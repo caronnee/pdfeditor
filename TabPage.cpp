@@ -76,26 +76,15 @@ void TabPage::nextPage()
 	this->setFromSplash();
 }
 
-void TabPage::keyPressEvent(QKeyEvent *event)
-{
-	if ((event->key() == Qt::Key_L)&&(pdf->getPagePosition(page) < pdf->getPageCount()))
-		page = boost::shared_ptr<pdfobjects::CPage>(pdf->getNextPage(page));
-	else if ((event->key() == Qt::Key_R) && (pdf->getPagePosition(page)!=1))
-		page = boost::shared_ptr<pdfobjects::CPage>(pdf->getPrevPage(page));
-	else if (event->key() == Qt::Key_A )
-		insertFromExisting();		
-	else return;
-
-	displayparams.hDpi = 70;
-	displayparams.vDpi = 100;
-
-	setFromSplash();
-}
-void TabPage::insertFromExisting()
-{ //TODO dialog which page and from where, or range
-	//insert new page, try catch
+void TabPage::insertPageFromExisting()
+{ 
+	QString s = getFile(QFileDialog::ExistingFile);
+	if (s == NULL)
+		return;
+	//set rotation, set rotation for pages, insertpages
 	boost::shared_ptr<pdfobjects::CPdf> pdf2 = boost::shared_ptr<pdfobjects::CPdf> ( 
-		pdfobjects::CPdf::getInstance ("D:\\Work\\winPdfEdit\\winPdfEdit\\pdfedit-0.4.5\\projects\\output\\zadani.pdf", pdfobjects::CPdf::ReadOnly));
+		pdfobjects::CPdf::getInstance (s.toAscii().data(), pdfobjects::CPdf::ReadOnly));
+//	RangeDialog
 	page = pdf->insertPage(pdf2->getPage(1),1);
 }
 void TabPage::deletePage()
@@ -176,7 +165,7 @@ void TabPage::commitRevision()
 
 void TabPage::exportRevision()
 {
-	QString name = getFile("Save as");
+	QString name = getFile();
 	//if exists, save it here
 	FILE * f = fopen(name.toAscii().data(),"r");
 	if (f) //we are sure we caanot create file
@@ -199,9 +188,10 @@ void TabPage::exportRevision()
 	fclose(f);
 }
 
-QString TabPage::getFile(const char * name)
+QString TabPage::getFile(QFileDialog::FileMode flags)
 {
 	QFileDialog d(this);
+	d.setFileMode(flags);
 	d.setFilter("All PDF files (*.pdf)");
 	if (!d.exec())
 		return NULL;

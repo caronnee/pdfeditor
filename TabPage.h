@@ -13,6 +13,7 @@
 //END of PDF
 #include <qwidget.h>
 #include <QString>
+#include <QFileDialog>
 #include "ui_showPage.h"
 
 
@@ -35,13 +36,11 @@ public:
 private:
 	//private methods
 	void addRevision( size_t i);
-	void keyPressEvent(QKeyEvent *event);
-	void insertFromExisting();
 	void setFromSplash();
 
 	void updatePageInfoBar();
 	// gets file, name is name of dialog
-	QString getFile(const char * name);
+	QString getFile(QFileDialog::FileMode flags = QFileDialog::AnyFile);
 
 public:	
 	///Mo	
@@ -55,6 +54,9 @@ public slots:
 	void previousPage();
 	///Sets image to next page
 	void nextPage();
+
+	/// Inserts range of file from existing PDF
+	void insertPageFromExisting();
 
 private slots:
 
