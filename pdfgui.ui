@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>pdfGuiClass</class>
+ <widget class="QMainWindow" name="pdfGuiClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>444</width>
+    <height>401</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>33</width>
+    <height>30</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>pdfGui</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QGroupBox" name="FileManipulation">
+      <property name="toolTip">
+       <string>FileManupulation</string>
+      </property>
+      <property name="title">
+       <string>File Manipulation</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QPushButton" name="openFile">
+         <property name="text">
+          <string>Open</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="saveButton">
+         <property name="text">
+          <string>Save</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="SaveAs">
+         <property name="text">
+          <string>Save as</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string>Display manipulation</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="display">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Display</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="rotate">
+         <property name="text">
+          <string>Rotate</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="pageManipulation">
+      <property name="toolTip">
+       <string>manipulation with page</string>
+      </property>
+      <property name="title">
+       <string>Page manipulation</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="1">
+        <widget class="QPushButton" name="pageUp">
+         <property name="text">
+          <string>Up</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="pageDown">
+         <property name="text">
+          <string>Down</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QPushButton" name="insertEmpty">
+         <property name="text">
+          <string>Insert Empty</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <widget class="QPushButton" name="deletePage">
+         <property name="text">
+          <string>DeletePage</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QPushButton" name="insertRange">
+         <property name="text">
+          <string>Insert Range</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="OpenPdf" name="openedPdfs">
+      <property name="acceptDrops">
+       <bool>true</bool>
+      </property>
+      <property name="tabPosition">
+       <enum>QTabWidget::North</enum>
+      </property>
+      <property name="tabShape">
+       <enum>QTabWidget::Triangular</enum>
+      </property>
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+      <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>444</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>OpenPdf</class>
+   <extends>QTabWidget</extends>
+   <header location="global">openpdf.h</header>
+   <container>1</container>
+   <slots>
+    <slot>openAnotherPdf()</slot>
+    <slot>closeAndRemoveTab(int)</slot>
+    <slot>createNewRevision()</slot>
+    <slot>save()</slot>
+    <slot>saveAs()</slot>
+    <slot>insertEmoty()</slot>
+    <slot>insertRange()</slot>
+    <slot>deletePage()</slot>
+    <slot>display()</slot>
+    <slot>rotate()</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="pdfgui.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>openedPdfs</sender>
+   <signal>tabCloseRequested(int)</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>closeAndRemoveTab(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>221</x>
+     <y>269</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>269</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>openFile</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>openAnotherPdf()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>118</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>269</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>saveButton</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>save()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>170</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SaveAs</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>saveAs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>359</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>display</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>display()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>118</x>
+     <y>137</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rotate</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>rotate()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>324</x>
+     <y>137</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>insertEmpty</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>insertEmoty()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>221</x>
+     <y>199</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>insertRange</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>insertRange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>304</x>
+     <y>199</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>deletePage</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>deletePage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>386</x>
+     <y>199</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
