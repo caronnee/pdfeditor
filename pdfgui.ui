@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>444</width>
-    <height>401</height>
+    <width>459</width>
+    <height>482</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -18,9 +18,6 @@
   </property>
   <property name="windowTitle">
    <string>pdfGui</string>
-  </property>
-  <property name="autoFillBackground">
-   <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -35,22 +32,29 @@
       <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
+      <layout class="QFormLayout" name="formLayout_2">
+       <item row="0" column="0">
         <widget class="QPushButton" name="openFile">
          <property name="text">
           <string>Open</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="1">
         <widget class="QPushButton" name="saveButton">
          <property name="text">
           <string>Save</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="printButton">
+         <property name="text">
+          <string>Print</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
         <widget class="QPushButton" name="SaveAs">
          <property name="text">
           <string>Save as</string>
@@ -68,8 +72,8 @@
       <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
         <widget class="QPushButton" name="display">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -77,13 +81,25 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>25</height>
+          </size>
+         </property>
          <property name="text">
           <string>Display</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="1">
         <widget class="QPushButton" name="rotate">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>25</height>
+          </size>
+         </property>
          <property name="text">
           <string>Rotate</string>
          </property>
@@ -103,39 +119,39 @@
       <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="1">
+      <layout class="QFormLayout" name="formLayout_3">
+       <item row="0" column="0">
         <widget class="QPushButton" name="pageUp">
          <property name="text">
           <string>Up</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
+       <item row="0" column="1">
         <widget class="QPushButton" name="pageDown">
          <property name="text">
           <string>Down</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="4">
+       <item row="1" column="1">
         <widget class="QPushButton" name="insertEmpty">
          <property name="text">
           <string>Insert Empty</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="6">
-        <widget class="QPushButton" name="deletePage">
-         <property name="text">
-          <string>DeletePage</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5">
+       <item row="2" column="1">
         <widget class="QPushButton" name="insertRange">
          <property name="text">
           <string>Insert Range</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="deletePage">
+         <property name="text">
+          <string>DeletePage</string>
          </property>
         </widget>
        </item>
@@ -171,7 +187,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>444</width>
+     <width>459</width>
      <height>20</height>
     </rect>
    </property>
@@ -204,11 +220,12 @@
     <slot>createNewRevision()</slot>
     <slot>save()</slot>
     <slot>saveAs()</slot>
-    <slot>insertEmoty()</slot>
+    <slot>insertEmpty()</slot>
     <slot>insertRange()</slot>
     <slot>deletePage()</slot>
     <slot>display()</slot>
     <slot>rotate()</slot>
+    <slot>print()</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -245,22 +262,6 @@
     <hint type="destinationlabel">
      <x>221</x>
      <y>269</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>saveButton</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>save()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>170</x>
-     <y>75</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>221</x>
-     <y>300</y>
     </hint>
    </hints>
   </connection>
@@ -316,10 +317,26 @@
    <sender>insertEmpty</sender>
    <signal>clicked()</signal>
    <receiver>openedPdfs</receiver>
-   <slot>insertEmoty()</slot>
+   <slot>insertEmpty()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>221</x>
+     <y>199</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>deletePage</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>deletePage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>386</x>
      <y>199</y>
     </hint>
     <hint type="destinationlabel">
@@ -345,14 +362,30 @@
    </hints>
   </connection>
   <connection>
-   <sender>deletePage</sender>
+   <sender>saveButton</sender>
    <signal>clicked()</signal>
    <receiver>openedPdfs</receiver>
-   <slot>deletePage()</slot>
+   <slot>save()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>386</x>
-     <y>199</y>
+     <x>170</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>printButton</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>print()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>376</x>
+     <y>75</y>
     </hint>
     <hint type="destinationlabel">
      <x>221</x>

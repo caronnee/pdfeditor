@@ -1,6 +1,7 @@
 #include "openpdf.h"
 #include "TabPage.h"
 #include <QFileDialog>
+#include "insertpagerange.h"
 
 OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget)
 {
@@ -63,4 +64,22 @@ void OpenPdf::pageDown()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->pageDown();
+}
+void OpenPdf::insertRange()
+{
+	//calls insert range specific to active tab
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->insertRange();
+}
+void OpenPdf::emptyPage()
+{
+	//calls insert range specific to active tab
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->addEmptyPage();
+}
+void OpenPdf::print()
+{
+	//calls insert range specific to active tab
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->print();
 }

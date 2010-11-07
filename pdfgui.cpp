@@ -24,8 +24,8 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	//pridame inicializocanie kniznice
 	// pdf lib init & work
 
-	//if no pdf ischoosed, display dialogBox..But TODO for now
-
+	//connections - no connections are made because i shoul connect and disconnect frequently to match actually choosed label
+	
 }
 
 pdfGui::~pdfGui()

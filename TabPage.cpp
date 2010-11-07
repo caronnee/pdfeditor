@@ -1,7 +1,15 @@
 #include "TabPage.h"
+//QT$
 #include <QKeyEvent>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QPainter>
+#include <QPrinter>
+#include <QPrintDialog>
+//PDF
+#include <kernel/factories.h>
+//created files
+#include "insertpagerange.h"
 
 TabPage::TabPage(QString name) : _name(name)
 {
@@ -10,8 +18,6 @@ TabPage::TabPage(QString name) : _name(name)
 	//connections()
 	connect (ui.previous,SIGNAL(clicked()),this,SLOT(previousPage()));
 	connect (ui.next,SIGNAL(clicked()),this,SLOT(nextPage()));
-	//connect (ui.commit, SIGNAL(clicked()), this, SLOT(createRevision()));
-//	connect (ui.branchRevision, SIGNAL(clicked()), this, SLOT(branchRevision()));
 
 	//end of connections
 
@@ -76,15 +82,13 @@ void TabPage::nextPage()
 	this->setFromSplash();
 }
 
-void TabPage::insertPageFromExisting()
+void TabPage::insertPageRangeFromExisting()
 { 
-	QString s = getFile(QFileDialog::ExistingFile);
+	QString s = QFileDialog::getOpenFileName(this, tr("Open File"),".",tr("Pdf files (*.pdf)"));
 	if (s == NULL)
 		return;
-	//set rotation, set rotation for pages, insertpages
 	boost::shared_ptr<pdfobjects::CPdf> pdf2 = boost::shared_ptr<pdfobjects::CPdf> ( 
 		pdfobjects::CPdf::getInstance (s.toAscii().data(), pdfobjects::CPdf::ReadOnly));
-//	RangeDialog
 	page = pdf->insertPage(pdf2->getPage(1),1);
 }
 void TabPage::deletePage()
@@ -107,7 +111,7 @@ void TabPage::setFromSplash()
 	SplashOutputDev splash (splashModeBGR8, 4, gFalse, paperColor);
 
 	// display it = create internal splash bitmap
-	page->displayPage (splash, displayparams);
+	page->displayPage(splash, displayparams);
 	splash.clearModRegion();
 
 	QImage image(splash.getBitmap()->getWidth(), splash.getBitmap()->getHeight(),QImage::Format_RGB32);
@@ -136,6 +140,12 @@ void TabPage::savePdf(char * name)
 	}
 	FILE * f;
 	f = fopen(name,"w");
+	if (!f)
+	{
+		QMessageBox::warning(this,tr("Cannot create file"),tr("Creation file failed"),
+			QMessageBox::Ok);
+		return;
+	}
 	pdf->clone(f);
 	fclose(f);
 }
@@ -213,4 +223,65 @@ void TabPage::revertRevision()
 	rename(s.c_str(), _name.toAscii().data());
 	pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (_name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 	//TODO skontrolovat, ci sa zmenia zamky
+}
+void TabPage::insertRange()
+{
+	//opens file
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open pdf file"),".",tr("PdfFiles (*.pdf)"));
+	if (fileName == NULL)
+		return;//cancel pressed
+	InsertPageRange range(pdf,pdf->getPagePosition(page),this,fileName);
+	//updateBar
+	updatePageInfoBar();
+}
+void TabPage::addEmptyPage()
+{
+	//insert empty page
+	boost::shared_ptr<pdfobjects::CDict> pageDict(pdfobjects::CDictFactory::getInstance());
+	boost::shared_ptr<pdfobjects::CName> type(pdfobjects::CNameFactory::getInstance("Page"));
+	pageDict->addProperty("Type", *type);
+	boost::shared_ptr<pdfobjects::CPage> pageToAdd(new pdfobjects::CPage(pageDict));
+	pdf->insertPage(pageToAdd, pdf->getPagePosition(page));//insert after
+}
+void TabPage::print()
+{
+	QPrinter printer;
+
+	QPrintDialog dialog(&printer, this);
+	dialog.setWindowTitle(tr("Print Document"));
+	if (dialog.exec() != QDialog::Accepted)
+		return;
+
+	QPainter painter;
+	painter.begin(&printer);
+
+	SplashColor paperColor;
+	paperColor[0] = paperColor[1] = paperColor[2] = 0xff;
+	SplashOutputDev splash (splashModeBGR8, 4, gFalse, paperColor);
+	Guchar * p = new Guchar[3];
+	for (int pos = 1; pos <= pdf->getPageCount(); ++pos) {
+
+		// Use the painter to draw on the page.
+
+		// display it = create internal splash bitmap
+		pdf->getPage(pos)->displayPage(splash, displayparams);
+		splash.clearModRegion();
+
+		QImage image(splash.getBitmap()->getWidth(), splash.getBitmap()->getHeight(),QImage::Format_RGB32);
+
+		for ( int i =0; i< image.width(); i++)
+		{
+			for ( int j =0; j < image.height(); j++)
+			{
+				splash.getBitmap()->getPixel(i,j,p);
+				image.setPixel(i,j, qRgb(p[0],p[1],p[2]));
+			}
+		}
+		painter.drawImage(0,0,image);
+		if (pos != pdf->getPageCount())
+			printer.newPage();
+	}
+	delete[] p;
+	//sends to printer
+	painter.end();
 }

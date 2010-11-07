@@ -43,7 +43,6 @@ private:
 	QString getFile(QFileDialog::FileMode flags = QFileDialog::AnyFile);
 
 public:	
-	///Mo	
 	void deletePage();
 	void pageUp();
 	void pageDown();
@@ -55,10 +54,18 @@ public slots:
 	///Sets image to next page
 	void nextPage();
 
-	/// Inserts range of file from existing PDF
-	void insertPageFromExisting();
+	///insert range
+	void insertRange();
+	
+	/// Adds empty page
+	void addEmptyPage();
 
+	//prints pdf
+	void print();
 private slots:
+
+	/// Inserts range of file from existing PDF
+	void insertPageRangeFromExisting();
 
 	/// Saves actual made changes to new revision
 	/** Nothign else happens, no need to  
@@ -70,4 +77,5 @@ private slots:
 
 	/// Revert revision
 	void revertRevision();
+
 };
