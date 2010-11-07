@@ -34,7 +34,7 @@ public:
 
 private:
 	//private methods
-	void addRevision( int i);
+	void addRevision( size_t i);
 	void keyPressEvent(QKeyEvent *event);
 	void insertFromExisting();
 	void setFromSplash();
@@ -44,15 +44,16 @@ private:
 	QString getFile(const char * name);
 
 public:	
-	
-	int getRevisionCount() const;
+	///Mo	
 	void deletePage();
 	void pageUp();
 	void pageDown();
 	void savePdf(char * name);
 
 public slots:
+	///Sets image to previous page
 	void previousPage();
+	///Sets image to next page
 	void nextPage();
 
 private slots:

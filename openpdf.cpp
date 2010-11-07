@@ -34,9 +34,6 @@ void OpenPdf::openAnotherPdf()
 	for ( int i =0; i < fileNames.size(); i++)
 	{
 		TabPage * page = new TabPage(fileNames[i]);
-		QByteArray   bytes  = fileNames[i].toAscii();
-		const char * ptr    = bytes.data();
-
 		this->addTab(page,fileNames[i]);
 	}
 	setCurrentIndex(count() -1);

@@ -10,7 +10,7 @@ TabPage::TabPage(QString name) : _name(name)
 	//connections()
 	connect (ui.previous,SIGNAL(clicked()),this,SLOT(previousPage()));
 	connect (ui.next,SIGNAL(clicked()),this,SLOT(nextPage()));
-	connect (ui.commit, SIGNAL(clicked()), this, SLOT(createRevision()));
+	//connect (ui.commit, SIGNAL(clicked()), this, SLOT(createRevision()));
 //	connect (ui.branchRevision, SIGNAL(clicked()), this, SLOT(branchRevision()));
 
 	//end of connections
@@ -25,7 +25,7 @@ TabPage::TabPage(QString name) : _name(name)
 	QStringList list;
 	std::stringstream ss;
 	std::string s;
-	for ( int i =0; i< pdf->getRevisionsCount(); i++)
+	for ( size_t i =0; i< pdf->getRevisionsCount(); i++)
 	{
 		ss << i;
 		ss >> s;
@@ -34,10 +34,6 @@ TabPage::TabPage(QString name) : _name(name)
 	ui.Revision->addItems(list);
 	ui.Revision->setCurrentIndex(list.count()-1);
 	setFromSplash();
-}
-int TabPage::getRevisionCount() const
-{
-	return ui.Revision->count();
 }
 void TabPage::updatePageInfoBar()
 {
@@ -157,7 +153,7 @@ void TabPage::savePdf(char * name)
 TabPage::~TabPage(void)	{}
 
 ///---private--------
-void TabPage::addRevision( int i )
+void TabPage::addRevision( size_t i )
 {
 	std::stringstream ss;
 	assert( i < pdf->getRevisionsCount() );
@@ -185,8 +181,22 @@ void TabPage::exportRevision()
 	FILE * f = fopen(name.toAscii().data(),"r");
 	if (f) //we are sure we caanot create file
 	{
-		QMessageBox b(NULL);
+		if ( QMessageBox::warning(this, "File exists","You are sure to overwrite?", QMessageBox::Ok | QMessageBox::Discard,QMessageBox::Discard) == QMessageBox::Discard)
+		{
+			fclose(f);
+			return;
+		}
+		fclose(f);
 	}
+	//saving to new file
+	f = fopen(name.toAscii().data(),"w");
+	if (!f)
+	{
+		QMessageBox::warning(this,"Cannot save","Unknown error", QMessageBox::Ok);
+		return;
+	}
+	pdf->clone(f);
+	fclose(f);
 }
 
 QString TabPage::getFile(const char * name)
