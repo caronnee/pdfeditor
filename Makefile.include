@@ -1,0 +1,16 @@
+LIBS += -L/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/kernel/  \
+-L/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/utils/ \
+-L/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/xpdf/fofi \
+-L/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/xpdf/goo \
+-L/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/xpdf/splash \
+-L/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/xpdf/xpdf \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
+-lt1 -lfreetype
+
+INCPATH += -I. -I/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/xpdf/ -I/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/
