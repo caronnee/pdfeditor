@@ -71,7 +71,7 @@ void OpenPdf::insertRange()
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->insertRange();
 }
-void OpenPdf::emptyPage()
+void OpenPdf::insertEmpty()
 {
 	//calls insert range specific to active tab
 	TabPage * page = (TabPage *)this->widget(currentIndex());
@@ -82,4 +82,9 @@ void OpenPdf::print()
 	//calls insert range specific to active tab
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->print();
+}
+void OpenPdf::deletePage()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->deletePage();
 }

@@ -101,11 +101,10 @@ void TabPage::deletePage()
 	//removes actual page and displays the one after
 	if (pdf->getPageCount() <= 1)
 		return;
-	size_t i = page->getPagePosition();
+	int i = pdf->getPagePosition(page);
 	pdf->removePage(i);
-	if ( i == pdf->getPageCount() ) //if removing last page..
-		i-=2;
-	i++;
+	if ( i > pdf->getPageCount() ) //if removing last page..
+		i =pdf->getPageCount() ;
 	page = pdf->getPage(i);
 	setFromSplash();
 }
@@ -181,25 +180,45 @@ void TabPage::savePdf(char * name)
 TabPage::~TabPage(void)	{}
 
 ///---private--------
-void TabPage::addRevision( size_t i )
+void TabPage::addRevision( int i )
 {
+	if ( i < 0)//remove last
+	{
+		ui.Revision->removeItem(ui.Revision->count()-1);
+		return;//page was loaded
+	}
+	std::cout << "adding revision ";
 	std::stringstream ss;
+	std::cout << i << " " << pdf->getRevisionsCount() << std::endl;
 	assert( i < pdf->getRevisionsCount() );
 	ss << i;
 	std::string s;
 	ss >> s;
 	ui.Revision->addItem(QString(("Revision " + s).c_str()));
+	ui.Revision->setCurrentIndex(i-1);
 }
 
 ///--------------------------------PRIVATE SLOTS----------------
 
+void TabPage::initRevision(int  revision) //snad su revizie od nuly:-/
+{
+	int pos = page->getPagePosition();
+	pdf->changeRevision(revision);
+	if (pos > pdf->getPageCount())
+		pos = pdf->getPageCount();
+	setFromSplash();
+}
 
 void TabPage::commitRevision()
 {
 	//save revision to pdf
 	this->pdf->save(true);
-	//update revicionscout
-	addRevision(this->ui.Revision->count());	
+	if (pdf->getRevisionsCount() == this->ui.Revision->count()+1)
+		addRevision(this->ui.Revision->count());	
+	else
+	{ 
+		std::cout << " Not changed" << pdf->getRevisionsCount() << std::endl;
+	}
 }
 
 void TabPage::exportRevision()
@@ -238,6 +257,11 @@ QString TabPage::getFile(QFileDialog::FileMode flags)
 }
 void TabPage::revertRevision()
 {
+	//only last time!
+	if (pdf->getRevisionsCount() == 1)
+		return;
+	pdf->changeRevision(pdf->getRevisionsCount()-1);
+	size_t pos = page->getPagePosition();
 	//save to file that is tmpdte
 	FILE * f;
 	std::string s(_name.toAscii().data());
@@ -251,7 +275,11 @@ void TabPage::revertRevision()
 	fclose(f);
 	rename(s.c_str(), _name.toAscii().data());
 	pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (_name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
-	//TODO skontrolovat, ci sa zmenia zamky
+	//TODO skontrolovat, ci sa zmenia zamky na subore
+	if (pos >  pdf->getPageCount())
+		pos = pdf->getPageCount();
+	page = pdf->getPage(pos);
+	addRevision();
 }
 void TabPage::insertRange()
 {
@@ -274,7 +302,7 @@ void TabPage::addEmptyPage()
 }
 void TabPage::print()
 {
-	QPrinter printer;
+	QPrinter printer(QPrinter::HighResolution);
 
 	QPrintDialog dialog(&printer, this);
 	dialog.setWindowTitle(tr("Print Document"));
@@ -284,11 +312,11 @@ void TabPage::print()
 	QPainter painter;
 	painter.begin(&printer);
 
-	SplashColor paperColor;
+	SplashColor paperColor; //not working! dunno why
 	paperColor[0] = paperColor[1] = paperColor[2] = 0xff;
 	SplashOutputDev splash (splashModeBGR8, 4, gFalse, paperColor);
 	Guchar * p = new Guchar[3];
-	for (int pos = 1; pos <= pdf->getPageCount(); ++pos) {
+	for (size_t pos = 1; pos <= pdf->getPageCount(); ++pos) {
 
 		// Use the painter to draw on the page.
 
@@ -306,7 +334,11 @@ void TabPage::print()
 				image.setPixel(i,j, qRgb(p[0],p[1],p[2]));
 			}
 		}
-		painter.drawImage(0,0,image);
+		//we have the image
+		QSize size(300,300);
+		QImage t = image.scaled(size);
+		t.save("test resized.bmp");
+		painter.drawImage(0,0,t);
 		if (pos != pdf->getPageCount())
 			printer.newPage();
 	}

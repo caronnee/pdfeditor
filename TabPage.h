@@ -35,7 +35,7 @@ public:
 
 private:
 	//private methods
-	void addRevision( size_t i);
+	void addRevision( int i = -1);
 	void setFromSplash();
 
 	void updatePageInfoBar();
@@ -65,6 +65,8 @@ public slots:
 	//prints pdf
 	void print();
 private slots:
+
+	void initRevision(int revision);
 
 	/// Inserts range of file from existing PDF
 	void insertPageRangeFromExisting();

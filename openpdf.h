@@ -35,8 +35,11 @@ public slots:
 	void insertRange();
 
 	//inserts empty page
-	void emptyPage();
+	void insertEmpty();
 
 	///print a page
 	void print();
+
+	//Deletes actual page, if theree is more that one page
+	void deletePage();
 };

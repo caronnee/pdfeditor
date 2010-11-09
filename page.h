@@ -12,7 +12,7 @@ class DisplayPage : public QWidget
 public:
 	DisplayPage(QWidget *parent = 0);
 	~DisplayPage();
-	void DisplayPage::setImage( const QImage & image)const;
+	void setImage( const QImage & image)const;
 
 private:
 	Ui::page ui;

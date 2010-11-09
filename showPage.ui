@@ -136,5 +136,18 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+ <connection>
+  <sender>commit</sender>
+  <signal>clicked()</signal>
+  <receiver>TabUI</receiver>
+  <slot>commitRevision()</slot>
+ </connection>
+ <connection>
+  <sender>Revision></sender>
+  <signal>activated(int)</signal>
+  <receiver>TabUI</receiver>
+  <slot>initRevision(int)</slot>
+ </connection>
+ </connections>
 </ui>
