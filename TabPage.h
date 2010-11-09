@@ -43,6 +43,8 @@ private:
 	QString getFile(QFileDialog::FileMode flags = QFileDialog::AnyFile);
 
 public:	
+
+	void wheelEvent( QWheelEvent * event ); 
 	void deletePage();
 	void pageUp();
 	void pageDown();
@@ -50,9 +52,9 @@ public:
 
 public slots:
 	///Sets image to previous page
-	void previousPage();
+	bool previousPage();
 	///Sets image to next page
-	void nextPage();
+	bool nextPage();
 
 	///insert range
 	void insertRange();

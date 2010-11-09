@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>page</class>
- <widget class="QScrollArea" name="page">
+ <widget class="QWidget" name="page">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,33 +11,20 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ScrollArea</string>
+   <string>Form</string>
   </property>
-  <property name="widgetResizable">
-   <bool>true</bool>
-  </property>
-  <widget class="QWidget" name="scrollAreaWidgetContents">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>398</width>
-     <height>298</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

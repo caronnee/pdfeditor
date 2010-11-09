@@ -15,11 +15,14 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0" rowspan="2" colspan="2">
-    <widget class="Page" name="scrollArea">
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <widget class="MyWidget" name="scrollAreaWidgetContents">
+     <widget class="DisplayPage" name="content">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -126,14 +129,8 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MyWidget</class>
+   <class>DisplayPage</class>
    <extends>QWidget</extends>
-   <header location="global">mywidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>Page</class>
-   <extends>QScrollArea</extends>
    <header location="global">page.h</header>
    <container>1</container>
   </customwidget>

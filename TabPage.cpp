@@ -6,6 +6,7 @@
 #include <QPainter>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QScrollBar>
 //PDF
 #include <kernel/factories.h>
 //created files
@@ -29,10 +30,11 @@ TabPage::TabPage(QString name) : _name(name)
 	//pdf->save();
 	// init splash bitmap
 	QStringList list;
-	std::stringstream ss;
+
 	std::string s;
 	for ( size_t i =0; i< pdf->getRevisionsCount(); i++)
 	{
+		std::stringstream ss;
 		ss << i;
 		ss >> s;
 		list.append(("Revision " + s).c_str());
@@ -44,13 +46,14 @@ TabPage::TabPage(QString name) : _name(name)
 void TabPage::updatePageInfoBar()
 {
 	std::stringstream ss;
-	ss << page->getPagePosition();
-	std::string s1;
-	ss >> s1;
 	ss << pdf->getPageCount();
 	std::string s2;
 	ss >> s2;
-	//,f1,10) + "/" + itoa(pdf->getPageCount(),f2,10);
+	ss.clear();
+	ss << page->getPagePosition();
+	std::string s1;
+	ss >> s1;
+	
 	this->ui.pageInfo->setText( (s1 + " / " +s2).c_str() );
 }
 void TabPage::pageUp()
@@ -67,19 +70,21 @@ void TabPage::pageDown()
 	this->pdf->insertPage(page,pos);
 	updatePageInfoBar();
 }
-void TabPage::previousPage()
+bool TabPage::previousPage()
 {
 	if (pdf->getPagePosition(page) == 1)
-		return;
+		return false;
 	page = pdf->getPrevPage(page);
 	this->setFromSplash();
+	return true;
 }
-void TabPage::nextPage()
+bool TabPage::nextPage()
 {
 	if (pdf->getPagePosition(page) == pdf->getPageCount())
-		return;
+		return false;
 	page = pdf->getNextPage(page);
 	this->setFromSplash();
+	return true;
 }
 
 void TabPage::insertPageRangeFromExisting()
@@ -126,10 +131,34 @@ void TabPage::setFromSplash()
 	}
 	delete[] p;
 
-	this->ui.label->setPixmap(QPixmap::fromImage(image));
+	this->ui.content->setImage(image);
 	//image.save("mytest.bmp","BMP");
-	this->ui.label->adjustSize();
+	//this->ui.label->adjustSize();
 	updatePageInfoBar();
+}
+void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
+{
+	if (event->delta() > 0 )
+	{
+		//wheeleing forward
+		QScrollBar * bar = this->ui.scrollArea->horizontalScrollBar();
+		if (( bar->value() > event->delta()) && 
+			(this->previousPage()))
+			bar->setValue(bar->maximum());
+		else
+			bar->setValue(bar->value() + event->delta() );
+	}
+	else
+	{
+		QScrollBar * bar = this->ui.scrollArea->horizontalScrollBar();
+		if ( bar->value() < event->delta()*-1 )
+		{
+			bar->setValue(bar->minimum());
+		}
+		else
+			bar->setValue(bar->value()+event->delta());
+	}
+	event->accept();
 }
 void TabPage::savePdf(char * name)
 {

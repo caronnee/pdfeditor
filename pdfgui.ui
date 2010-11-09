@@ -93,15 +93,24 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QPushButton" name="rotate">
+        <widget class="QDial" name="rotate">
          <property name="maximumSize">
           <size>
-           <width>100</width>
-           <height>25</height>
+           <width>30</width>
+           <height>30</height>
           </size>
          </property>
-         <property name="text">
-          <string>Rotate</string>
+         <property name="minimum">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <number>359</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>0</number>
          </property>
         </widget>
        </item>
@@ -128,30 +137,30 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QPushButton" name="pageDown">
+        <widget class="QPushButton" name="deletePage">
          <property name="text">
-          <string>Down</string>
+          <string>DeletePage</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QPushButton" name="insertEmpty">
-         <property name="text">
-          <string>Insert Empty</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
         <widget class="QPushButton" name="insertRange">
          <property name="text">
           <string>Insert Range</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QPushButton" name="deletePage">
+       <item row="2" column="1">
+        <widget class="QPushButton" name="insertEmpty">
          <property name="text">
-          <string>DeletePage</string>
+          <string>Insert Empty</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="pageDown">
+         <property name="text">
+          <string>Down</string>
          </property>
         </widget>
        </item>
@@ -289,22 +298,6 @@
    <hints>
     <hint type="sourcelabel">
      <x>118</x>
-     <y>137</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>221</x>
-     <y>300</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rotate</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>rotate()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>324</x>
      <y>137</y>
     </hint>
     <hint type="destinationlabel">

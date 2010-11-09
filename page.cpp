@@ -1,12 +1,17 @@
 #include "page.h"
 
-Page::Page(QWidget *parent)
-	: QScrollArea(parent)
+DisplayPage::DisplayPage(QWidget *parent)
+	: QWidget(parent)
 {
 	ui.setupUi(this);
 }
 
-Page::~Page()
+DisplayPage::~DisplayPage()
 {
 
+}
+void DisplayPage::setImage( const QImage & image )const
+{
+	this->ui.label->setPixmap(QPixmap::fromImage(image));
+	this->ui.label->adjustSize();
 }
