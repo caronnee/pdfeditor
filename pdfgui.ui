@@ -32,32 +32,35 @@
       <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>
-      <layout class="QFormLayout" name="formLayout_2">
-       <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="topMargin">
+        <number>9</number>
+       </property>
+       <item>
         <widget class="QPushButton" name="openFile">
          <property name="text">
           <string>Open</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="saveButton">
+       <item>
+        <widget class="QPushButton" name="SaveAs">
          <property name="text">
-          <string>Save</string>
+          <string>Save as</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item>
         <widget class="QPushButton" name="printButton">
          <property name="text">
           <string>Print</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="SaveAs">
+       <item>
+        <widget class="QPushButton" name="saveButton">
          <property name="text">
-          <string>Save as</string>
+          <string>Save</string>
          </property>
         </widget>
        </item>
@@ -73,6 +76,9 @@
        <set>Qt::AlignCenter</set>
       </property>
       <layout class="QFormLayout" name="formLayout">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+       </property>
        <item row="0" column="0">
         <widget class="QPushButton" name="display">
          <property name="sizePolicy">
@@ -109,9 +115,6 @@
          <property name="singleStep">
           <number>1</number>
          </property>
-         <property name="value">
-          <number>0</number>
-         </property>
         </widget>
        </item>
       </layout>
@@ -128,39 +131,39 @@
       <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>
-      <layout class="QFormLayout" name="formLayout_3">
-       <item row="0" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
         <widget class="QPushButton" name="pageUp">
          <property name="text">
           <string>Up</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="deletePage">
+       <item>
+        <widget class="QPushButton" name="pageDown">
          <property name="text">
-          <string>DeletePage</string>
+          <string>Down</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="insertRange">
-         <property name="text">
-          <string>Insert Range</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
+       <item>
         <widget class="QPushButton" name="insertEmpty">
          <property name="text">
           <string>Insert Empty</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QPushButton" name="pageDown">
+       <item>
+        <widget class="QPushButton" name="insertRange">
          <property name="text">
-          <string>Down</string>
+          <string>Insert Range</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="deletePage">
+         <property name="text">
+          <string>DeletePage</string>
          </property>
         </widget>
        </item>
@@ -233,7 +236,7 @@
     <slot>insertRange()</slot>
     <slot>deletePage()</slot>
     <slot>display()</slot>
-    <slot>rotate()</slot>
+    <slot>rotate(int)</slot>
     <slot>print()</slot>
    </slots>
   </customwidget>
@@ -383,6 +386,22 @@
     <hint type="destinationlabel">
      <x>221</x>
      <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rotate</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>rotate(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>140</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>229</x>
+     <y>344</y>
     </hint>
    </hints>
   </connection>

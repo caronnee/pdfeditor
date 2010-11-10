@@ -13,6 +13,9 @@ public:
 
 public slots:
 
+	//rotates active page
+	void rotate(int angle);
+
 	///Opens another pdf
 	void openAnotherPdf();
 
