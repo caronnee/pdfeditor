@@ -49,6 +49,7 @@ public:
 	void pageUp();
 	void pageDown();
 	void savePdf(char * name);
+	void rotate(int i, int begin, int end);
 
 public slots:
 	///Sets image to previous page

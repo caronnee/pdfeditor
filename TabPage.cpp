@@ -209,6 +209,23 @@ void TabPage::initRevision(int  revision) //snad su revizie od nuly:-/
 	setFromSplash();
 }
 
+void TabPage::rotate(int angle, int begin, int end)
+{
+	std::cout << "Rotating" << angle << std::endl;
+	if (begin == -1)
+	{
+		page->setRotation(angle);
+		setFromSplash();
+		return;
+	}
+	else
+	{
+		for (int i = begin; i< end; i++)
+		{
+			pdf->getPage(i)->setRotation(angle);
+		}
+	}
+}
 void TabPage::commitRevision()
 {
 	//save revision to pdf
