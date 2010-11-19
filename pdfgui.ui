@@ -44,6 +44,14 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="getText">
+         <property name="text">
+          <string>Convert To Text</string>
+         </property>
+        </widget>
+       </item>
+
+       <item>
         <widget class="QPushButton" name="SaveAs">
          <property name="text">
           <string>Save as</string>
@@ -245,6 +253,12 @@
   <include location="pdfgui.qrc"/>
  </resources>
  <connections>
+  <connection>
+   <sender>getText</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>getText()</slot>
+  </connection>
   <connection>
    <sender>openedPdfs</sender>
    <signal>tabCloseRequested(int)</signal>

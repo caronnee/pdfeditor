@@ -547,17 +547,22 @@ void TabPage::replaceText( std::string what, std::string by)
 void TabPage::getText()//get text from page
 {
 	//get only text iterator
-	std::vector<shared_ptr<CContentStream> streams;
+	std::vector<shared_ptr<CContentStream> > streams;
 	page->getContentStreams(streams);
+	std::string tmp ="";
 	for ( int i =0; i < streams.size(); i++ )
 	{
-		Oops ops;
+		Ops ops;
 		streams[i]->getPdfOperators(ops);
-		TextOperatorIterator it = PdfOperator::getIterator(ops.front());
+		TextOperatorIterator it = PdfOperator::getIterator<TextOperatorIterator> (ops.front());	
 		while(!it.isEnd())
 		{
-
+			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(it.getCurrent());
+			std::string s;
+			txt->getRawText(s);//bacha na t, ze to moze byt te lomitkova a hexadec repr..alebo nie?
+			tmp+= s;
+			it.next();
 		}
 	}
-	TextOperatorIterator it = PdfOperator::getIterator<TextOperatorIterator> (opers.front());	
+	std::cout << tmp << std::endl;
 }

@@ -13,6 +13,9 @@ public:
 
 public slots:
 
+	// extrcts text
+	void getText();
+
 	//rotates active page
 	void rotate(int angle);
 

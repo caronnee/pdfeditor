@@ -11,6 +11,11 @@ OpenPdf::~OpenPdf(void)
 {
 }
 
+void OpenPdf::getText()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->getText();
+}
 void OpenPdf::rotate(int i)
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());

@@ -75,6 +75,7 @@ private:
 	boost::shared_ptr<PdfOperator> findNearestFont(int x, int y);
 public:	
 
+	void getText();
 	void wheelEvent( QWheelEvent * event ); 
 	void deletePage();
 	void pageUp();
@@ -128,5 +129,4 @@ private slots:
 
 	/// Revert revision
 	void revertRevision();
-
 };

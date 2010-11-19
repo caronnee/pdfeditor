@@ -1,16 +1,17 @@
-LIBS += -L/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/kernel/  \
--L/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/utils/ \
--L/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/xpdf/fofi \
--L/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/xpdf/goo \
--L/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/xpdf/splash \
--L/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/xpdf/xpdf \
--lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
--lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
--lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
--lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
--lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
--lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
--lkernel -lutils -lfofi -lGoo -lsplash -lxpdf -lxpdf-extra \
--lt1 -lfreetype
+LIBS += -L/usr/local/lib/pdfedit-0.4.5/utils/ \
+-L/usr/local/lib/pdfedit-0.4.5/kernel \
+-L/usr/local/lib/pdfedit-0.4.5/fofi \
+-L/usr/local/lib/pdfedit-0.4.5/goo \
+-L/usr/local/lib/pdfedit-0.4.5/splash \
+-L/usr/local/lib/pdfedit-0.4.5/xpdf \
+-L/usr/local/lib/pdfedit-0.4.5/xpdf/xpdf \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf \
+-lkernel -lutils -lfofi -lGoo -lsplash -lxpdf \
+-lfreetype
 
-INCPATH += -I. -I/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/xpdf/ -I/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/
+INCPATH += -I. -I/usr/local/include/pdfedit-0.4.5/xpdf -I/usr/local/include/pdfedit-0.4.5
