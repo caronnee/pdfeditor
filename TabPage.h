@@ -14,26 +14,55 @@
 #include <qwidget.h>
 #include <QString>
 #include <QFileDialog>
+#include <QRect>
 #include "ui_showPage.h"
 
+using namespace boost;
+using namespace pdfobjects;
+
+//strom s peviazanymi listami
+struct Tree
+{
+	int y; //podla coho to budem delit
+	Tree * more;
+	Tree * prev;
+	//value, if Any
+	boost::shared_ptr< PdfOperator > TextOp;// BT, chceme operantText
+};
+
+//co spravit, ked prepnem na inu stranku
+enum WhatToDo
+{
+	HighlightText,
+	SelectText
+};
 
 class TabPage :
 	public QWidget
 {
 	Q_OBJECT
 
-private:
+private: //variables
 	Ui::TabUI ui;
+
 	QString _name; //name of the file to be opened
+
+	/** pdf objects */
 	SplashColorPtr m_image;
 	pdfobjects::DisplayParams displayparams;	
 	boost::shared_ptr<pdfobjects::CPdf> pdf;
 	boost::shared_ptr<pdfobjects::CPage> page;
+	
+	std::vector <shared_ptr<PdfOperator> > workingOpSet;//zavisla na prave zobrazenej stranke
+	std::vector<int> selectedText; //tot ma stejne po workingOpSet
+	std::vector<QRect> selectedRegions; 
+
 public:
 	TabPage(QString name);
 	~TabPage(void);
 
 private:
+	QRect getRectangle(shared_ptr < PdfOperator> ops);
 	//private methods
 	void addRevision( int i = -1);
 	void setFromSplash();
@@ -42,6 +71,8 @@ private:
 	// gets file, name is name of dialog
 	QString getFile(QFileDialog::FileMode flags = QFileDialog::AnyFile);
 
+	int x, y;
+	boost::shared_ptr<PdfOperator> findNearestFont(int x, int y);
 public:	
 
 	void wheelEvent( QWheelEvent * event ); 
@@ -52,6 +83,20 @@ public:
 	void rotate(int i, int begin, int end);
 
 public slots:
+	void showClicked(int x, int y);
+	void clicked();
+	void addToSelectOperator(QRect rect); //nove rectangle, co sme pribrali
+	void updateSelectedRect( std::vector<shared_ptr<PdfOperator> > oops);
+	void copyToClipBoard(); //from selected/ highlighted
+	void move(int difx, int dify); //on mouse event, called on mouse realease
+	void selectOperators(const QRect rect, std::vector<shared_ptr<PdfOperator> > & opers) ;
+	void setSelectedOperators(QRect rect);
+	void rotateText( int angle );
+	void replaceText( std::string what, std::string by);
+	void deleteText( std::string text);
+	void insertText( std::string text );
+
+
 	///Sets image to previous page
 	bool previousPage();
 	///Sets image to next page
@@ -59,12 +104,13 @@ public slots:
 
 	///insert range
 	void insertRange();
-	
+
 	/// Adds empty page
 	void addEmptyPage();
 
 	//prints pdf
 	void print();
+
 private slots:
 
 	void initRevision(int revision);
