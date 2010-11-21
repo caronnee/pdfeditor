@@ -14,19 +14,21 @@ public:
 	DisplayPage(QWidget *parent = 0);
 	~DisplayPage();
 	void setImage( const QImage & image);
-
+private:
+	void unsetImg();
+	void setImg();
 private:
 	QImage _image;
+	QImage _copyImg;
 	Ui::page ui;
 
 	//we have to remeber original size
 	QSize _size;
 
 public slots:
-	//scales the image according to factor
 	void zoom(int zoomscale);
 	void mousePressEvent(QMouseEvent * event);
-	void fillRect(const QRect rect, const QColor color);
+	void fillRect(int x, int y, int x2, int y2, const QColor color);
 signals:
 	void MouseClicked(int, int); //bolo na mna kliknute, robte s tym nieco!
 };

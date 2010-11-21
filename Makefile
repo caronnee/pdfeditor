@@ -8,8 +8,8 @@
 
 ####### Compiler, tools and options
 
-CC            = gcc
-CXX           = g++
+CC            = gcc -g
+CXX           = g++ -g
 DEFINES       = -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT $(DEFINES)
 CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT $(DEFINES)
@@ -181,7 +181,6 @@ clean:compiler_clean
 
 distclean: clean
 	-$(DEL_FILE) $(TARGET) 
-	-$(DEL_FILE) Makefile
 
 
 check: first

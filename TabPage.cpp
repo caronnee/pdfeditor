@@ -1,3 +1,4 @@
+#include "debug.h"
 #include "TabPage.h"
 //QT$
 #include <QKeyEvent>
@@ -21,13 +22,10 @@ TabPage::TabPage(QString name) : _name(name)
 	//connections()
 	connect (ui.previous,SIGNAL(clicked()),this,SLOT(previousPage()));
 	connect (ui.next,SIGNAL(clicked()),this,SLOT(nextPage()));
-	connect (ui.content,SIGNAL(MouseChanged(int, int)),this, SLOT(showClicked(int, int))); //pri selecte sa to disconnectne a nahrasi inym modom
-
-
+	connect (ui.content,SIGNAL(MouseClicked(int, int)),this, SLOT(showClicked(int, int))); //pri selecte sa to disconnectne a nahrasi inym modom
 	//end of connections
 
-	pdf = boost::shared_ptr<pdfobjects::CPdf> ( 
-		pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
+	pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 
 	page = boost::shared_ptr<pdfobjects::CPage> (pdf->getPage(1)); //or set from last
 	//page->addText("myText...XXXX",libs::Point(1,1),"Helvetica");
@@ -49,6 +47,9 @@ TabPage::TabPage(QString name) : _name(name)
 }
 void TabPage::showClicked(int x, int y)
 {
+	QColor c(5, 5, 0, 50);
+	QRect r(10,10,50,50);
+//	this->ui.content->fillRect(r, c );
 	double px, py;
 	displayparams.convertPixmapPosToPdfPos(x, y, px, py);
 	//find operattors
@@ -57,9 +58,20 @@ void TabPage::showClicked(int x, int y)
 	//vsetky tieto objekty vymalujeme
 	for ( int i =0; i < ops.size(); i++)
 	{
-		QRect rect = getRectangle(ops[i]);
-		QColor color(266, 255, 0, 50);
-		this->ui.content->fillRect(rect, color );
+		std::string s;
+		ops[i]->getOperatorName(s); 
+
+		libs::Rectangle b = ops[i]->getBBox();
+		double x1, y1, x2, y2;
+
+	DEBUGLINE( "povodne " << x << "/" << px << " " << y<< "/"<<py );
+		displayparams.convertPdfPosToPixmapPos(b.xleft, b.yleft, x1,y1);
+		displayparams.convertPdfPosToPixmapPos(b.xright, b.yright, x2, y2);
+
+	DEBUGLINE( "converted " << b.xleft << "/" << x1 << " " << b.xright<< "/"<<x2 );
+	DEBUGLINE( "converted " << b.yleft << "/" << y1 << " " << b.yright<< "/"<< y2 );
+		QColor color(5, 5, 0, 50);
+		this->ui.content->fillRect( x1, y1, x2, y2, color );
 	}
 }
 QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
@@ -67,19 +79,14 @@ QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
 	QRect r;
 	libs::Rectangle b = ops->getBBox();
 	double x1,y1,x2,y2;
-	double top_x = b.xleft;
-	double top_y = max(b.yleft,b.yright);
-	double bottom_x = b.xright;
-	double bottom_y = min(b.yright,b.yleft);
 	
-	displayparams.convertPdfPosToPixmapPos(top_x,top_y,x1,y1);
-	displayparams.convertPdfPosToPixmapPos(bottom_x, bottom_y, x2, y2);
+	displayparams.convertPdfPosToPixmapPos(b.xleft, b.yleft, x1,y1);
+	displayparams.convertPdfPosToPixmapPos(b.xright, b.yright, x2, y2);
 
-	r.setBottom(y2);
-	r.setLeft(x1);
-	r.setRight(x2);
-	r.setTop(y1);
-
+	r.setTop(max(y1,y2));
+	r.setBottom(min(y1,y2));
+	r.setLeft(min(x1,x2));
+	r.setRight(max(x1, x2));
 	return r;
 }
 void TabPage::updatePageInfoBar()
@@ -475,7 +482,7 @@ void TabPage::copyToClipBoard() //from selected/ highlighted
 {
 	//ak cchem vybrat len selected text, musim si pamat, kde konci vybranie
 	//we have operators, that were selected, must be text
-	//inf workin set there isonly text operators(TJ)
+	//in working set there isonly text operators(TJ)
 	std::string text = "";
 	for ( size_t i =0; i < workingOpSet.size(); i++)
 	{
