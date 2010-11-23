@@ -1,5 +1,10 @@
+// Text rotate, scale, 
+// Change font, change color
+//TODO check if rotating rotate just the one object
+
 #include "debug.h"
 #include "TabPage.h"
+#include "globalfunctions.h"
 //QT$
 #include <QKeyEvent>
 #include <QFileDialog>
@@ -10,6 +15,7 @@
 #include <QScrollBar>
 //PDF
 #include <kernel/factories.h>
+#include <kernel/pdfoperators.h>
 //created files
 #include "insertpagerange.h"
 
@@ -47,9 +53,6 @@ TabPage::TabPage(QString name) : _name(name)
 }
 void TabPage::showClicked(int x, int y)
 {
-	QColor c(5, 5, 0, 50);
-	QRect r(10,10,50,50);
-//	this->ui.content->fillRect(r, c );
 	double px, py;
 	displayparams.convertPixmapPosToPdfPos(x, y, px, py);
 	//find operattors
@@ -83,10 +86,10 @@ QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
 	displayparams.convertPdfPosToPixmapPos(b.xleft, b.yleft, x1,y1);
 	displayparams.convertPdfPosToPixmapPos(b.xright, b.yright, x2, y2);
 
-	r.setTop(max(y1,y2));
-	r.setBottom(min(y1,y2));
-	r.setLeft(min(x1,x2));
-	r.setRight(max(x1, x2));
+	r.setTop(max<float>(y1,y2));
+	r.setBottom(min<float>(y1,y2));
+	r.setLeft(min<float>(x1,x2));
+	r.setRight(max<float>(x1, x2));
 	return r;
 }
 void TabPage::updatePageInfoBar()
@@ -438,15 +441,113 @@ boost::shared_ptr<PdfOperator> TabPage::findNearestFont(int x, int y)
 	return fontOper;
 }
 //slot
-void TabPage::clicked()
+void TabPage::riseSel()
 {
-	
-}
-void TabPage::insertText( std::string text )
-{
-	//najdi najblissi font, ktp ry bol pouzity
+	//move only text operators
 
-	shared_ptr<PdfOperator> fontOper = findNearestFont(x,y);
+	TextOperatorIterator it = PdfOperator::getIterator<TextOperatorIterator> (workingOpSet.front().op);
+	while (!it.isEnd())
+	{
+		//len Tj, potrebujeme pred pridat Ts, ak uz predty nejake ts nie je
+		// dostaneme composit
+		PdfOperator::Iterator bit = PdfOperator::getIterator<PdfOperator::Iterator> (workingOpSet.front().op);
+		shared_ptr< PdfOperator >  parent = findCompositeOfPdfOperator(bit,it.getCurrent());
+		//insert before, if full, first insert and then remove
+		
+		PdfOperator::Operands intop;
+		intop.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(-5)));
+		parent->push_back( it.getCurrent()->clone(),it.getCurrent());//TODO must check if Tj is only one
+		parent->push_back( createOperator("Tj", intop),it.getCurrent());//TODO must check if Tj is only one
+		
+//split text acording to highlighted
+	}
+
+}
+//rotate 
+void TabPage::rotateObjects(int angle) //there can be text or image object
+{
+	//selected operator will be removed and new QSTATE added
+	//let's loolk for Q
+	shared_ptr< PdfOperator > parent;
+	float rAngle = toRadians(angle);
+	for ( int i =0; i < workingOpSet.size(); i++)
+	{
+		std::vector<PdfOperator> ops;
+		workingOpSet[i]->getContentStream()->getPdfOperators(ops);
+		PdfOperator::Iterator it = 
+			PdfOperator::getIterator(ops.front());
+		parent = findCompositeOfPdfOperator(it, workingOpSet[i].op);
+		//for graphical object
+		if (strcmp(tolower(parent->getName())),"q")
+		{
+			//add cm rotation matrix
+			pdfOperator::Operands operands;
+			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
+			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(sin(rAngle))));
+			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(-sin(rAngle))));
+			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
+			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
+			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
+			shared_ptr< PdfOperator > o = createOperator("cm",operands);
+			//addOperator
+			parent->putBehind(getFirstOperator(parent), o);//
+		}
+		if (strcmp(tolower(parent->getName())),"bt")
+		{
+			pdfOperator::Operands operands;
+			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
+			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(sin(rAngle))));
+			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(-sin(rAngle))));
+			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
+			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
+			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
+			shared_ptr< PdfOperator > o = createOperator("Tm",operands);
+			//addOperator
+			std::vector< PdfOperator> children;
+arent->getChildren(children);
+			parent->putBehind(children.front(), o);////rotate via tm
+		}
+
+	}
+}
+void TabPage::rotateText(int angle) //there can be text or image objects
+{
+	//for all selected operator, rotate, but just t
+	for ( size_t i =0; i < workingOpSet.size(); i++)
+	{
+		if (!isTextOp(workingOpSet[i].op))
+			continue;
+		//we have TJ, remove object from parent, create new at same position, but anothe rotate, otherwise we could alter also another text
+		//get textMatrix
+		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(workingOpSet[i].op);
+		std::string s; 
+		txt->getRawText(s);
+		BBox b = txt->getBBox();
+
+		parent->remove(workingOpSet[i].op); //remove from parent, linearizator will remove empty operators
+		workingOpSet[i].op = insertText(min(b.xLeft,b.xRight),min(b.yLeft,b.yRight),s, angle);
+		
+	}
+}
+void TabPage::clicked(int x, int y)
+{
+//select operators and add to selected	
+	double px, py;
+	displayparams.convertPixmapPosToPdfPos(x, y, px, py);
+	//find operattors
+	std::vector< shared_ptr < PdfOperator> > ops;
+	page->getObjectsAtPosition(ops, libs::Point(px,py));
+	for ( int i =0; i<ops.size(); i++)
+	{
+		OperatorData d;
+		d.begin = -1; //full
+		d.end = 0;
+		d.op = ops[i];
+		workingOpSet.push_back(d);
+	}
+}
+shared_ptr<PdfOperator> TabPage::insertText(double x, double y, std::string text, int angle )
+{
 	//creat composite pdf operators with this font
 	Ops ops;
 	//vytvor BT, ET 
@@ -454,7 +555,10 @@ void TabPage::insertText( std::string text )
 	shared_ptr<UnknownCompositePdfOperator> BT(new UnknownCompositePdfOperator("BT", "ET"));
 
 	q->push_back(BT,q);
-	BT->push_back(fontOper->clone(), getLastOperator(BT));
+	PdfOperator::Operands fOperands;//TODO check poradie
+	fOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(14)));//velkost pisme
+	fOperands.push_back(shared_ptr<IProperty>(CNameFactory::getInstance(DEFFONT)));//velkost font
+	BT->push_back(createOperator("Tf", fOperands), getLastOperator(BT));
 	//text matrix 
 
 	PdfOperator::Operands posOperands;
@@ -476,73 +580,32 @@ void TabPage::insertText( std::string text )
 	ops.push_back(q);
 	page->addContentStreamToBack(ops);
 	setFromSplash();
-}
-//zatial nepotrebujeme getText
-void TabPage::copyToClipBoard() //from selected/ highlighted
-{
-	//ak cchem vybrat len selected text, musim si pamat, kde konci vybranie
-	//we have operators, that were selected, must be text
-	//in working set there isonly text operators(TJ)
-	std::string text = "";
-	for ( size_t i =0; i < workingOpSet.size(); i++)
-	{
-		std::string tmp;
-		
-		workingOpSet[i]->getStringRepresentation(tmp); //len cast, ktoru sme vyznacili
-		//chceme vybrat len ten text, co sme vybrali
-
-		text += tmp.substr(0,selectedText[i]);
-	}
-	//QApplication::clipboard()->setText(text); //TODO move UP
-}
-void TabPage::updateSelectedRect( std::vector<shared_ptr<PdfOperator> > oops)
-{
-	for ( int i =0; i < oops.size(); i++)
-	{
-	//	this->ui.content->drawRect(oops[i]);
-	}
-	setFromSplash();
-}
-void TabPage::addToSelectOperator(QRect rect) //nove rectangle, co sme pribrali
-{
-	std::vector<shared_ptr<PdfOperator> > oops;
-	//hodime probkem na inu funkciu
-	//selectOperator(rect, oops);
-//	workingset.push_back(oops.begin(), oops.end());
-	//mame pridane nove operatory
-}
-void TabPage::selectOperators(const QRect rect, std::vector<shared_ptr<PdfOperator> > & opers) 
-{
-	//vyberame operatory
-//	libs::Rectangle r(rect.left(), rect.down(), rect.right(), rect.up());
-//	page->getObjectAtPosition(opers,r ); //select operators on page
-
-}
-void TabPage::setSelectedOperators(QRect rect)
-{
-	workingOpSet.clear();
-	//selectOperator(rect, workingOpSet);
-	//mame nove operatory, s ktorymi sa mozeme hrat
+	return q;
 }
 
 void TabPage::move(int difx, int dify) //on mouse event, called on mouse realease
 {
-	//z tyh selectlych vsetko posunieme
-	//ak je to text, nastavime novy maticu
-	//ak je to nie =co ine..panbu pomoz
-}
-void TabPage::rotateText( int angle )
-{
-	//we have the qrange
-	//we have to find textMatrix
-	
+	//for each selected operator, move it accrding to position
+	for ( size_t i =0; i< workingOpSet.size(); i++)
+	{
+		//u textov nastavime Td
+
+	}
 }
 //slot
-void TabPage::deleteText( std::string text)
+void TabPage::deleteText( std::string text, bool pages)
 {
 	//create tree of text on this page 
 	//search text, delete string & insert new text
-	std::vector < shared_ptr<PdfOperator> > operators;
+	std::vector<PdfOperator> opers;
+	while (search(text, opers,pages))
+	{
+		std::string todel = text;
+		
+		//ide nam len o zaciatok a koniec
+		//v kazdom operator bude kusok
+		//vsetko medzi tym sa zmaze
+	}
 }
 
 //slot

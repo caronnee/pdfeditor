@@ -13,7 +13,9 @@ public:
 
 public slots:
 
-	// extrcts text
+	void riseSel();
+
+	// extracts text
 	void getText();
 
 	//rotates active page

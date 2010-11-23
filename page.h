@@ -15,7 +15,6 @@ public:
 	~DisplayPage();
 	void setImage( const QImage & image);
 private:
-	void unsetImg();
 	void setImg();
 private:
 	QImage _image;
@@ -31,6 +30,9 @@ public slots:
 	void fillRect(int x, int y, int x2, int y2, const QColor color);
 signals:
 	void MouseClicked(int, int); //bolo na mna kliknute, robte s tym nieco!
+public:
+	void unsetImg();
+	
 };
 
 #endif // PAGE_H

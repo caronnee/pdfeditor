@@ -50,6 +50,22 @@
          </property>
         </widget>
        </item>
+	<item>
+        <widget class="QPushButton" name="rise">
+         <property name="text">
+          <string>Rise</string>
+         </property>
+        </widget>
+       </item>
+
+	<item>
+        <widget class="QPushButton" name="rotae">
+         <property name="text">
+          <string>Operator Rotate</string>
+         </property>
+        </widget>
+       </item>
+
 
        <item>
         <widget class="QPushButton" name="SaveAs">
@@ -253,6 +269,13 @@
   <include location="pdfgui.qrc"/>
  </resources>
  <connections>
+ <connection>
+   <sender>rise</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>riseSel()</slot>
+  </connection>
+
   <connection>
    <sender>getText</sender>
    <signal>clicked()</signal>
