@@ -1,6 +1,8 @@
-// Text rotate, scale, 
 // Change font, change color
-//TODO check if rotating rotate just the one object
+//TODO check if rotating rotate just the one object or all of them?
+//pre dial rotate text only, rotate all
+//highlightText
+//search
 
 #include "debug.h"
 #include "TabPage.h"
@@ -13,22 +15,32 @@
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QScrollBar>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 //PDF
 #include <kernel/factories.h>
 #include <kernel/pdfoperators.h>
 //created files
 #include "insertpagerange.h"
+#include "tree.h"
+#include "bookmark.h"
 
-typedef std::vector<shared_ptr<PdfOperator> > Ops;
 
+void TabPage::handleBookMark(QTreeWidget * item, int col)
+{
+	page = pdf->getPage(((Bookmark *)(item))->getDest());
+	setFromSplash();
+}
 TabPage::TabPage(QString name) : _name(name)
 {
 	ui.setupUi(this);
+	dirty = false;
 
 	//connections()
 	connect (ui.previous,SIGNAL(clicked()),this,SLOT(previousPage()));
 	connect (ui.next,SIGNAL(clicked()),this,SLOT(nextPage()));
-	connect (ui.content,SIGNAL(MouseClicked(int, int)),this, SLOT(showClicked(int, int))); //pri selecte sa to disconnectne a nahrasi inym modom
+	connect (ui.content,SIGNAL(MouseClicked(int, int)),this, SLOT(clicked(int, int))); //pri selecte sa to disconnectne a nahrasi inym modom
+	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	//end of connections
 
 	pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
@@ -40,7 +52,7 @@ TabPage::TabPage(QString name) : _name(name)
 	QStringList list;
 
 	std::string s;
-	for ( size_t i =0; i< pdf->getRevisionsCount(); i++)
+	for ( size_t i = 0; i< pdf->getRevisionsCount(); i++)
 	{
 		std::stringstream ss;
 		ss << i;
@@ -50,6 +62,164 @@ TabPage::TabPage(QString name) : _name(name)
 	ui.Revision->addItems(list);
 	ui.Revision->setCurrentIndex(list.count()-1);
 	setFromSplash();
+	SetModeTextSelect();
+	_dataReady = false;
+}
+
+void TabPage::SetModeTextSelect()
+{
+	_mode = SelectText;	
+	//show text button, hide everything else
+	if (_textList.empty())
+	{
+		//get all pdf text operats in list
+		Ops ops;
+		page->getObjectsAtPosition( ops, displayparams.pageRect);
+		//choose just testiterator
+		Ops::iterator it = ops.begin();
+		while ( it != ops.end())
+		{
+			std::string n; 
+			(*it)->getOperatorName(n);
+			if (!typeChecker.isType(OpTextName,n))
+				continue;
+			OperatorData data;
+			data.op = *it;
+			data.begin = data.end = 0;
+			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(data.op);
+			txt->getRawText(data.text);
+			data.rect = getRectangle(data.op);
+			_textList.push_back(data);
+		}
+		//sort list
+		dirty = true;
+	}
+}
+void TabPage::UnSetTextSelect()
+{
+	_mode = Default;
+}
+void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, ze sa vyberie prvy operator
+{
+	switch (_mode)
+	{
+		case SelectText:
+		{
+		//	highLightBegin(x,y); //nesprav nic, pretoze to bude robit mouseMove
+			break;
+		}
+		default:
+			showClicked(x,y);//zmenit 
+	}
+}
+void TabPage::mouseReleased() //nesprav nic, pretoze to bude robit mouseMove
+{
+	_dataReady = false;//TODO tu som este nieco chcela
+}
+void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit mouseMove
+{
+	//najdi prvy operator, na ktory bolo kliknute
+	Ops ops;
+	getAtPosition(ops,x,y); //zaplnili sme operator
+	//zistime, ze je to text
+	std::string n;
+	ops.back()->getOperatorName(n);
+	if (!typeChecker.isType(OpTextName,n))
+		return; //zoberieme iba posledny, vyditelny, ak siu na sebe
+	_dataReady = true;
+	sTextIt = _textList.begin();
+	sTextItEnd = sTextIt;
+	setTextData(sTextIt,_textList.end(),ops.back());
+}
+void TabPage::setTextData(TextData::iterator & it, TextData::iterator end,shared_ptr< PdfOperator > op)
+{
+	for ( ; it!= end; it++)
+	{
+		if (op == it->op)
+			return;
+	}
+	throw "Unexpected operator, text is not present in tree, why, why? ";
+}
+void TabPage::highlightText(int x, int y) //tu mame convertle  x,y
+{
+/*	if (!_dataReady) //prvykrat, co sme dotkli nejakeho operatora
+	{
+		_region = QRegion(); //region je tie convertly
+		highLightBegin(x,y);
+		return;
+	}
+	//highlightuj
+	//pohli sme sa na x, y
+	//ak sme sa pohli "dopredu" v zmysle dopredu textu, tal sme OK
+	//najsime operator
+	Ops ops;
+	getAtPosition(ops,x,y);
+	//ak nie je ziadny textovy operator
+	while ( !ops.empty())
+	{
+		std::string n;
+		ops.back()->getOperatorName(n);
+		if(typeChecker.isType( OpTextName, n))
+			break;
+		ops.pop_back();
+	}
+	if (ops.empty())
+	{
+		_dataReady = false;
+		return;
+	}//ideme vysvietit posledne. Ak je na tom mieste viacero textov, vysvietia sa podla toho, kde su v nasom liste, ale stene to bude fuj
+	//najdime teto operator
+	//ak sme sa pohli dopredu, tak y je mensia ako posledne, popripade x vyssie
+	if (sTextItEnd->forward(x,y))
+	{
+		//najdi ten operator, ktoreho sme sa dotkli
+		while (sTextItEnd->op != ops.back())
+		{
+			if (sTextItEnd == _textList.end())
+				throw "neni v tree"; //TODO potom toto tu vymazat
+			sTextItEnd++;
+			if (sTextItEnd!=sTextIt)
+				sTextItEnd->begin = 0;
+		}
+	}
+	else //pohybujeme sa smerom dozadu
+	{
+		while (sTextItEnd->op != ops.back())
+		{
+			if (sTextItEnd == _textList.end())
+				throw "neni v tree"; //TODO potom toto tu vymazat
+			sTextItEnd--;
+			if (sTextItEnd!=sTextIt)
+				sTextItEnd->begin = 0;
+		}
+	}
+	//teraz zistime, co sme to vlastne spachali, t.j vysvietime to, co sme vysvietili povodne
+	//najskor budeme rata s tym, ze nebudeme pridavat pomocou ctrl:)
+	TextData::iterator first = sTextIt;
+	TextData::iterator last = sTextItEnd; //TODO opravit na to, aby s dam davali aj medzery a pod, mozno by stacil upravit BBox, rozirit a dat do stromu
+	if( *first < *last)
+	{
+		TextData::iterator p = first;
+		first = last;
+		last = p; //zmenili mse
+	}
+	sTextItEnd->addToRegion(x);
+
+	//retapotrebujeme cely hilight vymazat //TODO to by sa malo zmenit, bo je to desne pomale
+	ui.content->unsetImg( );
+	while( first!=last)
+	{
+		QColor c(255,36,78);
+		ui.content->fillRect( first->region,c );
+		first ++;
+	}*/
+}
+void TabPage::getAtPosition(Ops& ops, int x, int y )
+{
+	double px, py;
+	displayparams.convertPixmapPosToPdfPos(x, y, px, py);
+	//find operattors
+	page->getObjectsAtPosition(ops, libs::Point(px,py));
 }
 void TabPage::showClicked(int x, int y)
 {
@@ -58,7 +228,8 @@ void TabPage::showClicked(int x, int y)
 	//find operattors
 	std::vector< shared_ptr < PdfOperator> > ops;
 	page->getObjectsAtPosition(ops, libs::Point(px,py));
-	//vsetky tieto objekty vymalujeme
+	workingOpSet.clear();	
+	//vsetky tieto objekty vymalujeme TODO zistit orientaciu
 	for ( int i =0; i < ops.size(); i++)
 	{
 		std::string s;
@@ -67,14 +238,12 @@ void TabPage::showClicked(int x, int y)
 		libs::Rectangle b = ops[i]->getBBox();
 		double x1, y1, x2, y2;
 
-	DEBUGLINE( "povodne " << x << "/" << px << " " << y<< "/"<<py );
 		displayparams.convertPdfPosToPixmapPos(b.xleft, b.yleft, x1,y1);
 		displayparams.convertPdfPosToPixmapPos(b.xright, b.yright, x2, y2);
 
-	DEBUGLINE( "converted " << b.xleft << "/" << x1 << " " << b.xright<< "/"<<x2 );
-	DEBUGLINE( "converted " << b.yleft << "/" << y1 << " " << b.yright<< "/"<< y2 );
-		QColor color(5, 5, 0, 50);
+		QColor color(255, 255, 0, 50);
 		this->ui.content->fillRect( x1, y1, x2, y2, color );
+		workingOpSet.push_back(op[i]);	
 	}
 }
 QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
@@ -85,7 +254,10 @@ QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
 	
 	displayparams.convertPdfPosToPixmapPos(b.xleft, b.yleft, x1,y1);
 	displayparams.convertPdfPosToPixmapPos(b.xright, b.yright, x2, y2);
-
+//move according to page rotation
+	page->getRotation();
+	rotatePosition(x1,y1,x1,y1);
+	rotatePosition(x2,y2,x2,y2);
 	r.setTop(max<float>(y1,y2));
 	r.setBottom(min<float>(y1,y2));
 	r.setLeft(min<float>(x1,x2));
@@ -94,6 +266,7 @@ QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
 }
 void TabPage::updatePageInfoBar()
 {
+	//page changes
 	std::stringstream ss;
 	ss << pdf->getPageCount();
 	std::string s2;
@@ -135,7 +308,59 @@ bool TabPage::nextPage()
 	this->setFromSplash();
 	return true;
 }
-
+void TabPage::getBookMarks()
+{
+	//LATER, TODO, zistit, na aku stranku sa odkazuju, potazne odsek
+	//ket from XREGWritel all GoLink
+	//get from dictionary outlines  and get everythong that has page reference
+	//asi to nebudeme hrotit
+	//na nejak on show()
+/*	std::vector<shared_ptr<CDict> > outline;
+	pdf->getOutlines(outlines);
+	std::vector<shared_ptr<CDict> > dicts;
+	BookMark * b; 
+	for (int i =0; i< outline.size(); i++)
+	{
+		for ( int i =0; i < outline.size(); i++)
+		{
+			setTree(outline[i],b);
+		}
+	}
+	this->ui.tree.addItem(b);*/
+	//skrtni kazde, ktore nema page ako dest
+}
+void TabPage::setTree(shared_ptr<CDict> d, QTreeWidgetItem * item)
+{
+/*	std::vector<shared_ptr<CDict> > dict;
+	try{
+	pdf->getAllChildrenOfPdfObject(d,dict);
+	if (d->containsProperty("Dest"))
+	{
+		int page;
+		IProperty::getSmartObjectPtr(outline[i]->getProperty("Dest")->getProperty(0)->getValue(page));
+		b = new BookMark(page);
+	}
+	else
+		b = new Bookmark(-1);
+	for(int i =0; i < dict.size(); i++)
+	{
+		setTree(dict[i],item);
+	}
+	}
+	catch(...)
+	{}*/
+}
+void TabPage::insertImage(int x, int y) //positions
+{
+	//open dialogand get file
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("Images (*.png *.xpm *.jpg)"));
+	QImage img(fileName);
+	//convert to buffer
+	CStream::Buffer buf(img.byteCount(), img.bits());
+	QSize size = img.size();
+	page->addInlineImage(buf,libs::Point(size.width(),size.height()), libs::Point(x,y));
+	setFromSplash();
+}
 void TabPage::insertPageRangeFromExisting()
 { 
 	QString s = QFileDialog::getOpenFileName(this, tr("Open File"),".",tr("Pdf files (*.pdf)"));
@@ -206,7 +431,7 @@ void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
 		else
 			bar->setValue(bar->value()+event->delta());
 	}
-	event->accept();
+	event->accept(); //TODO opravit
 }
 void TabPage::savePdf(char * name)
 {
@@ -260,8 +485,8 @@ void TabPage::initRevision(int  revision) //snad su revizie od nuly:-/
 
 void TabPage::rotate(int angle, int begin, int end)
 {
-	std::cout << "Rotating" << angle << std::endl;
-	if (begin == -1)
+//std::cout << "Rotating" << angle << std::endl;
+/*	if (begin == -1)
 	{
 		page->setRotation(angle);
 		setFromSplash();
@@ -274,6 +499,7 @@ void TabPage::rotate(int angle, int begin, int end)
 			pdf->getPage(i)->setRotation(angle);
 		}
 	}
+setFromSplash();*/
 }
 void TabPage::commitRevision()
 {
@@ -375,10 +601,8 @@ void TabPage::print()
 	if (dialog.exec() != QDialog::Accepted)
 		return;
 
-	QPainter painter;
-	painter.begin(&printer);
+	QPainter painter(&printer);
 
-	SplashColor paperColor; //not working! dunno why
 	paperColor[0] = paperColor[1] = paperColor[2] = 0xff;
 	SplashOutputDev splash (splashModeBGR8, 4, gFalse, paperColor);
 	Guchar * p = new Guchar[3];
@@ -401,7 +625,8 @@ void TabPage::print()
 			}
 		}
 		//we have the image
-		QSize size(300,300);
+		QSize size(printer.pageRect->width(),
+			printer.pageRect->height());
 		QImage t = image.scaled(size);
 		t.save("test resized.bmp");
 		painter.drawImage(0,0,t);
@@ -445,12 +670,12 @@ void TabPage::riseSel()
 {
 	//move only text operators
 
-	TextOperatorIterator it = PdfOperator::getIterator<TextOperatorIterator> (workingOpSet.front().op);
+/*	TextOperatorIterator it = PdfOperator::getIterator<TextOperatorIterator> (workingOpSet.front());
 	while (!it.isEnd())
 	{
 		//len Tj, potrebujeme pred pridat Ts, ak uz predty nejake ts nie je
 		// dostaneme composit
-		PdfOperator::Iterator bit = PdfOperator::getIterator<PdfOperator::Iterator> (workingOpSet.front().op);
+		PdfOperator::Iterator bit = PdfOperator::getIterator<PdfOperator::Iterator> (workingOpSet.front());
 		shared_ptr< PdfOperator >  parent = findCompositeOfPdfOperator(bit,it.getCurrent());
 		//insert before, if full, first insert and then remove
 		
@@ -460,7 +685,7 @@ void TabPage::riseSel()
 		parent->push_back( createOperator("Tj", intop),it.getCurrent());//TODO must check if Tj is only one
 		
 //split text acording to highlighted
-	}
+	}*/
 
 }
 //rotate 
@@ -468,15 +693,15 @@ void TabPage::rotateObjects(int angle) //there can be text or image object
 {
 	//selected operator will be removed and new QSTATE added
 	//let's loolk for Q
+/*	float rAngle = toRadians(angle);
 	shared_ptr< PdfOperator > parent;
-	float rAngle = toRadians(angle);
 	for ( int i =0; i < workingOpSet.size(); i++)
 	{
 		std::vector<PdfOperator> ops;
 		workingOpSet[i]->getContentStream()->getPdfOperators(ops);
 		PdfOperator::Iterator it = 
 			PdfOperator::getIterator(ops.front());
-		parent = findCompositeOfPdfOperator(it, workingOpSet[i].op);
+		parent = findCompositeOfPdfOperator(it, workingOpSet[i]);
 		//for graphical object
 		if (strcmp(tolower(parent->getName())),"q")
 		{
@@ -508,28 +733,28 @@ arent->getChildren(children);
 			parent->putBehind(children.front(), o);////rotate via tm
 		}
 
-	}
+	}*/
 }
 void TabPage::rotateText(int angle) //there can be text or image objects
 {
 	//for all selected operator, rotate, but just t
-	for ( size_t i =0; i < workingOpSet.size(); i++)
+/*	for ( size_t i =0; i < workingOpSet.size(); i++)
 	{
-		if (!isTextOp(workingOpSet[i].op))
+		if (!isTextOp(workingOpSet[i]))
 			continue;
 		//we have TJ, remove object from parent, create new at same position, but anothe rotate, otherwise we could alter also another text
 		//get textMatrix
-		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(workingOpSet[i].op);
+		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(workingOpSet[i]);
 		std::string s; 
 		txt->getRawText(s);
 		BBox b = txt->getBBox();
 
-		parent->remove(workingOpSet[i].op); //remove from parent, linearizator will remove empty operators
-		workingOpSet[i].op = insertText(min(b.xLeft,b.xRight),min(b.yLeft,b.yRight),s, angle);
+		parent->remove(workingOpSet[i]); //remove from parent, linearizator will remove empty operators
+		workingOpSet[i] = insertText(min(b.xLeft,b.xRight),min(b.yLeft,b.yRight),s, angle);
 		
-	}
+	}*/
 }
-void TabPage::clicked(int x, int y)
+/*void TabPage::add(int x, int y)
 {
 //select operators and add to selected	
 	double px, py;
@@ -545,7 +770,8 @@ void TabPage::clicked(int x, int y)
 		d.op = ops[i];
 		workingOpSet.push_back(d);
 	}
-}
+}*/
+
 shared_ptr<PdfOperator> TabPage::insertText(double x, double y, std::string text, int angle )
 {
 	//creat composite pdf operators with this font
@@ -592,8 +818,48 @@ void TabPage::move(int difx, int dify) //on mouse event, called on mouse realeas
 
 	}
 }
+void TabPage::search(std::string text)
+{
+/*	TextData::iterator it = _textList.begin();
+	Tree t(text);
+	int end;
+	while (it != _textList.end() )
+	{
+		end = t.fill(it->_text);
+		if(end>=0)
+			break;
+		it++;
+	}
+	if (end<0)
+		return;
+	//mame posledny operator
+	TextData::iterator beg = it;
+	it->end = end;
+	it->begin = 0;
+
+	int sum = t.getSize();
+	//chod dozadu az sum nebude 0
+	while (sum<0)
+	{
+		sum-= beg->text.length();
+		beg--;
+		beg->begin = 0;
+		beg->end=beg->text.length();
+	}
+	if (sum <= 0)
+		beg->begin = beg->end+sum;
+	else
+		beg->begin = 0;
+	beg->setRegion(); //setne vzhladom na begin, end
+	while (beg!=it)
+	{
+		this->ui.content->fillRect(beg->region);
+		beg++;
+	}
+	this->ui.content->fillRect(beg->region);*/
+}
 //slot
-void TabPage::deleteText( std::string text, bool pages)
+void TabPage::deleteText( std::string text)
 {
 	//create tree of text on this page 
 	//search text, delete string & insert new text
@@ -609,8 +875,10 @@ void TabPage::deleteText( std::string text, bool pages)
 }
 
 //slot
+
 void TabPage::replaceText( std::string what, std::string by)
 {
+	////TODO
 	//delete what text.
 	//insert by text
 }
@@ -634,5 +902,5 @@ void TabPage::getText()//get text from page
 			it.next();
 		}
 	}
-	std::cout << tmp << std::endl;
+//	std::cout << tmp << std::endl; //show new box
 }

@@ -1,6 +1,7 @@
 #ifndef __GLOBAL_F__
 #define __GLOBAL_F__
 
+#include <cmath>
 //TODO asi by t mohlo byt vacsie, na viac desatinnych miest
 #define PI 3.14
 template<typename T>

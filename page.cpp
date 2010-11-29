@@ -25,10 +25,19 @@ void DisplayPage::setImage( const QImage & image )
 	_image = image.copy();
 	unsetImg();
 }
+void DisplayPage::fillRect( QRegion region, const QColor color)
+{
+	QVector<QRect> r = region.rects();
+	for ( int i= 0; i < r.size(); i++)
+	{
+		fillRect(r[i].x(), r[i].y(), r[i].width(), r[i].height(),color);
+	}
+}
+	
 void DisplayPage::fillRect( int x1, int y1, int x2, int y2, const QColor color)
 {
 	QPainter painter(&_copyImg);
-	y1 = ui.label->size().height() - y1;
+	y1 = ui.label->size().height() - y1; //TODO pixmap size! for displaying
 	y2 = ui.label->size().height() - y2;
 	int sx = (x1 > x2) ? x1 - x2:x2 - x1;
 	int sy = (y1 > y2) ? y1 - y2:y2 - y1;
@@ -53,6 +62,16 @@ void DisplayPage::unsetImg() //agai st from image, for removing highligh and so
 void DisplayPage::mousePressEvent(QMouseEvent * event)
 {
 	//pass parent the coordinates
-	DEBUG("clicked on" <<event->x() << " " <<event->y());
+	DEBUG("clicked on" <<event->x() << " " <<event->y()); //TODO konvertovat na image, nie label
 	emit MouseClicked(event->x(), this->ui.label->size().height() - event->y()); //opacne kvoli pdfku
+}
+void DisplayPage::mouseMoveEvent(QMouseEvent * event)
+{
+	emit highlightText(event->x(), this->ui.label->size().height() - event->y());
+}
+
+
+void DisplayPage::mouseReleased(QMouseEvent * event)
+{
+	event->ignore(); //posun to parentovi
 }

@@ -25,13 +25,17 @@ private:
 	QSize _size;
 
 public slots:
+	void fillRect( QRegion reg, const QColor color);
 	void zoom(int zoomscale);
 	void mousePressEvent(QMouseEvent * event);
 	void fillRect(int x, int y, int x2, int y2, const QColor color);
 signals:
 	void MouseClicked(int, int); //bolo na mna kliknute, robte s tym nieco!
+	void highlightText(int x, int y);
 public:
 	void unsetImg();
+	void mouseMoveEvent(QMouseEvent *);
+	void mouseReleased(QMouseEvent * event);
 	
 };
 

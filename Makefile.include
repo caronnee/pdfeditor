@@ -15,3 +15,4 @@ LIBS += -L/usr/local/lib/pdfedit-0.4.5/utils/ \
 -lfreetype
 
 INCPATH += -I. -I/usr/local/include/pdfedit-0.4.5/xpdf -I/usr/local/include/pdfedit-0.4.5
+INCPATH += -I. -I/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/xpdf/ -I/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/
