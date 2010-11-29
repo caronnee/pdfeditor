@@ -19,6 +19,7 @@
 
 #include <list>
 #include <QTreeWidgetItem>
+
 using namespace boost;
 using namespace pdfobjects;
 
@@ -52,7 +53,7 @@ struct OperatorData
 		float step = 1/ rect.width();
 		region = QRegion(step*begin+rect.x(),rect.y(),(end-begin)*step,rect.height()); //kedy nastavujeme egin na 0?
 	}
-	void  addToRegion( int x ) //set selected..mozno to moze rovno emitovat?
+	void addToRegion( int x ) //set selected..mozno to moze rovno emitovat?
 	{
 		//y nas nezauima, zostane stejne, [ptrebujeme iba vysku a to je bbox]
 		//chcem vidiet, odkial pokalial highlightit
@@ -224,8 +225,8 @@ public slots:
 //	void updateSelectedRect( std::vector<shared_ptr<PdfOperator> > oops);
 //	void copyToClipBoard(); //from selected/ highlighted
 	void move(int difx, int dify); //on mouse event, called on mouse realease
-	void selectOperators(const QRect rect, std::vector<shared_ptr<PdfOperator> > & opers) ;
-	void setSelectedOperators(QRect rect);
+//	void selectOperators(const QRect rect, std::vector<shared_ptr<PdfOperator> > & opers) ;
+	//void setSelectedOperators(QRect rect);
 	void rotateText( int angle );
 	void replaceText( std::string what, std::string by);
 	void deleteText( std::string text);

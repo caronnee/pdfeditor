@@ -25,6 +25,7 @@
 #include "tree.h"
 #include "bookmark.h"
 
+#define DEFFONT "Helvetica"
 
 void TabPage::handleBookMark(QTreeWidget * item, int col)
 {
@@ -142,7 +143,7 @@ void TabPage::setTextData(TextData::iterator & it, TextData::iterator end,shared
 }
 void TabPage::highlightText(int x, int y) //tu mame convertle  x,y
 {
-/*	if (!_dataReady) //prvykrat, co sme dotkli nejakeho operatora
+	if (!_dataReady) //prvykrat, co sme dotkli nejakeho operatora
 	{
 		_region = QRegion(); //region je tie convertly
 		highLightBegin(x,y);
@@ -212,7 +213,7 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y
 		QColor c(255,36,78);
 		ui.content->fillRect( first->region,c );
 		first ++;
-	}*/
+	}
 }
 void TabPage::getAtPosition(Ops& ops, int x, int y )
 {
@@ -243,7 +244,7 @@ void TabPage::showClicked(int x, int y)
 
 		QColor color(255, 255, 0, 50);
 		this->ui.content->fillRect( x1, y1, x2, y2, color );
-		workingOpSet.push_back(op[i]);	
+		workingOpSet.push_back(ops[i]);	
 	}
 }
 QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
@@ -255,9 +256,9 @@ QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
 	displayparams.convertPdfPosToPixmapPos(b.xleft, b.yleft, x1,y1);
 	displayparams.convertPdfPosToPixmapPos(b.xright, b.yright, x2, y2);
 //move according to page rotation
-	page->getRotation();
-	rotatePosition(x1,y1,x1,y1);
-	rotatePosition(x2,y2,x2,y2);
+	int angle = page->getRotation();
+	rotatePosition(x1,y1,x1,y1, angle);
+	rotatePosition(x2,y2,x2,y2, angle);
 	r.setTop(max<float>(y1,y2));
 	r.setBottom(min<float>(y1,y2));
 	r.setLeft(min<float>(x1,x2));
@@ -315,40 +316,44 @@ void TabPage::getBookMarks()
 	//get from dictionary outlines  and get everythong that has page reference
 	//asi to nebudeme hrotit
 	//na nejak on show()
-/*	std::vector<shared_ptr<CDict> > outline;
-	pdf->getOutlines(outlines);
+	std::vector<shared_ptr<CDict> > outline;
+	pdf->getOutlines(outline);
 	std::vector<shared_ptr<CDict> > dicts;
-	BookMark * b; 
+	Bookmark * b; 
 	for (int i =0; i< outline.size(); i++)
 	{
 		for ( int i =0; i < outline.size(); i++)
 		{
 			setTree(outline[i],b);
+			this->ui.tree->addTopLevelItem(b);
 		}
 	}
-	this->ui.tree.addItem(b);*/
 	//skrtni kazde, ktore nema page ako dest
 }
 void TabPage::setTree(shared_ptr<CDict> d, QTreeWidgetItem * item)
 {
-/*	std::vector<shared_ptr<CDict> > dict;
+	std::vector<shared_ptr<CDict> > dict;
 	try{
-	pdf->getAllChildrenOfPdfObject(d,dict);
-	if (d->containsProperty("Dest"))
-	{
-		int page;
-		IProperty::getSmartObjectPtr(outline[i]->getProperty("Dest")->getProperty(0)->getValue(page));
-		b = new BookMark(page);
+		QTreeWidgetItem * it;
+		utils::getAllChildrenOfPdfObject(d,dict);
+		Bookmark * b;
+		if (d->containsProperty("Dest"))
+		{
+			int page;
+			shared_ptr<CArray> ar = IProperty::getSmartCObjectPtr<CArray>(d->getProperty("Dest"));
+			shared_ptr<IProperty> ip = ar->getProperty(0);
+			page = utils::getValueFromSimple<CInt>(ip);
+			b = new Bookmark(page);
+		}
+		else
+			b = new Bookmark(-1);
+		for(int i =0; i < dict.size(); i++)
+		{
+			setTree(dict[i],it);
+			item->addChild(it);
+		}
 	}
-	else
-		b = new Bookmark(-1);
-	for(int i =0; i < dict.size(); i++)
-	{
-		setTree(dict[i],item);
-	}
-	}
-	catch(...)
-	{}*/
+	catch(...) {}
 }
 void TabPage::insertImage(int x, int y) //positions
 {
@@ -356,7 +361,10 @@ void TabPage::insertImage(int x, int y) //positions
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("Images (*.png *.xpm *.jpg)"));
 	QImage img(fileName);
 	//convert to buffer
-	CStream::Buffer buf(img.byteCount(), img.bits());
+	uchar * c = img.bits();
+	std::vector<char> ch(c, c + img.byteCount() );
+	CStream::Buffer buf(ch);
+
 	QSize size = img.size();
 	page->addInlineImage(buf,libs::Point(size.width(),size.height()), libs::Point(x,y));
 	setFromSplash();
@@ -483,14 +491,12 @@ void TabPage::initRevision(int  revision) //snad su revizie od nuly:-/
 	setFromSplash();
 }
 
-void TabPage::rotate(int angle, int begin, int end)
+void TabPage::rotate(int angle, int begin, int end) //rotovanie pages
 {
 //std::cout << "Rotating" << angle << std::endl;
-/*	if (begin == -1)
+	if (begin == -1)
 	{
 		page->setRotation(angle);
-		setFromSplash();
-		return;
 	}
 	else
 	{
@@ -499,7 +505,7 @@ void TabPage::rotate(int angle, int begin, int end)
 			pdf->getPage(i)->setRotation(angle);
 		}
 	}
-setFromSplash();*/
+	setFromSplash();
 }
 void TabPage::commitRevision()
 {
@@ -603,6 +609,7 @@ void TabPage::print()
 
 	QPainter painter(&printer);
 
+	SplashColor paperColor;
 	paperColor[0] = paperColor[1] = paperColor[2] = 0xff;
 	SplashOutputDev splash (splashModeBGR8, 4, gFalse, paperColor);
 	Guchar * p = new Guchar[3];
@@ -625,8 +632,7 @@ void TabPage::print()
 			}
 		}
 		//we have the image
-		QSize size(printer.pageRect->width(),
-			printer.pageRect->height());
+		QSize size(printer.pageRect().width(), printer.pageRect().height());
 		QImage t = image.scaled(size);
 		t.save("test resized.bmp");
 		painter.drawImage(0,0,t);
@@ -771,7 +777,6 @@ void TabPage::rotateText(int angle) //there can be text or image objects
 		workingOpSet.push_back(d);
 	}
 }*/
-
 shared_ptr<PdfOperator> TabPage::insertText(double x, double y, std::string text, int angle )
 {
 	//creat composite pdf operators with this font
@@ -783,7 +788,6 @@ shared_ptr<PdfOperator> TabPage::insertText(double x, double y, std::string text
 	q->push_back(BT,q);
 	PdfOperator::Operands fOperands;//TODO check poradie
 	fOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(14)));//velkost pisme
-	fOperands.push_back(shared_ptr<IProperty>(CNameFactory::getInstance(DEFFONT)));//velkost font
 	BT->push_back(createOperator("Tf", fOperands), getLastOperator(BT));
 	//text matrix 
 
@@ -864,14 +868,14 @@ void TabPage::deleteText( std::string text)
 	//create tree of text on this page 
 	//search text, delete string & insert new text
 	std::vector<PdfOperator> opers;
-	while (search(text, opers,pages))
+/*	while (search(text, opers))
 	{
 		std::string todel = text;
 		
 		//ide nam len o zaciatok a koniec
 		//v kazdom operator bude kusok
 		//vsetko medzi tym sa zmaze
-	}
+	}*/
 }
 
 //slot
