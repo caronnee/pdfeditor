@@ -17,8 +17,8 @@
 #include <QScrollBar>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
+#include <QVariant>
 //PDF
-#include <kernel/factories.h>
 #include <kernel/pdfoperators.h>
 //created files
 #include "insertpagerange.h"
@@ -777,6 +777,39 @@ void TabPage::rotateText(int angle) //there can be text or image objects
 		workingOpSet.push_back(d);
 	}
 }*/
+void TabPage::loadFonts()
+{
+	//dostanme vsetky fontu, ktore su priamov pdf. bohuzial musime cez vsetky pages
+	CPage::FontList fontList;
+	CPage::FontList fontList2; //TODO zistit, ci nie su redundatne
+	for ( int i = 1; i <= pdf->getPageCount(); i++ )
+	{
+		pdf->getPage(i)->getFontIdsAndNames(fontList2);
+		fontList.insert(fontList.end(), fontList2.begin(), fontList2.end());
+	}
+	//TODO spravit uniqu
+	int index = 0;
+	for ( int i = 0; i< fontList.size(); i++)
+	{
+		this->ui.fonts->insertItem(index,QString(fontList[i].second.c_str())); //druhe je basename
+		_fonts.push_back(TextFont(fontList[i].first)); //prve je name, ako bolo v dict, asi ho zobrazime
+		index++;
+	}
+	this->ui.fonts->insertSeparator(fontList.size());
+	CPageFonts::SystemFontList flist = CPageFonts::getSystemFonts();
+	for ( CPageFonts::SystemFontList::iterator i = flist.begin(); i != flist.end(); i++ )
+	{
+		this->ui.fonts->insertItem(index, QString(i->c_str()));
+		index++;
+	}
+	//nacitame velkosti, ake moze nadobudat font
+	index =0;
+	for ( int i = 10; i< 40; i+=2)
+	{
+		QVariant q(i);
+		this->ui.fonts->insertItem(0, q.toString(),q);
+	}
+}
 shared_ptr<PdfOperator> TabPage::insertText(double x, double y, std::string text, int angle )
 {
 	//creat composite pdf operators with this font
@@ -786,9 +819,8 @@ shared_ptr<PdfOperator> TabPage::insertText(double x, double y, std::string text
 	shared_ptr<UnknownCompositePdfOperator> BT(new UnknownCompositePdfOperator("BT", "ET"));
 
 	q->push_back(BT,q);
-	PdfOperator::Operands fOperands;//TODO check poradie
-	fOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(14)));//velkost pisme
-	BT->push_back(createOperator("Tf", fOperands), getLastOperator(BT));
+	QVariant v = this->ui.fontsize->itemData(this->ui.fontsize->currentIndex());
+	BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(BT));
 	//text matrix 
 
 	PdfOperator::Operands posOperands;

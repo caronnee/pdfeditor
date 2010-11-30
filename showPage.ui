@@ -69,6 +69,15 @@
       <bool>false</bool>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+        <widget class="QComboBox" name="fonts">
+        </widget>
+     </item>
+     <item>
+        <widget class="QComboBox" name="fontsize">
+        </widget>
+     </item>
+
       <item>
        <widget class="QComboBox" name="Revision">
         <property name="sizePolicy">

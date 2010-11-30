@@ -9,6 +9,7 @@
 #include <splash/Splash.h>
 #include <splash/SplashBitmap.h>	
 #include <xpdf/SplashOutputDev.h>
+#include <kernel/factories.h>
 
 //END of PDF
 #include <qwidget.h>
@@ -37,6 +38,20 @@ typedef std::vector<shared_ptr<PdfOperator> > Ops;
 typedef shared_ptr<PdfOperator> PdfOp;
 typedef PdfOperator::BBox BBox;
 
+class TextFont
+{
+	std::string fontId;
+public:
+	TextFont(std::string id) : fontId(id) {}
+	//vrati pdfoperator TF, s nastavenim fontu a velkosti
+	shared_ptr<PdfOperator> getFontOper(int size)
+	{	
+		PdfOperator::Operands fontOperands;//TODO check poradie
+		fontOperands.push_back(shared_ptr<IProperty>(new CName (fontId)) );
+		fontOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(size)));//velkost pismeno
+		return createOperator("Tf", fontOperands);
+	}
+};
 //mozno to je moc vysoke?  Normalny text ma 10, na rise bude mat 5, alklurat neviem, ci je to v pixelochaa ak tam ma este tie svoje double...
 #define EPSILON_Y 5
 //TODO pozor na rotaciu stranky, bude to fachat?
@@ -158,6 +173,7 @@ private: //variables
 	/** pdf objects */
 //	SplashColorPtr m_image; //pouzve sa neskor pri configu
 
+	std::vector<TextFont> _fonts;
 	IsType typeChecker;
 	pdfobjects::DisplayParams displayparams;	
 	boost::shared_ptr<pdfobjects::CPdf> pdf;
@@ -166,13 +182,12 @@ private: //variables
 	//oterator	 of selected
 	TextData::iterator sTextIt;
 	TextData::iterator sTextItEnd; //kde ten iterator konci
-	bool _dataReady;
+	bool _dataReady; //pouzivane vseobecne, kedy sa to hodi
 	bool dirty;
 	//TODO mat este jeden iterator Actual, aby sa to stale neprekreslovalo cele
 	Ops workingOpSet;//zavisla na prave zobrazenej stranke
 	std::vector<QRect> selectedRegions; 
-	void getAtPosition(Ops& ops, int x, int y );
-	void setTextData(TextData::iterator &begin, TextData::iterator end, shared_ptr<PdfOperator> op);
+
 public:
 	void handleBookMark(QTreeWidget * item, int col);
 	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
@@ -187,7 +202,10 @@ public:
 	void highlightText(int x, int y); //tu mame convertle  x,y
 
 private:
-	
+	void loadFonts();
+	void getAtPosition(Ops& ops, int x, int y );
+	void setTextData(TextData::iterator &begin, TextData::iterator end, shared_ptr<PdfOperator> op);
+
 	//TODO zostit rotaciu boxu. to je but tm alebo Qstate
 	QRect getRectangle( PdfOp ops);
 
