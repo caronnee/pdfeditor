@@ -741,10 +741,10 @@ void TabPage::setAnnotations()
 		shared_ptr<CArray> rect;
 		_annots[i]->getDictionary()->getProperty("Rect")->getSmartCObjectPtr<CArray>(rect);
 		int x1,x2,y1,y2;
-		x1 = getSimpleValueFromArray<CInt>(rect,0);
+		x1 = utils::getSimpleValueFromArray<CInt>(rect,0);
 		//TODO
 //		BBox();
-		QRect convertedRect();
+		QRect convertedRect;
 		this->ui.content->addPlace(convertedRect);
 	}
 }
