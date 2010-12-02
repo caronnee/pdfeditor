@@ -14,6 +14,7 @@ public:
 	DisplayPage(QWidget *parent = 0);
 	~DisplayPage();
 	void setImage( const QImage & image);
+	void addPlace(QRect r){}
 private:
 	void setImg();
 private:

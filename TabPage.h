@@ -31,10 +31,12 @@ enum Mode
 	SelectText,
 	SelectOperators, //moze byt uzitocne
 	SelectImage,
-	CreateAnntotations
+	CreateAnntotations,
+	Draw
 };
 
 typedef std::vector<shared_ptr<PdfOperator> > Ops;
+typedef std::list<shared_ptr<PdfOperator> > OpsList;
 typedef shared_ptr<PdfOperator> PdfOp;
 typedef PdfOperator::BBox BBox;
 
@@ -186,9 +188,10 @@ private: //variables
 	bool dirty;
 	//TODO mat este jeden iterator Actual, aby sa to stale neprekreslovalo cele
 	Ops workingOpSet;//zavisla na prave zobrazenej stranke
-	std::vector<QRect> selectedRegions; 
+	CPage::Annotations _annots;
 
 public:
+	void changeText(std::string name, int size);//tazkopadne?
 	void handleBookMark(QTreeWidget * item, int col);
 	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
 	void SetTextSelect();
@@ -202,12 +205,14 @@ public:
 	void highlightText(int x, int y); //tu mame convertle  x,y
 
 private:
+	void setAnnotations();
 	void loadFonts();
 	void getAtPosition(Ops& ops, int x, int y );
 	void setTextData(TextData::iterator &begin, TextData::iterator end, shared_ptr<PdfOperator> op);
 
 	//TODO zostit rotaciu boxu. to je but tm alebo Qstate
 	QRect getRectangle( PdfOp ops);
+	QRect getRectangle(BBox box);
 
 	//private methods
 	void addRevision( int i = -1);
@@ -226,7 +231,10 @@ public:
 	void search(std::string text);
 	void getBookMarks(); //LATER, treba actions zisti, ako sa vykoavaju
 //	void changeImageProp(); // v selected mame images//LATER
-	void insertImage(int x, int y);
+	void insertImage(int x, int y, const QImage & img);
+	//nastavi u page cakanie na skoncenie kreslenie ( nieco emitne:)
+	void draw();
+	void insertImageFile(int x, int y);
 	void riseSel();
 	void getText();
 	void wheelEvent( QWheelEvent * event ); 
@@ -239,6 +247,7 @@ public:
 	void rotateObjects(int angle);
 
 public slots:
+	void removeObjects();
 	void clicked(int x, int y);
 //	void updateSelectedRect( std::vector<shared_ptr<PdfOperator> > oops);
 //	void copyToClipBoard(); //from selected/ highlighted

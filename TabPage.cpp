@@ -4,6 +4,8 @@
 //highlightText
 //search
 
+//po skoncilo vykreslovanie, ma to pridat ako obrazok, emituje to page, page ma vlastny mod
+
 #include "debug.h"
 #include "TabPage.h"
 #include "globalfunctions.h"
@@ -20,6 +22,8 @@
 #include <QVariant>
 //PDF
 #include <kernel/pdfoperators.h>
+#include <kernel/cannotation.h>
+#include <kernel/carray.h>
 //created files
 #include "insertpagerange.h"
 #include "tree.h"
@@ -355,19 +359,33 @@ void TabPage::setTree(shared_ptr<CDict> d, QTreeWidgetItem * item)
 	}
 	catch(...) {}
 }
-void TabPage::insertImage(int x, int y) //positions
+void TabPage::removeObjects() //vsetko, co je vo working
 {
-	//open dialogand get file
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("Images (*.png *.xpm *.jpg)"));
-	QImage img(fileName);
-	//convert to buffer
-	uchar * c = img.bits();
+	for (size_t i = 0; i < workingOpSet.size(); i++ )
+	{
+		PdfOperator::Iterator it = PdfOperator::getIterator(workingOpSet[i]);
+		workingOpSet[i]->getContentStream()->deleteOperator(it,true);
+	}
+	workingOpSet.clear();
+}
+void TabPage::insertImage(int x, int y, const QImage& img) //positions
+{
+	const uchar * c = img.bits();
 	std::vector<char> ch(c, c + img.byteCount() );
 	CStream::Buffer buf(ch);
 
 	QSize size = img.size();
 	page->addInlineImage(buf,libs::Point(size.width(),size.height()), libs::Point(x,y));
 	setFromSplash();
+
+}
+void TabPage::insertImageFile(int x, int y)
+{
+	//open dialogand get file
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("Images (*.png *.xpm *.jpg)"));
+	QImage img(fileName);
+	insertImage(x,y,img);
+	//convert to buffer
 }
 void TabPage::insertPageRangeFromExisting()
 { 
@@ -694,25 +712,75 @@ void TabPage::riseSel()
 	}*/
 
 }
+void TabPage::changeText(std::string name, int size) //toto bude vlastnostiach(dialog)
+{
+	//mame vyznaceny beginiter a end string
+	Ops matrix;
+	TextData::iterator it = sTextIt;
+	while ( it!= sTextItEnd )
+	{
+		//
+		it++;
+	}
+}
+void TabPage::draw() //change mode to drawing
+{
+//	this->ui.content->beginDraw();
+	_mode = Draw;
+}
+//na kazdej stranke mozu byt anotacie, po kliknuti na ne vyskoci pop-up alebo sa inak spravi akcia
+//page bude vediet o interaktovnyh miestach -> kvoli mouseMove
+void TabPage::setAnnotations()
+{
+	//akonahle sa zmeni straka, upozornim page na to ze tam moze mat anotacie
+	//dostan oblasti anotacii z pdf
+	page->getAllAnnotations(_annots);
+	//v page nastav vsetky aktivne miesta
+	for(int i =0; i< _annots.size(); i++)
+	{
+		shared_ptr<CArray> rect;
+		_annots[i]->getDictionary()->getProperty("Rect")->getSmartCObjectPtr<CArray>(rect);
+		int x1,x2,y1,y2;
+		x1 = getSimpleValueFromArray<CInt>(rect,0);
+		//TODO
+//		BBox();
+		QRect convertedRect();
+		this->ui.content->addPlace(convertedRect);
+	}
+}
+QRect TabPage::getRectangle(BBox b)
+{
+	double x1,x2,y1,y2;
+//TODO tot snad ani nemusi fungovat...check!
+	displayparams.convertPdfPosToPixmapPos(b.xleft, b.yleft, x1,y1);
+	displayparams.convertPdfPosToPixmapPos(b.xright, b.yright, x2,y2);
+	QRect r(QPoint(min(x1,x2),max(y1,y2)),QPoint(max(x1,x2),min(y1,y2)));
+	return r;
+}
 //rotate 
-void TabPage::rotateObjects(int angle) //there can be text or image object
+void TabPage::rotateObjects(int angle) //vsetky objekty wo workingOpSet
 {
 	//selected operator will be removed and new QSTATE added
-	//let's loolk for Q
-/*	float rAngle = toRadians(angle);
+	//let's look for Q
+	float rAngle = toRadians(angle); //su nastavene iterBegin a iterEnd, z neho vypraprarujeme working set
 	shared_ptr< PdfOperator > parent;
 	for ( int i =0; i < workingOpSet.size(); i++)
 	{
-		std::vector<PdfOperator> ops;
+		Ops ops;
 		workingOpSet[i]->getContentStream()->getPdfOperators(ops);
 		PdfOperator::Iterator it = 
-			PdfOperator::getIterator(ops.front());
+		PdfOperator::getIterator(ops.front());
 		parent = findCompositeOfPdfOperator(it, workingOpSet[i]);
 		//for graphical object
-		if (strcmp(tolower(parent->getName())),"q")
+		std::string opName;
+		parent->getOperatorName(opName);
+		for ( int i =0; i< opName.length(); i++)
+			opName[i] = tolower(opName[i]);
+		OpsList children;
+		if (strcmp(opName.c_str(),"q")==0)
 		{
 			//add cm rotation matrix
-			pdfOperator::Operands operands;
+			PdfOperator::Operands operands;
 			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
 			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(sin(rAngle))));
 			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(-sin(rAngle))));
@@ -721,11 +789,12 @@ void TabPage::rotateObjects(int angle) //there can be text or image object
 			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
 			shared_ptr< PdfOperator > o = createOperator("cm",operands);
 			//addOperator
-			parent->putBehind(getFirstOperator(parent), o);//
+			parent->getChildren(children);
+			parent->getContentStream()->insertOperator(PdfOperator::getIterator(children.front()),o,true);//FUJ, to snad ani nemoze fungovat..., a mozno to chce false
 		}
-		if (strcmp(tolower(parent->getName())),"bt")
+		if (strcmp(opName.c_str(),"bt"))
 		{
-			pdfOperator::Operands operands;
+			PdfOperator::Operands operands;
 			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
 			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(sin(rAngle))));
 			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(-sin(rAngle))));
@@ -734,12 +803,11 @@ void TabPage::rotateObjects(int angle) //there can be text or image object
 			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
 			shared_ptr< PdfOperator > o = createOperator("Tm",operands);
 			//addOperator
-			std::vector< PdfOperator> children;
-arent->getChildren(children);
-			parent->putBehind(children.front(), o);////rotate via tm
+			parent->getChildren(children);
+			parent->getContentStream()->insertOperator(PdfOperator::getIterator(children.front()),o,true);//FUJ, to snad ani nemoze fungovat...
 		}
 
-	}*/
+	}
 }
 void TabPage::rotateText(int angle) //there can be text or image objects
 {
