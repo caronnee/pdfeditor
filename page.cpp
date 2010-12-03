@@ -14,7 +14,7 @@ DisplayPage::~DisplayPage()
 
 }
 //slot
-void DisplayPage::zoom(int zoomscale)//later woth how much pages, if all or not
+void DisplayPage::zoom(int zoomscale)//later with how much pages, if all or not
 {
 	this->ui.label->resize(zoomscale * _size);
 	//TODO adjust scrollbar?

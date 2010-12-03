@@ -28,11 +28,11 @@ using namespace pdfobjects;
 enum Mode
 {
 	Default,
-	SelectText,
-	SelectOperators, //moze byt uzitocne
-	SelectImage,
-	CreateAnntotations,
-	Draw
+	TextMode,
+	OperatorsMode, //moze byt uzitocne
+	ImageMode,
+	AnntotationMode,
+	DrawMode
 };
 
 typedef std::vector<shared_ptr<PdfOperator> > Ops;
@@ -158,6 +158,13 @@ public:
 		return names[type].isType(n);
 	}
 };
+enum AnnotType
+{
+	LinkAnnot,
+	TextAnnot,
+	HighLighAnnot,
+	StrokeAnnot
+};
 class TabPage : public QWidget
 {
 	Q_OBJECT
@@ -165,10 +172,11 @@ class TabPage : public QWidget
 private: //variables
 	Ui::TabUI ui; 
 
+	std::vector<std::string> acceptedAnotName;//TODO static alebo enum alebo cos
 	//could be static. but :)
 	QRegion _region;
 	QString _name; //name of the file to be opened
-
+	
 	Mode _mode;
 
 	std::vector<AcceptOperatorName> opNames;
@@ -191,9 +199,14 @@ private: //variables
 	CPage::Annotations _annots;
 
 public:
+
+	void createAnnot(AnnotType t, std::string * params, int count);
+	void delAnnot(int i); //page to u seba upravi, aby ID zodpovedali
+
 	void changeText(std::string name, int size);//tazkopadne?
 	void handleBookMark(QTreeWidget * item, int col);
 	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
+	void handleAnnotation(int i);
 	void SetTextSelect();
 	void UnSetTextSelect();
 	TabPage(QString name);
@@ -278,6 +291,7 @@ private slots:
 
 	void initRevision(int revision);
 
+	void showTextAnnot(std::string name);
 	/// Inserts range of file from existing PDF
 	void insertPageRangeFromExisting();
 

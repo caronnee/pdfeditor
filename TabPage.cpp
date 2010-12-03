@@ -36,12 +36,19 @@ void TabPage::handleBookMark(QTreeWidget * item, int col)
 	page = pdf->getPage(((Bookmark *)(item))->getDest());
 	setFromSplash();
 }
+
 TabPage::TabPage(QString name) : _name(name)
 {
 	ui.setupUi(this);
 	dirty = false;
 
-	//connections()
+	acceptedAnotName.push_back("Link");
+	acceptedAnotName.push_back("Text");
+	acceptedAnotName.push_back("Highlight");
+	acceptedAnotName.push_back("Underline");
+	acceptedAnotName.push_back("Strikeout");
+
+	//connections
 	connect (ui.previous,SIGNAL(clicked()),this,SLOT(previousPage()));
 	connect (ui.next,SIGNAL(clicked()),this,SLOT(nextPage()));
 	connect (ui.content,SIGNAL(MouseClicked(int, int)),this, SLOT(clicked(int, int))); //pri selecte sa to disconnectne a nahrasi inym modom
@@ -73,7 +80,7 @@ TabPage::TabPage(QString name) : _name(name)
 
 void TabPage::SetModeTextSelect()
 {
-	_mode = SelectText;	
+	_mode = TextMode;	
 	//show text button, hide everything else
 	if (_textList.empty())
 	{
@@ -108,7 +115,7 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 {
 	switch (_mode)
 	{
-		case SelectText:
+		case TextMode:
 		{
 		//	highLightBegin(x,y); //nesprav nic, pretoze to bude robit mouseMove
 			break;
@@ -726,7 +733,7 @@ void TabPage::changeText(std::string name, int size) //toto bude vlastnostiach(d
 void TabPage::draw() //change mode to drawing
 {
 //	this->ui.content->beginDraw();
-	_mode = Draw;
+	_mode = DrawMode;
 }
 //na kazdej stranke mozu byt anotacie, po kliknuti na ne vyskoci pop-up alebo sa inak spravi akcia
 //page bude vediet o interaktovnyh miestach -> kvoli mouseMove
@@ -742,11 +749,80 @@ void TabPage::setAnnotations()
 		_annots[i]->getDictionary()->getProperty("Rect")->getSmartCObjectPtr<CArray>(rect);
 		int x1,x2,y1,y2;
 		x1 = utils::getSimpleValueFromArray<CInt>(rect,0);
-		//TODO
-//		BBox();
-		QRect convertedRect;
+		y1 = utils::getSimpleValueFromArray<CInt>(rect,0);
+		x2 = utils::getSimpleValueFromArray<CInt>(rect,0);
+		y2 = utils::getSimpleValueFromArray<CInt>(rect,0);
+		//dostat annotecny rectangle
+		BBox b(x1,y1,x2,y2);	
+		QRect convertedRect = getRectangle(b);
 		this->ui.content->addPlace(convertedRect);
 	}
+}
+//bolo kliknute na anotaciu, ideme ju vykonat
+void TabPage::handleAnnotation(int id)
+{
+	//mame identifikator
+	//_annots;
+	//Ukazeme widget s tymto textom
+	//ak je to link, tak rovno skocime
+	shared_ptr<CAnnotation> c = _annots[id];
+	//zistime, kam mame skocit
+	shared_ptr<IProperty> name = c->getDictionary()->getProperty("SubType");
+	std::string n = utils::getValueFromSimple<CName>(name);
+	if ( n == "Link")
+	{
+		//dostan page, na ktoru ma ist
+		if (c->getDictionary()->containsProperty("Dest"))
+		{
+			//ok,skaceme
+			shared_ptr< CArray > array; 
+			c->getDictionary()->getProperty("Dest")->getSmartCObjectPtr<CArray>(array);
+			page = pdf->getPage(utils::getSimpleValueFromArray<CInt>(array,0));
+			setFromSplash();
+			return;
+		}//alebo action
+		if (c->getDictionary()->containsProperty("A"))
+		{
+			shared_ptr<CDict> d; 
+			d = utils::getCDictFromDict(c->getDictionary(),"A"); //toto musi byt Launch, TODO overit
+			std::string nam = utils::getStringFromDict(d,"F");
+			//zistime lauch a jeho parametre
+			//TODO QDialog a launch
+		}
+		throw "Unsupported type";//TODO vymazat z anotacii alebo ich tam vobec nedavat
+		return;
+	}
+	//other Annotations
+	//tot by malo zobrazit pdfko
+	std::string name2 = utils::getStringFromDict(c->getDictionary(), "Contents");
+	showTextAnnot(name2);
+	return;
+}
+void TabPage::showTextAnnot(std::string name)
+{
+	//TODO novy textbox
+}
+void TabPage::createAnnot(AnnotType t, std::string * params, int count)
+{
+	//mame begin iter a enditer
+	shared_ptr<CAnnotation> annot;
+	switch (t)
+	{
+		case TextAnnot:
+		{
+			//potrebujeme iba text
+			shared_ptr<IProperty> prop ( CNameFactory::getInstance(params[0].c_str()));
+			std::string n = "Contents";
+			annot->getDictionary()->addProperty(n,*prop);
+			break;
+		}
+	}
+}
+void TabPage::delAnnot(int i) //page to u seba upravi, aby ID zodpovedali
+{
+	page->delAnnotation(_annots[i]);
+	_annots[i] = _annots.back();
+	_annots.pop_back();
 }
 QRect TabPage::getRectangle(BBox b)
 {
