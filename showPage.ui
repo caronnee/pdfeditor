@@ -115,27 +115,6 @@
      </column>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QScrollArea" name="scrollArea">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="widgetResizable">
-      <bool>true</bool>
-     </property>
-     <widget class="DisplayPage" name="content">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>429</width>
-        <height>177</height>
-       </rect>
-      </property>
-      <layout class="QGridLayout" name="gridLayout"/>
-     </widget>
-    </widget>
-   </item>
    <item row="1" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -205,16 +184,22 @@
      </layout>
     </widget>
    </item>
+   <item row="2" column="0">
+    <widget class="QScrollArea" name="scrollArea">
+     <widget class="QWidget" name="content">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>429</width>
+        <height>177</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>DisplayPage</class>
-   <extends>QWidget</extends>
-   <header location="global">page.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>

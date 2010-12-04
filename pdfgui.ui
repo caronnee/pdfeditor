@@ -148,15 +148,27 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="textWork">
          <property name="text">
-          <string>PushButton</string>
+          <string>Text Work</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>Viewer</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="opSelect">
+         <property name="text">
+          <string>OpSelect</string>
          </property>
         </widget>
        </item>
       </layout>
-      <zorder>pushButton</zorder>
-      <zorder>pushButton</zorder>
      </widget>
     </item>
     <item>

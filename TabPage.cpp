@@ -29,8 +29,6 @@
 #include "tree.h"
 #include "bookmark.h"
 
-#define DEFFONT "Helvetica"
-
 void TabPage::handleBookMark(QTreeWidget * item, int col)
 {
 	page = pdf->getPage(((Bookmark *)(item))->getDest());
@@ -40,7 +38,9 @@ void TabPage::handleBookMark(QTreeWidget * item, int col)
 TabPage::TabPage(QString name) : _name(name)
 {
 	ui.setupUi(this);
-	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this->ui.content,SLOT(zoom(QString)));
+	labelPage = new DisplayPage();
+	this->ui.scrollArea->setWidget(labelPage);
+	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),labelPage,SLOT(zoom(QString)));
 	dirty = false;
 
 	acceptedAnotName.push_back("Link");
@@ -52,7 +52,7 @@ TabPage::TabPage(QString name) : _name(name)
 	//connections
 	connect (ui.previous,SIGNAL(clicked()),this,SLOT(previousPage()));
 	connect (ui.next,SIGNAL(clicked()),this,SLOT(nextPage()));
-	connect (ui.content,SIGNAL(MouseClicked(int, int)),this, SLOT(clicked(int, int))); //pri selecte sa to disconnectne a nahrasi inym modom
+	connect (labelPage,SIGNAL(MouseClicked(int, int)),this, SLOT(clicked(int, int))); //pri selecte sa to disconnectne a nahrasi inym modom
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	//end of connections
 
@@ -135,7 +135,7 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 		}
 		default:
 			{
-				this->ui.content->unsetImg();
+				labelPage->unsetImg();
 				showClicked(x,y);//zmenit 
 			}
 	}
@@ -234,11 +234,11 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y
 	sTextItEnd->addToRegion(x);
 
 	//retapotrebujeme cely hilight vymazat //TODO to by sa malo zmenit, bo je to desne pomale
-	ui.content->unsetImg( );
+	labelPage->unsetImg( );
 	while( first!=last)
 	{
 		QColor c(255,36,78);
-		ui.content->fillRect( first->region,c );
+		labelPage->fillRect( first->region,c );
 		first ++;
 	}
 }
@@ -270,7 +270,7 @@ void TabPage::showClicked(int x, int y)
 		displayparams.convertPdfPosToPixmapPos(b.xright, b.yright, x2, y2);
 
 		QColor color(255, 255, 0, 50);
-		this->ui.content->fillRect( x1, y1, x2, y2, color );
+		labelPage->fillRect( x1, y1, x2, y2, color );
 		workingOpSet.push_back(ops[i]);	
 	}
 }
@@ -449,7 +449,7 @@ void TabPage::setFromSplash()
 	}
 	delete[] p;
 
-	this->ui.content->setImage(image);
+	labelPage->setImage(image);
 	//image.save("mytest.bmp","BMP");
 	//this->ui.label->adjustSize();
 	updatePageInfoBar();
@@ -767,7 +767,7 @@ void TabPage::setAnnotations()
 		//dostat annotecny rectangle
 		BBox b(x1,y1,x2,y2);	
 		QRect convertedRect = getRectangle(b);
-		this->ui.content->addPlace(convertedRect);
+		labelPage->addPlace(convertedRect);
 	}
 }
 //bolo kliknute na anotaciu, ideme ju vykonat

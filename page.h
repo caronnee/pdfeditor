@@ -6,11 +6,12 @@
 #include <QWheelEvent>
 #include "ui_page.h"
 
-class DisplayPage : public QWidget
+class DisplayPage : public QLabel
 {
 	Q_OBJECT
 
-	std::vector<QRect> _interactive;
+
+
 public:
 	DisplayPage(QWidget *parent = 0);
 	~DisplayPage();
@@ -24,9 +25,9 @@ public:
 private:
 	void setImg();
 private:
+	std::vector<QRect> _interactive;
 	QImage _image;
 	QImage _copyImg;
-	Ui::page ui;
 
 	//we have to remeber original size
 	QSize _size;

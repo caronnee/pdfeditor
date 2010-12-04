@@ -17,6 +17,7 @@
 #include <QFileDialog>
 #include <QRect>
 #include "ui_showPage.h"
+#include "page.h"
 
 #include <list>
 #include <QTreeWidgetItem>
@@ -197,7 +198,7 @@ private: //variables
 	//TODO mat este jeden iterator Actual, aby sa to stale neprekreslovalo cele
 	Ops workingOpSet;//zavisla na prave zobrazenej stranke
 	CPage::Annotations _annots;
-
+	DisplayPage * labelPage;
 public:
 
 	void createAnnot(AnnotType t, std::string * params, int count);
