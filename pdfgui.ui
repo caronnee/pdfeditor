@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>459</width>
-    <height>482</height>
+    <height>646</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -50,22 +50,20 @@
          </property>
         </widget>
        </item>
-	<item>
+       <item>
         <widget class="QPushButton" name="rise">
          <property name="text">
           <string>Rise</string>
          </property>
         </widget>
        </item>
-	<item>
+       <item>
         <widget class="QPushButton" name="rotae">
          <property name="text">
           <string>Operator Rotate</string>
          </property>
         </widget>
        </item>
-
-
        <item>
         <widget class="QPushButton" name="SaveAs">
          <property name="text">
@@ -84,59 +82,6 @@
         <widget class="QPushButton" name="saveButton">
          <property name="text">
           <string>Save</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="groupBox">
-      <property name="title">
-       <string>Display manipulation</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <layout class="QFormLayout" name="formLayout">
-       <property name="fieldGrowthPolicy">
-        <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-       </property>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="display">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Display</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QDial" name="rotate">
-         <property name="maximumSize">
-          <size>
-           <width>30</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="minimum">
-          <number>0</number>
-         </property>
-         <property name="maximum">
-          <number>359</number>
-         </property>
-         <property name="singleStep">
-          <number>1</number>
          </property>
         </widget>
        </item>
@@ -191,6 +136,27 @@
         </widget>
        </item>
       </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="modesgroup">
+      <property name="cursor">
+       <cursorShape>ArrowCursor</cursorShape>
+      </property>
+      <property name="title">
+       <string>GroupBox</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>PushButton</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+      <zorder>pushButton</zorder>
+      <zorder>pushButton</zorder>
      </widget>
     </item>
     <item>
@@ -268,18 +234,37 @@
   <include location="pdfgui.qrc"/>
  </resources>
  <connections>
- <connection>
+  <connection>
    <sender>rise</sender>
    <signal>clicked()</signal>
    <receiver>openedPdfs</receiver>
    <slot>riseSel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
-
   <connection>
    <sender>getText</sender>
    <signal>clicked()</signal>
    <receiver>openedPdfs</receiver>
    <slot>getText()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
   <connection>
    <sender>openedPdfs</sender>
@@ -322,22 +307,6 @@
     <hint type="sourcelabel">
      <x>359</x>
      <y>75</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>221</x>
-     <y>300</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>display</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>display()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>118</x>
-     <y>137</y>
     </hint>
     <hint type="destinationlabel">
      <x>221</x>
@@ -422,22 +391,6 @@
     <hint type="destinationlabel">
      <x>221</x>
      <y>300</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rotate</sender>
-   <signal>sliderMoved(int)</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>rotate(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>114</x>
-     <y>140</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>229</x>
-     <y>344</y>
     </hint>
    </hints>
   </connection>

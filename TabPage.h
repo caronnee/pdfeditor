@@ -27,7 +27,7 @@ using namespace pdfobjects;
 //co spravit, ked prepnem na inu stranku
 enum Mode
 {
-	Default,
+	DefaultMode,
 	TextMode,
 	OperatorsMode, //moze byt uzitocne
 	ImageMode,

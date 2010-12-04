@@ -9,14 +9,17 @@ DisplayPage::DisplayPage(QWidget *parent)
 	ui.setupUi(this);
 }
 
-DisplayPage::~DisplayPage()
-{
+DisplayPage::~DisplayPage(){}
 
-}
 //slot
-void DisplayPage::zoom(int zoomscale)//later with how much pages, if all or not
+void DisplayPage::zoom(QString zoomscale)//later with how much pages, if all or not
 {
-	this->ui.label->resize(zoomscale * _size);
+	//odstranit breberky za tym
+	zoomscale = zoomscale.remove("%");
+	zoomscale = zoomscale.remove(" ");
+	int scale = zoomscale.toInt();
+	this->ui.label->resize(scale * _size);
+	this->ui.label->adjustSize();
 	//TODO adjust scrollbar?
 }
 
@@ -62,11 +65,8 @@ void DisplayPage::unsetImg() //against from image, for removing highligh and so
 void DisplayPage::mousePressEvent(QMouseEvent * event)
 {
 	//pass parent the coordinates
-	DEBUGLINE("clicked on" <<event->x() << " " <<event->y()); //TODO konvertovat na image, nie label
 	//chceme suradnice vzhladom na label //TODO co ak budeme v continuous mode?
-	
 	QPoint point = this->ui.label->mapFromParent( event->pos());
-	std::cout << point.x() << " "<< point.y() << std::endl;
 	emit MouseClicked(point.x(), this->ui.label->size().height() - point.y()); //opacne kvoli pdfku
 }
 void DisplayPage::mouseMoveEvent(QMouseEvent * event)

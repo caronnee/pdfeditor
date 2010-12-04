@@ -33,7 +33,7 @@ private:
 
 public slots:
 	void fillRect( QRegion reg, const QColor color);
-	void zoom(int zoomscale);
+	void zoom(QString zoom);
 	void mousePressEvent(QMouseEvent * event);
 	void fillRect(int x, int y, int x2, int y2, const QColor color);
 signals:

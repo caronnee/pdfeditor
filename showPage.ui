@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>459</width>
+    <width>525</width>
     <height>339</height>
    </rect>
   </property>
@@ -14,32 +14,7 @@
    <string>Viewer</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0" rowspan="2" colspan="2">
-    <widget class="QScrollArea" name="scrollArea">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="widgetResizable">
-      <bool>true</bool>
-     </property>
-     <widget class="DisplayPage" name="content">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>439</width>
-        <height>246</height>
-       </rect>
-      </property>
-      <layout class="QGridLayout" name="gridLayout"/>
-     </widget>
-    </widget>
-   </item>
-   <item row="0" column="1">
-	<widget class="QTreeWidget" name="tree">
-	</widget>
-   </item>
-   <item row="2" column="0">
+   <item row="5" column="0">
     <widget class="QGroupBox" name="pageManipulation">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -69,25 +44,6 @@
       <bool>false</bool>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-        <widget class="QComboBox" name="fonts">
-        </widget>
-     </item>
-     <item>
-        <widget class="QComboBox" name="fontsize">
-        </widget>
-     </item>
-
-      <item>
-       <widget class="QComboBox" name="Revision">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="QCommandLinkButton" name="previous">
         <property name="text">
@@ -138,6 +94,117 @@
      </layout>
     </widget>
    </item>
+   <item row="2" column="1">
+    <widget class="QTreeWidget" name="tree">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>70</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <column>
+      <property name="text">
+       <string notr="true">1</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="DisplayPage" name="content">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>429</width>
+        <height>177</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout"/>
+     </widget>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Display manipulation</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QPushButton" name="display">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Display</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDial" name="rotate">
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>359</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="zoom"/>
+      </item>
+      <item>
+       <widget class="QComboBox" name="fontsize"/>
+      </item>
+      <item>
+       <widget class="QComboBox" name="Revision">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="fonts"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -150,17 +217,24 @@
  </customwidgets>
  <resources/>
  <connections>
- <connection>
-  <sender>commit</sender>
-  <signal>clicked()</signal>
-  <receiver>TabUI</receiver>
-  <slot>commitRevision()</slot>
- </connection>
- <connection>
-  <sender>Revision></sender>
-  <signal>activated(int)</signal>
-  <receiver>TabUI</receiver>
-  <slot>initRevision(int)</slot>
- </connection>
+  <connection>
+   <sender>commit</sender>
+   <signal>clicked()</signal>
+   <receiver>TabUI</receiver>
+   <slot>commitRevision()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>zoom(QString)</slot>
+ </slots>
 </ui>

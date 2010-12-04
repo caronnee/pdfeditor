@@ -40,6 +40,7 @@ void TabPage::handleBookMark(QTreeWidget * item, int col)
 TabPage::TabPage(QString name) : _name(name)
 {
 	ui.setupUi(this);
+	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this->ui.content,SLOT(zoom(QString)));
 	dirty = false;
 
 	acceptedAnotName.push_back("Link");
@@ -76,7 +77,14 @@ TabPage::TabPage(QString name) : _name(name)
 	setFromSplash();
 	SetModeTextSelect();
 	_dataReady = false;
+	//setZoom();
+	for ( int i =50; i< 500; i+=50)
+	{
+		QVariant s(i);
+		this->ui.zoom->addItem( s.toString()+" %",s);
+	}
 	loadFonts();
+	_mode = DefaultMode;
 }
 
 void TabPage::SetModeTextSelect()
@@ -114,7 +122,7 @@ void TabPage::SetModeTextSelect()
 }
 void TabPage::UnSetTextSelect()
 {
-	_mode = Default;
+	_mode = DefaultMode;
 }
 void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, ze sa vyberie prvy operator
 {
@@ -126,7 +134,10 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 			break;
 		}
 		default:
-			showClicked(x,y);//zmenit 
+			{
+				this->ui.content->unsetImg();
+				showClicked(x,y);//zmenit 
+			}
 	}
 }
 void TabPage::mouseReleased() //nesprav nic, pretoze to bude robit mouseMove
@@ -1044,7 +1055,7 @@ void TabPage::deleteText( std::string text)
 {
 	//create tree of text on this page 
 	//search text, delete string & insert new text
-	std::vector<PdfOperator> opers;
+	Ops opers;
 /*	while (search(text, opers))
 	{
 		std::string todel = text;

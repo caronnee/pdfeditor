@@ -5,6 +5,8 @@
 
 OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget)
 {
+	TabPage * page = new TabPage("C:/Documents and Settings/peva/Plocha/zadani.pdf");
+	this->addTab(page,"test");
 }
 
 OpenPdf::~OpenPdf(void)
