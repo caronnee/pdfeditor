@@ -54,7 +54,7 @@ void DisplayPage::setImg() //again st from image, for removing highligh and so
 	this->ui.label->adjustSize();
 	_size = this->ui.label->pixmap()->size();
 }
-void DisplayPage::unsetImg() //agai st from image, for removing highligh and so
+void DisplayPage::unsetImg() //against from image, for removing highligh and so
 {
 	_copyImg = _image.copy();
 	setImg();
@@ -63,7 +63,10 @@ void DisplayPage::mousePressEvent(QMouseEvent * event)
 {
 	//pass parent the coordinates
 	DEBUG("clicked on" <<event->x() << " " <<event->y()); //TODO konvertovat na image, nie label
-	emit MouseClicked(event->x(), this->ui.label->size().height() - event->y()); //opacne kvoli pdfku
+	//chceme suradnice vzhladom na label //TODO co ak budeme v continuous mode?
+	
+	QPoint point = this->ui.label->mapFromParent( event->pos());
+	emit MouseClicked(point.x(), this->ui.label->size().height() - point.y()); //opacne kvoli pdfku
 }
 void DisplayPage::mouseMoveEvent(QMouseEvent * event)
 {

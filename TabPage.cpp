@@ -76,6 +76,7 @@ TabPage::TabPage(QString name) : _name(name)
 	setFromSplash();
 	SetModeTextSelect();
 	_dataReady = false;
+	loadFonts();
 }
 
 void TabPage::SetModeTextSelect()
@@ -94,7 +95,10 @@ void TabPage::SetModeTextSelect()
 			std::string n; 
 			(*it)->getOperatorName(n);
 			if (!typeChecker.isType(OpTextName,n))
+			{
+				it++;
 				continue;
+			}
 			OperatorData data;
 			data.op = *it;
 			data.begin = data.end = 0;
@@ -102,6 +106,7 @@ void TabPage::SetModeTextSelect()
 			txt->getRawText(data.text);
 			data.rect = getRectangle(data.op);
 			_textList.push_back(data);
+			it++;
 		}
 		//sort list
 		dirty = true;
@@ -330,14 +335,11 @@ void TabPage::getBookMarks()
 	std::vector<shared_ptr<CDict> > outline;
 	pdf->getOutlines(outline);
 	std::vector<shared_ptr<CDict> > dicts;
-	Bookmark * b; 
 	for (int i =0; i< outline.size(); i++)
 	{
-		for ( int i =0; i < outline.size(); i++)
-		{
-			setTree(outline[i],b);
-			this->ui.tree->addTopLevelItem(b);
-		}
+		QTreeWidgetItem * b = new QTreeWidgetItem; 
+		setTree(outline[i],b);
+		this->ui.tree->addTopLevelItem(b);
 	}
 	//skrtni kazde, ktore nema page ako dest
 }
@@ -345,9 +347,8 @@ void TabPage::setTree(shared_ptr<CDict> d, QTreeWidgetItem * item)
 {
 	std::vector<shared_ptr<CDict> > dict;
 	try{
-		QTreeWidgetItem * it;
+		QTreeWidgetItem * b;
 		utils::getAllChildrenOfPdfObject(d,dict);
-		Bookmark * b;
 		if (d->containsProperty("Dest"))
 		{
 			int page;
@@ -360,8 +361,8 @@ void TabPage::setTree(shared_ptr<CDict> d, QTreeWidgetItem * item)
 			b = new Bookmark(-1);
 		for(int i =0; i < dict.size(); i++)
 		{
-			setTree(dict[i],it);
-			item->addChild(it);
+			setTree(dict[i],b);
+			item->addChild(b);
 		}
 	}
 	catch(...) {}
@@ -939,19 +940,19 @@ void TabPage::loadFonts()
 		_fonts.push_back(TextFont(fontList[i].first)); //prve je name, ako bolo v dict, asi ho zobrazime
 		index++;
 	}
-	this->ui.fonts->insertSeparator(fontList.size());
 	CPageFonts::SystemFontList flist = CPageFonts::getSystemFonts();
 	for ( CPageFonts::SystemFontList::iterator i = flist.begin(); i != flist.end(); i++ )
 	{
 		this->ui.fonts->insertItem(index, QString(i->c_str()));
 		index++;
 	}
+	this->ui.fonts->insertSeparator(fontList.size());
 	//nacitame velkosti, ake moze nadobudat font
 	index =0;
 	for ( int i = 10; i< 40; i+=2)
 	{
 		QVariant q(i);
-		this->ui.fonts->insertItem(0, q.toString(),q);
+		this->ui.fontsize->insertItem(0, q.toString(),q);
 	}
 }
 shared_ptr<PdfOperator> TabPage::insertText(double x, double y, std::string text, int angle )
