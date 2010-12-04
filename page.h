@@ -10,11 +10,17 @@ class DisplayPage : public QWidget
 {
 	Q_OBJECT
 
+	std::vector<QRect> _interactive;
 public:
 	DisplayPage(QWidget *parent = 0);
 	~DisplayPage();
 	void setImage( const QImage & image);
-	void addPlace(QRect r){}
+	//adds interactive rectagle (annotation)
+	void addPlace(QRect r)
+	{
+		_interactive.push_back(r);
+		//FIXME zotriedit pre lepsi pristup
+	}
 private:
 	void setImg();
 private:
