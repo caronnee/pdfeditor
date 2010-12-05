@@ -13,18 +13,6 @@ DisplayPage::DisplayPage(QWidget *parent)
 
 DisplayPage::~DisplayPage(){}
 
-//slot
-void DisplayPage::zoom(QString zoomscale)//later with how much pages, if all or not
-{
-	//odstranit breberky za tym
-	zoomscale = zoomscale.remove("%");
-	zoomscale = zoomscale.remove(" ");
-	float scale = zoomscale.toInt()/100;
-	resize(scale * _size);
-	QSize s = pixmap()->size();
-	//this->adjustSize();
-	//TODO adjust scrollbar?
-}
 
 void DisplayPage::setImage( const QImage & image )
 {
@@ -69,8 +57,9 @@ void DisplayPage::mousePressEvent(QMouseEvent * event)
 {
 	//pass parent the coordinates
 	//chceme suradnice vzhladom na label //TODO co ak budeme v continuous mode?
-	QPoint point = this->mapFromParent( event->pos());
-	emit MouseClicked(point.x(), this->size().height() - point.y()); //opacne kvoli pdfku
+	QPoint point = event->pos();
+	QSize s= pixmap()->size();
+	emit MouseClicked(point.x(), pixmap()->size().height() - point.y()); //opacne kvoli pdfku
 }
 void DisplayPage::mouseMoveEvent(QMouseEvent * event)
 {

@@ -10,11 +10,10 @@ class DisplayPage : public QLabel
 {
 	Q_OBJECT
 
-
-
 public:
 	DisplayPage(QWidget *parent = 0);
 	~DisplayPage();
+
 	void setImage( const QImage & image);
 	//adds interactive rectagle (annotation)
 	void addPlace(QRect r)
@@ -24,8 +23,12 @@ public:
 	}
 private:
 	void setImg();
+
 private:
+	//annotations
 	std::vector<QRect> _interactive;
+
+	//change handling
 	QImage _image;
 	QImage _copyImg;
 
@@ -34,7 +37,6 @@ private:
 
 public slots:
 	void fillRect( QRegion reg, const QColor color);
-	void zoom(QString zoom);
 	void mousePressEvent(QMouseEvent * event);
 	void fillRect(int x, int y, int x2, int y2, const QColor color);
 signals:

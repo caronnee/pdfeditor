@@ -10,6 +10,7 @@
 #include <splash/SplashBitmap.h>	
 #include <xpdf/SplashOutputDev.h>
 #include <kernel/factories.h>
+#include <kernel/displayparams.h>
 
 //END of PDF
 #include <qwidget.h>
@@ -33,7 +34,8 @@ enum Mode
 	OperatorsMode, //moze byt uzitocne
 	ImageMode,
 	AnntotationMode,
-	DrawMode
+	DrawMode,
+	NumberOfModes
 };
 
 typedef std::vector<shared_ptr<PdfOperator> > Ops;
@@ -154,9 +156,18 @@ public:
 		names[OpGraphicName].add("DO");
 		names[OpGraphicName].add("Do");
 	}
-	bool isType(AcceptName type, std::string n)
+	bool isType(int type, std::string n)
 	{
 		return names[type].isType(n);
+	}
+	bool acceptType(std::string name)
+	{
+		for ( int i =0 ; i < OpAcceptCount; i++)
+		{
+			if (isType(i,name))
+				return true;
+		}
+		return false;
 	}
 };
 enum AnnotType
@@ -180,7 +191,7 @@ private: //variables
 	
 	Mode _mode;
 
-	std::vector<AcceptOperatorName> opNames;
+//	std::vector<AcceptOperatorName> opNames;
 	/** pdf objects */
 //	SplashColorPtr m_image; //pouzve sa neskor pri configu
 
@@ -199,6 +210,10 @@ private: //variables
 	Ops workingOpSet;//zavisla na prave zobrazenej stranke
 	CPage::Annotations _annots;
 	DisplayPage * labelPage;
+private:
+	void toPdfPos(int x, int y, double & x1, double &y1);
+	void toPixmapPos(double x1, double y1, int & x, int & y);
+
 public:
 
 	void createAnnot(AnnotType t, std::string * params, int count);
@@ -289,7 +304,7 @@ public slots:
 	void print();
 
 private slots:
-
+	void zoom(QString zoomscale);
 	void initRevision(int revision);
 
 	void showTextAnnot(std::string name);

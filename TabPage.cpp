@@ -24,6 +24,7 @@
 #include <kernel/pdfoperators.h>
 #include <kernel/cannotation.h>
 #include <kernel/carray.h>
+
 //created files
 #include "insertpagerange.h"
 #include "tree.h"
@@ -40,7 +41,7 @@ TabPage::TabPage(QString name) : _name(name)
 	ui.setupUi(this);
 	labelPage = new DisplayPage();
 	this->ui.scrollArea->setWidget(labelPage);
-	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),labelPage,SLOT(zoom(QString)));
+	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
 	dirty = false;
 
 	acceptedAnotName.push_back("Link");
@@ -84,9 +85,21 @@ TabPage::TabPage(QString name) : _name(name)
 		this->ui.zoom->addItem( s.toString()+" %",s);
 	}
 	loadFonts();
+	this->ui.zoom->setCurrentIndex(1);
 	_mode = DefaultMode;
 }
-
+void TabPage::zoom(QString zoomscale)//later with how much pages, if all or not
+{
+	//odstranit breberky za tym
+	zoomscale = zoomscale.remove("%");
+	zoomscale = zoomscale.remove(" ");
+	float scale = zoomscale.toFloat()/100;
+	float dpix=labelPage->logicalDpiX();
+	float dpiy =labelPage->logicalDpiY();
+	displayparams.hDpi = dpix * scale;
+	displayparams.vDpi = dpiy * scale;
+	this->setFromSplash();
+}
 void TabPage::SetModeTextSelect()
 {
 	_mode = TextMode;	
@@ -245,29 +258,47 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y
 void TabPage::getAtPosition(Ops& ops, int x, int y )
 {
 	double px, py;
-	displayparams.convertPixmapPosToPdfPos(x, y, px, py);
+	toPdfPos(x, y, px, py);
 	//find operattors
 	page->getObjectsAtPosition(ops, libs::Point(px,py));
+}
+void TabPage::toPdfPos(int x, int y, double & x1, double &y1)
+{
+	displayparams.convertPixmapPosToPdfPos(x, y, x1, y1);
+	x1 *=displayparams.hDpi/72;
+	y1 *=displayparams.vDpi/72;
+}
+void TabPage::toPixmapPos(double x1, double y1, int & x, int &y)
+{
+	x1 /=displayparams.hDpi/72;
+	y1 /=displayparams.vDpi/72;
+	displayparams.convertPdfPosToPixmapPos(x, y, x1, y1);
 }
 void TabPage::showClicked(int x, int y)
 {
 	double px, py;
-	displayparams.convertPixmapPosToPdfPos(x, y, px, py);
-	//find operattors
-	std::vector< shared_ptr < PdfOperator> > ops;
+	//convert
+	toPdfPos(x,y, px, py);
+	//find operattdisplayparamsors
+	Ops ops;
 	page->getObjectsAtPosition(ops, libs::Point(px,py));
 	workingOpSet.clear();	
 	//vsetky tieto objekty vymalujeme TODO zistit orientaciu
 	for ( int i =0; i < ops.size(); i++)
 	{
+		//ukaz len povolene typy
 		std::string s;
 		ops[i]->getOperatorName(s); 
-
+		if (!typeChecker.acceptType(s))
+			continue;
+		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(ops[i]);
+		txt->getRawText(s);
 		libs::Rectangle b = ops[i]->getBBox();
-		double x1, y1, x2, y2;
+		int x1, y1;
+		int x2, y2;
 
-		displayparams.convertPdfPosToPixmapPos(b.xleft, b.yleft, x1,y1);
-		displayparams.convertPdfPosToPixmapPos(b.xright, b.yright, x2, y2);
+		toPixmapPos(b.xleft, b.yleft, x1,y1);
+		toPixmapPos(b.xright, b.yright, x2, y2);
 
 		QColor color(255, 255, 0, 50);
 		labelPage->fillRect( x1, y1, x2, y2, color );
@@ -278,10 +309,10 @@ QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
 {
 	QRect r;
 	libs::Rectangle b = ops->getBBox();
-	double x1,y1,x2,y2;
+	int x1,y1,x2,y2;
 	
-	displayparams.convertPdfPosToPixmapPos(b.xleft, b.yleft, x1,y1);
-	displayparams.convertPdfPosToPixmapPos(b.xright, b.yright, x2, y2);
+	toPixmapPos(b.xleft, b.yleft, x1,y1);
+	toPixmapPos(b.xright, b.yright, x2, y2);
 //move according to page rotation
 	int angle = page->getRotation();
 	rotatePosition(x1,y1,x1,y1, angle);
@@ -437,7 +468,7 @@ void TabPage::setFromSplash()
 	page->displayPage(splash, displayparams);
 	splash.clearModRegion();
 
-	QImage image(splash.getBitmap()->getWidth(), splash.getBitmap()->getHeight(),QImage::Format_RGB32);
+	QImage image(splash.getBitmap()->getWidth(), splash.getBitmap()->getHeight(),QImage::Format_RGB32);	
 	Guchar * p = new Guchar[3];
 	for ( int i =0; i< image.width(); i++)
 	{
@@ -448,8 +479,13 @@ void TabPage::setFromSplash()
 		}
 	}
 	delete[] p;
+	int x1,y1,x2,y2;
 
+	toPixmapPos( displayparams.pageRect.xleft, displayparams.pageRect.yleft, x1, y1 );
+	toPixmapPos( displayparams.pageRect.xright, displayparams.pageRect.yright, x2, y2 );
+	//image = image.scaled(QSize(max(x2,x1),max(y1,y2)));
 	labelPage->setImage(image);
+	QSize s = labelPage->size();
 	//image.save("mytest.bmp","BMP");
 	//this->ui.label->adjustSize();
 	updatePageInfoBar();
@@ -506,7 +542,7 @@ void TabPage::addRevision( int i )
 		ui.Revision->removeItem(ui.Revision->count()-1);
 		return;//page was loaded
 	}
-	std::cout << "adding revision ";
+	std::cout << "Adding revision ";
 	std::stringstream ss;
 	std::cout << i << " " << pdf->getRevisionsCount() << std::endl;
 	assert( (size_t)i < pdf->getRevisionsCount() );
@@ -838,10 +874,10 @@ void TabPage::delAnnot(int i) //page to u seba upravi, aby ID zodpovedali
 }
 QRect TabPage::getRectangle(BBox b)
 {
-	double x1,x2,y1,y2;
+	int x1,x2,y1,y2;
 //TODO tot snad ani nemusi fungovat...check!
-	displayparams.convertPdfPosToPixmapPos(b.xleft, b.yleft, x1,y1);
-	displayparams.convertPdfPosToPixmapPos(b.xright, b.yright, x2,y2);
+	toPixmapPos(b.xleft, b.yleft, x1,y1);
+	toPixmapPos(b.xright, b.yright, x2,y2);
 	QRect r(QPoint(min(x1,x2),max(y1,y2)),QPoint(max(x1,x2),min(y1,y2)));
 	return r;
 }
@@ -920,7 +956,7 @@ void TabPage::rotateText(int angle) //there can be text or image objects
 {
 //select operators and add to selected	
 	double px, py;
-	displayparams.convertPixmapPosToPdfPos(x, y, px, py);
+	toPdfPos(x, y, px, py);
 	//find operattors
 	std::vector< shared_ptr < PdfOperator> > ops;
 	page->getObjectsAtPosition(ops, libs::Point(px,py));
@@ -1076,6 +1112,7 @@ void TabPage::replaceText( std::string what, std::string by)
 }
 void TabPage::getText()//get text from page
 {
+	BBox b;
 	//get only text iterator
 	std::vector<shared_ptr<CContentStream> > streams;
 	page->getContentStreams(streams);
@@ -1091,6 +1128,11 @@ void TabPage::getText()//get text from page
 			std::string s;
 			txt->getRawText(s);//bacha na t, ze to moze byt te lomitkova a hexadec repr..alebo nie?
 			tmp+= s;
+			BBox box = it.getCurrent()->getBBox();
+			b.xright = max(max(box.xright,box.xleft),b.xright);
+			b.xleft = max(max(box.xleft,box.xright),b.xleft);
+			b.yright = max(max(box.yright,box.yleft),b.yright);
+			b.yleft = max(max(box.yleft,box.yright),b.yleft);
 			it.next();
 		}
 	}
