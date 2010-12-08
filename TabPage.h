@@ -18,7 +18,9 @@
 #include <QFileDialog>
 #include <QRect>
 #include "ui_showPage.h"
+#include "ui_properties.h"
 #include "page.h"
+#include "fontWidget.h"
 
 #include <list>
 #include <QTreeWidgetItem>
@@ -235,7 +237,7 @@ public:
 
 private:
 	void setAnnotations();
-	void loadFonts();
+	void loadFonts(FontWidget * font);
 	void getAtPosition(Ops& ops, int x, int y );
 	void setTextData(TextData::iterator &begin, TextData::iterator end, shared_ptr<PdfOperator> op);
 

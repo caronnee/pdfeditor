@@ -84,7 +84,7 @@ TabPage::TabPage(QString name) : _name(name)
 		QVariant s(i);
 		this->ui.zoom->addItem( s.toString()+" %",s);
 	}
-	loadFonts();
+//	loadFonts();
 	this->ui.zoom->setCurrentIndex(1);
 	_mode = DefaultMode;
 }
@@ -270,9 +270,12 @@ void TabPage::toPdfPos(int x, int y, double & x1, double &y1)
 }
 void TabPage::toPixmapPos(double x1, double y1, int & x, int &y)
 {
+	double x2, y2;
 	x1 /=displayparams.hDpi/72;
 	y1 /=displayparams.vDpi/72;
-	displayparams.convertPdfPosToPixmapPos(x, y, x1, y1);
+	displayparams.convertPdfPosToPixmapPos(x1, y1, x2, y2);
+	x = x2;
+	y = y2;
 }
 void TabPage::showClicked(int x, int y)
 {
@@ -969,7 +972,7 @@ void TabPage::rotateText(int angle) //there can be text or image objects
 		workingOpSet.push_back(d);
 	}
 }*/
-void TabPage::loadFonts()
+void TabPage::loadFonts(FontWidget* fontWidget)
 {
 	//dostanme vsetky fontu, ktore su priamov pdf. bohuzial musime cez vsetky pages
 	CPage::FontList fontList;
@@ -977,9 +980,14 @@ void TabPage::loadFonts()
 	for ( int i = 1; i <= pdf->getPageCount(); i++ )
 	{
 		pdf->getPage(i)->getFontIdsAndNames(fontList2);
-		fontList.insert(fontList.end(), fontList2.begin(), fontList2.end());
+		//fontList.insert(fontList.end(), fontList2.begin(), fontList2.end());
+		for( CPage::FontList::iterator it = fontList.begin(); it!=fontList.end(); it++)
+		{
+			fontWidget->addFont(it->first);
+		}
+
 	}
-	//TODO spravit uniqu
+/*	//TODO spravit uniqu
 	int index = 0;
 	for ( int i = 0; i< fontList.size(); i++)
 	{
@@ -1000,7 +1008,7 @@ void TabPage::loadFonts()
 	{
 		QVariant q(i);
 		this->ui.fontsize->insertItem(0, q.toString(),q);
-	}
+	}*/
 }
 shared_ptr<PdfOperator> TabPage::insertText(double x, double y, std::string text, int angle )
 {
@@ -1117,7 +1125,7 @@ void TabPage::getText()//get text from page
 	std::vector<shared_ptr<CContentStream> > streams;
 	page->getContentStreams(streams);
 	std::string tmp ="";
-	for ( int i =0; i < streams.size(); i++ )
+	for ( size_t i =0; i < streams.size(); i++ )
 	{
 		Ops ops;
 		streams[i]->getPdfOperators(ops);

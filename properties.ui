@@ -46,7 +46,7 @@
     <number>359</number>
    </property>
   </widget>
-  <widget class="QComboBox" name="font">
+  <widget class="QComboBox" name="fonts">
    <property name="geometry">
     <rect>
      <x>40</x>

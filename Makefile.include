@@ -11,7 +11,7 @@ LIBS += -L/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/kernel/ \
 -lkernel -lutils -lfofi -lGoo -lsplash -lxpdf  \
 -lkernel -lutils -lfofi -lGoo -lsplash -lxpdf  \
 -lkernel -lutils -lfofi -lGoo -lsplash -lxpdf  \
--lfreetype
+-lfreetype -lt1
 
 INCPATH += -I. -I/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/xpdf/ -I/afs/ms/u/p/peske5am/BIG/pdfGUI/pdfedit-0.4.5/src/
 
