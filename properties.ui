@@ -13,6 +13,16 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+ <widget class="QTableWidget" name="tm">
+   <property name="rowCount">
+  	<number>6</number>
+   </property>
+   <property name="columnCount">
+  	<number>6</number>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="text">
+  </widget>
   <widget class="QSpinBox" name="xPosition">
    <property name="geometry">
     <rect>

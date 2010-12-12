@@ -1,11 +1,3 @@
-// Change font, change color
-//TODO check if rotating rotate just the one object or all of them?
-//pre dial rotate text only, rotate all
-//highlightText
-//search
-
-//po skoncilo vykreslovanie, ma to pridat ako obrazok, emituje to page, page ma vlastny mod
-
 #include "debug.h"
 #include "TabPage.h"
 #include "globalfunctions.h"
@@ -38,6 +30,7 @@ void TabPage::handleBookMark(QTreeWidget * item, int col)
 
 TabPage::TabPage(QString name) : _name(name)
 {
+	_font = NULL;
 	ui.setupUi(this);
 	labelPage = new DisplayPage();
 	this->ui.scrollArea->setWidget(labelPage);
@@ -60,8 +53,6 @@ TabPage::TabPage(QString name) : _name(name)
 	pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 
 	page = boost::shared_ptr<pdfobjects::CPage> (pdf->getPage(1)); //or set from last
-	//page->addText("myText...XXXX",libs::Point(1,1),"Helvetica");
-	//pdf->save();
 	// init splash bitmap
 	QStringList list;
 
@@ -100,9 +91,14 @@ void TabPage::zoom(QString zoomscale)//later with how much pages, if all or not
 	displayparams.vDpi = dpiy * scale;
 	this->setFromSplash();
 }
+
 void TabPage::SetModeTextSelect()
 {
+	//bind widget to the page show
 	_mode = TextMode;	
+	_font = new FontWidget(this);
+	loadFonts(_font);
+	connect(_font, SIGNAL(text(PdfOp)), this, SLOT(insertText(PdfOp)));
 	//show text button, hide everything else
 	if (_textList.empty())
 	{
@@ -136,6 +132,9 @@ void TabPage::SetModeTextSelect()
 void TabPage::UnSetTextSelect()
 {
 	_mode = DefaultMode;
+	if(_font)
+		delete _font;
+	_font = NULL;
 }
 void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, ze sa vyberie prvy operator
 {
@@ -143,7 +142,7 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 	{
 		case TextMode:
 		{
-		//	highLightBegin(x,y); //nesprav nic, pretoze to bude robit mouseMove
+			highlightText(x,y); //nesprav nic, pretoze to bude robit mouseMove
 			break;
 		}
 		default:
@@ -983,7 +982,7 @@ void TabPage::loadFonts(FontWidget* fontWidget)
 		//fontList.insert(fontList.end(), fontList2.begin(), fontList2.end());
 		for( CPage::FontList::iterator it = fontList.begin(); it!=fontList.end(); it++)
 		{
-			fontWidget->addFont(it->first);
+			fontWidget->addFont(it->first, it->second);
 		}
 
 	}
@@ -1010,39 +1009,15 @@ void TabPage::loadFonts(FontWidget* fontWidget)
 		this->ui.fontsize->insertItem(0, q.toString(),q);
 	}*/
 }
-shared_ptr<PdfOperator> TabPage::insertText(double x, double y, std::string text, int angle )
+void TabPage::insertText( PdfOp op )
 {
+	//mame operator vytvoreny vo fontWidget
+	//pridame do page
 	//creat composite pdf operators with this font
 	Ops ops;
-	//vytvor BT, ET 
-	shared_ptr<UnknownCompositePdfOperator> q(new UnknownCompositePdfOperator("q", "Q"));
-	shared_ptr<UnknownCompositePdfOperator> BT(new UnknownCompositePdfOperator("BT", "ET"));
-
-	q->push_back(BT,q);
-	QVariant v = this->ui.fontsize->itemData(this->ui.fontsize->currentIndex());
-	BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(BT));
-	//text matrix 
-
-	PdfOperator::Operands posOperands;
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(1)));
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(1)));
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(x)));
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(y)));
-	BT->push_back(createOperator("Tm", posOperands), getLastOperator(BT));
-
-	PdfOperator::Operands textOperands;
-	textOperands.push_back(shared_ptr<IProperty>(new CString (text)));
-	BT->push_back(createOperator("Tj", textOperands), getLastOperator(BT));
-	PdfOperator::Operands emptyOperands;
-	BT->push_back(createOperator("ET", emptyOperands), getLastOperator(BT));
-	q->push_back(createOperator("Q", emptyOperands), getLastOperator(q));
-
-	ops.push_back(q);
+	ops.push_back(op);
 	page->addContentStreamToBack(ops);
 	setFromSplash();
-	return q;
 }
 
 void TabPage::move(int difx, int dify) //on mouse event, called on mouse realease

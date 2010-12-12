@@ -18,12 +18,12 @@
 #include <QFileDialog>
 #include <QRect>
 #include "ui_showPage.h"
-#include "ui_properties.h"
 #include "page.h"
 #include "fontWidget.h"
 
 #include <list>
 #include <QTreeWidgetItem>
+#include "typedefs.h"
 
 using namespace boost;
 using namespace pdfobjects;
@@ -40,25 +40,6 @@ enum Mode
 	NumberOfModes
 };
 
-typedef std::vector<shared_ptr<PdfOperator> > Ops;
-typedef std::list<shared_ptr<PdfOperator> > OpsList;
-typedef shared_ptr<PdfOperator> PdfOp;
-typedef PdfOperator::BBox BBox;
-
-class TextFont
-{
-	std::string fontId;
-public:
-	TextFont(std::string id) : fontId(id) {}
-	//vrati pdfoperator TF, s nastavenim fontu a velkosti
-	shared_ptr<PdfOperator> getFontOper(int size)
-	{	
-		PdfOperator::Operands fontOperands;//TODO check poradie
-		fontOperands.push_back(shared_ptr<IProperty>(new CName (fontId)) );
-		fontOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(size)));//velkost pismeno
-		return createOperator("Tf", fontOperands);
-	}
-};
 //mozno to je moc vysoke?  Normalny text ma 10, na rise bude mat 5, alklurat neviem, ci je to v pixelochaa ak tam ma este tie svoje double...
 #define EPSILON_Y 5
 //TODO pozor na rotaciu stranky, bude to fachat?
@@ -190,14 +171,13 @@ private: //variables
 	//could be static. but :)
 	QRegion _region;
 	QString _name; //name of the file to be opened
-	
+	FontWidget * _font;	
 	Mode _mode;
 
 //	std::vector<AcceptOperatorName> opNames;
 	/** pdf objects */
 //	SplashColorPtr m_image; //pouzve sa neskor pri configu
 
-	std::vector<TextFont> _fonts;
 	IsType typeChecker;
 	pdfobjects::DisplayParams displayparams;	
 	boost::shared_ptr<pdfobjects::CPdf> pdf;
@@ -288,8 +268,8 @@ public slots:
 	void rotateText( int angle );
 	void replaceText( std::string what, std::string by);
 	void deleteText( std::string text);
-	shared_ptr<PdfOperator> insertText(double x, double y, std::string text, int angle=0 );
 
+	void insertText( PdfOp op );
 
 	///Sets image to previous page
 	bool previousPage();
