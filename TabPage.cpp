@@ -67,7 +67,6 @@ TabPage::TabPage(QString name) : _name(name)
 	ui.Revision->addItems(list);
 	ui.Revision->setCurrentIndex(list.count()-1);
 	setFromSplash();
-	SetModeTextSelect();
 	_dataReady = false;
 	//setZoom();
 	for ( int i =50; i< 500; i+=50)
@@ -77,7 +76,7 @@ TabPage::TabPage(QString name) : _name(name)
 	}
 //	loadFonts();
 	this->ui.zoom->setCurrentIndex(1);
-	_mode = DefaultMode;
+	SetModeTextSelect();
 }
 void TabPage::zoom(QString zoomscale)//later with how much pages, if all or not
 {
@@ -96,8 +95,9 @@ void TabPage::SetModeTextSelect()
 {
 	//bind widget to the page show
 	_mode = TextMode;	
-	_font = new FontWidget(this);
+	_font = new FontWidget(NULL);
 	loadFonts(_font);
+	_font->show();
 	connect(_font, SIGNAL(text(PdfOp)), this, SLOT(insertText(PdfOp)));
 	//show text button, hide everything else
 	if (_textList.empty())
@@ -163,6 +163,8 @@ void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit 
 	getAtPosition(ops,x,y); //zaplnili sme operator
 	//zistime, ze je to text
 	std::string n;
+	if (ops.empty())
+		return;
 	ops.back()->getOperatorName(n);
 	if (!typeChecker.isType(OpTextName,n))
 		return; //zoberieme iba posledny, vyditelny, ak siu na sebe
@@ -975,10 +977,9 @@ void TabPage::loadFonts(FontWidget* fontWidget)
 {
 	//dostanme vsetky fontu, ktore su priamov pdf. bohuzial musime cez vsetky pages
 	CPage::FontList fontList;
-	CPage::FontList fontList2; //TODO zistit, ci nie su redundatne
 	for ( int i = 1; i <= pdf->getPageCount(); i++ )
 	{
-		pdf->getPage(i)->getFontIdsAndNames(fontList2);
+		pdf->getPage(i)->getFontIdsAndNames(fontList);
 		//fontList.insert(fontList.end(), fontList2.begin(), fontList2.end());
 		for( CPage::FontList::iterator it = fontList.begin(); it!=fontList.end(); it++)
 		{
@@ -986,28 +987,11 @@ void TabPage::loadFonts(FontWidget* fontWidget)
 		}
 
 	}
-/*	//TODO spravit uniqu
-	int index = 0;
-	for ( int i = 0; i< fontList.size(); i++)
-	{
-		this->ui.fonts->insertItem(index,QString(fontList[i].second.c_str())); //druhe je basename
-		_fonts.push_back(TextFont(fontList[i].first)); //prve je name, ako bolo v dict, asi ho zobrazime
-		index++;
-	}
 	CPageFonts::SystemFontList flist = CPageFonts::getSystemFonts();
 	for ( CPageFonts::SystemFontList::iterator i = flist.begin(); i != flist.end(); i++ )
 	{
-		this->ui.fonts->insertItem(index, QString(i->c_str()));
-		index++;
+		fontWidget->addFont(*i,*i);
 	}
-	this->ui.fonts->insertSeparator(fontList.size());
-	//nacitame velkosti, ake moze nadobudat font
-	index =0;
-	for ( int i = 10; i< 40; i+=2)
-	{
-		QVariant q(i);
-		this->ui.fontsize->insertItem(0, q.toString(),q);
-	}*/
 }
 void TabPage::insertText( PdfOp op )
 {

@@ -3,6 +3,7 @@
 #define NO_CMAP
 #include "xpdf/GlobalParams.h"
 #undef NO_CMAP
+
 #include <kernel/pdfedit-core-dev.h>
 #include <kernel/cpdf.h>
 #include <kernel/cpage.h>
@@ -202,7 +203,6 @@ public:
 	void delAnnot(int i); //page to u seba upravi, aby ID zodpovedali
 
 	void changeText(std::string name, int size);//tazkopadne?
-	void handleBookMark(QTreeWidget * item, int col);
 	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
 	void handleAnnotation(int i);
 	void SetTextSelect();
@@ -258,6 +258,7 @@ public:
 	void rotateObjects(int angle);
 
 public slots:
+	void handleBookMark(QTreeWidget * item, int col);
 	void removeObjects();
 	void clicked(int x, int y);
 //	void updateSelectedRect( std::vector<shared_ptr<PdfOperator> > oops);

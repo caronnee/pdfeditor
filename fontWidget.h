@@ -24,7 +24,7 @@ public:
 	boost::shared_ptr<pdfobjects::PdfOperator> getFontOper(int size)
 	{	
 		pdfobjects::PdfOperator::Operands fontOperands;//TODO check poradie
-		fontOperands.push_back(boost::shared_ptr<pdfobjects::IProperty>(new pdfobjects::CName (fontId)) );
+		fontOperands.push_back(boost::shared_ptr<pdfobjects::IProperty>(new pdfobjects::CName ("Helvetica")) );
 		fontOperands.push_back(boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(size)));//velkost pismeno
 		return createOperator("Tf", fontOperands);
 	}
@@ -52,5 +52,6 @@ signals:
 	void text(PdfOp op);
 public slots:
 	void apply(); //on clicked
+void setValue(int angle);
 };
 #endif

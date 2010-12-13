@@ -166,9 +166,6 @@
        <widget class="QComboBox" name="zoom"/>
       </item>
       <item>
-       <widget class="QComboBox" name="fontsize"/>
-      </item>
-      <item>
        <widget class="QComboBox" name="Revision">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -177,9 +174,6 @@
          </sizepolicy>
         </property>
        </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="fonts"/>
       </item>
      </layout>
     </widget>
@@ -219,7 +213,4 @@
    </hints>
   </connection>
  </connections>
- <slots>
-  <slot>zoom(QString)</slot>
- </slots>
 </ui>

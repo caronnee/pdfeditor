@@ -13,77 +13,92 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
- <widget class="QTableWidget" name="tm">
-   <property name="rowCount">
-  	<number>6</number>
-   </property>
-   <property name="columnCount">
-  	<number>6</number>
-   </property>
-  </widget>
-  <widget class="QTextEdit" name="text">
-  </widget>
-  <widget class="QSpinBox" name="xPosition">
-   <property name="geometry">
-    <rect>
-     <x>90</x>
-     <y>80</y>
-     <width>42</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QSpinBox" name="yPosition">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>80</y>
-     <width>42</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QDial" name="rotation">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>30</y>
-     <width>50</width>
-     <height>64</height>
-    </rect>
-   </property>
-   <property name="maximum">
-    <number>359</number>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="fonts">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>190</y>
-     <width>69</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QDoubleSpinBox" name="scale">
-   <property name="geometry">
-    <rect>
-     <x>260</x>
-     <y>130</y>
-     <width>62</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="minimum">
-    <double>0.500000000000000</double>
-   </property>
-   <property name="value">
-    <double>1.000000000000000</double>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="fontsize">
-   <property name="geometry">
+  <layout class="QGridLayout" name = "fLayout">
+   <item row="0" column="0">
+    <widget class="QTableWidget" name="tm">
+     <property name="rowCount">
+  	<number>3</number>
+     </property>
+     <property name="columnCount">
+  	<number>3</number>
+      </property>
+     </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QTextEdit" name="text"/>
+   </item>
+   <item row="0" column="2">
+    <widget class="QSpinBox" name="xPosition">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>80</y>
+       <width>42</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QSpinBox" name="yPosition">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>80</y>
+       <width>42</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QDial" name="rotation">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>30</y>
+       <width>50</width>
+       <height>64</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>359</number>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QComboBox" name="fonts">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>190</y>
+       <width>69</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QDoubleSpinBox" name="scale">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>130</y>
+       <width>62</width>
+       <height>22</height>
+      </rect>
+     </property>
+    <property name="minimum">
+     <double>0.500000000000000</double>
+    </property>
+    <property name="value">
+     <double>1.000000000000000</double>
+    </property>
+    </widget>
+   </item>
+   <item row="1" column="4">
+    <widget class="QComboBox" name="fontsize">
+     <property name="geometry">
     <rect>
      <x>140</x>
      <y>190</y>
@@ -92,16 +107,20 @@
     </rect>
    </property>
   </widget>
-  <widget class="QComboBox" name="shape">
-   <property name="geometry">
-    <rect>
-     <x>160</x>
-     <y>140</y>
-     <width>69</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
+  </item>
+  <item row="1" column="0">
+     <widget class="QComboBox" name="shape">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>140</y>
+        <width>69</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+  </item>
+  <item row="1" column="1">
   <widget class="QPushButton" name="apply">
    <property name="geometry">
     <rect>
@@ -115,7 +134,22 @@
     <string>Apply</string>
    </property>
   </widget>
+  </item>
+  </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>apply</sender>
+   <signal>clicked()</signal>
+   <receiver>Properties</receiver>
+   <slot>apply()</slot>
+  </connection>
+  <connection>
+   <sender>rotation</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>Properties</receiver>
+   <slot>setValue(int)</slot>
+  </connection>
+ </connections>
 </ui>
