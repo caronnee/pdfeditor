@@ -60,13 +60,13 @@ void FontWidget::apply()
 	PdfOperator::Operands posOperands;
 	QVariant var = ui.tm->item(0,0)->data(0);
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
-	var = ui.tm->item(1,0)->data(0);
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
-	var = ui.tm->item(2,0)->data(0);
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
 	var = ui.tm->item(0,1)->data(0);
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
+	var = ui.tm->item(1,0)->data(0);
+	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
 	var = ui.tm->item(1,1)->data(0);
+	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
+	var = ui.tm->item(2,0)->data(0);
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
 	var = ui.tm->item(2,1)->data(0);
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));

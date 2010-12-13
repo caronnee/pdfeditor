@@ -74,7 +74,6 @@ TabPage::TabPage(QString name) : _name(name)
 		QVariant s(i);
 		this->ui.zoom->addItem( s.toString()+" %",s);
 	}
-//	loadFonts();
 	this->ui.zoom->setCurrentIndex(1);
 	SetModeTextSelect();
 }
@@ -155,6 +154,7 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 void TabPage::mouseReleased() //nesprav nic, pretoze to bude robit mouseMove
 {
 	_dataReady = false;//TODO tu som este nieco chcela
+	DEBUGLINE("ach jaj?");
 }
 void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit mouseMove
 {
@@ -169,6 +169,7 @@ void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit 
 	if (!typeChecker.isType(OpTextName,n))
 		return; //zoberieme iba posledny, vyditelny, ak siu na sebe
 	_dataReady = true;
+	DEBUGLINE("READY");
 	sTextIt = _textList.begin();
 	sTextItEnd = sTextIt;
 	setTextData(sTextIt,_textList.end(),ops.back());
@@ -214,6 +215,7 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y
 	//ak sme sa pohli dopredu, tak y je mensia ako posledne, popripade x vyssie
 	if (sTextItEnd->forward(x,y))
 	{
+		DEBUGLINE("forward");
 		//najdi ten operator, ktoreho sme sa dotkli
 		while (sTextItEnd->op != ops.back())
 		{
@@ -226,6 +228,7 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y
 	}
 	else //pohybujeme sa smerom dozadu
 	{
+		DEBUGLINE("before");
 		while (sTextItEnd->op != ops.back())
 		{
 			if (sTextItEnd == _textList.end())
@@ -987,11 +990,11 @@ void TabPage::loadFonts(FontWidget* fontWidget)
 		}
 
 	}
-	CPageFonts::SystemFontList flist = CPageFonts::getSystemFonts();
+/*	CPageFonts::SystemFontList flist = CPageFonts::getSystemFonts();
 	for ( CPageFonts::SystemFontList::iterator i = flist.begin(); i != flist.end(); i++ )
 	{
 		fontWidget->addFont(*i,*i);
-	}
+	}*/
 }
 void TabPage::insertText( PdfOp op )
 {

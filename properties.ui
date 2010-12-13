@@ -20,7 +20,10 @@
   	<number>3</number>
      </property>
      <property name="columnCount">
-  	<number>3</number>
+  	<number>2</number>
+      </property>
+     <property name="minimumWidth">
+  	<number>200</number>
       </property>
      </widget>
    </item>
