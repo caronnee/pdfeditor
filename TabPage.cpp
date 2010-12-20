@@ -21,6 +21,7 @@
 #include "insertpagerange.h"
 #include "tree.h"
 #include "bookmark.h"
+#include <float.h>
 
 void TabPage::handleBookMark(QTreeWidget * item, int col)
 {
@@ -103,7 +104,8 @@ void TabPage::SetModeTextSelect()
 	{
 		//get all pdf text operats in list
 		Ops ops;
-		page->getObjectsAtPosition( ops, displayparams.pageRect);
+		libs::Rectangle rect(0,0,FLT_MAX,FLT_MAX);
+		page->getObjectsAtPosition( ops, rect);
 		//choose just testiterator
 		Ops::iterator it = ops.begin();
 		while ( it != ops.end())
@@ -112,6 +114,7 @@ void TabPage::SetModeTextSelect()
 			(*it)->getOperatorName(n);
 			if (!typeChecker.isType(OpTextName,n))
 			{
+			//	DEBUGLINE(n);
 				it++;
 				continue;
 			}
@@ -120,11 +123,14 @@ void TabPage::SetModeTextSelect()
 			data.begin = data.end = 0;
 			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(data.op);
 			txt->getRawText(data.text);
+//			DEBUGLINE(data.text);
+			//getc(stdin);
 			data.rect = getRectangle(data.op);
 			_textList.push_back(data);
 			it++;
 		}
 		//sort list
+		_textList.sort();
 		dirty = true;
 	}
 }
@@ -154,7 +160,7 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 void TabPage::mouseReleased() //nesprav nic, pretoze to bude robit mouseMove
 {
 	_dataReady = false;//TODO tu som este nieco chcela
-	DEBUGLINE("ach jaj?");
+	DEBUGLINE("data released");
 }
 void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit mouseMove
 {
@@ -167,9 +173,9 @@ void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit 
 		return;
 	ops.back()->getOperatorName(n);
 	if (!typeChecker.isType(OpTextName,n))
-		return; //zoberieme iba posledny, vyditelny, ak siu na sebe
+		return; //zoberieme iba posledny, viditelny, ak su na sebe
 	_dataReady = true;
-	DEBUGLINE("READY");
+	DEBUGLINE("Operator found");
 	sTextIt = _textList.begin();
 	sTextItEnd = sTextIt;
 	setTextData(sTextIt,_textList.end(),ops.back());
@@ -219,6 +225,7 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y
 		//najdi ten operator, ktoreho sme sa dotkli
 		while (sTextItEnd->op != ops.back())
 		{
+			DEBUGLINE("int cycle : " << sTextItEnd->text);
 			if (sTextItEnd == _textList.end())
 				throw "neni v tree"; //TODO potom toto tu vymazat
 			sTextItEnd++;
@@ -486,13 +493,8 @@ void TabPage::setFromSplash()
 		}
 	}
 	delete[] p;
-	int x1,y1,x2,y2;
-
-	toPixmapPos( displayparams.pageRect.xleft, displayparams.pageRect.yleft, x1, y1 );
-	toPixmapPos( displayparams.pageRect.xright, displayparams.pageRect.yright, x2, y2 );
 	//image = image.scaled(QSize(max(x2,x1),max(y1,y2)));
 	labelPage->setImage(image);
-	QSize s = labelPage->size();
 	//image.save("mytest.bmp","BMP");
 	//this->ui.label->adjustSize();
 	updatePageInfoBar();

@@ -73,12 +73,12 @@ struct OperatorData
 		BBox b = oper.op->getBBox();
 		//cim vyssie je y, tym vyssie je na obrazovke, t.j. ty to bude prvsie
 		//ak je rozdiel moc maly v y osi, si na jednej lajne
-		int maxy = max(a.yleft, a.yright);
-		int opMaxy = max(a.yleft, a.yright);
+		float maxy = max(a.yleft, a.yright);
+		float opMaxy = max(b.yleft, b.yright);
 		
-		if (abs(maxy - opMaxy) > EPSILON_Y) //rozhodni podla y osi, cim mensi, tym blizsie
+		if (fabs(maxy - opMaxy) > EPSILON_Y) //rozhodni podla y osi, cim mensi, tym blizsie
 		{
-			return maxy - opMaxy > 0;
+			return maxy - opMaxy < 0;
 		}
 		maxy = min(a.xleft, a.xright);
 		opMaxy = min(b.xleft,b.xright);

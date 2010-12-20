@@ -69,5 +69,6 @@ void DisplayPage::mouseMoveEvent(QMouseEvent * event)
 
 void DisplayPage::mouseReleased(QMouseEvent * event)
 {
-	event->ignore(); //posun to parentovi
+//	event->ignore(); //posun to parentovi
+//emit MouseRelased(); //:)
 }
