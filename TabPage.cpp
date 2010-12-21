@@ -35,6 +35,9 @@ TabPage::TabPage(QString name) : _name(name)
 	ui.setupUi(this);
 	labelPage = new DisplayPage();
 	this->ui.scrollArea->setWidget(labelPage);
+	//hode verythind except...
+	this->ui.pageManipulation->hide();
+	this->ui.displayManipulation->hide();
 	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
 	dirty = false;
 
@@ -189,13 +192,13 @@ void TabPage::setTextData(TextData::iterator & it, TextData::iterator end,shared
 	}
 	throw "Unexpected operator, text is not present in tree, why, why? ";
 }
-void TabPage::highlightText(int x, int y) //tu mame convertle  x,y
+void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka ser space
 {
 	if (!_dataReady) //prvykrat, co sme dotkli nejakeho operatora
 	{
 		_region = QRegion(); //region je tie convertly
 		highLightBegin(x,y);
-		return;
+	//	return;
 	}
 	//highlightuj
 	//pohli sme sa na x, y
@@ -219,19 +222,32 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y
 	}//ideme vysvietit posledne. Ak je na tom mieste viacero textov, vysvietia sa podla toho, kde su v nasom liste, ale stene to bude fuj
 	//najdime teto operator
 	//ak sme sa pohli dopredu, tak y je mensia ako posledne, popripade x vyssie
+
+	libs::Rectangle b;
+	int x1, y1;
+	int x2, y2;
+	QColor color(255, 255, 40, 50);
 	if (sTextItEnd->forward(x,y))
 	{
 		DEBUGLINE("forward");
 		//najdi ten operator, ktoreho sme sa dotkli
 		while (sTextItEnd->op != ops.back())
 		{
-			DEBUGLINE("int cycle : " << sTextItEnd->text);
+	//		DEBUGLINE("int cycle : " << sTextItEnd->text);
 			if (sTextItEnd == _textList.end())
 				throw "neni v tree"; //TODO potom toto tu vymazat
+			b = sTextItEnd->op->getBBox();
+			toPixmapPos(b.xleft, b.yleft, x1,y1);
+			toPixmapPos(b.xright, b.yright, x2, y2);
+			labelPage->fillRect( x1, y1, x2, y2, color );
 			sTextItEnd++;
-			if (sTextItEnd!=sTextIt)
-				sTextItEnd->begin = 0;
-		}
+		}		
+		//part
+		b = sTextItEnd->op->getBBox();
+		toPixmapPos(b.xleft, b.yleft, x1,y1);
+		toPixmapPos(b.xright, b.yright, x2, y2);
+		labelPage->fillRect( min<float>(x1,x2), min<float>(y1,y2), x,max<float>(y1,y2), color );
+		return;
 	}
 	else //pohybujeme sa smerom dozadu
 	{
@@ -243,7 +259,9 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y
 			sTextItEnd--;
 			if (sTextItEnd!=sTextIt)
 				sTextItEnd->begin = 0;
+			_region |= sTextItEnd->rect;
 		}
+		_region |= sTextItEnd->rect;
 	}
 	//teraz zistime, co sme to vlastne spachali, t.j vysvietime to, co sme vysvietili povodne
 	//najskor budeme rata s tym, ze nebudeme pridavat pomocou ctrl:)
@@ -257,14 +275,10 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y
 	}
 	sTextItEnd->addToRegion(x);
 
-	//retapotrebujeme cely hilight vymazat //TODO to by sa malo zmenit, bo je to desne pomale
+	//teraz potrebujeme cely highlight vymazat //TODO to by sa malo zmenit, bo je to desne pomale
 	labelPage->unsetImg( );
-	while( first!=last)
-	{
-		QColor c(255,36,78);
-		labelPage->fillRect( first->region,c );
-		first ++;
-	}
+	QColor c(255,36,78,50);
+	labelPage->fillRect( _region, c );
 }
 void TabPage::getAtPosition(Ops& ops, int x, int y )
 {
@@ -328,11 +342,17 @@ QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
 	toPixmapPos(b.xleft, b.yleft, x1,y1);
 	toPixmapPos(b.xright, b.yright, x2, y2);
 //move according to page rotation
-	int angle = page->getRotation();
+	/*int angle = page->getRotation();
+
+	DEBUGLINE(y1);
+	DEBUGLINE(y2);
+	DEBUGLINE(angle);
 	rotatePosition(x1,y1,x1,y1, angle);
 	rotatePosition(x2,y2,x2,y2, angle);
-	r.setTop(max<float>(y1,y2));
-	r.setBottom(min<float>(y1,y2));
+	getc(stdin);*///TODO rotation when displaying
+	
+	r.setTop(min<float>(y1,y2));
+	r.setBottom(max<float>(y1,y2));
 	r.setLeft(min<float>(x1,x2));
 	r.setRight(max<float>(x1, x2));
 	return r;
