@@ -163,7 +163,7 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 void TabPage::mouseReleased() //nesprav nic, pretoze to bude robit mouseMove
 {
 	_dataReady = false;//TODO tu som este nieco chcela
-	DEBUGLINE("data released");
+	DEBUGLINE("Data released");
 }
 void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit mouseMove
 {
@@ -180,8 +180,8 @@ void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit 
 	_dataReady = true;
 	DEBUGLINE("Operator found");
 	sTextIt = _textList.begin();
-	sTextItEnd = sTextIt;
 	setTextData(sTextIt,_textList.end(),ops.back());
+	sTextItEnd = sTextIt;
 }
 void TabPage::setTextData(TextData::iterator & it, TextData::iterator end,shared_ptr< PdfOperator > op)
 {
@@ -196,9 +196,10 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 {
 	if (!_dataReady) //prvykrat, co sme dotkli nejakeho operatora
 	{
+		labelPage->unsetImg( );
 		_region = QRegion(); //region je tie convertly
 		highLightBegin(x,y);
-	//	return;
+		return;
 	}
 	//highlightuj
 	//pohli sme sa na x, y
@@ -226,7 +227,7 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 	libs::Rectangle b;
 	int x1, y1;
 	int x2, y2;
-	QColor color(255, 255, 40, 50);
+	QColor color(255,36,255,50);
 	if (sTextItEnd->forward(x,y))
 	{
 		DEBUGLINE("forward");
@@ -277,8 +278,9 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 
 	//teraz potrebujeme cely highlight vymazat //TODO to by sa malo zmenit, bo je to desne pomale
 	labelPage->unsetImg( );
-	QColor c(255,36,78,50);
+	QColor c(255,36,255,50);
 	labelPage->fillRect( _region, c );
+	_dataReady = false;
 }
 void TabPage::getAtPosition(Ops& ops, int x, int y )
 {
