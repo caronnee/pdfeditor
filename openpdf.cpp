@@ -13,11 +13,6 @@ OpenPdf::~OpenPdf(void)
 {
 }
 
-void OpenPdf::riseSel()
-{
-	TabPage * page = (TabPage *)this->widget(currentIndex());
-	page->riseSel();
-}
 void OpenPdf::getText()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());

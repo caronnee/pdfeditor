@@ -47,30 +47,58 @@ enum Mode
 //budeme predpokladat, ze vsetko toto je platne, ze sme to uz nastavili
 struct OperatorData
 {
-	int begin, end;//zaciatocne cisla dat, ktore boli vyznacene, kam sa pohnut
-	QRect rect; //rect boundingbox pre tento BBox, v nasich suradniciach
-	PdfOp op;
-	QRegion region; //tu ho netreba nastavovat, pretoze sa pri kazdej iteracii nastavi  osobne
-	std::string text; //jak bol text v tom, pripadne uprava o medzeru, prepisanie ma medzeru, ako konci -, odstranit
-	void setRegion()
+	double _begin, _end;
+	double _ymin, _ymax; 
+	PdfOp _op;
+	std::string _text; //jak bol text v tom, pripadne uprava o medzeru, prepisanie ma medzeru, ako konci -, odstranit
+	OperatorData(PdfOp op) : _begin(0), _end(0), _op(op)
 	{
-		float step = 1/ rect.width();
-		region = QRegion(step*begin+rect.x(),rect.y(),(end-begin)*step,rect.height()); //kedy nastavujeme egin na 0?
+		shared_ptr<TextSimpleOperator> txt = boost::dynamic_pointer_cast<TextSimpleOperator>(op);
+		txt->getRawText(_text);
+		libs::Rectangle r = _op->getBBox();
+		_ymin = min<double>(r.yleft, r.yright);
+		_ymax = max<double>(r.yleft, r.yright);
+		clear();
 	}
-	void addToRegion( int x ) //set selected..mozno to moze rovno emitovat?
+
+	void change()
 	{
-		//y nas nezauima, zostane stejne, [ptrebujeme iba vysku a to je bbox]
-		//chcem vidiet, odkial pokalial highlightit
-		//vzdy tu budem hadzat len to end, preotoze begin sa nastavuje len pre kliknutie
-		float part = (x - rect.y() )/rect.width();
-		end = text.length()*part; //FUJ
-		//daj to region subregion
-		setRegion();
+		double d = _begin;
+		_begin = _end;
+		_end = d;
+	}
+	void clear()
+	{
+		libs::Rectangle r = _op->getBBox();
+		_begin = min<float>(r.xleft,r.xright);
+		_end = max<float>(r.xleft,r.xright);
+	}
+	void restoreEnd()
+	{
+		double b = _begin;
+		clear();
+		_begin = b;
+	}
+	void set(int x,double &place)
+	{
+		clear();
+		float width( _end - _begin );
+		float oneLetterStep =  width/_text.size();
+		int letters = x / oneLetterStep;
+		place = letters * oneLetterStep;
+	}
+	void setBegin(int x)
+	{
+		set(x,_begin);
+	}
+	void setEnd(int x)
+	{
+		set(x,_end);
 	}
 	bool operator<(const OperatorData & oper) //zoradime podla y-osi
 	{
-		BBox a = op->getBBox();
-		BBox b = oper.op->getBBox();
+		BBox a = _op->getBBox();
+		BBox b = oper._op->getBBox();
 		//cim vyssie je y, tym vyssie je na obrazovke, t.j. ty to bude prvsie
 		//ak je rozdiel moc maly v y osi, si na jednej lajne
 		float maxy = max(a.yleft, a.yright);
@@ -86,10 +114,10 @@ struct OperatorData
 	}
 	bool forward(int x, int y)
 	{
-		BBox b = op->getBBox();
+		BBox b = _op->getBBox();
 		double maxY = max(b.yleft, b.yright);
 		double maxX = max(b.xleft, b.xright);
-		if (maxY +EPSILON_Y < y)
+		if (maxY + EPSILON_Y < y)
 			return true; //pohni sa smerom dopredu
 		if (maxY +EPSILON_Y > y)
 			return false;
@@ -199,12 +227,10 @@ private:
 
 public:
 
-	void createAnnot(AnnotType t, std::string * params, int count);
+	void createAnnot(AnnotType t, std::string * params);
 	void delAnnot(int i); //page to u seba upravi, aby ID zodpovedali
 
-	void changeText(std::string name, int size);//tazkopadne?
 	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
-	void handleAnnotation(int i);
 	void SetTextSelect();
 	void UnSetTextSelect();
 	TabPage(QString name);
@@ -235,18 +261,15 @@ private:
 	QString getFile(QFileDialog::FileMode flags = QFileDialog::AnyFile);
 
 	int x, y;
-	boost::shared_ptr<PdfOperator> findNearestFont(int x, int y);
 
 	void showClicked(int x, int y);
 public:	
-	void search(std::string text);
 	void getBookMarks(); //LATER, treba actions zisti, ako sa vykoavaju
 //	void changeImageProp(); // v selected mame images//LATER
 	void insertImage(int x, int y, const QImage & img);
 	//nastavi u page cakanie na skoncenie kreslenie ( nieco emitne:)
 	void draw();
 	void insertImageFile(int x, int y);
-	void riseSel();
 	void getText();
 	void wheelEvent( QWheelEvent * event ); 
 	void deletePage();
@@ -254,21 +277,14 @@ public:
 	void pageDown();
 	void savePdf(char * name);
 	//rotate page
-	void rotate(int i, int begin, int end);
-	void rotateObjects(int angle);
 
 public slots:
-	void handleBookMark(QTreeWidget * item, int col);
+	void handleBookMark(QTreeWidget * item);
 	void removeObjects();
 	void clicked(int x, int y);
 //	void updateSelectedRect( std::vector<shared_ptr<PdfOperator> > oops);
-//	void copyToClipBoard(); //from selected/ highlighted
-	void move(int difx, int dify); //on mouse event, called on mouse realease
 //	void selectOperators(const QRect rect, std::vector<shared_ptr<PdfOperator> > & opers) ;
 	//void setSelectedOperators(QRect rect);
-	void rotateText( int angle );
-	void replaceText( std::string what, std::string by);
-	void deleteText( std::string text);
 
 	void insertText( PdfOp op );
 
@@ -286,11 +302,11 @@ public slots:
 	//prints pdf
 	void print();
 
+	void rotate(int i, int begin, int end);
 private slots:
 	void zoom(QString zoomscale);
 	void initRevision(int revision);
 
-	void showTextAnnot(std::string name);
 	/// Inserts range of file from existing PDF
 	void insertPageRangeFromExisting();
 
@@ -304,4 +320,19 @@ private slots:
 
 	/// Revert revision
 	void revertRevision();
+//----------------------------------------------------------------------------------------------------	
+	/* To implement
+	void showTextAnnot(std::string name);
+	void replaceText( std::string what, std::string by);
+	void deleteText( std::string text);
+	void copyToClipBoard(); //from selected/ highlighted
+	void rotateObjects(int angle);
+	void handleAnnotation(int i);
+	void rotateText( int angle );
+	boost::shared_ptr<PdfOperator> findNearestFont(int x, int y);
+	void move(int difx, int dify); //on mouse event, called on mouse realease
+	void riseSel();
+	void changeText(std::string name, int size);//tazkopadne?
+	void search(std::string text);
+	*/
 };

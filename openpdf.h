@@ -13,8 +13,6 @@ public:
 
 public slots:
 
-	void riseSel();
-
 	// extracts text
 	void getText();
 
