@@ -100,7 +100,7 @@ void TabPage::SetModeTextSelect()
 	_mode = TextMode;	
 	_font = new FontWidget(NULL);
 	loadFonts(_font);
-	_font->show();
+//	_font->show();
 	connect(_font, SIGNAL(text(PdfOp)), this, SLOT(insertText(PdfOp)));
 	//show text button, hide everything else
 	if (_textList.empty())
@@ -214,57 +214,53 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 	//ideme vysvietit posledne. Ak je na tom mieste viacero textov, vysvietia sa podla toho, kde su v nasom liste, ale stene to bude fuj
 	//najdime teto operator
 	//ak sme sa pohli dopredu, tak y je mensia ako posledne, popripade x vyssie
-
 	libs::Rectangle b;
 	int x1, y1;
 	int x2, y2;
 	QColor color(255,36,255,50);
-	sTextItEnd->restoreEnd();
-	if (sTextItEnd->forward(x,y))
+	TextData::iterator first = sTextIt;
+	TextData::iterator last = sTextItEnd; 
+	sTextItEnd->restoreEnd(); //stetitEnd je ohybliva zalozka, nesmiem swichovat
+	double a1,b1;
+	toPdfPos(x, y, a1, b1);
+	bool forw = sTextItEnd->forward(a1,b1); //ajskor zisti, kde je koniec a kde zaciatok
+	if (!forw) //ak 
 	{
-		DEBUGLINE("forward");
-		//najdi ten operator, ktoreho sme sa dotkli
-		while (sTextItEnd->_op != ops.back())
-		{
-			if (sTextItEnd == _textList.end())
-				throw "neni v tree"; //TODO potom toto tu vymazat
-			b = sTextItEnd->_op->getBBox();
-			toPixmapPos(sTextItEnd->_begin, b.yleft, x1,y1);
-			toPixmapPos(sTextItEnd->_end, b.yright, x2, y2);
-			labelPage->fillRect( x1, y1, x2, y2, color );
-			sTextItEnd++;
-		}		
-		double a,b;
-		toPdfPos(x, y, a, b);
-		sTextItEnd->setEnd(a);
-		toPixmapPos(sTextItEnd->_begin, sTextItEnd->_ymin, x1,y1);
-		toPixmapPos(sTextItEnd->_end, sTextItEnd->_ymax, x2, y2);
-		labelPage->fillRect( x1, y1, x2, y2, color );
-		return;
+		labelPage->unsetImg();
 	}
-	else //pohybujeme sa smerom dozadu
+	while (sTextItEnd->_op != ops.back())
 	{
-		DEBUGLINE("before");
-		return;
-		while (sTextItEnd->_op != ops.back())
+		if (sTextItEnd == _textList.end())
+			throw "neni v tree"; //TODO potom toto tu vymazat
+		inDirection(sTextItEnd, forw);
+	}		
+	//nasli sme oparator, na ktorom to zasekneme
+	//mame spravne range opratorov
+	{ 
+		sTextItEnd->setEnd(a1);
+		sTextItEnd->change(forw);
+		sTextIt->change(!forw);
+	}
+	{	//vykreslenie
+		forw = (*sTextIt) < (*sTextItEnd);
+		while (true)
 		{
+			toPixmapPos(first->_begin, first->_ymin, x1,y1);
+			toPixmapPos(first->_end, first->_ymax, x2, y2);
+			labelPage->fillRect( x1, y1, x2, y2, color );
+			if (first == sTextItEnd)
+				break;
+			inDirection(first, forw);
 		}
 	}
-	//teraz zistime, co sme to vlastne spachali, t.j vysvietime to, co sme vysvietili povodne
-	//najskor budeme rata s tym, ze nebudeme pridavat pomocou ctrl:)
-	TextData::iterator first = sTextIt;
-	TextData::iterator last = sTextItEnd; //TODO opravit na to, aby s dam davali aj medzery a pod, mozno by stacil upravit BBox, rozirit a dat do stromu
-	if( *first < *last)
-	{
-		TextData::iterator p = first;
-		first = last;
-		last = p; //zmenili mse
-		first->change();
-		last->change();
-	}
-	//sTextItEnd->addToRegion(x);
-	//teraz potrebujeme cely highlight vymazat //TODO to by sa malo zmenit, bo je to desne pomale
 	_dataReady = false;
+}
+void TabPage::inDirection(TextData::iterator& iter, bool forward)
+{
+	if (forward)
+		iter++;
+	else 
+		iter--;
 }
 void TabPage::getAtPosition(Ops& ops, int x, int y )
 {

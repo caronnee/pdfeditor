@@ -25,6 +25,7 @@
 #include <list>
 #include <QTreeWidgetItem>
 #include "typedefs.h"
+#include "debug.h"
 
 using namespace boost;
 using namespace pdfobjects;
@@ -58,20 +59,32 @@ struct OperatorData
 		libs::Rectangle r = _op->getBBox();
 		_ymin = min<double>(r.yleft, r.yright);
 		_ymax = max<double>(r.yleft, r.yright);
-		clear();
+		_begin = min<float>(r.xleft,r.xright);
+		_end = max<float>(r.xleft,r.xright);
 	}
-
-	void change()
+	void change(bool from_beg)
 	{
-		double d = _begin;
-		_begin = _end;
-		_end = d;
+		double b = _begin;
+		double e = _end;
+		clear();
+		double subs = (b==_begin)? e:b;
+		if (from_beg)
+			_end = subs;
+		else
+			_begin = subs;
+
 	}
 	void clear()
 	{
 		libs::Rectangle r = _op->getBBox();
 		_begin = min<float>(r.xleft,r.xright);
 		_end = max<float>(r.xleft,r.xright);
+	}
+	void restoreBegin()
+	{
+		double b = _end;
+		clear();
+		_end = b;
 	}
 	void restoreEnd()
 	{
@@ -87,6 +100,14 @@ struct OperatorData
 		int letters = x / oneLetterStep;
 		place = letters * oneLetterStep;
 	}
+	void setMark(int x, bool beg)
+	{
+		if (beg)
+			setBegin(x);
+		else
+			setEnd(x);
+	}
+
 	void setBegin(int x)
 	{
 		set(x,_begin);
@@ -97,32 +118,23 @@ struct OperatorData
 	}
 	bool operator<(const OperatorData & oper) //zoradime podla y-osi
 	{
-		BBox a = _op->getBBox();
 		BBox b = oper._op->getBBox();
 		//cim vyssie je y, tym vyssie je na obrazovke, t.j. ty to bude prvsie
 		//ak je rozdiel moc maly v y osi, si na jednej lajne
+		return forward( b.xleft, b.yleft);
+	}
+	bool forward (double x, double y)
+	{
+		BBox a = _op->getBBox();
 		float maxy = max(a.yleft, a.yright);
-		float opMaxy = max(b.yleft, b.yright);
-		
-		if (fabs(maxy - opMaxy) > EPSILON_Y) //rozhodni podla y osi, cim mensi, tym blizsie
+
+		DEBUGLINE(maxy << " " <<y <<" "<<fabs(maxy - y));
+		if (fabs(maxy - y) > EPSILON_Y) //rozhodni podla y osi, cim mensi, tym blizsie
 		{
-			return maxy - opMaxy < 0;
+			return maxy - y < 0;
 		}
 		maxy = min(a.xleft, a.xright);
-		opMaxy = min(b.xleft,b.xright);
-		return maxy < opMaxy;
-	}
-	bool forward(int x, int y)
-	{
-		BBox b = _op->getBBox();
-		double maxY = max(b.yleft, b.yright);
-		double maxX = max(b.xleft, b.xright);
-		if (maxY + EPSILON_Y < y)
-			return true; //pohni sa smerom dopredu
-		if (maxY +EPSILON_Y > y)
-			return false;
-		//ak je na stejnej lajne cca, checkneme x
-		return maxX < x;
+		return maxy < x;
 	}
 };
 typedef std::list<OperatorData> TextData;
@@ -224,6 +236,7 @@ private: //variables
 private:
 	void toPdfPos(int x, int y, double & x1, double &y1);
 	void toPixmapPos(double x1, double y1, int & x, int & y);
+	void inDirection(TextData::iterator & it, bool forw);
 
 public:
 
