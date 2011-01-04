@@ -128,13 +128,33 @@ struct OperatorData
 		BBox a = _op->getBBox();
 		float maxy = max(a.yleft, a.yright);
 
-		DEBUGLINE(maxy << " " <<y <<" "<<fabs(maxy - y));
 		if (fabs(maxy - y) > EPSILON_Y) //rozhodni podla y osi, cim mensi, tym blizsie
 		{
 			return maxy - y < 0;
 		}
+
 		maxy = min(a.xleft, a.xright);
 		return maxy < x;
+	}
+	//split odla toho, ako sme to vysvietili
+	void split(std::string & split1, std::string split2, std::string split3)
+	{
+		BBox a = _op->getBBox();
+		int part = abs((a.xleft - a.xright)/( _begin- (min(a.xright,a.xleft))));
+		int part2 = abs((a.xleft - a.xright)/(_end - _begin));
+		split1=_text.substr(0,part);
+		split2=_text.substr(part, part2);
+		split3=_text.substr(part2, _text.size());
+	}
+	void replaceAllText(std:string s)
+	{
+		PdfOperator::Operands ops;
+		ops.push_back(shared_ptr<IProperty>(new CString(s.c_str())));
+		PdfOp p = createOperator("Tj",ops);
+		_op->getContentStream()->replaceOperator(_op);
+		_op = p;
+		_text = s;
+		clear();
 	}
 };
 typedef std::list<OperatorData> TextData;
@@ -228,7 +248,8 @@ private: //variables
 	TextData::iterator sTextIt;
 	TextData::iterator sTextItEnd; //kde ten iterator konci
 	bool _dataReady; //pouzivane vseobecne, kedy sa to hodi
-	bool dirty;
+	bool _selected;
+
 	//TODO mat este jeden iterator Actual, aby sa to stale neprekreslovalo cele
 	Ops workingOpSet;//zavisla na prave zobrazenej stranke
 	CPage::Annotations _annots;
@@ -253,6 +274,7 @@ public:
 	void SetModeTextSelect();
 	void highLightBegin(int x, int y); //nesprav nic, pretoze to bude robit mouseMove
 	void highlightText(int x, int y); //tu mame convertle  x,y
+	void changeSelectedText(); //zmeni vytbrane operatory ( ide o poziciu)
 
 private:
 	void setAnnotations();
@@ -348,4 +370,6 @@ private slots:
 	void changeText(std::string name, int size);//tazkopadne?
 	void search(std::string text);
 	*/
+signals:
+	void pdfText(std::string s);
 };

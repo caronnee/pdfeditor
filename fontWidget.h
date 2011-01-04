@@ -40,6 +40,7 @@ public:
 	FontWidget(QWidget * parent);
 	FontWidget(const FontWidget & font);
 	~FontWidget();
+	void addText(std::string s);
 	// set
 	void addFont(std::string name, std::string value);
 	//gets

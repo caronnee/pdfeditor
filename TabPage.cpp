@@ -39,7 +39,6 @@ TabPage::TabPage(QString name) : _name(name)
 	this->ui.pageManipulation->hide();
 	this->ui.displayManipulation->hide();
 	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
-	dirty = false;
 
 	acceptedAnotName.push_back("Link");
 	acceptedAnotName.push_back("Text");
@@ -127,7 +126,6 @@ void TabPage::SetModeTextSelect()
 		}
 		//sort list
 		_textList.sort();
-		dirty = true;
 	}
 }
 void TabPage::UnSetTextSelect()
@@ -254,6 +252,50 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 		}
 	}
 	_dataReady = false;
+	_selected =  true;
+}
+void TabPage::changeSelectedText() //len pre texty zatial
+{
+	//zistime, ci oili vobec nieco vybrane
+	if (!_selected) //spravne nastavene 
+		return;
+	//ostran z listu
+	TextData::iterator first = sTextIt; 
+	TextData::iterator last = sTextItEnd; 
+	bool forw = (*sTextIt) < (*sTextItEnd);
+	if (!forw)
+	{
+		first = sTextItEnd;
+		last = sTextIt;
+	}
+	std::string s1,s2,s3,s4;
+	//pred kazdy musime dat nove td, alebo pre tym nove Q a deti
+	//problem je, e to moze by tiez cast - jedna sa len o prve a posledne. To zmazeme, ponechame cast a insterime znova
+	_selected = false;
+	if (first==last)
+	{ //sprav to same len s jednym iteratorom
+		//treba ho rozdelit na niekolko operatorov. Jelikoz je to jeden, tak na tri
+		_first->replaceText(s1);
+		_font->addText(s2);
+		//restore potrubuejm pravit poziciu-> pridattd
+		PdfOperator::Operands operands;
+		operands.push_back(new CReal(first->_end)); 
+		operands.push_back(new CReal(first->_maxy)); //to vyjde pretoze v ramci jedneho tj nemoze byt viac 
+		PdfOperator p = createOperator("td",operands);
+		_font->addText(s3);
+		return;
+	}
+	first->split(s1,s2,s3);	//zajima nas iba s2 -> od begin po edn
+	first->replaceText(s1);
+	_font->addText(s2); //ak ide len o otacanie? -> pohyb o nula
+	while (first!=last)
+	{
+		//TODO
+		first++;
+	}
+	last->split(s1,s3,s4); //last je end
+	//nahrad kazdy operator s novym td
+
 }
 void TabPage::inDirection(TextData::iterator& iter, bool forward)
 {
@@ -823,6 +865,9 @@ void TabPage::insertText( PdfOp op )
 	ops.push_back(op);
 	page->addContentStreamToBack(ops);
 	setFromSplash();
+	OperatorData data(op);
+	_textList.push_back(data);
+	_textList.sort();
 }
 
 //slot
@@ -834,25 +879,11 @@ void TabPage::getText()//get text from page
 	std::vector<shared_ptr<CContentStream> > streams;
 	page->getContentStreams(streams);
 	std::string tmp ="";
-	for ( size_t i =0; i < streams.size(); i++ )
+	TextData::iterator it = _textList.begin();
 	{
-		Ops ops;
-		streams[i]->getPdfOperators(ops);
-		TextOperatorIterator it = PdfOperator::getIterator<TextOperatorIterator> (ops.front());	
-		while(!it.isEnd())
-		{
-			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(it.getCurrent());
-			std::string s;
-			txt->getRawText(s);//bacha na t, ze to moze byt te lomitkova a hexadec repr..alebo nie?
-			tmp+= s;
-			BBox box = it.getCurrent()->getBBox();
-			b.xright = max(max(box.xright,box.xleft),b.xright);
-			b.xleft = max(max(box.xleft,box.xright),b.xleft);
-			b.yright = max(max(box.yright,box.yleft),b.yright);
-			b.yleft = max(max(box.yleft,box.yright),b.yleft);
-			it.next();
-		}
+		tmp+=it->_text;
 	}
+	emit pdfText(tmp);
 //	std::cout << tmp << std::endl; //show new box
 }
 /*
