@@ -23,6 +23,10 @@
 #include "bookmark.h"
 #include <float.h>
 
+//operators to be cloned
+std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","cs", "SC","SCN", "sc","scn", "G","g","RG","rg","k","K",
+	"Tc","Tw", "Tz", "TL", "Tf","Tr","Ts","Td","TD","Tm","T*" };
+
 void TabPage::handleBookMark(QTreeWidget * item)
 {
 	page = pdf->getPage(((Bookmark *)(item))->getDest());
@@ -254,9 +258,17 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 	_dataReady = false;
 	_selected =  true;
 }
-void TabPage::changeSelectedText() //len pre texty zatial
+PdfOp TabPage::createTranslationTd(double x, double y)
 {
-	//zistime, ci oili vobec nieco vybrane
+	PdfOperator::Operands ops;
+	ops.push_back(boost::shared_ptr<IProperty>(new CReal(x)));
+	ops.push_back(boost::shared_ptr<IProperty>(new CReal(y)));
+	return createOperator("Td",ops);
+}
+//zatial len v ramci jednej stranky
+void TabPage::moveText(int difX, int difY) //on mouse event, called on mouse realease
+{
+	//for each selected operator, move it accrding to position
 	if (!_selected) //spravne nastavene 
 		return;
 	//ostran z listu
@@ -269,33 +281,52 @@ void TabPage::changeSelectedText() //len pre texty zatial
 		last = sTextIt;
 	}
 	std::string s1,s2,s3,s4;
-	//pred kazdy musime dat nove td, alebo pre tym nove Q a deti
 	//problem je, e to moze by tiez cast - jedna sa len o prve a posledne. To zmazeme, ponechame cast a insterime znova
 	_selected = false;
 	if (first==last)
 	{ //sprav to same len s jednym iteratorom
 		//treba ho rozdelit na niekolko operatorov. Jelikoz je to jeden, tak na tri
-		_first->replaceText(s1);
-		_font->addText(s2);
-		//restore potrubuejm pravit poziciu-> pridattd
-		PdfOperator::Operands operands;
-		operands.push_back(new CReal(first->_end)); 
-		operands.push_back(new CReal(first->_maxy)); //to vyjde pretoze v ramci jedneho tj nemoze byt viac 
-		PdfOperator p = createOperator("td",operands);
-		_font->addText(s3);
+		double b = first->_begin;
+		double e = first->_end;
+		first->replaceAllText(s1); //netreba nic mazat, je prave jedno
+		createAddMoveString(first->_op,e+difX,first->_ymax+difY,s3);
+		createAddMoveString(first->_op,b+difX,first->_ymax+difY,s2);
 		return;
 	}
-	first->split(s1,s2,s3);	//zajima nas iba s2 -> od begin po edn
-	first->replaceText(s1);
-	_font->addText(s2); //ak ide len o otacanie? -> pohyb o nula
+	first->split(s1,s2,s3);	//zajima nas iba s2 -> od begin po end, s3 bude prazdna
+	float x = first->_begin , y=first->_ymax;
+	first->replaceAllText(s1); //tuto sa to pomeni
+	last->replaceAllText(s3);
+	last->split(s1,s3,s4); //last je end
+	createAddMoveString(first->_op,last->_begin+difX,last->_ymax+y,s2);
 	while (first!=last)
 	{
-		//TODO
-		first++;
+		PdfOp o = createTranslationTd(x+difX, y+difY);
+		insertBefore(o, last->_op);
+		last--;
+		x = last->_begin;
+		y = last->_ymax;
 	}
-	last->split(s1,s3,s4); //last je end
-	//nahrad kazdy operator s novym td
+	createAddMoveString(first->_op,first->_begin+difX,first->_ymax+y,s2);
 
+	_textList.sort();
+}
+void TabPage::insertBefore(PdfOp op, PdfOp before)
+{
+	PdfOp clone = before->clone();
+	before->getContentStream()->replaceOperator(before,op);	
+	op->getContentStream()->insertOperator(op,clone);	
+}
+void TabPage::createAddMoveString(PdfOp bef, double x, double y, std::string name)
+{
+	PdfOperator::Operands ops;
+	ops.push_back(boost::shared_ptr<IProperty> (new CName(name)));
+	PdfOp p = createOperator("tj",ops);
+	bef->getContentStream()->insertOperator(bef,p);
+	OperatorData d(p);
+	_textList.push_back(d);
+	PdfOp op = createTranslationTd(x,y);
+	bef->getContentStream()->insertOperator(bef,p);	
 }
 void TabPage::inDirection(TextData::iterator& iter, bool forward)
 {
@@ -774,7 +805,7 @@ void TabPage::print()
 
 void TabPage::draw() //change mode to drawing
 {
-//	this->ui.content->beginDraw();
+//	this->ui.content->_beginDraw();
 	_mode = DrawMode;
 }
 //na kazdej stranke mozu byt anotacie, po kliknuti na ne vyskoci pop-up alebo sa inak spravi akcia
@@ -1051,15 +1082,7 @@ boost::shared_ptr<PdfOperator> TabPage::findNearestFont(int x, int y)
 	}
 	return fontOper;
 }
-void TabPage::move(int x, int y) //on mouse event, called on mouse realease
-{
-	//for each selected operator, move it accrding to position
-	for ( size_t i =0; i< workingOpSet.size(); i++)
-	{
-		//u textov nastavime Td
-		
-	}
-}
+
 //slot
 void TabPage::riseSel()
 {
@@ -1111,7 +1134,7 @@ void TabPage::search(std::string text)
 	//mame posledny operator
 	TextData::iterator beg = it;
 	it->end = end;
-	it->begin = 0;
+	it->_begin = 0;
 
 	int sum = t.getSize();
 	//chod dozadu az sum nebude 0
@@ -1119,13 +1142,13 @@ void TabPage::search(std::string text)
 	{
 		sum-= beg->text.length();
 		beg--;
-		beg->begin = 0;
+		beg->_begin = 0;
 		beg->end=beg->text.length();
 	}
 	if (sum <= 0)
-		beg->begin = beg->end+sum;
+		beg->_begin = beg->end+sum;
 	else
-		beg->begin = 0;
+		beg->_begin = 0;
 	beg->setRegion(); //setne vzhladom na begin, end
 	while (beg!=it)
 	{

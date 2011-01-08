@@ -41,9 +41,9 @@ FontWidget::FontWidget(const FontWidget & font) : QWidget(font.parentWidget())
 }
 void FontWidget::addFont(std::string name, std::string val)
 {
-	QVariant q(name.c_str());
+	QVariant q(name.c_str()); //TODO convert to more understable font name
 	ui.fonts->insertItem(ui.fonts->count(),q.toString(),q); //Qvariant?
-	_fonts.push_back(name);
+	_fonts.push_back(val);
 }
 FontWidget::~FontWidget() { }
 void FontWidget::addText(std::string txt)

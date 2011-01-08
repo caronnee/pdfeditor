@@ -146,12 +146,12 @@ struct OperatorData
 		split2=_text.substr(part, part2);
 		split3=_text.substr(part2, _text.size());
 	}
-	void replaceAllText(std:string s)
+	void replaceAllText(std::string s)
 	{
 		PdfOperator::Operands ops;
 		ops.push_back(shared_ptr<IProperty>(new CString(s.c_str())));
 		PdfOp p = createOperator("Tj",ops);
-		_op->getContentStream()->replaceOperator(_op);
+		_op->getContentStream()->replaceOperator(_op,p);
 		_op = p;
 		_text = s;
 		clear();
@@ -275,6 +275,11 @@ public:
 	void highLightBegin(int x, int y); //nesprav nic, pretoze to bude robit mouseMove
 	void highlightText(int x, int y); //tu mame convertle  x,y
 	void changeSelectedText(); //zmeni vytbrane operatory ( ide o poziciu)
+
+	PdfOp createTranslationTd(double x, double y);
+	void moveText(int difX, int difY);
+	void insertBefore(PdfOp op, PdfOp before);
+	void createAddMoveString(PdfOp bef, double x, double y, std::string name);
 
 private:
 	void setAnnotations();
