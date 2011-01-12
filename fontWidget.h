@@ -40,7 +40,7 @@ public:
 	FontWidget(QWidget * parent);
 	FontWidget(const FontWidget & font);
 	~FontWidget();
-	void addText(std::string s);
+	PdfOp addText(std::string s);
 	// set
 	void addFont(std::string name, std::string value);
 	//gets
@@ -53,6 +53,6 @@ signals:
 	void text(PdfOp op);
 public slots:
 	void apply(); //on clicked
-void setValue(int angle);
+	void setValue(int angle);
 };
 #endif

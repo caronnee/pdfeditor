@@ -902,7 +902,51 @@ void TabPage::insertText( PdfOp op )
 }
 
 //slot
+void TabPage::changeText() 
+{
+	//mame vyznaceny beginiter a end string
+	Ops matrix;
+	TextData::iterator first,last;
+	if (*first < *last) //switchneme
+	{
+		first = sTextItEnd;
+		last = sTextIt;
+	}
+	else
+	{
+		last = sTextItEnd;
+		first = sTextIt;
+	}
+	if ( first == last ) //nemenime poziciu!//Len ke je to v jednom operatore
+	{
+		//vyberieme, vytvorime nove BT, nastavime nove atributy a nebudeme sa s tym hrajkat
+		std::string s1,s2,s3;
+		first->split(s1,s2,s3); //splitneme
+		double beg = first->_begin;
+		double end = first->_end;
+		PdfOp par; 
+		findCompositeOfPdfOperator(PdfOperator::getIterator(first->_op),par);
+		{
+			//copy all parameters 
+			std::list<PdfOp> opers;
+			par->getChildren(opers);
+			
+		}
+		PdfOp td1 = createTranslationTd(beg, first->_ymax);
 
+		PdfOp td2 = createTranslationTd(end, first->_ymax);
+		PdfOperator::Operands operands;
+		operands.push_back(shared_ptr<IProperty>(new CName(s3)));
+		PdfOp o2 =createOperator("Tj", operands);
+		first->_op->getContentStream()->insertOperator(first->_op,o2);
+		first->_op->getContentStream()->insertOperator(first->_op,td2);
+
+//		par->getContentStream()->insertOperator(par, );
+		
+		first->replaceAllText(s1);
+		first++;
+	}
+}
 void TabPage::getText()//get text from page
 {
 	BBox b;
@@ -1106,17 +1150,7 @@ void TabPage::riseSel()
 	}
 
 }
-void TabPage::changeText(std::string name, int size) //toto bude vlastnostiach(dialog)
-{
-	//mame vyznaceny beginiter a end string
-	Ops matrix;
-	TextData::iterator it = sTextIt;
-	while ( it!= sTextItEnd )
-	{
-		//
-		it++;
-	}
-}
+
 void TabPage::search(std::string text)
 {
 	TextData::iterator it = _textList.begin();

@@ -46,7 +46,7 @@ void FontWidget::addFont(std::string name, std::string val)
 	_fonts.push_back(val);
 }
 FontWidget::~FontWidget() { }
-void FontWidget::addText(std::string txt)
+PdfOp FontWidget::addText(std::string txt)
 {
 	//vytvor BT, ET 
 	shared_ptr<UnknownCompositePdfOperator> q(new UnknownCompositePdfOperator("q", "Q"));
@@ -78,13 +78,13 @@ void FontWidget::addText(std::string txt)
 	PdfOperator::Operands emptyOperands;
 	BT->push_back(createOperator("ET", emptyOperands), getLastOperator(BT));
 	q->push_back(createOperator("Q", emptyOperands), getLastOperator(q));
-	emit text(q);
+	return q;
 }
 void FontWidget::apply()
 {	
 	QString s =this->ui.text->toPlainText();
 	std::string txt(s.toAscii().data());
-	addText(txt);
+	emit text(addText(txt));
 }
 void FontWidget::setValue(int angle)
 {

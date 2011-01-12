@@ -280,6 +280,7 @@ public:
 	void moveText(int difX, int difY);
 	void insertBefore(PdfOp op, PdfOp before);
 	void createAddMoveString(PdfOp bef, double x, double y, std::string name);
+	void changeText();
 
 private:
 	void setAnnotations();
