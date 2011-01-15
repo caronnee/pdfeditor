@@ -917,35 +917,81 @@ void TabPage::changeText()
 		last = sTextItEnd;
 		first = sTextIt;
 	}
-	if ( first == last ) //nemenime poziciu!//Len ke je to v jednom operatore
+	//vyberieme, vytvorime nove BT, nastavime nove atributy a nebudeme sa s tym hrajkat
+	std::string s1,s2,s3;
+	double beg = first->_begin;
+	double end = first->_end;
+	first->split(s1,s2,s3); //splitneme
+	first->replaceAllText(s1);
+	
+	// v s3 je to, co ma vo firste zostat, s2 je to, co menime, s1 je to, co menime v laste. ak je
+	//proste sme to zarotovali:)
+	if ( first==last ) //TODO co ak je s3 prazdne? -> Compact?:)
 	{
-		//vyberieme, vytvorime nove BT, nastavime nove atributy a nebudeme sa s tym hrajkat
-		std::string s1,s2,s3;
-		first->split(s1,s2,s3); //splitneme
-		double beg = first->_begin;
-		double end = first->_end;
-		PdfOp par; 
-		findCompositeOfPdfOperator(PdfOperator::getIterator(first->_op),par);
-		{
-			//copy all parameters 
-			std::list<PdfOp> opers;
-			par->getChildren(opers);
-			
-		}
-		PdfOp td1 = createTranslationTd(beg, first->_ymax);
-
 		PdfOp td2 = createTranslationTd(end, first->_ymax);
 		PdfOperator::Operands operands;
 		operands.push_back(shared_ptr<IProperty>(new CName(s3)));
-		PdfOp o2 =createOperator("Tj", operands);
+		PdfOp o2 = createOperator("Tj", operands);
 		first->_op->getContentStream()->insertOperator(first->_op,o2);
-		first->_op->getContentStream()->insertOperator(first->_op,td2);
-
-//		par->getContentStream()->insertOperator(par, );
-		
-		first->replaceAllText(s1);
+		OperatorData d(o2);
+		_textList.push_back(d);
+		insertTextAfter(first->_op, beg, first->_ymax, s2);
+		_textList.sort();
+		return;
+	}//alltext replaced, mame end
+	{
+		std::string a,b,c;
+		last->split(a,b,c);
+		end= last->_end;
+		s1 = a;
+		last->replaceAllText(b);
+	}
+	insertTextAfter(last->_op,end,last->_ymax,s3);
+	first ++; //prvy sme us presli
+	TextData::iterator i = first;
+	while (first!=last)//iba pre TJ pridame operatory, vsetky, co boli zadane
+	{
+		insertTextAfter(first->_op,first->_begin, first->_ymax, first->_text);
+		first->_op->getContentStream()->deleteOperator(first->_op,true);
 		first++;
 	}
+	_textList.erase(i,last);
+	_textList.sort();
+}
+
+void TabPage::insertTextAfter(PdfOp opBehind, double td, double ymax, std::string s)
+{
+	std::list<PdfOp> ops;
+	opBehind->getContentStream()->getPdfOperators(ops);
+	PdfOperator::Iterator iter(PdfOperator::getIterator(ops.front()));
+	shared_ptr<pdfobjects::CompositePdfOperator> comp = findCompositeOfPdfOperator(iter,opBehind);
+	_font->createBT();
+	std::list<PdfOp> children;
+	comp->getChildren(children);
+	std::list<PdfOp>::iterator it = children.begin();
+	while (*it != opBehind)
+	{
+		std::string n;
+		(*it)->getOperatorName(n);
+		if ( typeChecker.isType(OpTextName,n))
+		{
+			it ++;
+			continue;
+		}
+		_font->addToBT((*it)->clone()); //no tak tam bt viac klonov, no:) ked tak do samostatnej listy a pri TJ sa to deletne
+		it++;
+	}
+	_font->addParameters();
+	PdfOp td1 = createTranslationTd(td, ymax);
+	_font->addToBT(td1);
+	//daj tam text
+	{
+		PdfOperator::Operands ops;
+		ops.push_back(shared_ptr<IProperty>(new CName(s)));
+		PdfOp tj = createOperator("Tj", ops);
+		_font->addToBT(tj);
+	}
+	comp->getContentStream()->insertOperator(comp, _font->createET());
 }
 void TabPage::getText()//get text from page
 {
@@ -1078,53 +1124,6 @@ void TabPage::rotateObjects(int angle) //vsetky objekty wo workingOpSet
 		}
 
 	}
-}
-void TabPage::rotateText(int angle) //there can be text or image objects
-{
-	//for all selected operator, rotate, but just t
-	for ( size_t i =0; i < workingOpSet.size(); i++)
-	{
-		if (!isTextOp(workingOpSet[i]))
-			continue;
-		//we have TJ, remove object from parent, create new at same position, but anothe rotate, otherwise we could alter also another text
-		//get textMatrix
-		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(workingOpSet[i]);
-		std::string s; 
-		txt->getRawText(s);
-		BBox b = txt->getBBox();
-
-		parent->remove(workingOpSet[i]); //remove from parent, linearizator will remove empty operators
-		workingOpSet[i] = insertText(min(b.xLeft,b.xRight),min(b.yLeft,b.yRight),s, angle);
-		
-	}
-}
-boost::shared_ptr<PdfOperator> TabPage::findNearestFont(int x, int y)
-{
-	boost::shared_ptr<PdfOperator> fontOper;
-	std::vector<boost::shared_ptr<CContentStream> > ccs;
-	page->getContentStreams(ccs);
-	int dist = 100000;
-	for ( size_t i =0; i< ccs.size(); i++)
-	{
-		std::vector<boost::shared_ptr<PdfOperator> > op;
-		ccs[i]->getPdfOperators(op);
-		for (int j = 0; j < op.Size(); j++)
-		{
-			if (tolower(op[j]->getName()) != "tf")
-				continue;
-			//mame font, zistime jeho vzdialenost
-			iBBox b = op[j]->BBox();
-			float pom = b.xLext-x;
-			float pom2 = b.xLeft - y;
-			if (pom2 >=0 && pom >x)
-				continue;
-			if ( pom*pom + pom2*pom2 > dist )
-				continue;
-			dist = pom*pom + pom2*pom2;
-			fontOper = op[j]; //closest
-		}
-	}
-	return fontOper;
 }
 
 //slot

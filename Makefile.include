@@ -29,7 +29,7 @@ LIBS += -L/usr/local/lib/pdfedit-0.4.5/utils/ \
 -lkernel -lutils -lfofi -lGoo -lsplash -lxpdf \
 -lkernel -lutils -lfofi -lGoo -lsplash -lxpdf \
 -lkernel -lutils -lfofi -lGoo -lsplash -lxpdf \
--lfreetype -lt1
+-lfreetype
 
 CFLAGS += -g
 CXXFLAGS += -g

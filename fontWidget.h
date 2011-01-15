@@ -15,6 +15,8 @@
 #undef fontItalic 
 #include "ui_properties.h"
 
+typedef boost::shared_ptr<pdfobjects::UnknownCompositePdfOperator> PdfComp;
+
 class TextFont
 {
 	std::string fontId;
@@ -36,11 +38,18 @@ class FontWidget : public QWidget
 
 	Ui::Properties ui;
 	std::vector<TextFont> _fonts;
+	PdfComp _q;
+	PdfComp _BT;
 public:
 	FontWidget(QWidget * parent);
 	FontWidget(const FontWidget & font);
 	~FontWidget();
 	PdfOp addText(std::string s);
+	void createBT();
+	void addParameters();
+	void addToBT(PdfOp op);
+	PdfOp createET();
+
 	// set
 	void addFont(std::string name, std::string value);
 	//gets
@@ -55,4 +64,5 @@ public slots:
 	void apply(); //on clicked
 	void setValue(int angle);
 };
+
 #endif

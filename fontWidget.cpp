@@ -38,25 +38,33 @@ FontWidget::FontWidget(const FontWidget & font) : QWidget(font.parentWidget())
 		this->ui.fontsize->insertItem(0, q.toString(),q);
 	}
 	//copy TODO
+	throw "Not now";
 }
-void FontWidget::addFont(std::string name, std::string val)
+void FontWidget::addFont(std::string name, std::string val)//TOFO
 {
 	QVariant q(name.c_str()); //TODO convert to more understable font name
 	ui.fonts->insertItem(ui.fonts->count(),q.toString(),q); //Qvariant?
 	_fonts.push_back(val);
 }
 FontWidget::~FontWidget() { }
-PdfOp FontWidget::addText(std::string txt)
+void FontWidget::createBT()
 {
-	//vytvor BT, ET 
-	shared_ptr<UnknownCompositePdfOperator> q(new UnknownCompositePdfOperator("q", "Q"));
-	shared_ptr<UnknownCompositePdfOperator> BT(new UnknownCompositePdfOperator("BT", "ET"));
-
-	q->push_back(BT,q);
+	_q = PdfComp(new pdfobjects::UnknownCompositePdfOperator( "q", "Q"));
+	_BT = PdfComp(new pdfobjects::UnknownCompositePdfOperator( "BT", "ET"));
+}
+PdfOp FontWidget::createET()
+{
+	PdfOperator::Operands emptyOperands;
+	_BT->push_back(createOperator("ET", emptyOperands), getLastOperator(_BT));
+	_q->push_back(createOperator("Q", emptyOperands), getLastOperator(_q));
+	return _q;
+}
+void FontWidget::addParameters() //TODO nie s jedine parametre
+{
 	QVariant v = this->ui.fontsize->itemData(this->ui.fontsize->currentIndex());
-	BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(BT));
-	//text matrix 
+	_BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(_BT));
 
+	//text matrix 
 	PdfOperator::Operands posOperands;
 	QVariant var = ui.tm->item(0,0)->data(0);
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
@@ -70,16 +78,24 @@ PdfOp FontWidget::addText(std::string txt)
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
 	var = ui.tm->item(2,1)->data(0);
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
-	BT->push_back(createOperator("Tm", posOperands), getLastOperator(BT));
+	_BT->push_back(createOperator("Tm", posOperands), getLastOperator(_BT));
+}
 
+void FontWidget::addToBT(PdfOp o)
+{
+	_BT->push_back(o,getLastOperator(_BT));
+}
+
+PdfOp FontWidget::addText(std::string txt)
+{
+	createBT();
+	addParameters();
 	PdfOperator::Operands textOperands;
 	textOperands.push_back(shared_ptr<IProperty>(new CString (txt.c_str())));
-	BT->push_back(createOperator("Tj", textOperands), getLastOperator(BT));
-	PdfOperator::Operands emptyOperands;
-	BT->push_back(createOperator("ET", emptyOperands), getLastOperator(BT));
-	q->push_back(createOperator("Q", emptyOperands), getLastOperator(q));
-	return q;
+	addToBT(createOperator("Tj", textOperands));
+	return createET();
 }
+
 void FontWidget::apply()
 {	
 	QString s =this->ui.text->toPlainText();

@@ -281,6 +281,7 @@ public:
 	void insertBefore(PdfOp op, PdfOp before);
 	void createAddMoveString(PdfOp bef, double x, double y, std::string name);
 	void changeText();
+	void insertTextAfter(PdfOp opBehind, double td, double ymax, std::string s);
 
 private:
 	void setAnnotations();
@@ -289,8 +290,8 @@ private:
 	void setTextData(TextData::iterator &begin, TextData::iterator end, shared_ptr<PdfOperator> op);
 
 	//TODO zostit rotaciu boxu. to je but tm alebo Qstate
-	QRect getRectangle( PdfOp ops);
-	QRect getRectangle(BBox box);
+	QRect getRectangle( PdfOp ops );
+	QRect getRectangle( BBox box );
 
 	//private methods
 	void addRevision( int i = -1);

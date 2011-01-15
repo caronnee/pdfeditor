@@ -1,0 +1,23 @@
+----------------------TO TEST---------------------------
+vysvietenie casti textu
+zmenit vysvieteny text
+extrahovanie textu
+----------------------TEXT---------------------------
+-dialog pre vyhladat
+-vyhladavanie
+-vyhladavanie aj medzerami
+-vyhladavanie regexu
+-prepisat cast textu
+-(upravit text tak, aby bol zarovnany vzhladom na ine viditelne operatory)
+----------------------IMAGE--------------------------
+-dialog pre pridanie obrazka
+-pridanie obrazka
+-skalovanie obrazka
+-(priehladnost obrazka?)
+-extrakcia casti obrazka
+-zmena atributov obrazka
+----------------------HIGHLIGHT----------------------
+-dialog pre pridanie commentu
+-pridanie commentu
+-dialog pre pridai roznych typov highlightu
+-pridanie dlasieho typu commentu
