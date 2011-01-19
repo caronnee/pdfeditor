@@ -1,14 +1,16 @@
 ----------------------TO TEST---------------------------
-vysvietenie casti textu
-zmenit vysvieteny text
-extrahovanie textu
-----------------------TEXT---------------------------
+-vysvietenie casti textu
+-zmenit vysvieteny text
+-extrahovanie textu
+-dialog pre insert upravit tak, aby si pamatal, ktore hodnoty boli zadane
 -dialog pre vyhladat
+----------------------TEXT---------------------------
 -vyhladavanie
 -vyhladavanie aj medzerami
--vyhladavanie regexu
+-(vyhladavanie regexu)
 -prepisat cast textu
 -(upravit text tak, aby bol zarovnany vzhladom na ine viditelne operatory)
+-pridat do osien farby, tvar a zmenu na cm namiesto td
 ----------------------IMAGE--------------------------
 -dialog pre pridanie obrazka
 -pridanie obrazka

@@ -36,11 +36,26 @@ class FontWidget : public QWidget
 {
 	Q_OBJECT
 
+	enum Options
+	{
+		OptionTm,
+		OptionShape,
+		OptionColor,
+		OptionGray,
+		OptionFont,
+		NumberOfOptions
+	};
+	enum Shapes
+	{
+		a,s,d,f,g,h,NumberOfShapes
+	};
+	bool set[NumberOfOptions];
 	Ui::Properties ui;
 	std::vector<TextFont> _fonts;
 	PdfComp _q;
 	PdfComp _BT;
 public:
+	void reset();
 	FontWidget(QWidget * parent);
 	FontWidget(const FontWidget & font);
 	~FontWidget();
@@ -58,9 +73,18 @@ public:
 	QColor getColor();
 	int getX();
 	int getY();
+	void change();
 signals:
 	void text(PdfOp op);
+	void changeSelected();
+
 public slots:
+
+	void setTm() { set[OptionTm] = true; }
+	void setFont() { set[OptionFont] = true; }
+	void setShape() { set[OptionShape] = true; }
+	void setGray() { set[OptionGray] = true; } //TODO macro
+
 	void apply(); //on clicked
 	void setValue(int angle);
 };

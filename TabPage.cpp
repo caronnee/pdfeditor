@@ -38,10 +38,13 @@ TabPage::TabPage(QString name) : _name(name)
 	_font = NULL;
 	ui.setupUi(this);
 	labelPage = new DisplayPage();
+	s = new Search();
+	s->show();
 	this->ui.scrollArea->setWidget(labelPage);
 	//hode verythind except...
 	this->ui.pageManipulation->hide();
 	this->ui.displayManipulation->hide();
+	QObject::connect(s, SIGNAL(search(std::string)),this,SLOT(search(std::string)));
 	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
 
 	acceptedAnotName.push_back("Link");
@@ -105,6 +108,7 @@ void TabPage::SetModeTextSelect()
 	loadFonts(_font);
 //	_font->show();
 	connect(_font, SIGNAL(text(PdfOp)), this, SLOT(insertText(PdfOp)));
+	connect(_font, SIGNAL(changeSelected()), this, SLOT(changeText()));
 	//show text button, hide everything else
 	if (_textList.empty())
 	{
@@ -905,7 +909,6 @@ void TabPage::insertText( PdfOp op )
 void TabPage::changeText() 
 {
 	//mame vyznaceny beginiter a end string
-	Ops matrix;
 	TextData::iterator first,last;
 	if (*first < *last) //switchneme
 	{
@@ -1019,6 +1022,12 @@ void TabPage::replaceText( std::string what, std::string by)
 	//insert by text
 }
 //slot
+*/
+void TabPage::search(std::string s)
+{
+	
+}
+/*
 void TabPage::deleteText( std::string text)
 {
 	//create tree of text on this page 
@@ -1150,44 +1159,4 @@ void TabPage::riseSel()
 
 }
 
-void TabPage::search(std::string text)
-{
-	TextData::iterator it = _textList.begin();
-	Tree t(text);
-	int end;
-	while (it != _textList.end() )
-	{
-		end = t.fill(it->_text);
-		if(end>=0)
-			break;
-		it++;
-	}
-	if (end<0)
-		return;
-	//mame posledny operator
-	TextData::iterator beg = it;
-	it->end = end;
-	it->_begin = 0;
-
-	int sum = t.getSize();
-	//chod dozadu az sum nebude 0
-	while (sum<0)
-	{
-		sum-= beg->text.length();
-		beg--;
-		beg->_begin = 0;
-		beg->end=beg->text.length();
-	}
-	if (sum <= 0)
-		beg->_begin = beg->end+sum;
-	else
-		beg->_begin = 0;
-	beg->setRegion(); //setne vzhladom na begin, end
-	while (beg!=it)
-	{
-		this->ui.content->fillRect(beg->region);
-		beg++;
-	}
-	this->ui.content->fillRect(beg->region);
-}
 */

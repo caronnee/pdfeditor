@@ -26,6 +26,7 @@
 #include <QTreeWidgetItem>
 #include "typedefs.h"
 #include "debug.h"
+#include "Search.h"
 
 using namespace boost;
 using namespace pdfobjects;
@@ -227,6 +228,8 @@ class TabPage : public QWidget
 
 private: //variables
 	Ui::TabUI ui; 
+	QWidget * widget;
+	Search * s;
 
 	std::vector<std::string> acceptedAnotName;//TODO static alebo enum alebo cos
 	//could be static. but :)
@@ -274,13 +277,11 @@ public:
 	void SetModeTextSelect();
 	void highLightBegin(int x, int y); //nesprav nic, pretoze to bude robit mouseMove
 	void highlightText(int x, int y); //tu mame convertle  x,y
-	void changeSelectedText(); //zmeni vytbrane operatory ( ide o poziciu)
 
 	PdfOp createTranslationTd(double x, double y);
 	void moveText(int difX, int difY);
 	void insertBefore(PdfOp op, PdfOp before);
 	void createAddMoveString(PdfOp bef, double x, double y, std::string name);
-	void changeText();
 	void insertTextAfter(PdfOp opBehind, double td, double ymax, std::string s);
 
 private:
@@ -321,6 +322,9 @@ public:
 	//rotate page
 
 public slots:
+	void search(std::string text);
+	void changeText();
+
 	void handleBookMark(QTreeWidget * item);
 	void removeObjects();
 	void clicked(int x, int y);

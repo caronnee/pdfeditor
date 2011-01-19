@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Search</class>
+ <widget class="QWidget" name="Search">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>searchAndReplace</string>
+  </property>
+  <layout class="QGridLayout" name = "fLayout">
+   <item row="0" column="1">
+    <widget class="QTextEdit" name="text"/>
+   </item>
+  <item row="1" column="1">
+  <widget class="QPushButton" name="search">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>260</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Search!</string>
+   </property>
+   </widget>
+  </item>
+  </layout>
+ </widget>
+ <resources/>
+</ui>

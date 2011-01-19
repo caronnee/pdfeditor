@@ -7,16 +7,21 @@ using namespace boost;
 
 typedef shared_ptr< PdfOperator > PdfOp;
 
-enum FontShapes
-{
-	q,w,e,r,t,y,NumberOfShapes
-};
 //TODO doplnit
 std::string fontShapes[] ={"a","s","d","f","g","h"};
 
+void FontWidget::change()
+{
+	emit changeSelected();
+}
+void FontWidget::reset() //nastavit rotaciu na nulu a podobne
+{
+	memset(set,0x0,sizeof(bool)*NumberOfOptions);
+}
 FontWidget::FontWidget(QWidget *parent) : QWidget(parent)
 {
 	ui.setupUi(this);
+	reset();
 	//set 10-40 fontsize
 	for ( int i = 10; i<=40; i+=2)
 	{
