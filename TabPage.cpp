@@ -41,7 +41,7 @@ TabPage::TabPage(QString name) : _name(name)
 	s = new Search();
 	s->show();
 	this->ui.scrollArea->setWidget(labelPage);
-	//hode verythind except...
+	//hide everything except...
 	this->ui.pageManipulation->hide();
 	this->ui.displayManipulation->hide();
 	QObject::connect(s, SIGNAL(search(std::string)),this,SLOT(search(std::string)));
@@ -1015,33 +1015,137 @@ void TabPage::showTextAnnot(std::string name)
 {
 	//TODO novy textbox
 }
+*/
+//TODO ask if there should be deletion after what it found
 void TabPage::replaceText( std::string what, std::string by)
 {
-	////TODO
-	//delete what text.
-	//insert by text
-}
-//slot
-*/
-void TabPage::search(std::string s)
-{
-	
-}
-/*
-void TabPage::deleteText( std::string text)
-{
-	//create tree of text on this page 
-	//search text, delete string & insert new text
-	Ops opers;
-	while (search(text, opers))
+	while ( true )
 	{
-		std::string todel = text;
-		
-		//ide nam len o zaciatok a koniec
-		//v kazdom operator bude kusok
-		//vsetko medzi tym sa zmaze
+		search(what);
+		if (!_selected)
+			break;
+		//mame selectnute
+		TextData::iterator first, last;
+		setSelected(first, last);
+		//delete the part
+		if (first != last)
+		{
+			//ak nie su stejne, stejne to zopakuj len pre prve a zvysok zmaz
+			std::string s[3];
+			TextData::iterator i1,i2;
+			setSelected(i1,i2);
+			i1->split(s[0],s[1],s[2]);
+			i1->replaceAllText(s[0]+s[1]+by);
+			i1++;
+			TextData::iterator it = i1;
+			for(; i1!=i2; i1++ )
+			{
+
+				i1->_op->getContentStream()->deleteOperator(i1->_op,true);
+
+			}
+			_textList.erase(it,i2);
+		}
+		//split to three and replace the text
+		std::string s[3];
+		first->split(s[0],s[1],s[2]);		
+		first->replaceAllText(s[0]);
+		PdfOp td2 = createTranslationTd(first->_end, first->_ymax);
+		{
+			PdfOperator::Operands operands;
+			operands.push_back(shared_ptr<IProperty>(new CName(s[2])));
+			PdfOp o2 = createOperator("Tj", operands);
+			first->_op->getContentStream()->insertOperator(first->_op,o2);	
+			OperatorData data(o2);
+			_textList.push_back(data);
+		}
+		{
+			PdfOperator::Operands operands;
+			operands.push_back(shared_ptr<IProperty>(new CName(s[2])));
+			PdfOp o2 = createOperator("Tj", operands);
+			first->_op->getContentStream()->insertOperator(first->_op,o2);	
+			first->_op->getContentStream()->insertOperator(first->_op,td2);	
+			OperatorData data(o2);
+			_textList.push_back(data);
+		}
+		_textList.sort();
+		continue;
 	}
 }
+void TabPage::setSelected(TextData::iterator& first, TextData::iterator& last)
+{
+	if (!_selected)
+	{
+		first = _textList.begin();
+		last = _textList.end();
+		return;
+	}
+	if (*last < *first)	
+	{
+		first = sTextItEnd;
+		last = sTextIt;
+	}
+	else
+	{
+		first = sTextIt;
+		last = sTextItEnd;
+	}
+}
+//slot
+void TabPage::search(std::string srch)
+{
+	Tree t(srch); //vytvor strom, ktory bude hladat to slovo
+	//vysviet prve, ktore najdes
+	TextData::iterator iter = _textList.begin();
+	if (_selected)
+	{
+		iter = sTextIt;
+	}
+	float prev = FLT_MAX;
+	while (iter != _textList.end())
+	{
+		std::string s = iter->_text;
+		switch (t.search())
+		{
+			case Tree::Next:
+			{
+				if (fabs(prev - iter->_begin) < 0.5f ) //from which space?
+				{
+					s = " " + s; //TODO insert before?
+				}
+				t.setText(s);
+				iter++;
+				prev = iter->_end;
+				break;
+			}
+			case Tree::Found:
+			{
+				prev = iter->_end;
+				iter->setEnd(t._end);
+				sTextItEnd = iter;
+				for ( int i = 0; i < t._tokens; i++)
+				{
+					iter--;
+					iter->clear();
+				}
+				sTextIt = iter;
+				iter->setBegin(t._begin);
+				_selected = true;
+				return;
+			}
+			default:
+			{
+				throw "Unexpected t->search() token";
+			}
+		}
+	}
+}
+
+void TabPage::deleteText( std::string text)
+{
+	replaceText(text,"");
+}
+/*
 //bolo kliknute na anotaciu, ideme ju vykonat
 void TabPage::handleAnnotation(int id)
 {

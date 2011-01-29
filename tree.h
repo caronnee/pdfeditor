@@ -82,15 +82,22 @@ class Tree
 {
 	Accept * actual;
 	Accept * root;
-	int size;
+	std::string _search;
 public:
-	int getSize()const
+	int _begin;
+	int _end; //poradie v tokenu, pretoze sa mi to naramne hodi:)
+	int _tokens;
+
+public:
+	enum TreeTokens
 	{
-		return size;
-	}
+		Next, //ma dalsi token
+		Found //je v koncovom stave
+	};
+
 	Tree(std::string pattern)
 	{
-		size = 0;
+		_tokens = 0;
 		if (pattern.empty()||(pattern[0] == '\\' && pattern.length() ==1))
 			throw "Wrong pattern input";
 		Accept * prev = NULL;
@@ -106,57 +113,66 @@ public:
 		actual = root;
 	} //krajsie by to bolo asi odzadu ale co uz
 
-
 	bool checkPattern() { return true; } //TODO dorobit na checkovanie, ci je to v spravnom tvare, tabulka pre preddefinovanie, kam sa ma skocit
 
 private:
 	void setAccept(std::string pattern, size_t & i)
 	{
 		switch (pattern[i])
-			{
-				case '*':
-					{
-						actual = new AcceptRange(pattern[0],0,~0,root);
-						i+=2; //zobrali sme aj dalsie
-						break;
-					}
-				case '\\':
+		{
+			case '*':
+				{
+					actual = new AcceptRange(pattern[0],0,~0,root);
+					i+=2; //zobrali sme aj dalsie
+					break;
+				}
+			case '\\':
 				{
 					root = new Accept(pattern[1],root);
 					i +=2;
 					break;
 				}
-				case '?':
+			case '?':
 				{
 					root = new AcceptRange(pattern[0],0,1,root);
 					i += 2;
 					break;
 				}
-				default:
+			default:
 				{
 					actual = new Accept(pattern[0],root);
 					i++;
 				}
 
-			}
+		}
 	}
+
 public:
-	int fill(std::string valueToFill)
+	void setText(std::string text)
 	{
-		//stejne toho nedostane vela
-		for ( size_t i = 0; i< valueToFill.length(); i++)
+		_tokens++;
+		_search = text;
+	}
+	TreeTokens search()
+	{
+		//stejne toho nedostane vela a bude to brat po tokenoch
+		for ( size_t i = 0; i< _search.length(); i++)
 		{
-			if(actual == root)
-				size = -1;
-			size++;
-			actual = actual->accept(valueToFill[i]);
+			_tokens++;
+			actual = actual->accept(_search[i]);
+			if (actual->isBegin())
+			{
+				_tokens = 0;
+				_begin = i;
+			}
 			if (actual->isEnd())
 			{
 				actual = root;
-				return i;//kolkate pismeno to bolo. Operator budeme vediet z toho, co tam vrazame
+				_end = i;
+				return Tree::Found;//kolkate pismeno to bolo. Operator budeme vediet z toho, co tam vrazame
 			}
 		}
-		return -1;
+		return Tree::Next;
 	}
 };
 #endif  // __TREE__

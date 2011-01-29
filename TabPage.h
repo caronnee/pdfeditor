@@ -21,7 +21,6 @@
 #include "ui_showPage.h"
 #include "page.h"
 #include "fontWidget.h"
-
 #include <list>
 #include <QTreeWidgetItem>
 #include "typedefs.h"
@@ -73,7 +72,6 @@ struct OperatorData
 			_end = subs;
 		else
 			_begin = subs;
-
 	}
 	void clear()
 	{
@@ -133,7 +131,6 @@ struct OperatorData
 		{
 			return maxy - y < 0;
 		}
-
 		maxy = min(a.xleft, a.xright);
 		return maxy < x;
 	}
@@ -158,6 +155,7 @@ struct OperatorData
 		clear();
 	}
 };
+
 typedef std::list<OperatorData> TextData;
 
 enum AcceptName
@@ -167,6 +165,7 @@ enum AcceptName
 	OpGraphicName,
 	OpAcceptCount
 };
+
 struct AcceptOperatorName
 {
 	std::vector<std::string> names;
@@ -187,6 +186,7 @@ struct AcceptOperatorName
 class IsType
 {
 	AcceptOperatorName names[OpAcceptCount];
+
 public:
 	IsType()
 	{
@@ -261,7 +261,7 @@ private:
 	void toPdfPos(int x, int y, double & x1, double &y1);
 	void toPixmapPos(double x1, double y1, int & x, int & y);
 	void inDirection(TextData::iterator & it, bool forw);
-
+	void setSelected(TextData::iterator& first, TextData::iterator& last);
 public:
 
 	void createAnnot(AnnotType t, std::string * params);
@@ -269,6 +269,7 @@ public:
 
 	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
 	void SetTextSelect();
+	void replaceText( std::string what, std::string by);
 	void UnSetTextSelect();
 	TabPage(QString name);
 	~TabPage(void);
@@ -289,6 +290,7 @@ private:
 	void loadFonts(FontWidget * font);
 	void getAtPosition(Ops& ops, int x, int y );
 	void setTextData(TextData::iterator &begin, TextData::iterator end, shared_ptr<PdfOperator> op);
+	void deleteText( std::string text);
 
 	//TODO zostit rotaciu boxu. to je but tm alebo Qstate
 	QRect getRectangle( PdfOp ops );
@@ -349,8 +351,10 @@ public slots:
 	void print();
 
 	void rotate(int i, int begin, int end);
+
 private slots:
 	void zoom(QString zoomscale);
+	/// init pdf-reader to have this revision
 	void initRevision(int revision);
 
 	/// Inserts range of file from existing PDF
@@ -369,8 +373,6 @@ private slots:
 //----------------------------------------------------------------------------------------------------	
 	/* To implement
 	void showTextAnnot(std::string name);
-	void replaceText( std::string what, std::string by);
-	void deleteText( std::string text);
 	void copyToClipBoard(); //from selected/ highlighted
 	void rotateObjects(int angle);
 	void handleAnnotation(int i);
