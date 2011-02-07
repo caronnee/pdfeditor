@@ -6,10 +6,10 @@
 -dialog pre vyhladat
 -vyhladavanie
 -vyhladavanie aj medzerami
-----------------------TEXT---------------------------
 -prepisat cast textu
+----------------------TEXT---------------------------
 -(upravit text tak, aby bol zarovnany vzhladom na ine viditelne operatory)
--pridat do otien farby, tvar a zmenu na cm namiesto td
+-pridat do odtien farby, tvar a zmenu na cm namiesto td
 ----------------------IMAGE--------------------------
 -dialog pre pridanie obrazka
 -pridanie obrazka

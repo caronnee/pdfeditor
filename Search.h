@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QString>
 #include "ui_search.h"
+#include <string>
 
 class Search : public QWidget 
 {
@@ -14,7 +15,7 @@ public:
 	Search();
 	void clicked();
 signals:
-	void search(QString);
+	void search(std::string);
 };
 
 #endif

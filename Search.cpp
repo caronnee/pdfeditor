@@ -6,5 +6,5 @@ Search::Search()
 }
 void Search::clicked()
 {
-	emit search(ui.text->toPlainText());
+	emit search(ui.text->toPlainText().toAscii().data());
 }

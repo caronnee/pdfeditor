@@ -223,7 +223,6 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 	libs::Rectangle b;
 	int x1, y1;
 	int x2, y2;
-	QColor color(255,36,255,50);
 	TextData::iterator first = sTextIt;
 	TextData::iterator last = sTextItEnd; 
 	sTextItEnd->restoreEnd(); //stetitEnd je ohybliva zalozka, nesmiem swichovat
@@ -247,20 +246,26 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 		sTextItEnd->change(forw);
 		sTextIt->change(!forw);
 	}
-	{	//vykreslenie
-		forw = (*sTextIt) < (*sTextItEnd);
-		while (true)
-		{
-			toPixmapPos(first->_begin, first->_ymin, x1,y1);
-			toPixmapPos(first->_end, first->_ymax, x2, y2);
-			labelPage->fillRect( x1, y1, x2, y2, color );
-			if (first == sTextItEnd)
-				break;
-			inDirection(first, forw);
-		}
-	}
+	highlight();
 	_dataReady = false;
 	_selected =  true;
+}
+void TabPage::highlight()
+{
+	QColor color(255,36,255,50);
+	TextData::iterator first = sTextIt;
+	TextData::iterator last = sTextItEnd; 
+	bool forw = (*sTextIt) < (*sTextItEnd);
+	int x1,x2,y1,y2;
+	while (true)
+	{
+		toPixmapPos(first->_begin, first->_ymin, x1,y1);
+		toPixmapPos(first->_end, first->_ymax, x2, y2);
+		labelPage->fillRect( x1, y1, x2, y2, color );
+		if (first == sTextItEnd)
+			break;
+		inDirection(first, forw);
+	}
 }
 PdfOp TabPage::createTranslationTd(double x, double y)
 {

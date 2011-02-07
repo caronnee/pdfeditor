@@ -276,6 +276,7 @@ public:
 
 	void setTree(shared_ptr<CDict> d, QTreeWidgetItem * item);
 	void SetModeTextSelect();
+	void highlight(); //nesprav nic, pretoze to bude robit mouseMove
 	void highLightBegin(int x, int y); //nesprav nic, pretoze to bude robit mouseMove
 	void highlightText(int x, int y); //tu mame convertle  x,y
 
