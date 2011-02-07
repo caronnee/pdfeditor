@@ -35,4 +35,12 @@
   </layout>
  </widget>
  <resources/>
+ <connections>
+  <connection>
+  <sender>search</sender>
+  <signal>clicked()</signal>
+  <receiver>Search</receiver>
+  <slot>clicked()</slot>
+  </connection>
+ </connections>
 </ui>

@@ -102,6 +102,7 @@ public:
 			throw "Wrong pattern input";
 		Accept * prev = NULL;
 		size_t i = 0;
+		setAccept(pattern,i);
 		root = actual;
 		prev = root;
 		while (i < pattern.length())

@@ -6,5 +6,6 @@ Search::Search()
 }
 void Search::clicked()
 {
-	emit search(ui.text->toPlainText().toAscii().data());
+	std::string text(ui.text->toPlainText().toAscii().data());
+	emit search(text);
 }

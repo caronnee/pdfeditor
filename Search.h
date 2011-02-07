@@ -13,6 +13,7 @@ class Search : public QWidget
 	Ui::Search ui;
 public:
 	Search();
+public slots:
 	void clicked();
 signals:
 	void search(std::string);
