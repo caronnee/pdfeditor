@@ -48,26 +48,29 @@ enum Mode
 //budeme predpokladat, ze vsetko toto je platne, ze sme to uz nastavili
 struct OperatorData
 {
+	double _origX, _origX2;
 	double _begin, _end;
 	double _ymin, _ymax; 
 	PdfOp _op;
 	std::string _text; //jak bol text v tom, pripadne uprava o medzeru, prepisanie ma medzeru, ako konci -, odstranit
-	OperatorData(PdfOp op) : _begin(0), _end(0), _op(op)
+	OperatorData(PdfOp op) : _begin(0), _end(0), _op(op), _origX(0), _origX2(0)
 	{
 		shared_ptr<TextSimpleOperator> txt = boost::dynamic_pointer_cast<TextSimpleOperator>(op);
 		txt->getRawText(_text);
 		libs::Rectangle r = _op->getBBox();
 		_ymin = min<double>(r.yleft, r.yright);
 		_ymax = max<double>(r.yleft, r.yright);
-		_begin = min<float>(r.xleft,r.xright);
-		_end = max<float>(r.xleft,r.xright);
+		_begin = min<float>(r.xleft, r.xright);
+		_end = max<float>(r.xleft, r.xright);
+		_origX = _begin;
+		_origX2 = _end; 
 	}
 	void change(bool from_beg)
 	{
 		double b = _begin;
 		double e = _end;
 		clear();
-		double subs = (b==_begin)? e:b;
+		double subs = fabs(b - _begin)<1e-5? e:b;
 		if (from_beg)
 			_end = subs;
 		else
@@ -75,29 +78,27 @@ struct OperatorData
 	}
 	void clear()
 	{
-		libs::Rectangle r = _op->getBBox();
-		_begin = min<float>(r.xleft,r.xright);
-		_end = max<float>(r.xleft,r.xright);
+		_begin = _origX;
+		_end = _origX2;
 	}
 	void restoreBegin()
 	{
-		double b = _end;
-		clear();
-		_end = b;
+		_begin = _origX;
 	}
 	void restoreEnd()
 	{
-		double b = _begin;
-		clear();
-		_begin = b;
+		_end = _origX2;
 	}
 	void set(int x,double &place)
 	{
-		clear();
-		float width( _end - _begin );
+		float width( _origX2 - _origX );
 		float oneLetterStep =  width/_text.size();
-		int letters = x / oneLetterStep;
-		place = letters * oneLetterStep;
+		int letters = (x - _origX) / oneLetterStep;
+		place = letters * oneLetterStep +_origX;
+	}
+	double position(int letters)
+	{
+		return ( _origX2 - _origX ) / _text.size() * (letters) + _origX;
 	}
 	void setMark(int x, bool beg)
 	{

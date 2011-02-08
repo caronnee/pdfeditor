@@ -110,9 +110,9 @@ void FontWidget::apply()
 void FontWidget::setValue(int angle)
 {
 	//set cosie, sine
-	double cs = cos(angle);
+	double cs = cos(static_cast<double>(angle));
 	QVariant cs1(cs);
-	double sn = sin(angle);
+	double sn = sin(static_cast<double>(angle));
 	QVariant sn1(sn);
 	QVariant sn2(sn*-1);
 	ui.tm->setItem(0,0,new QTableWidgetItem(cs1.toString()));

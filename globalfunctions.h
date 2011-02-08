@@ -14,7 +14,7 @@ int toDegree(float angle);
 template<typename T>
 void rotatePosition( T xin, T yin, T& xout, T &yout, int angle )
 {
-	float s = sqrt(xin*xin+yin*yin);
+	float s = sqrt(static_cast<double>(xin*xin+yin*yin));
 	xout = s*cos(toRadians(angle));
 	yout = s*sin(toRadians(angle));
 };

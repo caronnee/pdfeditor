@@ -35,6 +35,7 @@ void TabPage::handleBookMark(QTreeWidget * item)
 
 TabPage::TabPage(QString name) : _name(name)
 {
+	_selected = false;
 	_font = NULL;
 	ui.setupUi(this);
 	labelPage = new DisplayPage();
@@ -1107,26 +1108,30 @@ void TabPage::search(std::string srch)
 		iter = sTextIt;
 	}
 	float prev = FLT_MAX;
+	std::string s(iter->_text);
 	while (iter != _textList.end())
 	{
-		std::string s = iter->_text;
+		t.setText(s);
 		switch (t.search())
 		{
 			case Tree::Next:
 			{
+				iter++;
+				if (iter == _textList.end())
+					break;
+				s = iter->_text;
 				if (fabs(prev - iter->_begin) < 0.5f ) //from which space?
 				{
 					s = " " + s; //TODO insert before?
 				}
-				t.setText(s);
-				iter++;
 				prev = iter->_end;
 				break;
 			}
 			case Tree::Found:
 			{
 				prev = iter->_end;
-				iter->setEnd(t._end);
+				double a, b;
+				a = iter->position(t._end+2);				
 				sTextItEnd = iter;
 				for ( int i = 0; i < t._tokens; i++)
 				{
@@ -1134,8 +1139,11 @@ void TabPage::search(std::string srch)
 					iter->clear();
 				}
 				sTextIt = iter;
-				iter->setBegin(t._begin);
+				b = iter->position(t._begin+1); //clearle, MAGIC
+				iter->setEnd(a);
+				iter->setBegin(b);
 				_selected = true;
+				highlight();
 				return;
 			}
 			default:

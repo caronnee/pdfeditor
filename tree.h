@@ -25,7 +25,7 @@ public:
 	void setPrev ( Accept * acc) { _prev = acc; }
 	Accept * prev()const { return _prev;}
 	bool isEnd()const { return _next == NULL; }
-	bool isBegin()const { return _prev == NULL; }
+	bool isBegin()const { return _prev == this; } //resp root, TODO vlastna podclass?Treba?
 	virtual ~Accept() {}
 };
 
@@ -80,8 +80,8 @@ public:
 };
 class Tree
 {
-	Accept * actual;
-	Accept * root;
+	Accept * _actual;
+	Accept * _root;
 	std::string _search;
 public:
 	int _begin;
@@ -97,21 +97,26 @@ public:
 
 	Tree(std::string pattern)
 	{
-		_tokens = 0;
+		_root= NULL;
+		_actual = NULL;
+		_begin = 0;
+		_end = 0;
+		_tokens = -1;
 		if (pattern.empty()||(pattern[0] == '\\' && pattern.length() ==1))
 			throw "Wrong pattern input";
 		Accept * prev = NULL;
 		size_t i = 0;
 		setAccept(pattern,i);
-		root = actual;
-		prev = root;
+		_actual->setPrev(_actual); //back to root
+		_root = _actual;
+		prev = _root;
 		while (i < pattern.length())
 		{	
 			setAccept(pattern,i);
-			prev->setNext(actual);
-			prev=actual;
+			prev->setNext(_actual);
+			prev=_actual;
 		}
-		actual = root;
+		_actual = _root;
 	} //krajsie by to bolo asi odzadu ale co uz
 
 	bool checkPattern() { return true; } //TODO dorobit na checkovanie, ci je to v spravnom tvare, tabulka pre preddefinovanie, kam sa ma skocit
@@ -123,25 +128,25 @@ private:
 		{
 			case '*':
 				{
-					actual = new AcceptRange(pattern[0],0,~0,root);
+					_actual = new AcceptRange(pattern[0],0,~0,_root);
 					i+=2; //zobrali sme aj dalsie
 					break;
 				}
 			case '\\':
 				{
-					root = new Accept(pattern[1],root);
+					_actual = new Accept(pattern[1],_root);
 					i +=2;
 					break;
 				}
 			case '?':
 				{
-					root = new AcceptRange(pattern[0],0,1,root);
+					_actual = new AcceptRange(pattern[0],0,1,_root);
 					i += 2;
 					break;
 				}
 			default:
 				{
-					actual = new Accept(pattern[0],root);
+					_actual = new Accept(pattern[i],_root);
 					i++;
 				}
 
@@ -159,16 +164,15 @@ public:
 		//stejne toho nedostane vela a bude to brat po tokenoch
 		for ( size_t i = 0; i< _search.length(); i++)
 		{
-			_tokens++;
-			actual = actual->accept(_search[i]);
-			if (actual->isBegin())
+			if (_actual->isBegin())
 			{
 				_tokens = 0;
 				_begin = i;
 			}
-			if (actual->isEnd())
+			_actual = _actual->accept(_search[i]);
+			if (_actual==NULL) //posledne
 			{
-				actual = root;
+				_actual = _root;
 				_end = i;
 				return Tree::Found;//kolkate pismeno to bolo. Operator budeme vediet z toho, co tam vrazame
 			}
