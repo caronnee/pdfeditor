@@ -8,7 +8,6 @@
 -vyhladavanie aj medzerami
 -prepisat cast textu
 ----------------------TEXT---------------------------
--(upravit text tak, aby bol zarovnany vzhladom na ine viditelne operatory)
 -pridat do odtien farby, tvar a zmenu na cm namiesto td
 ----------------------IMAGE--------------------------
 -dialog pre pridanie obrazka
@@ -26,3 +25,4 @@
 
 ----------------------ADDITIONAL---------------------
 -(vyhladavanie regexu)
+-(upravit text tak, aby bol zarovnany vzhladom na ine viditelne operatory)

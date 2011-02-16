@@ -9,7 +9,6 @@
 class DisplayPage : public QLabel
 {
 	Q_OBJECT
-
 public:
 	DisplayPage(QWidget *parent = 0);
 	~DisplayPage();

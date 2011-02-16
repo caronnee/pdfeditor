@@ -3,8 +3,6 @@
 
 #include <QWidget>
 #include <vector>
-
-
 //PDF
 #include <kernel/pdfedit-core-dev.h>
 #include <kernel/factories.h>
