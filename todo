@@ -7,10 +7,15 @@
 -vyhladavanie
 -vyhladavanie aj medzerami
 -prepisat cast textu
-----------------------TEXT---------------------------
--pridat do odtien farby, tvar a zmenu na cm namiesto td
-----------------------IMAGE--------------------------
+-cm namiesto td - checkbox, ci sa nakoniec vyvolava td alebo cm
+----IMAGE-----
 -dialog pre pridanie obrazka
+----------------------TEXT---------------------------
+-pridat do odtien farby, tvar
+	(cs non-stroking)
+	(CS stroking) .//set operation
+----------------------IMAGE--------------------------
+-v zavslosti na rotacii dialogu spravit to, jak sa vypocitava cm
 -pridanie obrazka
 -skalovanie obrazka
 -(priehladnost obrazka?)

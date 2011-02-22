@@ -55,6 +55,10 @@ FontWidget::~FontWidget() { }
 void FontWidget::createBT()
 {
 	_q = PdfComp(new pdfobjects::UnknownCompositePdfOperator( "q", "Q"));
+	//ak chcemem vytvarat cm, tu je na to vhodna doba
+	if (this->ui.generateCm->isChecked())
+		_q->push_back( createMatrix("cm"), getLastOperator(_q));
+	//TODO farba  podobne prkotiny
 	_BT = PdfComp(new pdfobjects::UnknownCompositePdfOperator( "BT", "ET"));
 }
 PdfOp FontWidget::createET()
@@ -64,11 +68,8 @@ PdfOp FontWidget::createET()
 	_q->push_back(createOperator("Q", emptyOperands), getLastOperator(_q));
 	return _q;
 }
-void FontWidget::addParameters() //TODO nie s jedine parametre
+PdfOp FontWidget::createMatrix(std::string op)
 {
-	QVariant v = this->ui.fontsize->itemData(this->ui.fontsize->currentIndex());
-	_BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(_BT));
-
 	//text matrix 
 	PdfOperator::Operands posOperands;
 	QVariant var = ui.tm->item(0,0)->data(0);
@@ -83,7 +84,42 @@ void FontWidget::addParameters() //TODO nie s jedine parametre
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
 	var = ui.tm->item(2,1)->data(0);
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
-	_BT->push_back(createOperator("Tm", posOperands), getLastOperator(_BT));
+	return createOperator(op, posOperands);
+}
+void FontWidget::addParameters() //TODO nie s jedine parametre
+{
+	//redering mode
+
+	{
+		PdfOperator::Operands operands;
+		operands.push_back(shared_ptr<IProperty>(new CInt(ui.shape->currentIndex())));
+		_BT->push_back( createOperator("tr", operands ), getLastOperator(_BT));
+	}
+	//nastal cas na farby a podobne uchylnosti, este predtym, ako pojdm td
+	//RGB
+	{
+		//stroking operands
+		PdfOperator::Operands operands;
+		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getR())) );
+		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getG())) );
+		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getB())) );
+		_BT->push_back( createOperator("RG", operands ), getLastOperator(_BT));
+	}
+	{
+		PdfOperator::Operands operands;
+		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getR())) );
+		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getG())) );
+		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getB())) );
+	
+		//non-stroking operands
+		_BT->push_back( createOperator("rg", operands ), getLastOperator(_BT));
+	}
+	QVariant v = this->ui.fontsize->itemData(this->ui.fontsize->currentIndex());
+	_BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(_BT));
+
+	if (this->ui.generateCm->isChecked())
+		return;
+	_BT->push_back( createMatrix("tm"), getLastOperator(_BT));
 }
 
 void FontWidget::addToBT(PdfOp o)

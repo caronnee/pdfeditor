@@ -52,6 +52,8 @@ class FontWidget : public QWidget
 	std::vector<TextFont> _fonts;
 	PdfComp _q;
 	PdfComp _BT;
+
+	PdfOp createMatrix(std::string op);
 public:
 	void reset();
 	FontWidget(QWidget * parent);

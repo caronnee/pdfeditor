@@ -1,0 +1,41 @@
+<ui version="4.0" >
+<author></author>
+<comment></comment>
+<exportmacro></exportmacro>
+<class>ColorPick</class>
+<widget class="QWidget" name="colorPick" >
+<layout class="QHBoxLayout" name="horizontalLayout_2">
+<item>
+<widget class="QSpinBox" name="r">
+<property name="maximum">
+<double>255</double>
+</property>
+<property name="minimum">
+<double>0</double>
+</property>
+</widget>
+</item>
+<item>
+<widget class="QSpinBox" name="g">
+<property name="maximum">
+<double>255</double>
+</property>
+<property name="minimum">
+<double>0</double>
+</property>
+</widget>
+</item>
+<item>
+<widget class="QSpinBox" name="b">
+<property name="maximum">
+<double>255</double>
+</property>
+<property name="minimum">
+<double>0</double>
+</property>
+</widget>
+</item>
+</layout>
+</widget>
+</ui>
+

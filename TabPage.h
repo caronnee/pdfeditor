@@ -48,10 +48,10 @@ enum Mode
 //budeme predpokladat, ze vsetko toto je platne, ze sme to uz nastavili
 struct OperatorData
 {
-	double _origX, _origX2;
 	double _begin, _end;
 	double _ymin, _ymax; 
 	PdfOp _op;
+	double _origX, _origX2;
 	std::string _text; //jak bol text v tom, pripadne uprava o medzeru, prepisanie ma medzeru, ako konci -, odstranit
 	OperatorData(PdfOp op) : _begin(0), _end(0), _op(op), _origX(0), _origX2(0)
 	{
