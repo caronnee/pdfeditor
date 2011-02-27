@@ -1,8 +1,8 @@
-#include "pdfgui.h"
 #include  <QImage>
 #include <QColor>
 #include <QKeyEvent>
 #include <iostream>
+#include "pdfgui.h"
 
 pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags) 
 	: QMainWindow(parent, flags), init()

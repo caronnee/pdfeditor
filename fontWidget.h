@@ -1,6 +1,7 @@
 #ifndef __FONTE_WIDGET__
 #define __FONTE_WIDGET__
 
+#include "ui_properties.h"
 #include <QWidget>
 #include <vector>
 //PDF
@@ -9,9 +10,8 @@
 #include <kernel/pdfoperators.h>
 #include "typedefs.h"
 //misc
-//kvoli xpdf, kde je to definovane...pch!:)
-#undef fontItalic 
-#include "ui_properties.h"
+////kvoli xpdf, kde je to definovane...pch!:)
+//#undef fontItalic 
 
 typedef boost::shared_ptr<pdfobjects::UnknownCompositePdfOperator> PdfComp;
 

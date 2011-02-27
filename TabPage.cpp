@@ -1,3 +1,8 @@
+//PDF
+#include <kernel/pdfoperators.h>
+#include <kernel/cannotation.h>
+#include <kernel/carray.h>
+
 #include "debug.h"
 #include "TabPage.h"
 #include "globalfunctions.h"
@@ -12,10 +17,6 @@
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QVariant>
-//PDF
-#include <kernel/pdfoperators.h>
-#include <kernel/cannotation.h>
-#include <kernel/carray.h>
 
 //created files
 #include "insertpagerange.h"

@@ -10,8 +10,7 @@ class ColorPicker : public QWidget
 	Q_OBJECT
 
 private:
-	Ui::ColorPick ui;	 //tri spinboxy + 1 na vykreslovanie farby
-	int _r,_g,_b; //na zaciatku cierne
+	Ui::colorPick ui;	 //tri spinboxy + 1 na vykreslovanie farby
 public:
 	ColorPicker(QWidget * parent) : QWidget(parent) { }
 	int getR() { return ui.r->value(); }

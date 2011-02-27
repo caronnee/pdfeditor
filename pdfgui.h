@@ -2,9 +2,9 @@
 #define PDFGUI_H
 
 #include <QtGui/QMainWindow>
+ 
 #include "openpdf.h"
 #include "ui_pdfgui.h"
- 
 //xpdf, pdfedit -> ktovie ci to nema ist do cppka
 #define NO_CMAP
 #include "xpdf/GlobalParams.h"

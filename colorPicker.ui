@@ -1,41 +1,36 @@
-<ui version="4.0" >
-<author></author>
-<comment></comment>
-<exportmacro></exportmacro>
-<class>ColorPick</class>
-<widget class="QWidget" name="colorPick" >
-<layout class="QHBoxLayout" name="horizontalLayout_2">
-<item>
-<widget class="QSpinBox" name="r">
-<property name="maximum">
-<double>255</double>
-</property>
-<property name="minimum">
-<double>0</double>
-</property>
-</widget>
-</item>
-<item>
-<widget class="QSpinBox" name="g">
-<property name="maximum">
-<double>255</double>
-</property>
-<property name="minimum">
-<double>0</double>
-</property>
-</widget>
-</item>
-<item>
-<widget class="QSpinBox" name="b">
-<property name="maximum">
-<double>255</double>
-</property>
-<property name="minimum">
-<double>0</double>
-</property>
-</widget>
-</item>
-</layout>
-</widget>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>colorPick</class>
+ <widget class="QWidget" name="colorPick">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>400</width>
+    <height>300</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QSpinBox" name="r"/>
+   </item>
+   <item>
+    <widget class="QSpinBox" name="g"/>
+   </item>
+   <item>
+    <widget class="QSpinBox" name="b"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>
-

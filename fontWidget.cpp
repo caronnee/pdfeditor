@@ -1,6 +1,6 @@
 //TODO on close close evrythign else
-#include "fontWidget.h"
 #include <QTableWidgetItem>
+#include "fontWidget.h"
 
 using namespace pdfobjects;
 using namespace boost;
@@ -100,16 +100,16 @@ void FontWidget::addParameters() //TODO nie s jedine parametre
 	{
 		//stroking operands
 		PdfOperator::Operands operands;
-		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getR())) );
-		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getG())) );
-		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getB())) );
+	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getR())) );
+	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getG())) );
+	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getB())) );
 		_BT->push_back( createOperator("RG", operands ), getLastOperator(_BT));
 	}
 	{
 		PdfOperator::Operands operands;
-		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getR())) );
-		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getG())) );
-		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getB())) );
+	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getR())) );
+	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getG())) );
+	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getB())) );
 	
 		//non-stroking operands
 		_BT->push_back( createOperator("rg", operands ), getLastOperator(_BT));
