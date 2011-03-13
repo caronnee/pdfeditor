@@ -8,19 +8,20 @@
 -vyhladavanie aj medzerami
 -prepisat cast textu
 -cm namiesto td - checkbox, ci sa nakoniec vyvolava td alebo cm
-----IMAGE-----
--dialog pre pridanie obrazka
-----------------------TEXT---------------------------
 -pridat do odtien farby, tvar
 	(cs non-stroking)
 	(CS stroking) .//set operation
-----------------------IMAGE--------------------------
--v zavslosti na rotacii dialogu spravit to, jak sa vypocitava cm
+----IMAGE-----
+-dialog pre pridanie obrazka
+-v zavislosti na rotacii v dialogu spravit to, jak sa vypocitava cm
 -pridanie obrazka
 -skalovanie obrazka
+----------------------TEXT---------------------------
+----------------------IMAGE--------------------------
 -(priehladnost obrazka?)
 -extrakcia casti obrazka
--zmena atributov obrazka
+-zmena atributov obrazka(new context)
+
 ----------------------HIGHLIGHT----------------------
 -dialog pre pridanie comments
 -pridanie commentu
@@ -31,3 +32,6 @@
 ----------------------ADDITIONAL---------------------
 -(vyhladavanie regexu)
 -(upravit text tak, aby bol zarovnany vzhladom na ine viditelne operatory)
+
+
+CodeWarrior - debugger

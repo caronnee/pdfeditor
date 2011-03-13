@@ -53,6 +53,9 @@
       </item>
       <item row="2" column="2">
        <widget class="QDial" name="rotation">
+        <property name="tracking">
+		<bool>false</bool>
+	</property>
         <property name="maximumSize">
          <size>
           <width>50</width>
@@ -130,5 +133,18 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+ 	<connection>
+  	<sender>rotation</sender>
+  	<signal>valueChanged(int)</signal>
+  	<receiver>Image</receiver>
+  	<slot>rotateCm(int)</slot>
+ </connection>
+ 	<connection>
+	<sender>apply</sender>
+	<signal>clicked</signal>
+	<receiver>Image</receiver>
+	<slot>apply</slot>
+	</connection>
+ </connections>
 </ui>

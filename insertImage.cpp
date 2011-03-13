@@ -1,4 +1,5 @@
 #include "insertImage.h"
+#include "globalfunctions.h"
 #include <boost/shared_ptr.hpp>
 #include <kernel/pdfoperators.h>
 #include <kernel/factories.h>
@@ -12,8 +13,25 @@ InsertImage::InsertImage()
 	ui.setupUi(this);
 }
 //v tomto okamihu mame nazov obrazka
-void InsertImage::inserting()
+void InsertImage::rotationCm(int angle)
 {
+	float radian = toRadians(angle);
+	float scale = this->ui.scale->value();
+	double cs = scale*cos(static_cast<double>(radian));
+	QVariant cs1(cs);
+	double sn = scale*sin(static_cast<double>(radian));
+	QVariant sn1(sn);
+	QVariant sn2(sn*-1);
+	ui.cm->setItem(0,0,new QTableWidgetItem(cs1.toString()));
+	ui.cm->setItem(0,1,new QTableWidgetItem(cs1.toString()));
+	ui.cm->setItem(1,0,new QTableWidgetItem(cs1.toString()));
+	ui.cm->setItem(1,1,new QTableWidgetItem(cs1.toString()));
+}
+void InsertImage::apply()
+{
+	if (ui.lineEdit->text()==NULL)
+		return;
+	//TODO checkni, ci ten subor existuje
 	//add to buffer everything that is in image
 	shared_ptr<UnknownCompositePdfOperator> q(new UnknownCompositePdfOperator("q", "Q"));
 
@@ -40,7 +58,12 @@ void InsertImage::inserting()
 	image_dict.addProperty ("CS", CName ("RGB"));
 	image_dict.addProperty ("BPC", CInt (8));
 	//CInlineImage img (image_dict, what);
-	shared_ptr<CInlineImage> inline_image (new CInlineImage (/*image_dict, what*/));
+	// WHAT has to be cStream Buffer, whatever it is..
+//	for ( int i =0; i<  ui.lineEdit->text().toAscii().data() );
+	const char * b = ui.lineEdit->text().toAscii().data();
+	CStream::Buffer buffer(b, b+ui.lineEdit->text().toAscii().length());
+	//for ( int i =0; i<  ui.lineEdit->text().toAscii().data() );
+	shared_ptr<CInlineImage> inline_image (new CInlineImage (image_dict,buffer));
 	shared_ptr<InlineImageCompositePdfOperator> BI(new InlineImageCompositePdfOperator (inline_image));
 
 	q->push_back(BI,getLastOperator(q));

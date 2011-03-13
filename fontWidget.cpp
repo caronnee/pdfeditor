@@ -8,7 +8,7 @@ using namespace boost;
 typedef shared_ptr< PdfOperator > PdfOp;
 
 //TODO doplnit
-std::string fontShapes[] ={"a","s","d","f","g","h"};
+std::string fontShapes[] ={"a1","a2","a3","a4","a5","a6"};
 
 void FontWidget::change()
 {
@@ -88,8 +88,7 @@ PdfOp FontWidget::createMatrix(std::string op)
 }
 void FontWidget::addParameters() //TODO nie s jedine parametre
 {
-	//redering mode
-
+	//rendering mode
 	{
 		PdfOperator::Operands operands;
 		operands.push_back(shared_ptr<IProperty>(new CInt(ui.shape->currentIndex())));

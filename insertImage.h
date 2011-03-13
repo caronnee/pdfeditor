@@ -13,7 +13,8 @@ class InsertImage : public QWidget
 public:
 	InsertImage();
 public slots:
-	void inserting();
+	void apply();
+	void rotationCm(int angle);
 signals:
 	void insertImage(PdfOp op); //jake casti
 };
