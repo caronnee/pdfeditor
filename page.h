@@ -20,7 +20,10 @@ public:
 		_interactive.push_back(r);
 		//FIXME zotriedit pre lepsi pristup
 	}
-private:
+	const QImage & getImage()const
+	{
+		return _image;
+	}
 	void setImg();
 
 private:

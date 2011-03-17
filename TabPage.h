@@ -1,4 +1,20 @@
-#pragma once
+#ifndef __TAbPAGE__
+#define __TAbPAGE__
+
+#include <qwidget.h>
+#include <QString>
+#include <QFileDialog>
+#include <QRect>
+#include "ui_showPage.h"
+#include "page.h"
+#include "fontWidget.h"
+#include <list>
+#include <QTreeWidgetItem>
+#include "typedefs.h"
+#include "debug.h"
+#include "Search.h"
+
+
 //xpdf, pdfedit -> ktovie ci to nema ist do cppka
 #define NO_CMAP
 #include "xpdf/GlobalParams.h"
@@ -14,19 +30,6 @@
 #include <kernel/displayparams.h>
 
 //END of PDF
-#include <qwidget.h>
-#include <QString>
-#include <QFileDialog>
-#include <QRect>
-#include "ui_showPage.h"
-#include "page.h"
-#include "fontWidget.h"
-#include <list>
-#include <QTreeWidgetItem>
-#include "typedefs.h"
-#include "debug.h"
-#include "Search.h"
-
 using namespace boost;
 using namespace pdfobjects;
 
@@ -37,6 +40,7 @@ enum Mode
 	TextMode,
 	OperatorsMode, //moze byt uzitocne
 	ImageMode,
+	ImageModePart,
 	AnntotationMode,
 	DrawMode,
 	NumberOfModes
@@ -231,6 +235,7 @@ private: //variables
 	Ui::TabUI ui; 
 	QWidget * widget;
 	Search * s;
+	QPoint _mousePos;
 
 	std::vector<std::string> acceptedAnotName;//TODO static alebo enum alebo cos
 	//could be static. but :)
@@ -259,6 +264,7 @@ private: //variables
 	CPage::Annotations _annots;
 	DisplayPage * labelPage;
 private:
+	void getSelected(int x , int y, Ops ops);
 	void toPdfPos(int x, int y, double & x1, double &y1);
 	void toPixmapPos(double x1, double y1, int & x, int & y);
 	void inDirection(TextData::iterator & it, bool forw);
@@ -388,3 +394,5 @@ private slots:
 signals:
 	void pdfText(std::string s);
 };
+
+#endif

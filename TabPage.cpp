@@ -1,11 +1,13 @@
-//PDF
-#include <kernel/pdfoperators.h>
-#include <kernel/cannotation.h>
-#include <kernel/carray.h>
-
 #include "debug.h"
 #include "TabPage.h"
 #include "globalfunctions.h"
+
+//created files
+#include "insertpagerange.h"
+#include "tree.h"
+#include "bookmark.h"
+#include <float.h>
+
 //QT$
 #include <QKeyEvent>
 #include <QFileDialog>
@@ -17,12 +19,12 @@
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QVariant>
+#include <QClipboard>
 
-//created files
-#include "insertpagerange.h"
-#include "tree.h"
-#include "bookmark.h"
-#include <float.h>
+//PDF
+#include <kernel/pdfoperators.h>
+#include <kernel/cannotation.h>
+#include <kernel/carray.h>
 
 //operators to be cloned
 std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","cs", "SC","SCN", "sc","scn", "G","g","RG","rg","k","K",
@@ -53,7 +55,7 @@ TabPage::TabPage(QString name) : _name(name)
 	acceptedAnotName.push_back("Text");
 	acceptedAnotName.push_back("Highlight");
 	acceptedAnotName.push_back("Underline");
-	acceptedAnotName.push_back("Strikeout");
+	acceptedAnotName.push_back("Strikeout"); //skrtnutie
 
 	//connections
 	connect (ui.previous,SIGNAL(clicked()),this,SLOT(previousPage()));
@@ -154,7 +156,60 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 			highlightText(x,y); //nesprav nic, pretoze to bude robit mouseMove
 			break;
 		}
-		default:
+		case ImageModePart:
+		{
+			//zadaj init poziciue ->mouse Release
+			if ( _dataReady )
+			{
+				//copy to clipboard
+				QClipboard *clipBoard = QApplication::clipboard();
+				QRect rect(_mousePos, QPoint(x,y)); //to vyberie ale vsetko
+				//TODO minimum from BOX selected & rect
+				clipBoard->setImage(labelPage->getImage().copy(rect));
+				return;
+			}
+			else
+			{ //TODO painter showing it's way
+				_mousePos = QPoint(x,y);
+				Ops ops;
+				getSelected( x, y, ops);
+				for ( int i =0 ; i < ops.size(); i++)
+				{
+					std::string s;
+					ops[i]->getOperatorName(s);
+					if (!typeChecker.isType(OpImageName,s))
+						continue;
+					_dataReady = true; //TODO vyznacenie
+					break;
+				}
+			}
+			break;
+		}
+		case ImageMode:
+		{
+			//show only picture, all picture
+			//get only operator
+			double px, py;
+			//convert
+			toPdfPos(x,y, px, py);
+			//find operattdisplayparamsors
+			Ops ops;
+			page->getObjectsAtPosition(ops, libs::Point(px,py));
+			//vsetky tieto objekty vymalujeme TODO zistit orientaciu
+			for ( size_t i =0; i < ops.size(); i++)
+			{
+				//ukaz len povolene typy
+				std::string s;
+				ops[i]->getOperatorName(s); 
+				if (!typeChecker.isType(OpImageName,s))
+				{
+					QClipboard *clipBoard = QApplication::clipboard();
+					clipBoard->setImage(labelPage->getImage().copy(getRectangle(ops[i])));
+					break;
+				}
+			}
+		}
+		default: //ukazuje celeho operatora
 		{
 			labelPage->unsetImg();
 			showClicked(x,y);//zmenit 
@@ -839,7 +894,7 @@ void TabPage::setAnnotations()
 		//dostat annotecny rectangle
 		BBox b(x1,y1,x2,y2);	
 		QRect convertedRect = getRectangle(b);
-		labelPage->addPlace(convertedRect);
+		labelPage->addPlace(convertedRect); //teraz vie o vsetkych miestach
 	}
 }
 
@@ -1278,3 +1333,15 @@ void TabPage::riseSel()
 }
 
 */
+
+void TabPage::getSelected( int x, int y, Ops ops)
+{
+	//show only picture, all picture
+	//get only operator
+	double px, py;
+	//convert
+	toPdfPos(x,y, px, py);
+	//find operattdisplayparamsors
+	page->getObjectsAtPosition(ops, libs::Point(px,py));
+
+}

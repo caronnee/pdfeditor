@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>comments</class>
+ <widget class="QWidget" name="Comments">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>400</width>
+    <height>300</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Add Annotation</string>
+  </property>
+  <layout class="QVBoxLayout" name="layout">
+   <item>
+    <widget class="QComboBox" name="annotType"/>
+   </item>
+   <item>
+   	<widget class="QTextEdit" name="text" />
+   </item>
+   <item>
+   	<widget class="QTextEdit" name="link" />
+   </item>
+   <item>
+   	<widget class="QPushButton" name="apply">
+		<property name="text">
+			<string>Ok</string>
+		</property>
+	</widget>
+   </item>
+   <item>
+   	<widget class="QPushButton" name="del">
+		<property name="text">
+			<string>Delete</string>
+		</property>
+	</widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>apply</sender>
+   <signal>clicked()</signal>
+   <receiver>Comments</receiver>
+   <slot>apply</slot>
+  </connection>
+  <connection>
+  <sender>annotTypes</sender>
+  <signal>currentIndexChanged(int)</signal>
+  <receiver>Comments</receiver>
+  <slot>onChange(int)</slot>
+  </connection>
+ </connections>
+</ui>
