@@ -18,4 +18,19 @@ void rotatePosition( T xin, T yin, T& xout, T &yout, int angle )
 	xout = s*cos(toRadians(angle));
 	yout = s*sin(toRadians(angle));
 };
+#define ANNOTS(XX) \
+	XX( "Link", Link) \
+	XX( "Text", Text) \
+	XX("Highlight", Highlight) \
+	XX("Underline", Underline) \
+	XX("Strikeout", Strike) \
+	XX("", Supported) \
+
+#define ENUMS(a,b) A##b,
+#define CREATE_ARRAY(a,b)	a,
+
+enum SupportedAnnotation
+{
+	ANNOTS(ENUMS)
+};
 #endif // __GLOBAL_F__

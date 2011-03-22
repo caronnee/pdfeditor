@@ -1,4 +1,6 @@
 #include "comments.h"
+#include "kernel\factories.h"
+#include "globalfunctions.h"
 
 Comments::Comments(float x, float y)
 {
@@ -16,6 +18,17 @@ void Comments::onChange(int index)
 }
 void Comments::apply()
 {
-	//ziti, ci je to text
+	//zisti, ci je to text
+	switch (ui.annotType->currentIndex())
+	{
+	case AText: //text, obycajny
+		{
+			ADictionary d = _an->getDictionary();
+			d->addProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CNameFactory::getInstance(std::string(ui.text->toPlainText().toAscii().data()))));
+			break;
+		} //TODO dokoncit
+	default:
+		throw "unimplemented";
+	}
 	emit (annotation (_an));
 }

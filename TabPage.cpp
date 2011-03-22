@@ -6,6 +6,7 @@
 #include "insertpagerange.h"
 #include "tree.h"
 #include "bookmark.h"
+#include "globalfunctions.h"
 #include <float.h>
 
 //QT$
@@ -51,11 +52,13 @@ TabPage::TabPage(QString name) : _name(name)
 	QObject::connect(s, SIGNAL(search(std::string)),this,SLOT(search(std::string)));
 	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
 
-	acceptedAnotName.push_back("Link");
-	acceptedAnotName.push_back("Text");
-	acceptedAnotName.push_back("Highlight");
-	acceptedAnotName.push_back("Underline");
-	acceptedAnotName.push_back("Strikeout"); //skrtnutie
+	{
+		std::string links[] = { ANNOTS(CREATE_ARRAY) };
+		for ( int i =0; i < ASupported; i++)
+		{
+			acceptedAnotName.push_back(links[i]);
+		}
+	}
 
 	//connections
 	connect (ui.previous,SIGNAL(clicked()),this,SLOT(previousPage()));

@@ -24,14 +24,14 @@
 ----------------------TEXT---------------------------
 ----------------------IMAGE--------------------------
 -(priehladnost obrazka?)
-
-----------------------HIGHLIGHT----------------------
--pridanie commentu
--zmazanie commentu
+---------------------HIGHLIGHT----------------------
+-pridanie commentu ( context menu - > add comennt, emit point, od, okaa, emit  refresh(rectangle to refresh
+	( podporovane text, link, highlight, strikeout )
 -zmena commentu ( zmena textu farby, atd)
--zobraenie, ze existije anotacia
+-zobraenie, ze existuje anotacia
+-zmazanie commentu
 -----------------------VIZAZ-------------------------
-->prepinanie medzi moznostami
+->prepinanie medzi moznostami( pracuj ako s textom, pracuj ako s obrazkom, ukaz mi operatory)
 ----------------------ADDITIONAL---------------------
 - (vyhladavanie regexu)
 - (upravit text tak, aby bol zarovnany vzhladom na ine viditelne operatory)

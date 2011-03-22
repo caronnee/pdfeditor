@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>comments</class>
+ <class>Comments</class>
  <widget class="QWidget" name="Comments">
   <property name="geometry">
    <rect>
@@ -24,24 +24,24 @@
     <widget class="QComboBox" name="annotType"/>
    </item>
    <item>
-   	<widget class="QTextEdit" name="text" />
+    <widget class="QTextEdit" name="text"/>
    </item>
    <item>
-   	<widget class="QTextEdit" name="link" />
+    <widget class="QTextEdit" name="link"/>
    </item>
    <item>
-   	<widget class="QPushButton" name="apply">
-		<property name="text">
-			<string>Ok</string>
-		</property>
-	</widget>
+    <widget class="QPushButton" name="apply">
+     <property name="text">
+      <string>Ok</string>
+     </property>
+    </widget>
    </item>
    <item>
-   	<widget class="QPushButton" name="del">
-		<property name="text">
-			<string>Delete</string>
-		</property>
-	</widget>
+    <widget class="QPushButton" name="del">
+     <property name="text">
+      <string>Delete</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -52,12 +52,16 @@
    <signal>clicked()</signal>
    <receiver>Comments</receiver>
    <slot>apply</slot>
-  </connection>
-  <connection>
-  <sender>annotTypes</sender>
-  <signal>currentIndexChanged(int)</signal>
-  <receiver>Comments</receiver>
-  <slot>onChange(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
  </connections>
 </ui>
