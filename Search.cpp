@@ -1,4 +1,5 @@
 #include "Search.h"
+#include <string.h>
 
 Search::Search()
 {

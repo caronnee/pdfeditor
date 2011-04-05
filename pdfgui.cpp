@@ -1,7 +1,8 @@
-#include  <QImage>
+#include <iostream>
+#include <QImage>
 #include <QColor>
 #include <QKeyEvent>
-#include <iostream>
+
 #include "pdfgui.h"
 
 pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags) 

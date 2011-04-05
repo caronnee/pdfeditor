@@ -43,6 +43,9 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QComboBox" name="annotLinkStyle"/>
+   </item>
   </layout>
  </widget>
  <resources/>

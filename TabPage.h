@@ -1,5 +1,5 @@
-#ifndef __TAbPAGE__
-#define __TAbPAGE__
+#ifndef __TABPAGE__
+#define __TABPAGE__
 
 #include <qwidget.h>
 #include <QString>

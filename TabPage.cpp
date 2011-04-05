@@ -25,7 +25,7 @@
 //PDF
 #include <kernel/pdfoperators.h>
 #include <kernel/cannotation.h>
-#include <kernel/carray.h>
+//#include <kernel/carray.h>
 
 //operators to be cloned
 std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","cs", "SC","SCN", "sc","scn", "G","g","RG","rg","k","K",
@@ -76,6 +76,7 @@ TabPage::TabPage(QString name) : _name(name)
 	std::string s;
 	for ( size_t i = 0; i< pdf->getRevisionsCount(); i++)
 	{
+		QVariant q(i);
 		std::stringstream ss;
 		ss << i;
 		ss >> s;
@@ -695,9 +696,9 @@ void TabPage::addRevision( int i )
 		ui.Revision->removeItem(ui.Revision->count()-1);
 		return;//page was loaded
 	}
-	std::cout << "Adding revision ";
+	//std::cout << "Adding revision ";
 	std::stringstream ss;
-	std::cout << i << " " << pdf->getRevisionsCount() << std::endl;
+	//std::cout << i << " " << pdf->getRevisionsCount() << std::endl;
 	assert( (size_t)i < pdf->getRevisionsCount() );
 	ss << i;
 	std::string s;
@@ -741,7 +742,7 @@ void TabPage::commitRevision()
 		addRevision(this->ui.Revision->count());	
 	else
 	{ 
-		std::cout << " Not changed" << pdf->getRevisionsCount() << std::endl;
+		//std::cout << " Not changed" << pdf->getRevisionsCount() << std::endl;
 	}
 }
 

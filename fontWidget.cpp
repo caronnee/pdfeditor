@@ -45,13 +45,13 @@ FontWidget::FontWidget(const FontWidget & font) : QWidget(font.parentWidget())
 	//copy TODO
 	throw "Not now";
 }
-void FontWidget::addFont(std::string name, std::string val)//TOFO
+void FontWidget::addFont(std::string name, std::string val)//TODO
 {
 	QVariant q(name.c_str()); //TODO convert to more understable font name
 	ui.fonts->insertItem(ui.fonts->count(),q.toString(),q); //Qvariant?
 	_fonts.push_back(val);
 }
-FontWidget::~FontWidget() { }
+FontWidget::~FontWidget() {}
 void FontWidget::createBT()
 {
 	_q = PdfComp(new pdfobjects::UnknownCompositePdfOperator( "q", "Q"));
