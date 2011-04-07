@@ -13,6 +13,7 @@
 #include "typedefs.h"
 #include "debug.h"
 #include "Search.h"
+#include "comments.h"
 
 
 //xpdf, pdfedit -> ktovie ci to nema ist do cppka
@@ -43,6 +44,7 @@ enum Mode
 	ImageModePart,
 	AnntotationMode,
 	DrawMode,
+	ModeEmitPosition,
 	NumberOfModes
 };
 
@@ -242,6 +244,7 @@ private: //variables
 	QRegion _region;
 	QString _name; //name of the file to be opened
 	FontWidget * _font;	
+	Comments * _cmts;
 	Mode _mode;
 
 //	std::vector<AcceptOperatorName> opNames;
@@ -276,6 +279,7 @@ public:
 
 	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
 	void SetTextSelect();
+	
 	void replaceText( std::string what, std::string by);
 	void UnSetTextSelect();
 	TabPage(QString name);
@@ -332,9 +336,13 @@ public:
 	//rotate page
 
 public slots:
+	void toRows(libs::Rectangle);
+	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
+	void insertAnnotation(Annot a);
 	void search(std::string text);
 	void changeText();
-
+	void showAnnotDiag();
+	void closeAnnotDiag();
 	void handleBookMark(QTreeWidget * item);
 	void removeObjects();
 	void clicked(int x, int y);
@@ -392,6 +400,8 @@ private slots:
 	void search(std::string text);
 	*/
 signals:
+	void parsed(std::vector<float>);
+	void pdfPosition(float a, float b, int w,int h);
 	void pdfText(std::string s);
 };
 

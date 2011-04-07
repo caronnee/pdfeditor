@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QRect>
 
+#include <vector>
 #include "ui_comments.h"
 //PDF
 #include "kernel/cannotation.h"
@@ -24,14 +25,15 @@ class Comments : public  QWidget
 	Annot _an;
 	libs::Rectangle rect;
 public:
-	Comments(float x, float y);
+	Comments();
 	
 signals:
-	//addAnnotation, where
 	void annotation(Annot);
+	void parseToRows(libs::Rectangle);
 
 public slots:
-	void setPoints(float * flts, int size);
+	void setRectangle(float x, float y, int width, int height);
+	void setPoints(std::vector<float> flts);
 	void setDestination(pdfobjects::IndiRef ref);
 	void onChange(int index);
 	void apply();

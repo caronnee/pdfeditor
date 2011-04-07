@@ -7,6 +7,7 @@
 #include "tree.h"
 #include "bookmark.h"
 #include "globalfunctions.h"
+#include "utils\types\coordinates.h"
 #include <float.h>
 
 //QT$
@@ -41,6 +42,7 @@ TabPage::TabPage(QString name) : _name(name)
 {
 	_selected = false;
 	_font = NULL;
+	_cmts = NULL;
 	ui.setupUi(this);
 	labelPage = new DisplayPage();
 	s = new Search();
@@ -51,7 +53,6 @@ TabPage::TabPage(QString name) : _name(name)
 	this->ui.displayManipulation->hide();
 	QObject::connect(s, SIGNAL(search(std::string)),this,SLOT(search(std::string)));
 	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
-
 	{
 		std::string links[] = { ANNOTS(CREATE_ARRAY) };
 		for ( int i =0; i < ASupported; i++)
@@ -107,7 +108,60 @@ void TabPage::zoom(QString zoomscale)//later with how much pages, if all or not
 	displayparams.vDpi = dpiy * scale;
 	this->setFromSplash();
 }
-
+void TabPage::toRows(libs::Rectangle r)
+{
+	//najsi mi vssetky textove oeratory a z nich vycuvam svojich 8 cisel, pravepodobne z gxfconfu a pozicie offset operatorov ( vektory )
+	//TODO treba osetrit na to, ak chceme zvyraznit len jednu cast textoveho operatora
+	Ops ops;
+	page->getObjectsAtPosition(ops,r);
+	TextOperatorIterator it = PdfOperator::getIterator<TextOperatorIterator> (ops.front());
+	std::vector<float> flts;
+	while (!it.isEnd())
+	{
+		libs::Rectangle r2 = it.getCurrent()->getBBox();
+		flts.push_back(r2.xleft);
+		flts.push_back(r2.yleft);
+		flts.push_back(r2.xleft);
+		flts.push_back(r2.yright);
+		flts.push_back(r2.xright);
+		flts.push_back(r2.yleft);
+		flts.push_back(r2.xright);
+		flts.push_back(r2.yright);
+		it.next();
+	}
+	emit parsed(flts);
+}
+void TabPage::closeAnnotDiag()
+{
+	delete _cmts; //cleanup za anotacie
+	_cmts = NULL;
+	_mode = TextMode;
+	//disconnect all?
+}
+void TabPage::insertAnnotation(Annot a)
+{
+	//vlozeime do aktualnej stranky
+	page->addAnnotation(a);
+		///updatneme annots:)
+	page->getAllAnnotations(_annots);
+}
+void TabPage::waitForPosition()
+{
+	_mode = ModeEmitPosition;
+}
+void TabPage::showAnnotDiag()
+{
+	_cmts = new Comments();
+	_cmts->show();
+	_mode = ModeEmitPosition;
+	connect(_cmts,SIGNAL(close),this,SLOT(closeAnnotDiag));
+	//pridanie anotacie
+	connect(_cmts,SIGNAL(annotation(Annot)),this,SLOT(insertAnnotation(Annot)));
+	connect(this,SIGNAL(pdfPosition(float,float,int,int)),_cmts,SLOT(setRectangle(float,float,int,int)));
+	connect(_cmts,SIGNAL(parseToRows(libs::Rectangle)),
+		this,SLOT(toRows(libs::Rectangle)));
+	connect(this,SIGNAL(parsed(std::vector<float>)),_cmts,SLOT(setPoints(std::vector<float>)));
+}
 void TabPage::SetModeTextSelect()
 {
 	//bind widget to the page show
@@ -155,6 +209,19 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 {
 	switch (_mode)
 	{
+	case ModeEmitPosition:
+		{
+			if (_mousePos.x()<0)
+				_mousePos = QPoint(x,y);
+			else
+			{
+				double a,b;
+				toPdfPos(min(_mousePos.x(),x),min(_mousePos.y(),y),a,b);
+				emit pdfPosition(a,b,abs(_mousePos.x()-x),abs(_mousePos.y()-y));
+				_mousePos = QPoint(-1,-1);
+			}
+			break;
+		}
 		case TextMode:
 		{
 			highlightText(x,y); //nesprav nic, pretoze to bude robit mouseMove
@@ -882,7 +949,7 @@ void TabPage::draw() //change mode to drawing
 //page bude vediet o interaktovnyh miestach -> kvoli mouseMove
 void TabPage::setAnnotations()
 {
-	//akonahle sa zmeni straka, upozornim page na to ze tam moze mat anotacie
+	//akonahle sa zmeni stranka, upozornim page na to ze tam moze mat anotacie
 	//dostan oblasti anotacii z pdf
 	page->getAllAnnotations(_annots);
 	//v page nastav vsetky aktivne miesta
