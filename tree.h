@@ -83,6 +83,7 @@ class Tree
 	Accept * _actual;
 	Accept * _root;
 	std::string _search;
+	size_t _position;
 public:
 	int _begin;
 	int _end; //poradie v tokenu, pretoze sa mi to naramne hodi:)
@@ -95,13 +96,28 @@ public:
 		Found //je v koncovom stave
 	};
 
-	Tree(std::string pattern)
+	void Clear()
 	{
+		while(_root!=NULL)
+		{
+			Accept * t = _root;
+			_root = t->next();
+			delete t; //TODO check
+		}
+	}
+	Tree() 
+	{ 
+		_position = 0;
 		_root= NULL;
 		_actual = NULL;
 		_begin = 0;
 		_end = 0;
 		_tokens = -1;
+	}
+	~Tree() { Clear(); }
+	void setPattern(std::string pattern)
+	{
+		Clear(); //TODO checkovat, ci tam ten pattern uz nahodou nie je, takze netreba clear
 		if (pattern.empty()||(pattern[0] == '\\' && pattern.length() ==1))
 			throw "Wrong pattern input";
 		Accept * prev = NULL;
@@ -152,7 +168,6 @@ private:
 
 		}
 	}
-
 public:
 	void setText(std::string text)
 	{
@@ -162,21 +177,22 @@ public:
 	TreeTokens search()
 	{
 		//stejne toho nedostane vela a bude to brat po tokenoch
-		for ( size_t i = 0; i< _search.length(); i++)
+		for (_position; _position< _search.length();  _position++)
 		{
 			if (_actual->isBegin())
 			{
 				_tokens = 0;
-				_begin = i;
+				_begin = _position;
 			}
-			_actual = _actual->accept(_search[i]);
+			_actual = _actual->accept(_search[_position]);
 			if (_actual==NULL) //posledne
 			{
 				_actual = _root;
-				_end = i;
+				_end = _position;
 				return Tree::Found;//kolkate pismeno to bolo. Operator budeme vediet z toho, co tam vrazame
 			}
 		}
+		_position = 0;
 		return Tree::Next;
 	}
 };

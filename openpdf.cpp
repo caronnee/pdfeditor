@@ -5,7 +5,7 @@
 
 OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget)
 {
-	TabPage * page = new TabPage("./zadani.pdf");
+	TabPage * page = new TabPage("D:\\work\\PdfEdit\\zadani.pdf");
 	this->addTab(page,"test");
 }
 

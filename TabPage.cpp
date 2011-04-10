@@ -938,8 +938,6 @@ void TabPage::print()
 	painter.end();
 }
 
-
-
 void TabPage::draw() //change mode to drawing
 {
 //	this->ui.content->_beginDraw();
@@ -1227,19 +1225,19 @@ void TabPage::setSelected(TextData::iterator& first, TextData::iterator& last)
 //slot
 void TabPage::search(std::string srch)
 {
-	Tree t(srch); //vytvor strom, ktory bude hladat to slovo
+	_searchEngine.setPattern(srch); //vytvor strom, ktory bude hladat to slovo
 	//vysviet prve, ktore najdes
 	TextData::iterator iter = _textList.begin();
 	if (_selected)
 	{
-		iter = sTextIt;
+		iter = sTextIt;//nic nemen v hladacom engine
 	}
 	float prev = FLT_MAX;
 	std::string s(iter->_text);
 	while (iter != _textList.end())
 	{
-		t.setText(s);
-		switch (t.search())
+		_searchEngine.setText(s);
+		switch (_searchEngine.search())
 		{
 			case Tree::Next:
 			{
@@ -1256,18 +1254,20 @@ void TabPage::search(std::string srch)
 			}
 			case Tree::Found:
 			{
-				prev = iter->_end;
+				prev = iter->_end; //to tu mozno uz ani netreba
 				double a, b;
-				a = iter->position(t._end+2);				
+				//ak je 
+				iter->setEnd(iter->position(_searchEngine._end+2));
 				sTextItEnd = iter;
-				for ( int i = 0; i < t._tokens; i++)
+				for ( int i = 0; i < _searchEngine._tokens; i++)
 				{
 					iter--;
 					iter->clear();
+					//a = iter->_;
 				}
 				sTextIt = iter;
-				b = iter->position(t._begin+1); //clearle, MAGIC
-				iter->setEnd(a);
+				b = iter->position(_searchEngine._begin+1); //clearle, MAGIC
+				//iter->setEnd(a);
 				iter->setBegin(b);
 				_selected = true;
 				highlight();

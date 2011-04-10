@@ -13,34 +13,43 @@
   <property name="windowTitle">
    <string>searchAndReplace</string>
   </property>
-  <layout class="QGridLayout" name = "fLayout">
+  <layout class="QGridLayout" name="fLayout">
    <item row="0" column="1">
     <widget class="QTextEdit" name="text"/>
    </item>
-  <item row="1" column="1">
-  <widget class="QPushButton" name="search">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>260</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Search!</string>
-   </property>
-   </widget>
-  </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="search">
+     <property name="text">
+      <string>Next</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="up">
+     <property name="text">
+      <string>Previous</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>
  <connections>
   <connection>
-  <sender>search</sender>
-  <signal>clicked()</signal>
-  <receiver>Search</receiver>
-  <slot>clicked()</slot>
+   <sender>search</sender>
+   <signal>clicked()</signal>
+   <receiver>Search</receiver>
+   <slot>clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
  </connections>
 </ui>

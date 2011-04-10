@@ -14,6 +14,7 @@
 #include "debug.h"
 #include "Search.h"
 #include "comments.h"
+#include "Tree.h"
 
 
 //xpdf, pdfedit -> ktovie ci to nema ist do cppka
@@ -238,6 +239,7 @@ private: //variables
 	QWidget * widget;
 	Search * s;
 	QPoint _mousePos;
+	Tree _searchEngine;
 
 	std::vector<std::string> acceptedAnotName;//TODO static alebo enum alebo cos
 	//could be static. but :)
@@ -304,7 +306,7 @@ private:
 	void setTextData(TextData::iterator &begin, TextData::iterator end, shared_ptr<PdfOperator> op);
 	void deleteText( std::string text);
 
-	//TODO zostit rotaciu boxu. to je but tm alebo Qstate
+	//TODO zIstit rotaciu boxu. to je but tm alebo Qstate
 	QRect getRectangle( PdfOp ops );
 	QRect getRectangle( BBox box );
 
