@@ -325,14 +325,17 @@ float TextSimpleOperator::getWidth(char chr)
 	CharCode c;Unicode u;int a; double b,cc,d,dx;
 	getCurrentFont()->getNextChar(&chr,1,&c,&u,(int)(sizeof(u) / sizeof(Unicode)),&a,&dx,&b,&cc,&d);
 	//najdi predosly operator s velkostou font
-	FontOperatorIterator it = this->getIterator<FontOperatorIterator>(boost::shared_ptr<PdfOperator>(this),true);
+	/*FontOperatorIterator it = this->getIterator<FontOperatorIterator>(boost::shared_ptr<PdfOperator>(this),false);
 	boost::shared_ptr<PdfOperator> op = it.getCurrent();
-	FontOperatorIterator it2 = this->getIterator<FontOperatorIterator>(boost::shared_ptr<PdfOperator>(op),false);
-	it2.prev();
 	Operands operands;
 	op->getParameters(operands);
-	float fs = utils::getValueFromSimple<CReal>(operands[1]);
-	//getCurrentFont()->
+	float fs = utils::getValueFromSimple<CReal>(operands[1]);*/
+	//najdi predosly operator s velkostou font
+	FontOperatorIterator it = this->getIterator<FontOperatorIterator>(boost::shared_ptr<PdfOperator>(this),true);
+	boost::shared_ptr<PdfOperator> op = it.getCurrent();
+	//tu to padne na drzku
+	FontOperatorIterator it2 = this->getIterator<FontOperatorIterator>(boost::shared_ptr<PdfOperator>(op),false);
+	it2.prev();
 	return dx;
 }
 void TextSimpleOperator::getFontText(std::string& str)const
