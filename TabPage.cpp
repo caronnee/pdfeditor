@@ -9,8 +9,9 @@
 #include "globalfunctions.h"
 #include "utils\types\coordinates.h"
 #include <float.h>
-
+#define SIZEOF_SPACE 6.0f
 //QT$
+#include <QMessageBox>
 #include <QKeyEvent>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -30,7 +31,7 @@
 
 //operators to be cloned
 std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","cs", "SC","SCN", "sc","scn", "G","g","RG","rg","k","K",
-	"Tc","Tw", "Tz", "TL", "Tf","Tr","Ts","Td","TD","Tm","T*" };
+"Tc","Tw", "Tz", "TL", "Tf","Tr","Ts","Td","TD","Tm","T*" };
 
 void TabPage::handleBookMark(QTreeWidget * item)
 {
@@ -142,7 +143,7 @@ void TabPage::insertAnnotation(Annot a)
 {
 	//vlozeime do aktualnej stranky
 	page->addAnnotation(a);
-		///updatneme annots:)
+	///updatneme annots:)
 	page->getAllAnnotations(_annots);
 }
 void TabPage::waitForPosition()
@@ -168,35 +169,46 @@ void TabPage::SetModeTextSelect()
 	_mode = TextMode;	
 	_font = new FontWidget(NULL);
 	loadFonts(_font);
-//	_font->show();
+	//	_font->show();
 	connect(_font, SIGNAL(text(PdfOp)), this, SLOT(insertText(PdfOp)));
 	connect(_font, SIGNAL(changeSelected()), this, SLOT(changeText()));
 	//show text button, hide everything else
-	if (_textList.empty())
+	createList();
+}
+void TabPage::createList()
+{
+	_textList.clear();
+	//get all pdf text operats in list
+	Ops ops;
+	libs::Rectangle rect(0,0,FLT_MAX,FLT_MAX);
+	page->getObjectsAtPosition( ops, rect);
+	//choose just testiterator
+	Ops::iterator it = ops.begin();
+	//float fontSize = 0;
+	while ( it != ops.end())
 	{
-		//get all pdf text operats in list
-		Ops ops;
-		libs::Rectangle rect(0,0,FLT_MAX,FLT_MAX);
-		page->getObjectsAtPosition( ops, rect);
-		//choose just testiterator
-		Ops::iterator it = ops.begin();
-		while ( it != ops.end())
+		std::string n; 
+		(*it)->getOperatorName(n);
+		//if (!typeChecker.isType(OpFontName,n))
+		//{
+		//	pdfobjects::PdfOperator::Operands ops;
+		//	(*it)->getParameters(ops);
+		//	if (ops.size() <2) //nemalo by nikdy nastat! chyba v strukture
+		//		continue;
+		//	fontSize = utils::getValueFromSimple<float>(ops[1]);
+		//}
+		if (!typeChecker.isType(OpTextName,n))
 		{
-			std::string n; 
-			(*it)->getOperatorName(n);
-			if (!typeChecker.isType(OpTextName,n))
-			{
 			//	DEBUGLINE(n);
-				it++;
-				continue;
-			}
-			OperatorData data(*it);
-			_textList.push_back(data);
 			it++;
+			continue;
 		}
-		//sort list
-		_textList.sort();
+		OperatorData data(*it);
+		_textList.push_back(data);
+		it++;
 	}
+	//sort list
+	_textList.sort();
 }
 void TabPage::UnSetTextSelect()
 {
@@ -222,12 +234,12 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 			}
 			break;
 		}
-		case TextMode:
+	case TextMode:
 		{
 			highlightText(x,y); //nesprav nic, pretoze to bude robit mouseMove
 			break;
 		}
-		case ImageModePart:
+	case ImageModePart:
 		{
 			//zadaj init poziciue ->mouse Release
 			if ( _dataReady )
@@ -256,7 +268,7 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 			}
 			break;
 		}
-		case ImageMode:
+	case ImageMode:
 		{
 			//show only picture, all picture
 			//get only operator
@@ -280,7 +292,7 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 				}
 			}
 		}
-		default: //ukazuje celeho operatora
+	default: //ukazuje celeho operatora
 		{
 			labelPage->unsetImg();
 			showClicked(x,y);//zmenit 
@@ -530,10 +542,10 @@ QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
 	QRect r;
 	libs::Rectangle b = ops->getBBox();
 	int x1,y1,x2,y2;
-	
+
 	toPixmapPos(b.xleft, b.yleft, x1,y1);
 	toPixmapPos(b.xright, b.yright, x2, y2);
-//move according to page rotation
+	//move according to page rotation
 	/*int angle = page->getRotation();
 
 	DEBUGLINE(y1);
@@ -542,7 +554,7 @@ QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
 	rotatePosition(x1,y1,x1,y1, angle);
 	rotatePosition(x2,y2,x2,y2, angle);
 	getc(stdin);*///TODO rotation when displaying
-	
+
 	r.setTop(min<float>(y1,y2));
 	r.setBottom(max<float>(y1,y2));
 	r.setLeft(min<float>(x1,x2));
@@ -560,7 +572,7 @@ void TabPage::updatePageInfoBar()
 	ss << page->getPagePosition();
 	std::string s1;
 	ss >> s1;
-	
+
 	this->ui.pageInfo->setText( (s1 + " / " +s2).c_str() );
 }
 void TabPage::pageUp()
@@ -787,7 +799,7 @@ void TabPage::initRevision(int  revision) //snad su revizie od nuly:-/
 
 void TabPage::rotate(int angle, int begin, int end) //rotovanie pages
 {
-//std::cout << "Rotating" << angle << std::endl;
+	//std::cout << "Rotating" << angle << std::endl;
 	if (begin == -1)
 	{
 		page->setRotation(angle);
@@ -940,7 +952,7 @@ void TabPage::print()
 
 void TabPage::draw() //change mode to drawing
 {
-//	this->ui.content->_beginDraw();
+	//	this->ui.content->_beginDraw();
 	_mode = DrawMode;
 }
 //na kazdej stranke mozu byt anotacie, po kliknuti na ne vyskoci pop-up alebo sa inak spravi akcia
@@ -973,7 +985,7 @@ void TabPage::createAnnot(AnnotType t, std::string * params)
 	shared_ptr<CAnnotation> annot;
 	switch (t)
 	{
-		case TextAnnot:
+	case TextAnnot:
 		{
 			//potrebujeme iba text
 			shared_ptr<IProperty> prop ( CNameFactory::getInstance(params[0].c_str()));
@@ -981,8 +993,8 @@ void TabPage::createAnnot(AnnotType t, std::string * params)
 			annot->getDictionary()->addProperty(n,*prop);
 			break;
 		}
-		default:
-			break;
+	default:
+		break;
 	}
 }
 void TabPage::delAnnot(int i) //page to u seba upravi, aby ID zodpovedali
@@ -994,7 +1006,7 @@ void TabPage::delAnnot(int i) //page to u seba upravi, aby ID zodpovedali
 QRect TabPage::getRectangle(BBox b)
 {
 	int x1,x2,y1,y2;
-//TODO tot snad ani nemusi fungovat...check!
+	//TODO tot snad ani nemusi fungovat...check!
 	toPixmapPos(b.xleft, b.yleft, x1,y1);
 	toPixmapPos(b.xright, b.yright, x2,y2);
 	QRect r(QPoint(min(x1,x2),max(y1,y2)),QPoint(max(x1,x2),min(y1,y2)));
@@ -1016,10 +1028,10 @@ void TabPage::loadFonts(FontWidget* fontWidget)
 		}
 
 	}
-/*	CPageFonts::SystemFontList flist = CPageFonts::getSystemFonts();
+	/*	CPageFonts::SystemFontList flist = CPageFonts::getSystemFonts();
 	for ( CPageFonts::SystemFontList::iterator i = flist.begin(); i != flist.end(); i++ )
 	{
-		fontWidget->addFont(*i,*i);
+	fontWidget->addFont(*i,*i);
 	}*/
 }
 void TabPage::insertText( PdfOp op )
@@ -1057,7 +1069,7 @@ void TabPage::changeText()
 	double end = first->_end;
 	first->split(s1,s2,s3); //splitneme
 	first->replaceAllText(s1);
-	
+
 	// v s3 je to, co ma vo firste zostat, s2 je to, co menime, s1 je to, co menime v laste. ak je
 	//proste sme to zarotovali:)
 	if ( first==last ) //TODO co ak je s3 prazdne? -> Compact?:)
@@ -1139,12 +1151,12 @@ void TabPage::getText()//get text from page
 		tmp+=it->_text;
 	}
 	emit pdfText(tmp);
-//	std::cout << tmp << std::endl; //show new box
+	//	std::cout << tmp << std::endl; //show new box
 }
 /*
 void TabPage::showTextAnnot(std::string name)
 {
-	//TODO novy textbox
+//TODO novy textbox
 }
 */
 //TODO ask if there should be deletion after what it found
@@ -1225,60 +1237,81 @@ void TabPage::setSelected(TextData::iterator& first, TextData::iterator& last)
 //slot
 void TabPage::search(std::string srch)
 {
-	_searchEngine.setPattern(srch); //vytvor strom, ktory bude hladat to slovo
-	//vysviet prve, ktore najdes
-	TextData::iterator iter = _textList.begin();
-	if (_selected)
+	for(int i = 0; i< pdf->getPageCount(); i++)
 	{
-		iter = sTextIt;//nic nemen v hladacom engine
-	}
-	float prev = FLT_MAX;
-	std::string s(iter->_text);
-	while (iter != _textList.end())
-	{
-		_searchEngine.setText(s);
-		switch (_searchEngine.search())
+		_searchEngine.setPattern(srch); //vytvor strom, ktory bude hladat to slovo
+		//vysviet prve, ktore najdes
+		TextData::iterator iter = _textList.begin();
+		iter->clear();
+		if (_selected)
 		{
+			iter = sTextIt;//nic nemen v hladacom engine
+		}
+		float prev = iter->_end;
+		std::string s(iter->_text);
+		while (iter != _textList.end())
+		{
+			_searchEngine.setText(s);
+			switch (_searchEngine.search())
+			{
 			case Tree::Next:
-			{
-				iter++;
-				if (iter == _textList.end())
+				{
+					iter++;
+					if (iter == _textList.end())
+						break;
+					s = iter->_text;
+					//sSimp
+					//float sizeOfSpace = iter->_op->
+					//aprozumijeme medzeru
+					shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
+					float dx = txt->getWidth(' ');
+					if (fabs(prev - iter->_begin) > dx ) //from which space?
+					{
+						s = " " + s; 
+					}
+					prev = iter->_end;
 					break;
-				s = iter->_text;
-				if (fabs(prev - iter->_begin) < 0.5f ) //from which space?
-				{
-					s = " " + s; //TODO insert before?
 				}
-				prev = iter->_end;
-				break;
-			}
 			case Tree::Found:
-			{
-				prev = iter->_end; //to tu mozno uz ani netreba
-				double a, b;
-				//ak je 
-				iter->setEnd(iter->position(_searchEngine._end+2));
-				sTextItEnd = iter;
-				for ( int i = 0; i < _searchEngine._tokens; i++)
 				{
-					iter--;
-					iter->clear();
-					//a = iter->_;
+					prev = iter->_end; //to tu mozno uz ani netreba
+					double a, b;
+					//ak je 
+					iter->setEnd(iter->position(_searchEngine._end+2));
+					sTextItEnd = iter;
+					for ( int i = 0; i < _searchEngine._tokens; i++)
+					{
+						iter--;
+						iter->clear();
+						//a = iter->_;
+					}
+					sTextIt = iter;
+					b = iter->position(_searchEngine._begin+1); //clearle, MAGIC
+					//iter->setEnd(a);
+					iter->setBegin(b);
+					_selected = true;
+					highlight();
+					return;
 				}
-				sTextIt = iter;
-				b = iter->position(_searchEngine._begin+1); //clearle, MAGIC
-				//iter->setEnd(a);
-				iter->setBegin(b);
-				_selected = true;
-				highlight();
-				return;
-			}
 			default:
-			{
-				throw "Unexpected t->search() token";
+				{
+					throw "Unexpected t->search() token";
+				}
 			}
 		}
+		//next page, etreba davat do splashu
+		if (pdf->getPagePosition(page) == pdf->getPageCount())
+			pdf->getPage(1);
+		else
+			page = pdf->getNextPage(page);
+		//nastav nove _textbox, pretoze sme stejne v textovom rezime
 	}
+	QMessageBox::warning(this, tr("Not found"),
+                                tr("String cannot be found"),
+								QMessageBox::Ok,
+                                QMessageBox::Ok);
+	//set from th beginning
+
 }
 
 void TabPage::deleteText( std::string text)
@@ -1289,117 +1322,117 @@ void TabPage::deleteText( std::string text)
 //bolo kliknute na anotaciu, ideme ju vykonat
 void TabPage::handleAnnotation(int id)
 {
-	//mame identifikator
-	//_annots;
-	//Ukazeme widget s tymto textom
-	//ak je to link, tak rovno skocime
-	shared_ptr<CAnnotation> c = _annots[id];
-	//zistime, kam mame skocit
-	shared_ptr<IProperty> name = c->getDictionary()->getProperty("SubType");
-	std::string n = utils::getValueFromSimple<CName>(name);
-	if ( n == "Link")
-	{
-		//dostan page, na ktoru ma ist
-		if (c->getDictionary()->containsProperty("Dest"))
-		{
-			//ok,skaceme
-			shared_ptr< CArray > array; 
-			c->getDictionary()->getProperty("Dest")->getSmartCObjectPtr<CArray>(array);
-			page = pdf->getPage(utils::getSimpleValueFromArray<CInt>(array,0));
-			setFromSplash();
-			return;
-		}//alebo action
-		if (c->getDictionary()->containsProperty("A"))
-		{
-			shared_ptr<CDict> d; 
-			d = utils::getCDictFromDict(c->getDictionary(),"A"); //toto musi byt Launch, TODO overit
-			std::string nam = utils::getStringFromDict(d,"F");
-			//zistime lauch a jeho parametre
-			//TODO QDialog a launch
-		}
-		throw "Unsupported type";//TODO vymazat z anotacii alebo ich tam vobec nedavat
-		return;
-	}
-	//other Annotations
-	//tot by malo zobrazit pdfko
-	std::string name2 = utils::getStringFromDict(c->getDictionary(), "Contents");
-	showTextAnnot(name2);
-	return;
+//mame identifikator
+//_annots;
+//Ukazeme widget s tymto textom
+//ak je to link, tak rovno skocime
+shared_ptr<CAnnotation> c = _annots[id];
+//zistime, kam mame skocit
+shared_ptr<IProperty> name = c->getDictionary()->getProperty("SubType");
+std::string n = utils::getValueFromSimple<CName>(name);
+if ( n == "Link")
+{
+//dostan page, na ktoru ma ist
+if (c->getDictionary()->containsProperty("Dest"))
+{
+//ok,skaceme
+shared_ptr< CArray > array; 
+c->getDictionary()->getProperty("Dest")->getSmartCObjectPtr<CArray>(array);
+page = pdf->getPage(utils::getSimpleValueFromArray<CInt>(array,0));
+setFromSplash();
+return;
+}//alebo action
+if (c->getDictionary()->containsProperty("A"))
+{
+shared_ptr<CDict> d; 
+d = utils::getCDictFromDict(c->getDictionary(),"A"); //toto musi byt Launch, TODO overit
+std::string nam = utils::getStringFromDict(d,"F");
+//zistime lauch a jeho parametre
+//TODO QDialog a launch
+}
+throw "Unsupported type";//TODO vymazat z anotacii alebo ich tam vobec nedavat
+return;
+}
+//other Annotations
+//tot by malo zobrazit pdfko
+std::string name2 = utils::getStringFromDict(c->getDictionary(), "Contents");
+showTextAnnot(name2);
+return;
 }
 //rotate 
 void TabPage::rotateObjects(int angle) //vsetky objekty wo workingOpSet
 {
-	//selected operator will be removed and new QSTATE added
-	//let's look for Q
-	float rAngle = toRadians(angle); //su nastavene iterBegin a iterEnd, z neho vypraprarujeme working set
-	shared_ptr< PdfOperator > parent;
-	for ( int i =0; i < workingOpSet.size(); i++)
-	{
-		Ops ops;
-		workingOpSet[i]->getContentStream()->getPdfOperators(ops);
-		PdfOperator::Iterator it = 
-		PdfOperator::getIterator(ops.front());
-		parent = findCompositeOfPdfOperator(it, workingOpSet[i]);
-		//for graphical object
-		std::string opName;
-		parent->getOperatorName(opName);
-		for ( int i =0; i< opName.length(); i++)
-			opName[i] = tolower(opName[i]);
-		OpsList children;
-		if (strcmp(opName.c_str(),"q")==0)
-		{
-			//add cm rotation matrix
-			PdfOperator::Operands operands;
-			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
-			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(sin(rAngle))));
-			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(-sin(rAngle))));
-			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
-			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
-			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
-			shared_ptr< PdfOperator > o = createOperator("cm",operands);
-			//addOperator
-			parent->getChildren(children);
-			parent->getContentStream()->insertOperator(PdfOperator::getIterator(children.front()),o,true);//FUJ, to snad ani nemoze fungovat..., a mozno to chce false
-		}
-		if (strcmp(opName.c_str(),"bt"))
-		{
-			PdfOperator::Operands operands;
-			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
-			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(sin(rAngle))));
-			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(-sin(rAngle))));
-			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
-			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
-			operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
-			shared_ptr< PdfOperator > o = createOperator("Tm",operands);
-			//addOperator
-			parent->getChildren(children);
-			parent->getContentStream()->insertOperator(PdfOperator::getIterator(children.front()),o,true);//FUJ, to snad ani nemoze fungovat...
-		}
+//selected operator will be removed and new QSTATE added
+//let's look for Q
+float rAngle = toRadians(angle); //su nastavene iterBegin a iterEnd, z neho vypraprarujeme working set
+shared_ptr< PdfOperator > parent;
+for ( int i =0; i < workingOpSet.size(); i++)
+{
+Ops ops;
+workingOpSet[i]->getContentStream()->getPdfOperators(ops);
+PdfOperator::Iterator it = 
+PdfOperator::getIterator(ops.front());
+parent = findCompositeOfPdfOperator(it, workingOpSet[i]);
+//for graphical object
+std::string opName;
+parent->getOperatorName(opName);
+for ( int i =0; i< opName.length(); i++)
+opName[i] = tolower(opName[i]);
+OpsList children;
+if (strcmp(opName.c_str(),"q")==0)
+{
+//add cm rotation matrix
+PdfOperator::Operands operands;
+operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
+operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(sin(rAngle))));
+operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(-sin(rAngle))));
+operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
+operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
+operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
+shared_ptr< PdfOperator > o = createOperator("cm",operands);
+//addOperator
+parent->getChildren(children);
+parent->getContentStream()->insertOperator(PdfOperator::getIterator(children.front()),o,true);//FUJ, to snad ani nemoze fungovat..., a mozno to chce false
+}
+if (strcmp(opName.c_str(),"bt"))
+{
+PdfOperator::Operands operands;
+operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
+operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(sin(rAngle))));
+operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(-sin(rAngle))));
+operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cos(rAngle))));
+operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
+operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(0)));
+shared_ptr< PdfOperator > o = createOperator("Tm",operands);
+//addOperator
+parent->getChildren(children);
+parent->getContentStream()->insertOperator(PdfOperator::getIterator(children.front()),o,true);//FUJ, to snad ani nemoze fungovat...
+}
 
-	}
+}
 }
 
 //slot
 void TabPage::riseSel()
 {
-	//move only text operators
+//move only text operators
 
-	TextOperatorIterator it = PdfOperator::getIterator<TextOperatorIterator> (workingOpSet.front());
-	while (!it.isEnd())
-	{
-		//len Tj, potrebujeme pred pridat Ts, ak uz predty nejake ts nie je
-		// dostaneme composit
-		PdfOperator::Iterator bit = PdfOperator::getIterator<PdfOperator::Iterator> (workingOpSet.front());
-		shared_ptr< PdfOperator >  parent = findCompositeOfPdfOperator(bit,it.getCurrent());
-		//insert before, if full, first insert and then remove
-		
-		PdfOperator::Operands intop;
-		intop.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(-5)));
-		parent->push_back( it.getCurrent()->clone(),it.getCurrent());//TODO must check if Tj is only one
-		parent->push_back( createOperator("Tj", intop),it.getCurrent());//TODO must check if Tj is only one
-		
+TextOperatorIterator it = PdfOperator::getIterator<TextOperatorIterator> (workingOpSet.front());
+while (!it.isEnd())
+{
+//len Tj, potrebujeme pred pridat Ts, ak uz predty nejake ts nie je
+// dostaneme composit
+PdfOperator::Iterator bit = PdfOperator::getIterator<PdfOperator::Iterator> (workingOpSet.front());
+shared_ptr< PdfOperator >  parent = findCompositeOfPdfOperator(bit,it.getCurrent());
+//insert before, if full, first insert and then remove
+
+PdfOperator::Operands intop;
+intop.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(-5)));
+parent->push_back( it.getCurrent()->clone(),it.getCurrent());//TODO must check if Tj is only one
+parent->push_back( createOperator("Tj", intop),it.getCurrent());//TODO must check if Tj is only one
+
 //split text acording to highlighted
-	}
+}
 
 }
 

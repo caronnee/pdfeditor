@@ -178,6 +178,8 @@ public:
 	 * @return Font name or NULL if not initialized yet.
 	 */
 	const char* getFontName()const;
+	/** returns width of the text */
+	float getWidth(char c);
 
 }; // class TextSimpleOperator
 

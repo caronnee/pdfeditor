@@ -221,7 +221,10 @@ public:
   GBool getUsesMacRomanEnc() { return usesMacRomanEnc; }
 
   // Get width of a character.
-  double getWidth(Guchar c) { return widths[c]; }
+  double getWidth(Guchar c) 
+  { 
+	  return widths[c]; 
+  }
 
   // Return a char code-to-GID mapping for the provided font file.
   // (This is only useful for TrueType fonts.)

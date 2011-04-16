@@ -12,6 +12,7 @@ protected:
 	Accept * _next;
 	Accept * _prev;
 public:
+	char getChar()const { return _ch; }
 	Accept(char ch, Accept * prev) : _ch(ch), _next(NULL), _prev(prev) { }
 
 	virtual Accept* accept(char ch)
@@ -156,12 +157,20 @@ private:
 				}
 			case '?':
 				{
-					_actual = new AcceptRange(pattern[0],0,1,_root);
+					_actual = new AcceptRange(pattern[i+1],0,1,_root);
 					i += 2;
 					break;
 				}
-			default:
+			case ' ':
 				{
+					if (_actual && _actual->getChar()!= ' ')
+					{
+						_actual = new Accept(pattern[i],_root);
+					}
+					i++; //spracovane
+				}
+			default:
+				{ 
 					_actual = new Accept(pattern[i],_root);
 					i++;
 				}

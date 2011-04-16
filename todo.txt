@@ -3,10 +3,8 @@
 TESTED	hladanie jedneho slova v jednom operatore
 TESTED		hladanie jedneho slove vo viacerych operatoroch
 FIXED				vysvietia sa nerovnako podoperatory
-	hladanie na viacerych strankach
-	hldanie diakritiky
-	oznamit, ked sme prisli na koniec textu
-	nevysviecovat nieco, co sa uz prave vysvietilo
+FIXED	hladanie na viacerych strankach, nebude sa zastavovat na stranke odkial vysla
+TESTED	hladanie diakritiky
 	hadanie s medzerou alebo viacerymi
 	spravne vysvietenie hadaneho slova
 	v okamziku, ked je to dalej, zrusi sa vysvietenie prechodzieho testu
@@ -17,6 +15,7 @@ FIXED				vysvietia sa nerovnako podoperatory
 -zmenit vysvieteny text
 -extrahovanie textu
 	- export do textoveho suboru
+
 -----------------------------------------------------------------------------
 -dialog pre insert upravit tak, aby si pamatal, ktore hodnoty boli zadane
 -dialog pre vyhladat
@@ -57,5 +56,3 @@ FIXED				vysvietia sa nerovnako podoperatory
 - zadanie, aka farba v pozadi sa ma zobrazovat 
 - defaultne, 1/2 stranok
 - farba vysvietenie
-
-CodeWarrior - debugger

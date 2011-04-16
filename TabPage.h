@@ -168,6 +168,7 @@ typedef std::list<OperatorData> TextData;
 
 enum AcceptName
 {
+	OpFontName,
 	OpTextName,
 	OpImageName,
 	OpGraphicName,
@@ -198,6 +199,8 @@ class IsType
 public:
 	IsType()
 	{
+		names[OpFontName].add("Tf");
+		names[OpFontName].add("tf");
 		names[OpTextName].add("TJ");
 		names[OpTextName].add("Tj");
 		names[OpTextName].add("'");
@@ -269,6 +272,8 @@ private: //variables
 	CPage::Annotations _annots;
 	DisplayPage * labelPage;
 private:
+	/* vytvorit textovy list */
+	void createList();
 	void getSelected(int x , int y, Ops ops);
 	void toPdfPos(int x, int y, double & x1, double &y1);
 	void toPixmapPos(double x1, double y1, int & x, int & y);
