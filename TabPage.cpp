@@ -221,7 +221,7 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 {
 	switch (_mode)
 	{
-	case ModeEmitPosition:
+		case ModeEmitPosition: //pre anotacie
 		{
 			if (_mousePos.x()<0)
 				_mousePos = QPoint(x,y);
@@ -360,15 +360,12 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 	//ideme vysvietit posledne. Ak je na tom mieste viacero textov, vysvietia sa podla toho, kde su v nasom liste, ale stene to bude fuj
 	//najdime teto operator
 	//ak sme sa pohli dopredu, tak y je mensia ako posledne, popripade x vyssie
-	libs::Rectangle b;
-	int x1, y1;
-	int x2, y2;
+	libs::Rectangle b = ops.back()->getBBox();
 	TextData::iterator first = sTextIt;
 	TextData::iterator last = sTextItEnd; 
 	sTextItEnd->restoreEnd(); //stetitEnd je ohybliva zalozka, nesmiem swichovat
-	double a1,b1;
-	toPdfPos(x, y, a1, b1);
-	bool forw = sTextItEnd->forward(a1,b1); //ajskor zisti, kde je koniec a kde zaciatok
+	bool forw = sTextItEnd->forward(b.xleft,b.yleft); //ajskor zisti, kde je koniec a kde zaciatok
+	sTextItEnd->forward(b.xleft,b.yleft);
 	if (!forw) //ak 
 	{
 		labelPage->unsetImg();
@@ -379,9 +376,11 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 			throw "neni v tree"; //TODO potom toto tu vymazat
 		inDirection(sTextItEnd, forw);
 	}		
-	//nasli sme oparator, na ktorom to zasekneme
+	//nasli sme operator, na ktorom to zasekneme
 	//mame spravne range opratorov
 	{ 
+		double a1,a2;
+		toPdfPos(x,y,a1,a2);
 		sTextItEnd->setEnd(a1);
 		sTextItEnd->change(forw);
 		sTextIt->change(!forw);
@@ -1013,7 +1012,6 @@ QRect TabPage::getRectangle(BBox b)
 	return r;
 }
 
-
 void TabPage::loadFonts(FontWidget* fontWidget)
 {
 	//dostanme vsetky fontu, ktore su priamov pdf. bohuzial musime cez vsetky pages
@@ -1266,15 +1264,13 @@ void TabPage::search(std::string srch)
 					shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
 					float dx = txt->getWidth(' ');
 					if (fabs(prev - iter->_begin) > dx ) //from which space?
-					{
-						s = " " + s; 
-					}
+						_searchEngine.acceptSpace();
 					prev = iter->_end;
 					break;
 				}
 			case Tree::Found:
 				{
-					prev = iter->_end; //to tu mozno uz ani netreba
+					prev = iter->_end; 
 					double a, b;
 					//ak je 
 					iter->setEnd(iter->position(_searchEngine._end+2));
@@ -1298,6 +1294,7 @@ void TabPage::search(std::string srch)
 					throw "Unexpected t->search() token";
 				}
 			}
+
 		}
 		//next page, etreba davat do splashu
 		if (pdf->getPagePosition(page) == pdf->getPageCount())

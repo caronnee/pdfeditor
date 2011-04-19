@@ -51,7 +51,27 @@ public:
 	}
 	virtual ~AcceptSet() {}
 };
-
+class AcceptSpace : public Accept
+{
+	bool _accepted;
+public:
+	AcceptSpace(char ot, Accept * prev) : Accept(ot, prev), _accepted(false)	{	}
+	virtual Accept * accept(char c) 
+	{
+		if ( c == ' ') //ak je to whitespace, TODO
+		{
+			_accepted = true;
+			if ( _next == NULL )
+				return NULL;
+			return this;
+		}
+		bool pom = _accepted;
+		_accepted = false; //do povodneho stavu
+		if (pom)
+			return _next->accept(c);
+		return _prev;
+	}
+};
 // {0-19}
 class AcceptRange : public Accept
 {
@@ -59,7 +79,7 @@ class AcceptRange : public Accept
 public:
 	AcceptRange(char ot, int beg, int end, Accept * prev) : Accept(ot, prev)
 	{
-		_ch = ot; _beg = beg; _end = end; _iter = 0;
+		_beg = beg; _end = end; _iter = 0;
 	}
 	virtual Accept * accept(char c) 
 	{
@@ -96,7 +116,6 @@ public:
 		Next, //ma dalsi token
 		Found //je v koncovom stave
 	};
-
 	void Clear()
 	{
 		while(_root!=NULL)
@@ -165,7 +184,7 @@ private:
 				{
 					if (_actual && _actual->getChar()!= ' ')
 					{
-						_actual = new Accept(pattern[i],_root);
+						_actual = new AcceptSpace(pattern[i],_root);
 					}
 					i++; //spracovane
 				}
@@ -182,6 +201,14 @@ public:
 	{
 		_tokens++;
 		_search = text;
+	}
+	//ak je tj operator s whitespacom ->"test    test", "test \t test"
+	//search - ..test -> .test OK
+	//search - xx..test -> xx.text -> xx.(.)x
+
+	void acceptSpace()
+	{
+		_actual = _actual->accept(' ');
 	}
 	TreeTokens search()
 	{

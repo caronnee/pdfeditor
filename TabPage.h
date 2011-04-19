@@ -130,14 +130,14 @@ struct OperatorData
 		//ak je rozdiel moc maly v y osi, si na jednej lajne
 		return forward( b.xleft, b.yleft);
 	}
-	bool forward (double x, double y)
+	bool forward (double x, double y)const
 	{
 		BBox a = _op->getBBox();
-		float maxy = max(a.yleft, a.yright);
+		float maxy = max(a.yleft, a.yright); //najvyssia hodnota -> najnizie
 
 		if (fabs(maxy - y) > EPSILON_Y) //rozhodni podla y osi, cim mensi, tym blizsie
 		{
-			return maxy - y < 0;
+			return maxy - y < 0;//pojde dopredy ak toto je vyssie ako y, ktore sme dostali
 		}
 		maxy = min(a.xleft, a.xright);
 		return maxy < x;
