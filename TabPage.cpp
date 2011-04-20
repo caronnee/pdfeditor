@@ -46,14 +46,15 @@ TabPage::TabPage(QString name) : _name(name)
 	_cmts = NULL;
 	ui.setupUi(this);
 	labelPage = new DisplayPage();
-	s = new Search();
-	s->show();
+	_search = new Search();
+	_search->show();
 	this->ui.scrollArea->setWidget(labelPage);
 	//hide everything except...
 	this->ui.pageManipulation->hide();
 	this->ui.displayManipulation->hide();
-	QObject::connect(s, SIGNAL(search(std::string)),this,SLOT(search(std::string)));
+	QObject::connect(_search, SIGNAL(search(std::string)),this,SLOT(search(std::string)));
 	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
+	//QObject::connect(this->ui, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
 	{
 		std::string links[] = { ANNOTS(CREATE_ARRAY) };
 		for ( int i =0; i < ASupported; i++)
@@ -66,6 +67,7 @@ TabPage::TabPage(QString name) : _name(name)
 	connect (ui.previous,SIGNAL(clicked()),this,SLOT(previousPage()));
 	connect (ui.next,SIGNAL(clicked()),this,SLOT(nextPage()));
 	connect (labelPage,SIGNAL(MouseClicked(int, int)),this, SLOT(clicked(int, int))); //pri selecte sa to disconnectne a nahrasi inym modom
+	connect (labelPage,SIGNAL(MouseReleased()),this, SLOT(mouseReleased())); //pri selecte sa to disconnectne
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	//end of connections
 
@@ -332,6 +334,7 @@ void TabPage::setTextData(TextData::iterator & it, TextData::iterator end,shared
 	}
 	throw "Unexpected operator, text is not present in tree, why, why? ";
 }
+
 void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka ser space
 {
 	if (!_dataReady) //prvykrat, co sme dotkli nejakeho operatora
@@ -358,14 +361,13 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 	if (ops.empty()) // pridaj najblizsie text
 		return;
 	//ideme vysvietit posledne. Ak je na tom mieste viacero textov, vysvietia sa podla toho, kde su v nasom liste, ale stene to bude fuj
-	//najdime teto operator
+	//najdime tento operator
 	//ak sme sa pohli dopredu, tak y je mensia ako posledne, popripade x vyssie
 	libs::Rectangle b = ops.back()->getBBox();
 	TextData::iterator first = sTextIt;
 	TextData::iterator last = sTextItEnd; 
 	sTextItEnd->restoreEnd(); //stetitEnd je ohybliva zalozka, nesmiem swichovat
 	bool forw = sTextItEnd->forward(b.xleft,b.yleft); //ajskor zisti, kde je koniec a kde zaciatok
-	sTextItEnd->forward(b.xleft,b.yleft);
 	if (!forw) //ak 
 	{
 		labelPage->unsetImg();
@@ -386,7 +388,7 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 		sTextIt->change(!forw);
 	}
 	highlight();
-	_dataReady = false;
+	//_dataReady = false;
 	_selected =  true;
 }
 void TabPage::highlight()
@@ -1246,10 +1248,8 @@ void TabPage::search(std::string srch)
 			iter = sTextIt;//nic nemen v hladacom engine
 		}
 		float prev = iter->_end;
-		std::string s(iter->_text);
 		while (iter != _textList.end())
 		{
-			_searchEngine.setText(s);
 			switch (_searchEngine.search())
 			{
 			case Tree::Next:
@@ -1257,7 +1257,7 @@ void TabPage::search(std::string srch)
 					iter++;
 					if (iter == _textList.end())
 						break;
-					s = iter->_text;
+					//s = iter->_text;
 					//sSimp
 					//float sizeOfSpace = iter->_op->
 					//aprozumijeme medzeru
@@ -1270,6 +1270,7 @@ void TabPage::search(std::string srch)
 				}
 			case Tree::Found:
 				{
+					labelPage->unsetImg();
 					prev = iter->_end; 
 					double a, b;
 					//ak je 
@@ -1285,7 +1286,7 @@ void TabPage::search(std::string srch)
 					b = iter->position(_searchEngine._begin+1); //clearle, MAGIC
 					//iter->setEnd(a);
 					iter->setBegin(b);
-					_selected = true;
+					_selected = true; 
 					highlight();
 					return;
 				}
@@ -1294,7 +1295,7 @@ void TabPage::search(std::string srch)
 					throw "Unexpected t->search() token";
 				}
 			}
-
+			_searchEngine.setText(iter->_text);
 		}
 		//next page, etreba davat do splashu
 		if (pdf->getPagePosition(page) == pdf->getPageCount())

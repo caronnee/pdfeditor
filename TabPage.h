@@ -240,7 +240,7 @@ class TabPage : public QWidget
 private: //variables
 	Ui::TabUI ui; 
 	QWidget * widget;
-	Search * s;
+	Search * _search;
 	QPoint _mousePos;
 	Tree _searchEngine;
 
@@ -283,8 +283,6 @@ public:
 
 	void createAnnot(AnnotType t, std::string * params);
 	void delAnnot(int i); //page to u seba upravi, aby ID zodpovedali
-
-	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
 	void SetTextSelect();
 	
 	void replaceText( std::string what, std::string by);
@@ -343,6 +341,7 @@ public:
 	//rotate page
 
 public slots:
+	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
 	void toRows(libs::Rectangle);
 	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
 	void insertAnnotation(Annot a);

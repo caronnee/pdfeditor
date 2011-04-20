@@ -4,7 +4,7 @@
 #include <QPainter>
 
 DisplayPage::DisplayPage(QWidget *parent)
-	: QLabel(parent)
+	: QLabel(parent), _mousePressed(false)
 {
 	 setBackgroundRole(QPalette::Base);
      setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -59,16 +59,19 @@ void DisplayPage::mousePressEvent(QMouseEvent * event)
 	//chceme suradnice vzhladom na label //TODO co ak budeme v continuous mode?
 	QPoint point = event->pos();
 	QSize s= pixmap()->size();
+	_mousePressed = true;
 	emit MouseClicked(point.x(), pixmap()->size().height() - point.y()); //opacne kvoli pdfku
 }
 void DisplayPage::mouseMoveEvent(QMouseEvent * event)
 {
-	emit highlightText(event->x(), this->size().height() - event->y());
+	if (_mousePressed)
+		emit MouseClicked(event->x(), this->size().height() - event->y());
+		//emit highlightText(event->x(), this->size().height() - event->y());
 }
 
-
-void DisplayPage::mouseReleased(QMouseEvent * event)
+void DisplayPage::mouseReleaseEvent(QMouseEvent * event)
 {
+	_mousePressed = false;
 //	event->ignore(); //posun to parentovi
-//emit MouseRelased(); //:)
+	emit MouseReleased(); //:)
 }

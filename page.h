@@ -27,6 +27,7 @@ public:
 	void setImg();
 
 private:
+	bool _mousePressed;
 	//annotations
 	std::vector<QRect> _interactive;
 
@@ -44,10 +45,11 @@ public slots:
 signals:
 	void MouseClicked(int, int); //bolo na mna kliknute, robte s tym nieco!
 	void highlightText(int x, int y);
+	void MouseReleased();
 public:
 	void unsetImg();
 	void mouseMoveEvent(QMouseEvent *);
-	void mouseReleased(QMouseEvent * event);
+	void mouseReleaseEvent(QMouseEvent * event);
 	
 };
 
