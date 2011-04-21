@@ -57,10 +57,11 @@ struct OperatorData
 {
 	double _begin, _end;
 	double _ymin, _ymax; 
+	double _charSpace;
 	PdfOp _op;
 	double _origX, _origX2;
 	std::string _text; //jak bol text v tom, pripadne uprava o medzeru, prepisanie ma medzeru, ako konci -, odstranit
-	OperatorData(PdfOp op) : _begin(0), _end(0), _op(op), _origX(0), _origX2(0)
+	OperatorData(PdfOp op) : _begin(0), _end(0), _op(op), _origX(0), _origX2(0), _charSpace(0.0f)
 	{
 		shared_ptr<TextSimpleOperator> txt = boost::dynamic_pointer_cast<TextSimpleOperator>(op);
 		txt->getRawText(_text);
@@ -71,6 +72,12 @@ struct OperatorData
 		_end = max<float>(r.xleft, r.xright);
 		_origX = _begin;
 		_origX2 = _end; 
+		_charSpace = _end - _begin;
+		for ( int i =0; i< _text.size(); i++)
+		{
+			_charSpace -= txt->getWidth(_text[i]);
+		}
+		_charSpace/=_text.size();
 	}
 	void change(bool from_beg)
 	{
@@ -98,14 +105,16 @@ struct OperatorData
 	}
 	void set(int x,double &place)
 	{
-		float width( _origX2 - _origX );
-		float oneLetterStep =  width/_text.size();
-		int letters = (x - _origX) / oneLetterStep;
-		place = letters * oneLetterStep +_origX;
+		place = x;
 	}
 	double position(int letters)
 	{
-		return ( _origX2 - _origX ) / _text.size() * (letters) + _origX;
+		double place = _origX;
+		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(_op);
+		for(int i = 0; i< letters; i++)
+			place += txt->getWidth(_text[i]) + _charSpace;
+		assert(place < _origX2+0.5f);
+		return place;
 	}
 	void setMark(int x, bool beg)
 	{

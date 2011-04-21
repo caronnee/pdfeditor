@@ -11,7 +11,7 @@ TESTED     po kliknuti resetnut hladanie vzhladom mna to, kde bolo kliknute
 FIXED		niekedy sa necha vysvitit cely text
 			niekedy len cast, vysviecuju sa nespravne
 FIXED			niekedy sa vyhodi assert na not-decrementable
-FIXED PART		musi sa drzat myska, aby sa vysvietil text v textovom rezime
+BUG		musi sa drzat myska, aby sa vysvietil text v textovom rezime
 		spravne vysvietenie hladaneho slova
 	v okamziku, ked je to dalej/predchadzajuce, zrusi sa vysvietenie prechodzieho testu
 	ak nie je vysvieteni viditelne, zaskroluj na miesto, aby viditelne bolo( sel scroll)

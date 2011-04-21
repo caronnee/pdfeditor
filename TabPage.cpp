@@ -339,7 +339,7 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 {
 	if (!_dataReady) //prvykrat, co sme dotkli nejakeho operatora
 	{
-		labelPage->unsetImg( );
+		labelPage->unsetImg();
 		highLightBegin(x,y);
 		return;
 	}
@@ -348,7 +348,7 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 	//ak sme sa pohli "dopredu" v zmysle dopredu textu, tal sme OK
 	//najdime operator
 	Ops ops;
-	getAtPosition(ops,x,y);
+	getAtPosition(ops,x,y);//este stale sme nezmenili
 	//ak nie je ziadny textovy operator
 	while ( !ops.empty())
 	{
@@ -366,17 +366,15 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 	libs::Rectangle b = ops.back()->getBBox();
 	TextData::iterator first = sTextIt;
 	TextData::iterator last = sTextItEnd; 
-	sTextItEnd->restoreEnd(); //stetitEnd je ohybliva zalozka, nesmiem swichovat
 	bool forw = sTextItEnd->forward(b.xleft,b.yleft); //ajskor zisti, kde je koniec a kde zaciatok
-	if (!forw) //ak 
-	{
-		labelPage->unsetImg();
-	}
+	
 	while (sTextItEnd->_op != ops.back())
 	{
 		if (sTextItEnd == _textList.end())
 			throw "neni v tree"; //TODO potom toto tu vymazat
 		inDirection(sTextItEnd, forw);
+		sTextItEnd->restoreBegin();
+		sTextItEnd->restoreEnd();
 	}		
 	//nasli sme operator, na ktorom to zasekneme
 	//mame spravne range opratorov
@@ -391,6 +389,7 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 	//_dataReady = false;
 	_selected =  true;
 }
+
 void TabPage::highlight()
 {
 	QColor color(255,36,255,50);
@@ -1247,6 +1246,10 @@ void TabPage::search(std::string srch)
 		{
 			iter = sTextIt;//nic nemen v hladacom engine
 		}
+		else
+		{
+			_searchEngine.setText(iter->_text);
+		}
 		float prev = iter->_end;
 		while (iter != _textList.end())
 		{
@@ -1256,7 +1259,7 @@ void TabPage::search(std::string srch)
 				{
 					iter++;
 					if (iter == _textList.end())
-						break;
+						goto NextPage;
 					//s = iter->_text;
 					//sSimp
 					//float sizeOfSpace = iter->_op->
@@ -1266,6 +1269,7 @@ void TabPage::search(std::string srch)
 					if (fabs(prev - iter->_begin) > dx ) //from which space?
 						_searchEngine.acceptSpace();
 					prev = iter->_end;
+
 					break;
 				}
 			case Tree::Found:
@@ -1274,7 +1278,7 @@ void TabPage::search(std::string srch)
 					prev = iter->_end; 
 					double a, b;
 					//ak je 
-					iter->setEnd(iter->position(_searchEngine._end+2));
+					iter->setEnd(iter->position(_searchEngine._end+1));
 					sTextItEnd = iter;
 					for ( int i = 0; i < _searchEngine._tokens; i++)
 					{
@@ -1283,7 +1287,7 @@ void TabPage::search(std::string srch)
 						//a = iter->_;
 					}
 					sTextIt = iter;
-					b = iter->position(_searchEngine._begin+1); //clearle, MAGIC
+					b = iter->position(_searchEngine._begin); 
 					//iter->setEnd(a);
 					iter->setBegin(b);
 					_selected = true; 
@@ -1298,6 +1302,7 @@ void TabPage::search(std::string srch)
 			_searchEngine.setText(iter->_text);
 		}
 		//next page, etreba davat do splashu
+NextPage:
 		if (pdf->getPagePosition(page) == pdf->getPageCount())
 			pdf->getPage(1);
 		else

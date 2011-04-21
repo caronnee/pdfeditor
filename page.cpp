@@ -60,7 +60,7 @@ void DisplayPage::mousePressEvent(QMouseEvent * event)
 	QPoint point = event->pos();
 	QSize s= pixmap()->size();
 	_mousePressed = true;
-	emit MouseClicked(point.x(), pixmap()->size().height() - point.y()); //opacne kvoli pdfku
+	mouseMoveEvent(event);
 }
 void DisplayPage::mouseMoveEvent(QMouseEvent * event)
 {

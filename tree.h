@@ -127,7 +127,7 @@ public:
 	}
 	Tree() 
 	{ 
-		_position = 0;
+		_position = -1;
 		_root= NULL;
 		_actual = NULL;
 		_begin = 0;
@@ -209,9 +209,11 @@ public:
 	void acceptSpace()
 	{
 		_actual = _actual->accept(' ');
+		_position =-1;
 	}
 	TreeTokens search()
 	{
+		_position++; //pre polracujuce veci
 		//stejne toho nedostane vela a bude to brat po tokenoch
 		for (_position; _position< _search.length();  _position++)
 		{
@@ -228,7 +230,7 @@ public:
 				return Tree::Found;//kolkate pismeno to bolo. Operator budeme vediet z toho, co tam vrazame
 			}
 		}
-		_position = 0;
+		_position = -1;
 		return Tree::Next;
 	}
 };
