@@ -8,9 +8,17 @@ DisplayPage::DisplayPage(QWidget *parent)
 {
 	 setBackgroundRole(QPalette::Base);
      setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+	 setContextMenuPolicy(Qt::CustomContextMenu);
      setScaledContents(true);
+	 menu = new QMenu();
+	 menu->addAction("Test");
+	 menu->addAction("Test2");
+	 menu->addAction("Test3");
 }
-
+void DisplayPage::contextMenuEvent( QContextMenuEvent* event )
+{
+	menu->exec(event->globalPos());
+}
 DisplayPage::~DisplayPage(){}
 
 

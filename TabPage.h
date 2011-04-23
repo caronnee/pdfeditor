@@ -5,11 +5,12 @@
 #include <QString>
 #include <QFileDialog>
 #include <QRect>
-#include "ui_showPage.h"
+#include "ui_tab.h"
 #include "page.h"
 #include "fontWidget.h"
 #include <list>
 #include <QTreeWidgetItem>
+#include <QTextEdit>
 #include "typedefs.h"
 #include "debug.h"
 #include "Search.h"
@@ -281,8 +282,11 @@ private: //variables
 	CPage::Annotations _annots;
 	DisplayPage * labelPage;
 private:
+	void SetNextPageRotate();
 	/* vytvorit textovy list */
 	void createList();
+	void searchPrev(std::string srch);
+	void searchForw(std::string srch);
 	void getSelected(int x , int y, Ops ops);
 	void toPdfPos(int x, int y, double & x1, double &y1);
 	void toPixmapPos(double x1, double y1, int & x, int & y);
@@ -341,7 +345,6 @@ public:
 	//nastavi u page cakanie na skoncenie kreslenie ( nieco emitne:)
 	void draw();
 	void insertImageFile(int x, int y);
-	void getText();
 	void wheelEvent( QWheelEvent * event ); 
 	void deletePage();
 	void pageUp();
@@ -354,7 +357,7 @@ public slots:
 	void toRows(libs::Rectangle);
 	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
 	void insertAnnotation(Annot a);
-	void search(std::string text);
+	void search(std::string text,bool forw);
 	void changeText();
 	void showAnnotDiag();
 	void closeAnnotDiag();
@@ -381,9 +384,13 @@ public slots:
 	//prints pdf
 	void print();
 
+	/** exports text to the chosen file & opens that file ( txt ) in view */
+	void exportText(QTextEdit * e);
+
 	void rotate(int i, int begin, int end);
 
 private slots:
+
 	void zoom(QString zoomscale);
 	/// init pdf-reader to have this revision
 	void initRevision(int revision);

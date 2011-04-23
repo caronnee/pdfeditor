@@ -18,14 +18,14 @@
     <widget class="QTextEdit" name="text"/>
    </item>
    <item row="2" column="1">
-    <widget class="QPushButton" name="search">
+    <widget class="QPushButton" name="next">
      <property name="text">
       <string>Next</string>
      </property>
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QPushButton" name="up">
+    <widget class="QPushButton" name="prev">
      <property name="text">
       <string>Previous</string>
      </property>
@@ -34,22 +34,19 @@
   </layout>
  </widget>
  <resources/>
- <connections>
+<connections>
   <connection>
-   <sender>search</sender>
+   <sender>next</sender>
    <signal>clicked()</signal>
    <receiver>Search</receiver>
-   <slot>clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
+   <slot>next()</slot>
+  </connection>
+  <connection>
+   <sender>prev</sender>
+   <signal>clicked()</signal>
+   <receiver>Search</receiver>
+   <slot>prev()</slot>
   </connection>
  </connections>
+ 
 </ui>

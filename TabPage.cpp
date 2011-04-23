@@ -52,7 +52,7 @@ TabPage::TabPage(QString name) : _name(name)
 	//hide everything except...
 	this->ui.pageManipulation->hide();
 	this->ui.displayManipulation->hide();
-	QObject::connect(_search, SIGNAL(search(std::string)),this,SLOT(search(std::string)));
+	QObject::connect(_search, SIGNAL(search(std::string,bool)),this,SLOT(search(std::string,bool)));
 	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
 	//QObject::connect(this->ui, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
 	{
@@ -403,7 +403,10 @@ void TabPage::highlight()
 		toPixmapPos(first->_end, first->_ymax, x2, y2);
 		labelPage->fillRect( x1, y1, x2, y2, color );
 		if (first == sTextItEnd)
+		{
+			this->ui.scrollArea->ensureVisible(x2,labelPage->size().height() - y2);
 			break;
+		}
 		inDirection(first, forw);
 	}
 }
@@ -1138,20 +1141,7 @@ void TabPage::insertTextAfter(PdfOp opBehind, double td, double ymax, std::strin
 	}
 	comp->getContentStream()->insertOperator(comp, _font->createET());
 }
-void TabPage::getText()//get text from page
-{
-	BBox b;
-	//get only text iterator
-	std::vector<shared_ptr<CContentStream> > streams;
-	page->getContentStreams(streams);
-	std::string tmp ="";
-	TextData::iterator it = _textList.begin();
-	{
-		tmp+=it->_text;
-	}
-	emit pdfText(tmp);
-	//	std::cout << tmp << std::endl; //show new box
-}
+
 /*
 void TabPage::showTextAnnot(std::string name)
 {
@@ -1163,7 +1153,7 @@ void TabPage::replaceText( std::string what, std::string by)
 {
 	while ( true )
 	{
-		search(what);
+		search(what,true);
 		if (!_selected)
 			break;
 		//mame selectnute
@@ -1234,7 +1224,98 @@ void TabPage::setSelected(TextData::iterator& first, TextData::iterator& last)
 	}
 }
 //slot
-void TabPage::search(std::string srch)
+void TabPage::search(std::string srch, bool forw)
+{
+	if (forw)
+		searchForw(srch);
+	else
+		searchPrev(srch);
+}
+std::string revert(std::string s)
+{
+	std::string rev;
+	for ( int i = s.size()-1; i>=0; i--)
+		rev += s[i];
+	return rev;
+}
+void TabPage::searchPrev(std::string srch)
+{
+	_searchEngine.setPattern(revert(srch)); //vytvor strom, ktory bude hladat to slovo
+	for(int i = 0; i< pdf->getPageCount(); i++)
+	{
+		//TODO vlearn searchin machine (tokens )
+		//vysviet prve, ktore najdes
+		TextData::iterator iter = _textList.end();
+		iter--;
+		if (_selected)
+		{
+			iter = sTextIt;//nic nemen v hladacom engine
+		}
+		else
+		{
+			_searchEngine.setText(iter->_text);
+		}
+		iter->clear();
+		float prev = iter->_begin;
+		while (iter != _textList.end())
+		{
+			switch (_searchEngine.search())
+			{
+			case Tree::Next:
+				{
+					if (iter == _textList.begin())
+						goto NextPage;
+					iter--;
+					shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
+					float dx = txt->getWidth(' ');
+					if (fabs(prev - iter->_end) > dx ) //from which space?
+						_searchEngine.acceptSpace();
+					prev = iter->_begin;
+					break;
+				}
+			case Tree::Found:
+				{
+					prev = iter->_end; 
+					labelPage->unsetImg();
+					double a, b;
+					//ak je 
+					iter->setBegin(iter->position(iter->_text.size() - _searchEngine._end-1));
+					sTextItEnd = iter;
+					for ( int i = 0; i < _searchEngine._tokens; i++)
+					{
+						iter++;
+						iter->clear();
+					}
+					sTextIt = iter;
+					b = iter->position(iter->_text.size() - _searchEngine._begin); 
+					//iter->setEnd(a);
+					iter->setEnd(b);
+					_selected = true; 
+					highlight();
+					return;
+				}
+			default:
+				{
+					throw "Unexpected t->search() token";
+				}
+			}
+			_searchEngine.setText(revert(iter->_text));
+		}
+		//next page, etreba davat do splashu
+NextPage:
+		if (pdf->getPagePosition(page) == 1)
+			pdf->getPage(pdf->getPageCount());
+		else
+			page = pdf->getPrevPage(page);
+		//nastav nove _textbox, pretoze sme stejne v textovom rezime
+	}
+	QMessageBox::warning(this, tr("Not found"),
+                                tr("String cannot be found"),
+								QMessageBox::Ok,
+                                QMessageBox::Ok);
+	//set from th beginning
+}
+void TabPage::searchForw(std::string srch)
 {
 	for(int i = 0; i< pdf->getPageCount(); i++)
 	{
@@ -1314,12 +1395,41 @@ NextPage:
 								QMessageBox::Ok,
                                 QMessageBox::Ok);
 	//set from th beginning
-
 }
 
 void TabPage::deleteText( std::string text)
 {
 	replaceText(text,"");
+}
+void TabPage::exportText(QTextEdit * edit)
+{
+	//TODO nejaka inicializacia
+	QString text;//TODO check ci nie je text moc dlhy, odmedzenia?
+	for ( int i =0; i < pdf->getPageCount(); i++)
+	{
+		float prev =_textList.size() > 0  ? _textList.begin()->_begin : 0;
+		for (TextData::iterator iter = _textList.begin(); iter != _textList.end(); iter++)
+		{
+			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
+			if ( fabs(iter->_origX - prev) > iter->_charSpace )
+				text.append(" ");
+			text.append(QString::fromLocal8Bit(iter->_text.c_str()));
+			prev = iter->_origX2;
+		}
+		SetNextPageRotate();
+		createList();
+	}
+	edit->setText(text);
+	edit->show();
+	//cakaj na e
+}
+void TabPage::SetNextPageRotate()
+{
+	size_t i = pdf->getPagePosition(page);
+	if ( i == pdf->getPageCount() )
+		page = pdf->getPage(1);
+	else
+		page = pdf->getPage(i);
 }
 /*
 //bolo kliknute na anotaciu, ideme ju vykonat

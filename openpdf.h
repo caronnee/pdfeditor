@@ -6,7 +6,7 @@ class OpenPdf :
 {
 	Q_OBJECT
 private:
-
+	std::vector<QWidget *> _widgets;
 public:
 	OpenPdf(QWidget * widget);
 	~OpenPdf(void);

@@ -14,9 +14,10 @@ class Search : public QWidget
 public:
 	Search();
 public slots:
-	void clicked();
+	void next();
+	void prev();
 signals:
-	void search(std::string);
+	void search(std::string,bool);
 };
 
 #endif

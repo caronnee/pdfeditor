@@ -5,8 +5,13 @@ Search::Search()
 {
 	ui.setupUi(this);
 }
-void Search::clicked()
+void Search::next()
 {
 	std::string text(ui.text->toPlainText().toAscii().data());
-	emit search(text);
+	emit search(text,true);
+}
+void Search::prev()
+{
+	std::string text(ui.text->toPlainText().toAscii().data());
+	emit search(text,false);
 }

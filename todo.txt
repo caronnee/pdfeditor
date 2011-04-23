@@ -4,26 +4,26 @@ TESTED	hladanie jedneho slova v jednom operatore
 TESTED		hladanie jedneho slove vo viacerych operatoroch
 FIXED				vysvietia sa nerovnako podoperatory
 FIXED	hladanie na viacerych strankach, nebude sa zastavovat na stranke odkial vysla
-			hladat alsie, nie len prve
+FIXED	hladat alsie, nie len prve
 TESTED	hladanie diakritiky
 FIXED	hadanie s medzerou alebo viacerymi
 TESTED     po kliknuti resetnut hladanie vzhladom mna to, kde bolo kliknute
 FIXED		niekedy sa necha vysvitit cely text
-			niekedy len cast, vysviecuju sa nespravne
+FIXED			niekedy len cast, vysviecuju sa nespravne
 FIXED			niekedy sa vyhodi assert na not-decrementable
 BUG		musi sa drzat myska, aby sa vysvietil text v textovom rezime
-		spravne vysvietenie hladaneho slova
-	v okamziku, ked je to dalej/predchadzajuce, zrusi sa vysvietenie prechodzieho testu
-	ak nie je vysvieteni viditelne, zaskroluj na miesto, aby viditelne bolo( sel scroll)
-	hladat aj predchadzajuce vyskyty
+FIXED	spravne vysvietenie hladaneho slova
+FIXED	v okamziku, ked je to dalej/predchadzajuce, zrusi sa vysvietenie prechodzieho testu
+FIXED	ak nie je vysvieteni viditelne, zaskroluj na miesto, aby viditelne bolo( set scroll)
+FIXED	hladat aj predchadzajuce vyskyty
 	---------------
+-extrahovanie textu
+	-export do textoveho suboru
+-insert text ( context menu )
 -zmenit vysvieteny text
-	-zmenit velekost
+	-zmenit velkost
 	-zmenit farbu
 	-zmenit pismo
--extrahovanie textu
-	- export do textoveho suboru
--insert text ( context menu )
 -replace selected text
 	-find-replace
 	-okienko na replace
@@ -31,10 +31,8 @@ BUG		musi sa drzat myska, aby sa vysvietil text v textovom rezime
 	- context menu on selected ( delete )
 -----------------------------------------------------------------------------
 -dialog pre insert upravit tak, aby si pamatal, ktore hodnoty boli zadane
--vyhladavanie
--vyhladavanie aj medzerami
 -prepisat cast textu ( replace )
--cm namiesto td - checkbox, ci sa nakoniec vyvolava td alebo cm
+-cm namiesto td - checkbox, ci sa nakoniec vyvolava td alebo cm, checknut vysledok
 -pridat do odtien farby, tvar
 	(cs non-stroking)
 	(CS stroking) .//set operation

@@ -334,6 +334,7 @@ float TextSimpleOperator::getWidth(char chr)
 	float fs = utils::getValueFromSimple<CReal>(operands[1]);
 	return dx*fs;
 }
+
 void TextSimpleOperator::getFontText(std::string& str)const
 {
  	std::string rawStr;
@@ -346,16 +347,17 @@ void TextSimpleOperator::getFontText(std::string& str)const
 		return;
 	utilsPrintDbg(debug::DBG_INFO, "Textoperator uses font="<<fontData->getFontName());
  	CharCode code;
- 	Unicode u;
+ 	Unicode u[8];
  	int uLen;
  	double dx, dy, originX, originY;
  	char * p=raw.getCString();
  	while(len>0)
  	{
- 		int n = font->getNextChar(p, len, &code, &u, (int)(sizeof(u) / sizeof(Unicode)), &uLen,
+ 		int n = font->getNextChar(p, len, &code, u, (int)(sizeof(u) / sizeof(Unicode)), &uLen,
  			    &dx, &dy, &originX, &originY);
- 		for (int i=0; i<uLen; ++i)
- 			str += (&u)[i];
+		assert(uLen <= 8);
+ 		//for (int i=0; i<uLen; ++i)
+ 		str += code;
  		p += n;
  		len -= n;
   	}

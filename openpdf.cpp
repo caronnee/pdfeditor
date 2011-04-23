@@ -11,12 +11,17 @@ OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget)
 
 OpenPdf::~OpenPdf(void)
 {
+	for ( int i =0; i < _widgets.size(); i++)
+		delete _widgets[i];
+	_widgets.clear();
 }
 
 void OpenPdf::getText()
 {
+	QTextEdit * e = new QTextEdit();
+	_widgets.push_back(e);
 	TabPage * page = (TabPage *)this->widget(currentIndex());
-	page->getText();
+	page->exportText(e);
 }
 void OpenPdf::rotate(int i)
 {

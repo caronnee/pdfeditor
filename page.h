@@ -4,11 +4,15 @@
 #include <QScrollArea>
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <QMenu>
 #include "ui_page.h"
 
 class DisplayPage : public QLabel
 {
 	Q_OBJECT
+
+private:
+	QMenu * menu;
 public:
 	DisplayPage(QWidget *parent = 0);
 	~DisplayPage();
@@ -25,7 +29,8 @@ public:
 		return _image;
 	}
 	void setImg();
-
+public:
+	void contextMenuEvent( QContextMenuEvent* event );
 private:
 	bool _mousePressed;
 	//annotations
