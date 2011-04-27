@@ -564,7 +564,7 @@ boost::shared_ptr<PdfOperator> createOperatorTranslation (double x, double y)
 	ops.push_back (boost::shared_ptr<IProperty>(new CReal (1)));
 	ops.push_back (boost::shared_ptr<IProperty>(new CReal (x)));
 	ops.push_back (boost::shared_ptr<IProperty>(new CReal (y)));
-	return createOperator("cm", ops);
+	return createOperator("Tm", ops);
 }
 
 

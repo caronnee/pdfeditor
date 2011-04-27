@@ -369,6 +369,7 @@ public slots:
 	//void setSelectedOperators(QRect rect);
 
 	void insertText( PdfOp op );
+	void raiseInsertText(QPoint);
 
 	///Sets image to previous page
 	bool previousPage();

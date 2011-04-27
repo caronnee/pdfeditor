@@ -10,9 +10,6 @@
 #include <kernel/pdfoperators.h>
 #include "typedefs.h"
 //misc
-////kvoli xpdf, kde je to definovane...pch!:)
-//#undef fontItalic 
-
 typedef boost::shared_ptr<pdfobjects::UnknownCompositePdfOperator> PdfComp;
 
 class TextFont
@@ -52,7 +49,7 @@ class FontWidget : public QWidget
 	std::vector<TextFont> _fonts;
 	PdfComp _q;
 	PdfComp _BT;
-
+	float _pdfPosX,_pdfPosY;
 	PdfOp createMatrix(std::string op);
 public:
 	void reset();
@@ -79,14 +76,14 @@ signals:
 	void changeSelected();
 
 public slots:
-
+	void setPosition(float pdfx, float pdfy);
 	void setTm() { set[OptionTm] = true; }
 	void setFont() { set[OptionFont] = true; }
 	void setShape() { set[OptionShape] = true; }
 	void setGray() { set[OptionGray] = true; } //TODO macro
 
 	void apply(); //on clicked
-	void setValue(int angle);
+	void setAngle(int angle);
 };
 
 #endif

@@ -1,4 +1,4 @@
-//TODO on close close evrythign else
+//TODO on close close everythign else
 #include <QTableWidgetItem>
 #include "fontWidget.h"
 
@@ -7,7 +7,7 @@ using namespace boost;
 
 typedef shared_ptr< PdfOperator > PdfOp;
 
-//TODO doplnit
+//TODO doplnit a spravne vyrazy
 std::string fontShapes[] ={"a1","a2","a3","a4","a5","a6"};
 
 void FontWidget::change()
@@ -47,9 +47,9 @@ FontWidget::FontWidget(const FontWidget & font) : QWidget(font.parentWidget())
 }
 void FontWidget::addFont(std::string name, std::string val)//TODO
 {
-	QVariant q(name.c_str()); //TODO convert to more understable font name
+	QVariant q(val.c_str()); //TODO convert to more understable font name
 	ui.fonts->insertItem(ui.fonts->count(),q.toString(),q); //Qvariant?
-	_fonts.push_back(val);
+	_fonts.push_back(name);
 }
 FontWidget::~FontWidget() {}
 void FontWidget::createBT()
@@ -65,6 +65,7 @@ PdfOp FontWidget::createET()
 {
 	PdfOperator::Operands emptyOperands;
 	_BT->push_back(createOperator("ET", emptyOperands), getLastOperator(_BT));
+	_q->push_back(_BT, getLastOperator(_q));
 	_q->push_back(createOperator("Q", emptyOperands), getLastOperator(_q));
 	return _q;
 }
@@ -73,52 +74,59 @@ PdfOp FontWidget::createMatrix(std::string op)
 	//text matrix 
 	PdfOperator::Operands posOperands;
 	QVariant var = ui.tm->item(0,0)->data(0);
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
+	float f = var.value<float>();
+	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(f)));
 	var = ui.tm->item(0,1)->data(0);
+	f = var.value<float>();
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
 	var = ui.tm->item(1,0)->data(0);
+	f = var.value<float>();
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
 	var = ui.tm->item(1,1)->data(0);
+	f = var.value<float>();
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
 	var = ui.tm->item(2,0)->data(0);
+	f = var.value<float>();
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
 	var = ui.tm->item(2,1)->data(0);
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
+	f = var.value<float>();
+	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(f)));
 	return createOperator(op, posOperands);
 }
 void FontWidget::addParameters() //TODO nie s jedine parametre
 {
-	//rendering mode
-	{
-		PdfOperator::Operands operands;
-		operands.push_back(shared_ptr<IProperty>(new CInt(ui.shape->currentIndex())));
-		_BT->push_back( createOperator("tr", operands ), getLastOperator(_BT));
-	}
-	//nastal cas na farby a podobne uchylnosti, este predtym, ako pojdm td
-	//RGB
-	{
-		//stroking operands
-		PdfOperator::Operands operands;
+	///rendering mode
+	//{
+	//	PdfOperator::Operands operands;
+	//	operands.push_back(shared_ptr<IProperty>(new CInt(ui.shape->currentIndex())));
+	//	_BT->push_back( createOperator("tr", operands ), getLastOperator(_BT));
+	//}
+	////nastal cas na farby a podobne uchylnosti, este predtym, ako pojdm td
+	////RGB
+	//{
+	//	//stroking operands
+	//	PdfOperator::Operands operands;
 	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getR())) );
 	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getG())) );
 	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getB())) );
-		_BT->push_back( createOperator("RG", operands ), getLastOperator(_BT));
-	}
-	{
-		PdfOperator::Operands operands;
+	//	_BT->push_back( createOperator("RG", operands ), getLastOperator(_BT));
+	//}
+	//{
+	//	PdfOperator::Operands operands;
 	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getR())) );
 	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getG())) );
 	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getB())) );
-	
-		//non-stroking operands
-		_BT->push_back( createOperator("rg", operands ), getLastOperator(_BT));
-	}
+
+	//	//non-stroking operands
+	//	_BT->push_back( createOperator("rg", operands ), getLastOperator(_BT));
+	//}
+
 	QVariant v = this->ui.fontsize->itemData(this->ui.fontsize->currentIndex());
 	_BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(_BT));
 
-	if (this->ui.generateCm->isChecked())
-		return;
-	_BT->push_back( createMatrix("tm"), getLastOperator(_BT));
+	//if (this->ui.generateCm->isChecked())
+	//	return;
+	_BT->push_back( createMatrix("Tm"), getLastOperator(_BT));
 }
 
 void FontWidget::addToBT(PdfOp o)
@@ -131,18 +139,24 @@ PdfOp FontWidget::addText(std::string txt)
 	createBT();
 	addParameters();
 	PdfOperator::Operands textOperands;
-	textOperands.push_back(shared_ptr<IProperty>(new CString (txt.c_str())));
+	textOperands.push_back(shared_ptr<IProperty>(new CString(txt.c_str())));
 	addToBT(createOperator("Tj", textOperands));
 	return createET();
 }
 
 void FontWidget::apply()
 {	
-	QString s =this->ui.text->toPlainText();
+	QString s = this->ui.text->toPlainText();
 	std::string txt(s.toAscii().data());
 	emit text(addText(txt));
 }
-void FontWidget::setValue(int angle)
+void FontWidget::setPosition(float pdfx, float pdfy)
+{
+	_pdfPosX = pdfx; 
+	_pdfPosY = pdfy;
+	setAngle(0);
+}
+void FontWidget::setAngle(int angle)
 {
 	//set cosie, sine
 	double cs = cos(static_cast<double>(angle));
@@ -154,4 +168,9 @@ void FontWidget::setValue(int angle)
 	ui.tm->setItem(0,1,new QTableWidgetItem(sn1.toString()));
 	ui.tm->setItem(1,0,new QTableWidgetItem(sn1.toString()));
 	ui.tm->setItem(1,1,new QTableWidgetItem(cs1.toString()));
+
+	QVariant x(_pdfPosX);
+	QVariant y(_pdfPosY);
+	ui.tm->setItem(2,0,new QTableWidgetItem(x.toString()));
+	ui.tm->setItem(2,1,new QTableWidgetItem(y.toString()));
 }

@@ -9,7 +9,6 @@
 #include "globalfunctions.h"
 #include "utils\types\coordinates.h"
 #include <float.h>
-#define SIZEOF_SPACE 6.0f
 //QT$
 #include <QMessageBox>
 #include <QKeyEvent>
@@ -47,7 +46,7 @@ TabPage::TabPage(QString name) : _name(name)
 	ui.setupUi(this);
 	labelPage = new DisplayPage();
 	_search = new Search();
-	_search->show();
+	//_search->show();
 	this->ui.scrollArea->setWidget(labelPage);
 	//hide everything except...
 	this->ui.pageManipulation->hide();
@@ -68,6 +67,7 @@ TabPage::TabPage(QString name) : _name(name)
 	connect (ui.next,SIGNAL(clicked()),this,SLOT(nextPage()));
 	connect (labelPage,SIGNAL(MouseClicked(int, int)),this, SLOT(clicked(int, int))); //pri selecte sa to disconnectne a nahrasi inym modom
 	connect (labelPage,SIGNAL(MouseReleased()),this, SLOT(mouseReleased())); //pri selecte sa to disconnectne
+	connect (labelPage,SIGNAL(InsertTextSignal(QPoint)),this,SLOT(raiseInsertText(QPoint)));
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	//end of connections
 
@@ -211,6 +211,13 @@ void TabPage::createList()
 	}
 	//sort list
 	_textList.sort();
+}
+void TabPage::raiseInsertText(QPoint point)
+{
+	double x,y;
+	toPdfPos(point.x(),point.y(),x,y);
+	_font->setPosition(x,y);
+	_font->show();
 }
 void TabPage::UnSetTextSelect()
 {
@@ -497,8 +504,8 @@ void TabPage::getAtPosition(Ops& ops, int x, int y )
 void TabPage::toPdfPos(int x, int y, double & x1, double &y1)
 {
 	displayparams.convertPixmapPosToPdfPos(x, y, x1, y1);
-	x1 *=displayparams.hDpi/72;
-	y1 *=displayparams.vDpi/72;
+	//x1 *=displayparams.hDpi/72;
+	//y1 *=displayparams.vDpi/72; //zakomentovane kvoli tome, ze to blblo pri pridavani textu.
 }
 void TabPage::toPixmapPos(double x1, double y1, int & x, int &y)
 {
@@ -758,7 +765,7 @@ void TabPage::savePdf(char * name)
 		return;
 	}
 	FILE * f;
-	f = fopen(name,"w");
+	f = fopen(name,"wb");
 	if (!f)
 	{
 		QMessageBox::warning(this,tr("Cannot create file"),tr("Creation file failed"),
@@ -1038,16 +1045,15 @@ void TabPage::loadFonts(FontWidget* fontWidget)
 }
 void TabPage::insertText( PdfOp op )
 {
-	//mame operator vytvoreny vo fontWidget
-	//pridame do page
-	//creat composite pdf operators with this font
 	Ops ops;
 	ops.push_back(op);
 	page->addContentStreamToBack(ops);
 	setFromSplash();
-	OperatorData data(op);
+	TextOperatorIterator iter(op);assert(iter.valid());
+	/*OperatorData data(iter.getCurrent());
 	_textList.push_back(data);
-	_textList.sort();
+	_textList.sort();*/
+	setFromSplash();
 }
 
 //slot

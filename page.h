@@ -12,12 +12,15 @@ class DisplayPage : public QLabel
 	Q_OBJECT
 
 private:
+	/** kontext menu  */
 	QMenu * menu;
+	QPoint _point;
 public:
 	DisplayPage(QWidget *parent = 0);
 	~DisplayPage();
 
 	void setImage( const QImage & image);
+
 	//adds interactive rectagle (annotation)
 	void addPlace(QRect r)
 	{
@@ -29,8 +32,6 @@ public:
 		return _image;
 	}
 	void setImg();
-public:
-	void contextMenuEvent( QContextMenuEvent* event );
 private:
 	bool _mousePressed;
 	//annotations
@@ -47,11 +48,14 @@ public slots:
 	void fillRect( QRegion reg, const QColor color);
 	void mousePressEvent(QMouseEvent * event);
 	void fillRect(int x, int y, int x2, int y2, const QColor color);
+	void insertText();
 signals:
+	void InsertTextSignal(QPoint point);
 	void MouseClicked(int, int); //bolo na mna kliknute, robte s tym nieco!
 	void highlightText(int x, int y);
 	void MouseReleased();
 public:
+
 	void unsetImg();
 	void mouseMoveEvent(QMouseEvent *);
 	void mouseReleaseEvent(QMouseEvent * event);

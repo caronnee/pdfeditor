@@ -11,16 +11,16 @@ DisplayPage::DisplayPage(QWidget *parent)
 	 setContextMenuPolicy(Qt::CustomContextMenu);
      setScaledContents(true);
 	 menu = new QMenu();
-	 menu->addAction("Test");
+	 menu->addAction("InsertText",this,SLOT(insertText()));
+	 //connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 	 menu->addAction("Test2");
 	 menu->addAction("Test3");
 }
-void DisplayPage::contextMenuEvent( QContextMenuEvent* event )
-{
-	menu->exec(event->globalPos());
+void DisplayPage::insertText()
+{	
+	emit InsertTextSignal(_point);
 }
 DisplayPage::~DisplayPage(){}
-
 
 void DisplayPage::setImage( const QImage & image )
 {
@@ -63,12 +63,30 @@ void DisplayPage::unsetImg() //against from image, for removing highligh and so
 }
 void DisplayPage::mousePressEvent(QMouseEvent * event)
 {
-	//pass parent the coordinates
-	//chceme suradnice vzhladom na label //TODO co ak budeme v continuous mode?
-	QPoint point = event->pos();
-	QSize s= pixmap()->size();
-	_mousePressed = true;
-	mouseMoveEvent(event);
+	_point = event->pos();
+	//ak to bol lavy button, nerob nic)
+	switch(event->button())
+	{
+	case Qt::MouseButton::RightButton:
+		{
+			menu->exec(event->globalPos());
+			return;
+		}
+	case Qt::MouseButton::LeftButton:
+		{
+			//pass parent the coordinates
+			//chceme suradnice vzhladom na label //TODO co ak budeme v continuous mode?
+		
+			_mousePressed = true;
+			mouseMoveEvent(event);
+			break;
+		}
+	default:
+		{
+			assert(false);
+			break; //not implemented
+		}
+	}
 }
 void DisplayPage::mouseMoveEvent(QMouseEvent * event)
 {

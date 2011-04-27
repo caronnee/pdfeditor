@@ -12,7 +12,7 @@ class ColorPicker : public QWidget
 private:
 	Ui::colorPick ui;	 //tri spinboxy + 1 na vykreslovanie farby
 public:
-	ColorPicker(QWidget * parent) : QWidget(parent) { }
+	ColorPicker(QWidget * parent) : QWidget(parent) { this->ui.setupUi(this); }
 	int getR() { return ui.r->value(); }
 	int getG() { return ui.g->value(); }
 	int getB() { return ui.b->value(); }

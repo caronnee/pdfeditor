@@ -17,9 +17,12 @@ FIXED	v okamziku, ked je to dalej/predchadzajuce, zrusi sa vysvietenie prechodzi
 FIXED	ak nie je vysvieteni viditelne, zaskroluj na miesto, aby viditelne bolo( set scroll)
 FIXED	hladat aj predchadzajuce vyskyty
 	---------------
--extrahovanie textu
-	-export do textoveho suboru
--insert text ( context menu )
+FIXED BUG	-extrahovanie textu
+DENIED				-export do textoveho suboru
+		- pri zamietnuti  vytvorenia suboru sa vytvori hlaska, ze cration failed -> nezodpoveda
+			- nazvy fontov budu unikatne
+FIxED scasti -insert text ( context menu )
+		- iektore pismea sa nevysvietia
 -zmenit vysvieteny text
 	-zmenit velkost
 	-zmenit farbu
@@ -27,6 +30,7 @@ FIXED	hladat aj predchadzajuce vyskyty
 -replace selected text
 	-find-replace
 	-okienko na replace
+	-context menu replace
 -delete selected text
 	- context menu on selected ( delete )
 -----------------------------------------------------------------------------
