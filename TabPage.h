@@ -108,6 +108,19 @@ struct OperatorData
 	{
 		place = x;
 	}
+	int letters(double x)
+	{
+		int res;
+		double t = _origX;
+		int i =0;
+		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(_op);
+		while (t<x)
+		{
+			t+= txt->getWidth(_text[i]);
+			i++;
+		}
+		return i;
+	}
 	double position(int letters)
 	{
 		double place = _origX;
@@ -153,14 +166,14 @@ struct OperatorData
 		return maxy < x;
 	}
 	//split odla toho, ako sme to vysvietili
-	void split(std::string & split1, std::string split2, std::string split3)
+	void split(std::string & split1, std::string& split2, std::string& split3)
 	{
 		BBox a = _op->getBBox();
-		int part = abs((a.xleft - a.xright)/( _begin- (min(a.xright,a.xleft))));
-		int part2 = abs((a.xleft - a.xright)/(_end - _begin));
-		split1=_text.substr(0,part);
-		split2=_text.substr(part, part2);
-		split3=_text.substr(part2, _text.size());
+		int part1 = letters(_begin);
+		int part2 = letters(_end);
+		split1=_text.substr(0,part1-1);
+		split2=_text.substr(part1-1, part2-part1);
+		split3=_text.substr(part2-1);
 	}
 	void replaceAllText(std::string s)
 	{
@@ -353,12 +366,13 @@ public:
 	//rotate page
 
 public slots:
+	void deleteSelectedText();
+	void changeSelectedText();
 	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
 	void toRows(libs::Rectangle);
 	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
 	void insertAnnotation(Annot a);
 	void search(std::string text,bool forw);
-	void changeText();
 	void showAnnotDiag();
 	void closeAnnotDiag();
 	void handleBookMark(QTreeWidget * item);

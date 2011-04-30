@@ -46,13 +46,14 @@ TabPage::TabPage(QString name) : _name(name)
 	ui.setupUi(this);
 	labelPage = new DisplayPage();
 	_search = new Search();
-	//_search->show();
+	_search->show();
 	this->ui.scrollArea->setWidget(labelPage);
 	//hide everything except...
-	this->ui.pageManipulation->hide();
+	//this->ui.pageManipulation->hide();
 	this->ui.displayManipulation->hide();
 	QObject::connect(_search, SIGNAL(search(std::string,bool)),this,SLOT(search(std::string,bool)));
 	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
+	
 	//QObject::connect(this->ui, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
 	{
 		std::string links[] = { ANNOTS(CREATE_ARRAY) };
@@ -68,6 +69,7 @@ TabPage::TabPage(QString name) : _name(name)
 	connect (labelPage,SIGNAL(MouseClicked(int, int)),this, SLOT(clicked(int, int))); //pri selecte sa to disconnectne a nahrasi inym modom
 	connect (labelPage,SIGNAL(MouseReleased()),this, SLOT(mouseReleased())); //pri selecte sa to disconnectne
 	connect (labelPage,SIGNAL(InsertTextSignal(QPoint)),this,SLOT(raiseInsertText(QPoint)));
+	connect (labelPage,SIGNAL(DeleteTextSignal()),this,SLOT(deleteSelectedText()));
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	//end of connections
 
@@ -216,6 +218,9 @@ void TabPage::raiseInsertText(QPoint point)
 {
 	double x,y;
 	toPdfPos(point.x(),point.y(),x,y);
+	//do povodneho stavu .. hotfix
+	x/=displayparams.vDpi/72;
+	y/=displayparams.hDpi/72;
 	_font->setPosition(x,y);
 	_font->show();
 }
@@ -504,8 +509,8 @@ void TabPage::getAtPosition(Ops& ops, int x, int y )
 void TabPage::toPdfPos(int x, int y, double & x1, double &y1)
 {
 	displayparams.convertPixmapPosToPdfPos(x, y, x1, y1);
-	//x1 *=displayparams.hDpi/72;
-	//y1 *=displayparams.vDpi/72; //zakomentovane kvoli tome, ze to blblo pri pridavani textu.
+	x1 *=displayparams.hDpi/72;
+	y1 *=displayparams.vDpi/72; //zakomentovane kvoli tome, ze to blblo pri pridavani textu.
 }
 void TabPage::toPixmapPos(double x1, double y1, int & x, int &y)
 {
@@ -772,7 +777,11 @@ void TabPage::savePdf(char * name)
 			QMessageBox::Ok);
 		return;
 	}
-	pdf->clone(f);
+	int i = pdf->getRevisionsCount();
+//	commitRevision(); //TODO plikovat na kopiu!
+//	pdf->saveChangesToNew(f);
+//	revertRevision();
+	throw "Not implemented so far";
 	fclose(f);
 }
 TabPage::~TabPage(void)	{}
@@ -874,8 +883,9 @@ void TabPage::revertRevision()
 	//only last time!
 	if (pdf->getRevisionsCount() == 1)
 		return;
+	size_t pos = pdf->getPagePosition( page );
 	pdf->changeRevision(pdf->getRevisionsCount()-1);
-	size_t pos = page->getPagePosition();
+	pdf->save(false);
 	//save to file that is tmpdte
 	FILE * f;
 	std::string s(_name.toAscii().data());
@@ -885,10 +895,6 @@ void TabPage::revertRevision()
 	{
 		QMessageBox::warning(this, tr("Not able to revert"),tr("There was problem to open file for writing"), QMessageBox::Ok);
 	}
-	pdf->clone(f);
-	fclose(f);
-	rename(s.c_str(), _name.toAscii().data());
-	pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (_name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 	//TODO skontrolovat, ci sa zmenia zamky na subore
 	if (pos >  pdf->getPageCount())
 		pos = pdf->getPageCount();
@@ -1050,14 +1056,12 @@ void TabPage::insertText( PdfOp op )
 	page->addContentStreamToBack(ops);
 	setFromSplash();
 	TextOperatorIterator iter(op);assert(iter.valid());
-	/*OperatorData data(iter.getCurrent());
-	_textList.push_back(data);
-	_textList.sort();*/
+	createList();//TODO zoptimalizovat, nsert ba jedneho prvku
 	setFromSplash();
 }
 
 //slot
-void TabPage::changeText() 
+void TabPage::changeSelectedText()
 {
 	//mame vyznaceny beginiter a end string
 	TextData::iterator first,last;
@@ -1178,9 +1182,7 @@ void TabPage::replaceText( std::string what, std::string by)
 			TextData::iterator it = i1;
 			for(; i1!=i2; i1++ )
 			{
-
 				i1->_op->getContentStream()->deleteOperator(i1->_op,true);
-
 			}
 			_textList.erase(it,i2);
 		}
@@ -1402,7 +1404,38 @@ NextPage:
                                 QMessageBox::Ok);
 	//set from th beginning
 }
-
+void TabPage::deleteSelectedText()
+{
+	if (!_selected)
+		return;
+	//prvy  replasni, ostatne vymaz
+	std::string s[3];
+	sTextIt->split(s[0],s[1],s[2]);
+	PdfOperator::Operands operand;
+	operand.push_back(shared_ptr<IProperty>(new CString(s[0].c_str())));;
+	PdfOp op = createOperator("Tj",operand);
+	_selected = false;
+	if (s[2]!="")
+	{
+		PdfOperator::Operands operand2;
+		operand2.push_back(shared_ptr<IProperty>(shared_ptr<IProperty>(new CString(s[2].c_str()))));
+		PdfOp op2 = createOperator("Tj",operand2);
+		sTextIt->_op->getContentStream()->insertOperator(sTextIt->_op,op2);
+	}
+	sTextIt->_op->getContentStream()->replaceOperator(sTextIt->_op->getIterator(sTextIt->_op),op);
+	if (sTextIt == sTextItEnd)
+		goto End;
+	sTextIt++;
+	do
+	{
+		sTextIt++;
+		sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op);
+	}while(sTextIt!=sTextItEnd);
+End:
+	_selected = false;
+	createList();
+	setFromSplash();
+}
 void TabPage::deleteText( std::string text)
 {
 	replaceText(text,"");

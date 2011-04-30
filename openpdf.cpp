@@ -39,6 +39,8 @@ void OpenPdf::closeAndRemoveTab(int i)
 void OpenPdf::saveAs()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),".", tr("PDF files (*.pdf)"));
+	if (fileName == "")
+		return;
 	TabPage * page = (TabPage *)this->widget(this->currentIndex());
 	page->savePdf(fileName.toAscii().data());
 }

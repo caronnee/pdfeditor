@@ -332,7 +332,6 @@ protected:
 		internal_fetch = false;
 	}
 public:
-
 	/** Initialize constructor.
 	 * @param stream Stream with file data.
 	 *

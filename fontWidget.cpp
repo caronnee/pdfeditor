@@ -8,7 +8,7 @@ using namespace boost;
 typedef shared_ptr< PdfOperator > PdfOp;
 
 //TODO doplnit a spravne vyrazy
-std::string fontShapes[] ={"a1","a2","a3","a4","a5","a6"};
+std::string fontShapes[] ={"Fill","Stroke","Fill&Stroke","Invisible"};
 
 void FontWidget::change()
 {
@@ -96,30 +96,30 @@ PdfOp FontWidget::createMatrix(std::string op)
 void FontWidget::addParameters() //TODO nie s jedine parametre
 {
 	///rendering mode
-	//{
-	//	PdfOperator::Operands operands;
-	//	operands.push_back(shared_ptr<IProperty>(new CInt(ui.shape->currentIndex())));
-	//	_BT->push_back( createOperator("tr", operands ), getLastOperator(_BT));
-	//}
-	////nastal cas na farby a podobne uchylnosti, este predtym, ako pojdm td
-	////RGB
-	//{
-	//	//stroking operands
-	//	PdfOperator::Operands operands;
-	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getR())) );
-	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getG())) );
-	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getB())) );
-	//	_BT->push_back( createOperator("RG", operands ), getLastOperator(_BT));
-	//}
-	//{
-	//	PdfOperator::Operands operands;
-	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getR())) );
-	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getG())) );
-	//	operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getB())) );
+	{
+		PdfOperator::Operands operands;
+		operands.push_back(shared_ptr<IProperty>(new CInt(ui.shape->currentIndex())));
+		_BT->push_back( createOperator("Tr", operands ), getLastOperator(_BT));
+	}
+	//nastal cas na farby a podobne uchylnosti, este predtym, ako pojdm td
+	//RGB
+	{
+		//stroking operands
+		PdfOperator::Operands operands;
+		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getR())) );
+		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getG())) );
+		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getB())) );
+		_BT->push_back( createOperator("RG", operands ), getLastOperator(_BT));
+	}
+	{
+		PdfOperator::Operands operands;
+		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getR())) );
+		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getG())) );
+		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getB())) );
 
-	//	//non-stroking operands
-	//	_BT->push_back( createOperator("rg", operands ), getLastOperator(_BT));
-	//}
+		//non-stroking operands
+		_BT->push_back( createOperator("rg", operands ), getLastOperator(_BT));
+	}
 
 	QVariant v = this->ui.fontsize->itemData(this->ui.fontsize->currentIndex());
 	_BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(_BT));

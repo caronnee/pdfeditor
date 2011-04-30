@@ -2515,6 +2515,7 @@ size_t CPdf::getPagePosition(const boost::shared_ptr<CPage> &page)const
 
 	// search in returned page list
 	PageList::iterator i;
+	assert(pageList.begin()!=pageList.end());
 	for(i=pageList.begin(); i!=pageList.end(); ++i)
 	{
 		// compares page instances
@@ -3178,7 +3179,14 @@ void CPdf::save(bool newRevision)const
 	xref->saveChanges(newRevision);
 	change=false;
 }
-
+void CPdf::SaveChangesToNew(FILE* file)
+{
+	// Saving linearized document results in demaged documents
+	if(isLinearized())
+		throw NotImplementedException("Linearized PDF cloning is not supported");
+	clone(file);
+//	xref->cloneChanges(f);
+}
 void CPdf::clone(FILE * file)const
 {
 using namespace debug;

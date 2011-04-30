@@ -49,13 +49,14 @@ public slots:
 	void mousePressEvent(QMouseEvent * event);
 	void fillRect(int x, int y, int x2, int y2, const QColor color);
 	void insertText();
+	void deleteText();
 signals:
+	void DeleteTextSignal();
 	void InsertTextSignal(QPoint point);
 	void MouseClicked(int, int); //bolo na mna kliknute, robte s tym nieco!
 	void highlightText(int x, int y);
 	void MouseReleased();
 public:
-
 	void unsetImg();
 	void mouseMoveEvent(QMouseEvent *);
 	void mouseReleaseEvent(QMouseEvent * event);

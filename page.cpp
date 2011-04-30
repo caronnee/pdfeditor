@@ -13,8 +13,12 @@ DisplayPage::DisplayPage(QWidget *parent)
 	 menu = new QMenu();
 	 menu->addAction("InsertText",this,SLOT(insertText()));
 	 //connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
-	 menu->addAction("Test2");
+	 menu->addAction("Delete",this,SLOT(deleteText()));
 	 menu->addAction("Test3");
+}
+void DisplayPage::deleteText()
+{
+	emit DeleteTextSignal();
 }
 void DisplayPage::insertText()
 {	
