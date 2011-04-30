@@ -44,6 +44,7 @@ class FontWidget : public QWidget
 	{
 		a,s,d,f,g,h,NumberOfShapes
 	};
+	bool _change;
 	bool set[NumberOfOptions];
 	Ui::Properties ui;
 	std::vector<TextFont> _fonts;
@@ -52,6 +53,7 @@ class FontWidget : public QWidget
 	float _pdfPosX,_pdfPosY;
 	PdfOp createMatrix(std::string op);
 public:
+	void setText(std::string s);
 	void reset();
 	FontWidget(QWidget * parent);
 	FontWidget(const FontWidget & font);
@@ -72,10 +74,13 @@ public:
 	int getY();
 	void change();
 signals:
+	void changeTextSignal();
 	void text(PdfOp op);
 	void changeSelected();
 
 public slots:
+	void setInsert();
+	void setChange();
 	void setPosition(float pdfx, float pdfy);
 	void setTm() { set[OptionTm] = true; }
 	void setFont() { set[OptionFont] = true; }

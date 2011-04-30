@@ -29,8 +29,7 @@
 //#include <kernel/carray.h>
 
 //operators to be cloned
-std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","cs", "SC","SCN", "sc","scn", "G","g","RG","rg","k","K",
-"Tc","Tw", "Tz", "TL", "Tf","Tr","Ts","Td","TD","Tm","T*" };
+std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","cs", "SC","SCN", "sc","scn", "G","g","RG","rg","k","K","Tc","Tw", "Tz", "TL", "Tf","Tr","Ts","Td","TD","Tm","T*" };
 
 void TabPage::handleBookMark(QTreeWidget * item)
 {
@@ -53,8 +52,6 @@ TabPage::TabPage(QString name) : _name(name)
 	this->ui.displayManipulation->hide();
 	QObject::connect(_search, SIGNAL(search(std::string,bool)),this,SLOT(search(std::string,bool)));
 	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
-	
-	//QObject::connect(this->ui, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
 	{
 		std::string links[] = { ANNOTS(CREATE_ARRAY) };
 		for ( int i =0; i < ASupported; i++)
@@ -70,6 +67,8 @@ TabPage::TabPage(QString name) : _name(name)
 	connect (labelPage,SIGNAL(MouseReleased()),this, SLOT(mouseReleased())); //pri selecte sa to disconnectne
 	connect (labelPage,SIGNAL(InsertTextSignal(QPoint)),this,SLOT(raiseInsertText(QPoint)));
 	connect (labelPage,SIGNAL(DeleteTextSignal()),this,SLOT(deleteSelectedText()));
+	connect (labelPage,SIGNAL(EraseTextSignal()),this,SLOT(eraseSelectedText()));
+	connect (labelPage,SIGNAL(ChangeTextSignal()),this,SLOT(raiseChangeSelectedText()));
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	//end of connections
 
@@ -150,6 +149,10 @@ void TabPage::insertAnnotation(Annot a)
 	///updatneme annots:)
 	page->getAllAnnotations(_annots);
 }
+void TabPage::raiseChangeSelectedText()
+{
+	_font->setChange();
+}
 void TabPage::waitForPosition()
 {
 	_mode = ModeEmitPosition;
@@ -175,7 +178,7 @@ void TabPage::SetModeTextSelect()
 	loadFonts(_font);
 	//	_font->show();
 	connect(_font, SIGNAL(text(PdfOp)), this, SLOT(insertText(PdfOp)));
-	connect(_font, SIGNAL(changeSelected()), this, SLOT(changeText()));
+	connect(_font, SIGNAL(changeTextSignal()), this, SLOT(changeSelectedText()));
 	//show text button, hide everything else
 	createList();
 }
@@ -222,7 +225,7 @@ void TabPage::raiseInsertText(QPoint point)
 	x/=displayparams.vDpi/72;
 	y/=displayparams.hDpi/72;
 	_font->setPosition(x,y);
-	_font->show();
+	_font->setInsert();
 }
 void TabPage::UnSetTextSelect()
 {
@@ -1061,59 +1064,52 @@ void TabPage::insertText( PdfOp op )
 }
 
 //slot
-void TabPage::changeSelectedText()
+void TabPage::changeSelectedText() //vsetko zosane na svojom mieste, akurat sa pridaju 
 {
-	//mame vyznaceny beginiter a end string
-	TextData::iterator first,last;
-	if (*first < *last) //switchneme
-	{
-		first = sTextItEnd;
-		last = sTextIt;
-	}
-	else
-	{
-		last = sTextItEnd;
-		first = sTextIt;
-	}
+	//hodnoty mame v show
+	//vymaz vsetko a zadaj to znovu, pozor na to, kde sa co nachadza
+	//mame vyznaceny begin iter a end string
 	//vyberieme, vytvorime nove BT, nastavime nove atributy a nebudeme sa s tym hrajkat
-	std::string s1,s2,s3;
-	double beg = first->_begin;
-	double end = first->_end;
-	first->split(s1,s2,s3); //splitneme
-	first->replaceAllText(s1);
-
-	// v s3 je to, co ma vo firste zostat, s2 je to, co menime, s1 je to, co menime v laste. ak je
+	
+	// v s3 je to, co ma vo sTextIte zostat, s2 je to, co menime, s1 je to, co menime v sTextItEnde. ak je
 	//proste sme to zarotovali:)
-	if ( first==last ) //TODO co ak je s3 prazdne? -> Compact?:)
+	if ( sTextIt==sTextItEnd ) //TODO co ak je s3 prazdne? -> Compact?:)
 	{
-		PdfOp td2 = createTranslationTd(end, first->_ymax);
-		PdfOperator::Operands operands;
-		operands.push_back(shared_ptr<IProperty>(new CName(s3)));
-		PdfOp o2 = createOperator("Tj", operands);
-		first->_op->getContentStream()->insertOperator(first->_op,o2);
-		OperatorData d(o2);
-		_textList.push_back(d);
-		insertTextAfter(first->_op, beg, first->_ymax, s2);
-		_textList.sort();
+		std::string s[3];
+		sTextIt->split(s[0],s[1],s[2]);
+		_font->setPosition(sTextIt->_begin*72/displayparams.hDpi,displayparams.DEFAULT_PAGE_RY - sTextIt->_ymax*72/displayparams.vDpi);
+		_font->setText(s[1]);
+		eraseSelectedText();
+		_font->setInsert();
+		_font->apply();
+		_font->close(); //TODO zmazat
 		return;
 	}//alltext replaced, mame end
+	std::string s2,s3;
+	{
+		std::string s1;
+		sTextIt->split(s1,s2,s3); //splitneme
+		sTextIt->replaceAllText(s1); // povodny operator bude nezmeneny az na to , ze mu zmenime text
+	}
+	double beg = sTextIt->_begin;
+	double end = sTextIt->_end;
+
 	{
 		std::string a,b,c;
-		last->split(a,b,c);
-		end= last->_end;
-		s1 = a;
-		last->replaceAllText(b);
+		sTextItEnd->split(a,b,c);
+		end= sTextItEnd->_end;
+		sTextItEnd->replaceAllText(b);
 	}
-	insertTextAfter(last->_op,end,last->_ymax,s3);
-	first ++; //prvy sme us presli
-	TextData::iterator i = first;
-	while (first!=last)//iba pre TJ pridame operatory, vsetky, co boli zadane
+	insertTextAfter(sTextItEnd->_op,end,sTextItEnd->_ymax,s3);
+	sTextIt ++; //prvy sme us presli
+	TextData::iterator i = sTextIt;
+	while (sTextIt!=sTextItEnd)//iba pre TJ pridame operatory, vsetky, co boli zadane
 	{
-		insertTextAfter(first->_op,first->_begin, first->_ymax, first->_text);
-		first->_op->getContentStream()->deleteOperator(first->_op,true);
-		first++;
+		insertTextAfter(sTextIt->_op,sTextIt->_begin, sTextIt->_ymax, sTextIt->_text);
+		sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op,true);
+		sTextIt++;
 	}
-	_textList.erase(i,last);
+	_textList.erase(i,sTextItEnd);
 	_textList.sort();
 }
 
@@ -1432,6 +1428,57 @@ void TabPage::deleteSelectedText()
 		sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op);
 	}while(sTextIt!=sTextItEnd);
 End:
+	_selected = false;
+	createList();
+	setFromSplash();
+}
+void TabPage::eraseSelectedText()
+{
+	if (!_selected)
+		return;
+	//prvy  replasni, ostatne vymaz
+	std::string s[3];
+	sTextIt->split(s[0],s[1],s[2]);
+	PdfOperator::Operands operand;
+	operand.push_back(shared_ptr<IProperty>(new CString(s[0].c_str())));;
+	PdfOp op = createOperator("Tj",operand);
+	_selected = false;
+	float x = sTextIt->_charSpace;
+	shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(sTextIt->_op);
+	for ( int i =0; i< s[1].size();i++)
+	{
+		x+=txt->getWidth(s[1][i]); //s1 je to, co mazeme:)
+		x+=sTextIt->_charSpace;
+	}
+	if (s[2]!="")
+	{
+		PdfOperator::Operands operand2;
+		operand2.push_back(shared_ptr<IProperty>(shared_ptr<IProperty>(new CString(s[2].c_str()))));
+		PdfOp op2 = createOperator("Tj",operand2);
+		sTextIt->_op->getContentStream()->insertOperator(sTextIt->_op,op2);
+	}
+	sTextIt->_op->getContentStream()->replaceOperator(sTextIt->_op->getIterator(sTextIt->_op),op);
+	if (sTextIt == sTextItEnd)
+	{
+		sTextIt->_op = op; //novy operatoer
+		goto End;
+	}
+	sTextIt++;
+	do
+	{
+		sTextIt++;
+		sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op);
+	}while(sTextIt!=sTextItEnd);
+	sTextItEnd++;
+End:
+	//nevalidne sTextItend
+	{
+		//toto sa nemeni, toto su este stare hodnoty. Potrebuejueme sa posunut o to, co sme zmazali
+		//ak to bolo viacej operatrov, posunieme sa o vsetky. Ak sme mazali cez via roadkov, bude to novy ET a nove TM, takze nase TD to vobec nebude tankovat
+		PdfOperator::Operands tdOp;
+		PdfOp td = createTranslationTd(x,0);
+		sTextItEnd->_op->getContentStream()->insertOperator(sTextItEnd->_op->getIterator(sTextItEnd->_op),td);
+	} //ak je operator uplne mimo, tak ma urcite nove TD, takze ma netrapi, ze bude dve za sebou
 	_selected = false;
 	createList();
 	setFromSplash();

@@ -2,11 +2,11 @@
 #define PDFGUI_H
 
 #include <QtGui/QMainWindow>
- 
+#include <QCloseEvent>
+
 #include "openpdf.h"
 #include "ui_pdfgui.h"
 //xpdf, pdfedit -> ktovie ci to nema ist do cppka
-
 
 #include <kernel/pdfedit-core-dev.h>
 #include <kernel/cpdf.h>
@@ -29,7 +29,7 @@ public:
 	~pdfGui();
 
 protected:
-
+	void closeEvent(QCloseEvent *event);
 	//void keyPressEvent(QKeyEvent *event);
 
 private:

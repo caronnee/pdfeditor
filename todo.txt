@@ -22,22 +22,25 @@ DENIED				-export do textoveho suboru
 FIXED		- pri zamietnuti  vytvorenia suboru sa vytvori hlaska, ze cration failed -> nezodpoveda
 			- nazvy fontov budu unikatne (set?)
 FIXED scasti -insert text ( context menu )
-		- save -  savne sa posledna cast, aj ked nie je revizia->automaticky sa cmmitne revia, reverne sa spat
-		- vyhladava sa insertneny text?	
-		-vysvietenie zvrhlosti ( iny text etc )
+FIXED	- vyhladava sa insertneny text?	
+		- vysvietenie zvrhlosti ( iny text etc )
 REMOVED - scale matrix for scaling text
--delete selected text
-	- context menu on selected ( delete )
+FIXED	- delete selected text
+FIXED	- context menu on selected ( delete )
+FIXED	- erase selected text ( zamplnenie nicim ), context menu
+				-zostavaju specialne pripacy - co ak je to otocene, viac riadkov a pod.
 -zmenit vysvieteny text
 	-zmenit velkost
 	-zmenit farbu
 	-zmenit pismo
+	-otocit text
 -replace selected text
-	-find-replace
+FIXED	-find
+	-replace
 	-okienko na replace
 	-context menu replace
-
 -cm namiesto td - checkbox, ci sa nakoniec vyvolava td alebo cm, checknut vysledok
+-vyhladavanie otoceneho textu, vysvoeteie otoceneho textu,...
 FIXED	-pridat do odtien farby, tvar	(cs non-stroking)	(CS stroking) .//set operation
 ----IMAGE-----
 -dialog pre pridanie obrazka
@@ -70,3 +73,8 @@ FIXED	-pridat do odtien farby, tvar	(cs non-stroking)	(CS stroking) .//set opera
 - defaultne, 1/2 stranok
 - farba vysvietenia, v zavisloti na tom, co vysviecuje
 - niektore pismea sa nevysvietia
+- undo & redo ( staci a jeden krat )
+- pri zatvarani okien zostovat, co sa vsetko ulozilo, poprpade sa spytat, ci to ulozit ( setting save on exit )
+- save -  savne sa posledna cast, aj ked nie je revizia->automaticky sa cmmitne revia, reverne sa spat
+- pri pridavani textu pridat len tie pramatre, ktore boli skutocne zadane
+- set from splast iba raz a na cast, vzdy ina na konecnej

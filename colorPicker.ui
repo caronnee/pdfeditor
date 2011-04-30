@@ -21,13 +21,25 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QSpinBox" name="r"/>
+    <widget class="QSpinBox" name="r">
+     <property name="maximum">
+      <number>255</number>
+     </property>
+    </widget>
    </item>
    <item>
-    <widget class="QSpinBox" name="g"/>
+    <widget class="QSpinBox" name="g">
+     <property name="maximum">
+      <number>255</number>
+     </property>
+    </widget>
    </item>
    <item>
-    <widget class="QSpinBox" name="b"/>
+    <widget class="QSpinBox" name="b">
+     <property name="maximum">
+      <number>255</number>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

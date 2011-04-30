@@ -171,9 +171,11 @@ struct OperatorData
 		BBox a = _op->getBBox();
 		int part1 = letters(_begin);
 		int part2 = letters(_end);
-		split1=_text.substr(0,part1-1);
-		split2=_text.substr(part1-1, part2-part1);
-		split3=_text.substr(part2-1);
+		part1--;
+		part2-=2;
+		split1=_text.substr(0,part1);
+		split2=_text.substr(part1, part2-part1);
+		split3=_text.substr(part2);
 	}
 	void replaceAllText(std::string s)
 	{
@@ -306,7 +308,6 @@ private:
 	void inDirection(TextData::iterator & it, bool forw);
 	void setSelected(TextData::iterator& first, TextData::iterator& last);
 public:
-
 	void createAnnot(AnnotType t, std::string * params);
 	void delAnnot(int i); //page to u seba upravi, aby ID zodpovedali
 	void SetTextSelect();
@@ -366,8 +367,9 @@ public:
 	//rotate page
 
 public slots:
-	void deleteSelectedText();
 	void changeSelectedText();
+	void deleteSelectedText();
+	void eraseSelectedText();
 	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
 	void toRows(libs::Rectangle);
 	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
@@ -384,6 +386,7 @@ public slots:
 
 	void insertText( PdfOp op );
 	void raiseInsertText(QPoint);
+	void raiseChangeSelectedText();
 
 	///Sets image to previous page
 	bool previousPage();

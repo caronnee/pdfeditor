@@ -9,7 +9,16 @@ typedef shared_ptr< PdfOperator > PdfOp;
 
 //TODO doplnit a spravne vyrazy
 std::string fontShapes[] ={"Fill","Stroke","Fill&Stroke","Invisible"};
-
+void FontWidget::setChange()
+{
+	_change = true;
+	show();
+}
+void FontWidget::setInsert()
+{
+	_change = false;
+	show();
+}
 void FontWidget::change()
 {
 	emit changeSelected();
@@ -93,6 +102,11 @@ PdfOp FontWidget::createMatrix(std::string op)
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(f)));
 	return createOperator(op, posOperands);
 }
+void FontWidget::setText(std::string s)
+{
+	QString str(s.c_str());
+	ui.text->setText(str);
+}
 void FontWidget::addParameters() //TODO nie s jedine parametre
 {
 	///rendering mode
@@ -146,6 +160,11 @@ PdfOp FontWidget::addText(std::string txt)
 
 void FontWidget::apply()
 {	
+	if (_change)
+	{
+		emit changeTextSignal();
+		return;
+	}
 	QString s = this->ui.text->toPlainText();
 	std::string txt(s.toAscii().data());
 	emit text(addText(txt));

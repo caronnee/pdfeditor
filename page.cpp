@@ -14,7 +14,16 @@ DisplayPage::DisplayPage(QWidget *parent)
 	 menu->addAction("InsertText",this,SLOT(insertText()));
 	 //connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 	 menu->addAction("Delete",this,SLOT(deleteText()));
-	 menu->addAction("Test3");
+	 menu->addAction("Erase", this, SLOT(eraseText()));
+	 menu->addAction("Change",this,SLOT(changeText()));
+}
+void DisplayPage::changeText()
+{
+	emit ChangeTextSignal();
+}
+void DisplayPage::eraseText()
+{
+	emit EraseTextSignal();
 }
 void DisplayPage::deleteText()
 {

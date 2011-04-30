@@ -5,6 +5,12 @@
 
 #include "pdfgui.h"
 
+void pdfGui::closeEvent(QCloseEvent *event)
+{
+	qApp->closeAllWindows();
+	event->accept();
+}
+
 pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags) 
 	: QMainWindow(parent, flags), init()
 {

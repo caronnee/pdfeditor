@@ -50,7 +50,11 @@ public slots:
 	void fillRect(int x, int y, int x2, int y2, const QColor color);
 	void insertText();
 	void deleteText();
+	void eraseText();
+	void changeText();
 signals:
+	void ChangeTextSignal();
+	void EraseTextSignal();
 	void DeleteTextSignal();
 	void InsertTextSignal(QPoint point);
 	void MouseClicked(int, int); //bolo na mna kliknute, robte s tym nieco!
