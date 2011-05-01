@@ -1077,7 +1077,17 @@ void TabPage::changeSelectedText() //vsetko zosane na svojom mieste, akurat sa p
 	{
 		std::string s[3];
 		sTextIt->split(s[0],s[1],s[2]);
-		_font->setPosition(sTextIt->_begin*72/displayparams.hDpi,displayparams.DEFAULT_PAGE_RY - sTextIt->_ymax*72/displayparams.vDpi);
+		float pos = sTextIt->_origX;
+		int i =0;
+		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(sTextIt->_op);
+		while ( pos < sTextIt->_begin)
+		{
+			pos+= txt->getWidth(sTextIt->_text[i]);
+			pos+=sTextIt->_charSpace;
+			i++;
+		}
+		float y = displayparams.DEFAULT_PAGE_RY - (sTextIt->_ymin+txt->getFontHeight())*72/displayparams.vDpi-1;
+		_font->setPosition(pos*72/displayparams.hDpi,y); //pretoe toto je v default user space
 		_font->setText(s[1]);
 		eraseSelectedText();
 		_font->setInsert();
@@ -1452,6 +1462,8 @@ void TabPage::eraseSelectedText()
 	}
 	if (s[2]!="")
 	{
+		//hack
+		x+=txt->getWidth(s[2][0]);
 		PdfOperator::Operands operand2;
 		operand2.push_back(shared_ptr<IProperty>(shared_ptr<IProperty>(new CString(s[2].c_str()))));
 		PdfOp op2 = createOperator("Tj",operand2);

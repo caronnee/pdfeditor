@@ -180,6 +180,7 @@ public:
 	const char* getFontName()const;
 	/** returns width of the text */
 	float getWidth(char c);
+	float getFontHeight()const;
 
 }; // class TextSimpleOperator
 

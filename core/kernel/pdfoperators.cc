@@ -320,6 +320,16 @@ GfxFont* TextSimpleOperator::getCurrentFont()const
 				<<") for operator");
 	return font;
 }
+float TextSimpleOperator::getFontHeight()const
+{
+	shared_ptr<PdfOperator> shr = this->_next().lock();
+	FontOperatorIterator it = this->getIterator<FontOperatorIterator>(shr,false);
+	boost::shared_ptr<PdfOperator> op = it.getCurrent();
+	Operands operands;
+	op->getParameters(operands);
+	float fs = utils::getValueFromSimple<CReal>(operands[1]);
+	return fs;
+}
 float TextSimpleOperator::getWidth(char chr)
 {
 	CharCode c;Unicode u;int a; double b,cc,d,dx;
@@ -328,7 +338,6 @@ float TextSimpleOperator::getWidth(char chr)
 	shared_ptr<PdfOperator> shr = this->_next().lock();
 	FontOperatorIterator it = this->getIterator<FontOperatorIterator>(shr,false);
 	boost::shared_ptr<PdfOperator> op = it.getCurrent();
-	const double * table = getCurrentFont()->getFontMatrix();
 	Operands operands;
 	op->getParameters(operands);
 	float fs = utils::getValueFromSimple<CReal>(operands[1]);
