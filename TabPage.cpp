@@ -37,7 +37,7 @@ void TabPage::handleBookMark(QTreeWidget * item)
 	setFromSplash();
 }
 
-TabPage::TabPage(QString name) : _name(name)
+TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 {
 	_selected = false;
 	_font = NULL;

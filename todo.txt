@@ -29,14 +29,13 @@ FIXED	- delete selected text
 FIXED	- context menu on selected ( delete )
 FIXED	- erase selected text ( zamplnenie nicim ), context menu
 				-zostavaju specialne pripacy - co ak je to otocene, viac riadkov a pod.
--zmenit vysvieteny text
-	-zmenit velkost
-	-zmenit farbu
-	-zmenit pismo
-	-otocit text
+FIXED	-zmenit vysvieteny text
+CCA_OK	-zmenit velkost
+FIXED	-zmenit farb
+FIXED	-otocit text(tm, cm)
 -replace selected text
 FIXED	-find
-	-replace
+	-replace/find
 	-okienko na replace
 	-context menu replace
 -cm namiesto td - checkbox, ci sa nakoniec vyvolava td alebo cm, checknut vysledok
@@ -78,3 +77,5 @@ FIXED	-pridat do odtien farby, tvar	(cs non-stroking)	(CS stroking) .//set opera
 - save -  savne sa posledna cast, aj ked nie je revizia->automaticky sa cmmitne revia, reverne sa spat
 - pri pridavani textu pridat len tie pramatre, ktore boli skutocne zadane
 - set from splast iba raz a na cast, vzdy ina na konecnej
+- zmenit pismo(typ  pisma)
+- preview textu
