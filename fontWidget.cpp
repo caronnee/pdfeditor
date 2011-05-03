@@ -14,6 +14,11 @@ void FontWidget::setChange()
 	_change = true;
 	show();
 }
+std::string FontWidget::getText()
+{
+	QString s = this->ui.text->toPlainText();
+	return s.toAscii().data(); //to sa uz samo konvertne
+}
 void FontWidget::setInsert()
 {
 	_change = false;
@@ -138,11 +143,20 @@ void FontWidget::addParameters() //TODO nie s jedine parametre
 	QVariant v = this->ui.fontsize->itemData(this->ui.fontsize->currentIndex());
 	_BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(_BT));
 
-	//if (this->ui.generateCm->isChecked())
-	//	return;
+	if (this->ui.generateCm->isChecked())
+	{
+		_BT->push_back(createTranslationTd(30,30));
+		return;
+	}
 	_BT->push_back( createMatrix("Tm"), getLastOperator(_BT));
 }
-
+PdfOp FontWidget::createTranslationTd(double x, double y)
+{
+	PdfOperator::Operands ops;
+	ops.push_back(boost::shared_ptr<IProperty>(new CReal(x)));
+	ops.push_back(boost::shared_ptr<IProperty>(new CReal(y)));
+	return createOperator("Td",ops);
+}
 void FontWidget::addToBT(PdfOp o)
 {
 	_BT->push_back(o,getLastOperator(_BT));

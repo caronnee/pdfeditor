@@ -296,6 +296,7 @@ private: //variables
 	CPage::Annotations _annots;
 	DisplayPage * labelPage;
 private:
+	float findDistance(std::string s,TextData::iterator textIter);
 	void SetNextPageRotate();
 	/* vytvorit textovy list */
 	void createList();
@@ -322,7 +323,6 @@ public:
 	void highLightBegin(int x, int y); //nesprav nic, pretoze to bude robit mouseMove
 	void highlightText(int x, int y); //tu mame convertle  x,y
 
-	PdfOp createTranslationTd(double x, double y);
 	void moveText(int difX, int difY);
 	void insertBefore(PdfOp op, PdfOp before);
 	void createAddMoveString(PdfOp bef, double x, double y, std::string name);
@@ -369,6 +369,7 @@ public slots:
 	void changeSelectedText();
 	void deleteSelectedText();
 	void eraseSelectedText();
+	void replaceSelectedText(std::string by);
 	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
 	void toRows(libs::Rectangle);
 	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu

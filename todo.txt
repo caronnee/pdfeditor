@@ -1,5 +1,4 @@
 ----------------------TO TEST---------------------------
--hladanie 
 TESTED	hladanie jedneho slova v jednom operatore
 TESTED		hladanie jedneho slove vo viacerych operatoroch
 FIXED				vysvietia sa nerovnako podoperatory
@@ -23,25 +22,29 @@ FIXED		- pri zamietnuti  vytvorenia suboru sa vytvori hlaska, ze cration failed 
 			- nazvy fontov budu unikatne (set?)
 FIXED scasti -insert text ( context menu )
 FIXED	- vyhladava sa insertneny text?	
-		- vysvietenie zvrhlosti ( iny text etc )
+		- vysvietenie zvrhlosti ( operatory inych fontov, otocenie )
 REMOVED - scale matrix for scaling text
 FIXED	- delete selected text
+        - delete cez viac operatorov, s roznymi fontami a p, rozne vzdialeneod
 FIXED	- context menu on selected ( delete )
 FIXED	- erase selected text ( zamplnenie nicim ), context menu
+FIXED   - erase cez viac operatorov
 				-zostavaju specialne pripacy - co ak je to otocene, viac riadkov a pod.
 FIXED	-zmenit vysvieteny text
-CCA_OK	-zmenit velkost
-FIXED	-zmenit farb
+CCA_OK	-zmenit velkost (ak sa zmeni velksot, treba posunut ostatne operatory
+FIXED	-zmenit farbu
 FIXED	-otocit text(tm, cm)
--replace selected text
+REMOVED -cm namiesto td - checkbox, ci sa nakoniec vyvolava td alebo cm, checknut vysledok
+MERGED	-context menu replace - to iste ako change
+IMPLEMENTED - replace selected text
 FIXED	-find
-	-replace/find
-	-okienko na replace
-	-context menu replace
--cm namiesto td - checkbox, ci sa nakoniec vyvolava td alebo cm, checknut vysledok
--vyhladavanie otoceneho textu, vysvoeteie otoceneho textu,...
-FIXED	-pridat do odtien farby, tvar	(cs non-stroking)	(CS stroking) .//set operation
+IMPLEMENTED	-replace/find
+MERGED	-okienko na replace
+FIXED - vyhladavanie otoceneho textu, vysvoeteie otoceneho textu,...
+FIXED - pridat do odtien farby, tvar	(cs non-stroking)	(CS stroking) .//set operation
+
 ----IMAGE-----
+-ako pozadie dat obrazok
 -dialog pre pridanie obrazka
 -v zavislosti na rotacii v dialogu spravit to, jak sa vypocitava cm
 -pridanie obrazka
@@ -51,9 +54,6 @@ FIXED	-pridat do odtien farby, tvar	(cs non-stroking)	(CS stroking) .//set opera
 --------------------COMMENTY---------------
 -dialog pre pridanie comments
 -dialog pre pridai roznych typov commentu
-----------------------TEXT---------------------------
-----------------------IMAGE--------------------------
--(priehladnost obrazka?)
 ---------------------HIGHLIGHT----------------------
 -pridanie commentu ( context menu - > add comennt, emit point, od, okaa, emit  refresh(rectangle to refresh
 	( podporovane text, link, highlight, strikeout )
@@ -79,3 +79,7 @@ FIXED	-pridat do odtien farby, tvar	(cs non-stroking)	(CS stroking) .//set opera
 - set from splast iba raz a na cast, vzdy ina na konecnej
 - zmenit pismo(typ  pisma)
 - preview textu
+- vyhladaj cele slovo
+- uprav tak, aby sa texty neprekryvali
+- context menu - move
+- pohnut vysvietenym textom

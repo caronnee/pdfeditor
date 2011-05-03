@@ -17,6 +17,7 @@ public slots:
 	void next();
 	void prev();
 signals:
+	void replaceTextSignal(std::string a1,std::string a2);
 	void search(std::string,bool);
 };
 
