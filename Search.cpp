@@ -18,7 +18,7 @@ void Search::prev()
 void Search::replace()
 {
 	std::string r,s;
-	r = this->ui.replaceText->getPlainText().toAscii().Data();
-	s = this->ui.text->getPlainText().toAscii().Data();
+	r = this->ui.replacetext->toPlainText().toAscii().data();
+	s = this->ui.text->toPlainText().toAscii().data();
 	emit replaceTextSignal(s,r);
 }

@@ -16,6 +16,11 @@ DisplayPage::DisplayPage(QWidget *parent)
 	 menu->addAction("Delete",this,SLOT(deleteText()));
 	 menu->addAction("Erase", this, SLOT(eraseText()));
 	 menu->addAction("Change",this,SLOT(changeText()));
+	 menu->addAction("InsertImage",this,SLOT(insertImage()));
+}
+void DisplayPage::insertImage()
+{
+	emit InsertImageSignal();
 }
 void DisplayPage::changeText()
 {

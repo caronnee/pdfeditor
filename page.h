@@ -52,7 +52,9 @@ public slots:
 	void deleteText();
 	void eraseText();
 	void changeText();
+	void insertImage();
 signals:
+	void InsertImageSignal();
 	void ChangeTextSignal();
 	void EraseTextSignal();
 	void DeleteTextSignal();

@@ -199,7 +199,7 @@ void FontWidget::setAngle(int angle)
 	QVariant sn2(sn*-1);
 	ui.tm->setItem(0,0,new QTableWidgetItem(cs1.toString()));
 	ui.tm->setItem(0,1,new QTableWidgetItem(sn1.toString()));
-	ui.tm->setItem(1,0,new QTableWidgetItem(sn1.toString()));
+	ui.tm->setItem(1,0,new QTableWidgetItem(sn2.toString()));
 	ui.tm->setItem(1,1,new QTableWidgetItem(cs1.toString()));
 
 	QVariant x(_pdfPosX);

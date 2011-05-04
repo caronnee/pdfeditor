@@ -16,6 +16,7 @@
 #include "Search.h"
 #include "comments.h"
 #include "Tree.h"
+#include "insertImage.h"
 
 
 //xpdf, pdfedit -> ktovie ci to nema ist do cppka
@@ -265,6 +266,7 @@ private: //variables
 	Ui::TabUI ui; 
 	QWidget * widget;
 	Search * _search;
+	InsertImage * _image;
 	QPoint _mousePos;
 	Tree _searchEngine;
 
@@ -275,10 +277,6 @@ private: //variables
 	FontWidget * _font;	
 	Comments * _cmts;
 	Mode _mode;
-
-//	std::vector<AcceptOperatorName> opNames;
-	/** pdf objects */
-//	SplashColorPtr m_image; //pouzve sa neskor pri configu
 
 	IsType typeChecker;
 	pdfobjects::DisplayParams displayparams;	
@@ -357,7 +355,6 @@ public:
 	void insertImage(int x, int y, const QImage & img);
 	//nastavi u page cakanie na skoncenie kreslenie ( nieco emitne:)
 	void draw();
-	void insertImageFile(int x, int y);
 	void wheelEvent( QWheelEvent * event ); 
 	void deletePage();
 	void pageUp();
@@ -387,6 +384,7 @@ public slots:
 	void insertText( PdfOp op );
 	void raiseInsertText(QPoint);
 	void raiseChangeSelectedText();
+	void raiseInsertImage();
 
 	///Sets image to previous page
 	bool previousPage();

@@ -133,18 +133,24 @@
   </layout>
  </widget>
  <resources/>
- <connections>
- 	<connection>
+ <connections> 	
+ <connection>
   	<sender>rotation</sender>
   	<signal>valueChanged(int)</signal>
   	<receiver>Image</receiver>
-  	<slot>rotateCm(int)</slot>
+  	<slot>rotationCm(int)</slot>
  </connection>
- 	<connection>
+  <connection>
 	<sender>apply</sender>
-	<signal>clicked</signal>
+	<signal>clicked()</signal>
 	<receiver>Image</receiver>
-	<slot>apply</slot>
-	</connection>
+	<slot>apply()</slot>
+ </connection>
+  <connection>
+	<sender>chooseFile</sender>
+	<signal>clicked()</signal>
+	<receiver>Image</receiver>
+	<slot>setImagePath()</slot>
+ </connection>
  </connections>
 </ui>

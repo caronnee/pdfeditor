@@ -1,5 +1,6 @@
 #include "insertImage.h"
 #include "globalfunctions.h"
+#include <QFileDialog>
 #include <boost/shared_ptr.hpp>
 #include <kernel/pdfoperators.h>
 #include <kernel/factories.h>
@@ -11,27 +12,43 @@ using namespace pdfobjects;
 InsertImage::InsertImage()
 {
 	ui.setupUi(this);
+	QVariant x(100);
+	ui.cm->setItem(2,0,new QTableWidgetItem(x.toString()));
+	ui.cm->setItem(2,1,new QTableWidgetItem(x.toString()));
+}
+void InsertImage::setImagePath()
+{
+	//open dialogand get file
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("Images (*.png *.xpm *.jpg)"));
+	if (!fileName.size() == 0)
+		this->ui.lineEdit->setText(fileName);
 }
 //v tomto okamihu mame nazov obrazka
 void InsertImage::rotationCm(int angle)
 {
 	float radian = toRadians(angle);
-	float scale = this->ui.scale->value();
+	float scale = 1; //this->ui.scale->value();
 	double cs = scale*cos(static_cast<double>(radian));
 	QVariant cs1(cs);
 	double sn = scale*sin(static_cast<double>(radian));
 	QVariant sn1(sn);
 	QVariant sn2(sn*-1);
 	ui.cm->setItem(0,0,new QTableWidgetItem(cs1.toString()));
-	ui.cm->setItem(0,1,new QTableWidgetItem(cs1.toString()));
-	ui.cm->setItem(1,0,new QTableWidgetItem(cs1.toString()));
+	ui.cm->setItem(0,1,new QTableWidgetItem(sn1.toString()));
+	ui.cm->setItem(1,0,new QTableWidgetItem(sn2.toString()));
 	ui.cm->setItem(1,1,new QTableWidgetItem(cs1.toString()));
 }
 void InsertImage::apply()
 {
 	if (ui.lineEdit->text()==NULL)
 		return;
-	//TODO checkni, ci ten subor existuje
+	//snaz sa ho otvorit
+	{
+		FILE * f = fopen(ui.lineEdit->text().toAscii().data());
+		if (!f)
+			return;
+		fclose(f);
+	}
 	//add to buffer everything that is in image
 	shared_ptr<UnknownCompositePdfOperator> q(new UnknownCompositePdfOperator("q", "Q"));
 
@@ -74,3 +91,16 @@ void InsertImage::apply()
 	contents.push_back(q);
 	emit(insertImage(q));
 }
+//void InsertImage::setAngle(int angle)
+//{
+//	//set cosie, sine
+//	double cs = cos(static_cast<double>(angle));
+//	QVariant cs1(cs);
+//	double sn = sin(static_cast<double>(angle));
+//	QVariant sn1(sn);
+//	QVariant sn2(sn*-1);
+//	ui.cm->setItem(0,0,new QTableWidgetItem(cs1.toString()));
+//	ui.cm->setItem(0,1,new QTableWidgetItem(sn1.toString()));
+//	ui.cm->setItem(1,0,new QTableWidgetItem(sn1.toString()));
+//	ui.cm->setItem(1,1,new QTableWidgetItem(cs1.toString()));
+//}

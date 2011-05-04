@@ -42,18 +42,20 @@ IMPLEMENTED	-replace/find
 MERGED	-okienko na replace
 FIXED - vyhladavanie otoceneho textu, vysvoeteie otoceneho textu,...
 FIXED - pridat do odtien farby, tvar	(cs non-stroking)	(CS stroking) .//set operation
-
 ----IMAGE-----
--ako pozadie dat obrazok
--dialog pre pridanie obrazka
--v zavislosti na rotacii v dialogu spravit to, jak sa vypocitava cm
--pridanie obrazka
--skalovanie obrazka
--extrakcia casti obrazka (click- vyber vsetko, click&drag->painter, transform to bmp position a extact)
+FIXED - dialog pre pridanie obrazka (context doteraz)
+FIXED - v zavislosti na rotacii v dialogu spravit to, jak sa vypocitava cm
+- pridanie obrazka
+-----------------------------
+-nasetovat scale v zavislosi na obrazku(4-stvrtina)
+-skalovaie obrazk
+-extrakcia casti obrazka (click- vyber vsetko, click&drag->painter, transform to bmp position a extract)
 -zmena atributov obrazka(on click show window, set selected)
 --------------------COMMENTY---------------
 -dialog pre pridanie comments
 -dialog pre pridai roznych typov commentu
+-po klikuti na link vybehnut na danu poziciu
+-ignorovat ostatne 
 ---------------------HIGHLIGHT----------------------
 -pridanie commentu ( context menu - > add comennt, emit point, od, okaa, emit  refresh(rectangle to refresh
 	( podporovane text, link, highlight, strikeout )
@@ -83,3 +85,4 @@ FIXED - pridat do odtien farby, tvar	(cs non-stroking)	(CS stroking) .//set oper
 - uprav tak, aby sa texty neprekryvali
 - context menu - move
 - pohnut vysvietenym textom
+-ako pozadie dat obrazok, na ktorom sa vsetko bude vykreslovat

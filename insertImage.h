@@ -15,6 +15,7 @@ public:
 public slots:
 	void apply();
 	void rotationCm(int angle);
+	void setImagePath();
 signals:
 	void insertImage(PdfOp op); //jake casti
 };

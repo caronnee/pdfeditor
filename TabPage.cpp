@@ -45,7 +45,8 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	ui.setupUi(this);
 	labelPage = new DisplayPage();
 	_search = new Search();
-	_search->show();
+	//_search->show();
+	_image = new InsertImage();
 	this->ui.scrollArea->setWidget(labelPage);
 	//hide everything except...
 	//this->ui.pageManipulation->hide();
@@ -71,6 +72,7 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	connect (labelPage,SIGNAL(DeleteTextSignal()),this,SLOT(deleteSelectedText()));
 	connect (labelPage,SIGNAL(EraseTextSignal()),this,SLOT(eraseSelectedText()));
 	connect (labelPage,SIGNAL(ChangeTextSignal()),this,SLOT(raiseChangeSelectedText()));
+	connect (labelPage,SIGNAL(InsertImageSignal()),this,SLOT(raiseInsertImage()));
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	//end of connections
 
@@ -101,6 +103,10 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	}
 	this->ui.zoom->setCurrentIndex(1);
 	SetModeTextSelect();
+}
+void TabPage::raiseInsertImage()
+{
+	_image->show();
 }
 void TabPage::zoom(QString zoomscale)//later with how much pages, if all or not
 {
@@ -690,14 +696,6 @@ void TabPage::insertImage(int x, int y, const QImage& img) //positions
 	page->addInlineImage(buf,libs::Point(size.width(),size.height()), libs::Point(x,y));
 	setFromSplash();
 
-}
-void TabPage::insertImageFile(int x, int y)
-{
-	//open dialogand get file
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("Images (*.png *.xpm *.jpg)"));
-	QImage img(fileName);
-	insertImage(x,y,img);
-	//convert to buffer
 }
 void TabPage::insertPageRangeFromExisting()
 { 
