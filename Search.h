@@ -12,7 +12,7 @@ class Search : public QWidget
 
 	Ui::Search ui;
 public:
-	Search();
+	Search(QWidget * widget);
 public slots:
 	void next();
 	void prev();

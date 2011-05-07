@@ -5,13 +5,13 @@
 
 OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget)
 {
-	TabPage * page = new TabPage("D:\\work\\PdfEdit\\zadani.pdf");
+	TabPage * page = new TabPage("./zadani.pdf");
 	this->addTab(page,"test");
 }
 
 OpenPdf::~OpenPdf(void)
 {
-	for ( int i =0; i < _widgets.size(); i++)
+	for ( size_t i =0; i < _widgets.size(); i++)
 		delete _widgets[i];
 	_widgets.clear();
 }

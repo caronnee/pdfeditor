@@ -5,11 +5,13 @@
 
 #include "pdfgui.h"
 
-void pdfGui::closeEvent(QCloseEvent *event)
+/*void pdfGui::closeEvent(QCloseEvent *event)
 {
+#ifndef _WIN32_
 	qApp->closeAllWindows();
+#endif
 	event->accept();
-}
+}*/
 
 pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags) 
 	: QMainWindow(parent, flags), init()
@@ -18,7 +20,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	int argc = 0;
 	char ** argv;
 	if ( 0 != pdfedit_core_dev_init(&argc, &argv, &init))
-		throw "Not going to happen..pliiis";
+		throw "Unable to init PdfEdit library";
 
 	
 	GlobalParams::initGlobalParams(NULL)->setEnableT1lib("no");

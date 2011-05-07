@@ -1,7 +1,7 @@
 #include "Search.h"
 #include <string.h>
 
-Search::Search()
+Search::Search(QWidget * parent) : QWidget(parent)
 {
 	ui.setupUi(this);
 }

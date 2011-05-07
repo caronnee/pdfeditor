@@ -215,7 +215,7 @@ public:
 	{
 		_position++; //pre polracujuce veci
 		//stejne toho nedostane vela a bude to brat po tokenoch
-		for (_position; _position< _search.length();  _position++)
+		for (; _position< _search.length();  _position++)
 		{
 			if (_actual->isBegin())
 			{

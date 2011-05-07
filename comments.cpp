@@ -1,5 +1,5 @@
 #include "comments.h"
-#include "kernel\factories.h"
+#include "kernel/factories.h"
 #include "globalfunctions.h"
 
 void Comments::setRectangle(float x, float y, int width, int height)

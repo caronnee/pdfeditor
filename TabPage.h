@@ -5,7 +5,7 @@
 #include <QString>
 #include <QFileDialog>
 #include <QRect>
-#include "ui_tab.h"
+#include "ui_Tab.h"
 #include "page.h"
 #include "fontWidget.h"
 #include <list>
@@ -15,7 +15,7 @@
 #include "debug.h"
 #include "Search.h"
 #include "comments.h"
-#include "Tree.h"
+#include "tree.h"
 #include "insertImage.h"
 
 
@@ -51,8 +51,6 @@ enum Mode
 	NumberOfModes
 };
 
-//mozno to je moc vysoke?  Normalny text ma 10, na rise bude mat 5, alklurat neviem, ci je to v pixelochaa ak tam ma este tie svoje double...
-#define EPSILON_Y 5
 //TODO pozor na rotaciu stranky, bude to fachat?
 //budeme predpokladat, ze vsetko toto je platne, ze sme to uz nastavili
 struct OperatorData
@@ -63,7 +61,7 @@ struct OperatorData
 	PdfOp _op;
 	double _origX, _origX2;
 	std::string _text; //jak bol text v tom, pripadne uprava o medzeru, prepisanie ma medzeru, ako konci -, odstranit
-	OperatorData(PdfOp op) : _begin(0), _end(0), _op(op), _origX(0), _origX2(0), _charSpace(0.0f)
+	OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _op(op), _origX(0), _origX2(0), _text("")
 	{
 		shared_ptr<TextSimpleOperator> txt = boost::dynamic_pointer_cast<TextSimpleOperator>(op);
 		txt->getRawText(_text);
@@ -75,10 +73,8 @@ struct OperatorData
 		_origX = _begin;
 		_origX2 = _end; 
 		_charSpace = _end - _begin;
-		for ( int i =0; i< _text.size(); i++)
-		{
+		for ( size_t i =0; i< _text.size(); i++)
 			_charSpace -= txt->getWidth(_text[i]);
-		}
 		_charSpace/=_text.size();
 	}
 	void change(bool from_beg)
@@ -111,7 +107,6 @@ struct OperatorData
 	}
 	int letters(double x)
 	{
-		int res;
 		double t = _origX;
 		int i =0;
 		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(_op);
@@ -160,7 +155,7 @@ struct OperatorData
 		BBox a = _op->getBBox();
 		float maxy = max(a.yleft, a.yright); //najvyssia hodnota -> najnizie
 
-		if (fabs(maxy - y) > EPSILON_Y) //rozhodni podla y osi, cim mensi, tym blizsie
+		if (fabs(maxy - y) > 0.5f) //rozhodni podla y osi, cim mensi, tym blizsie
 		{
 			return maxy - y < 0;//pojde dopredy ak toto je vyssie ako y, ktore sme dostali
 		}
@@ -345,14 +340,10 @@ private:
 	void updatePageInfoBar();
 	// gets file, name is name of dialog
 	QString getFile(QFileDialog::FileMode flags = QFileDialog::AnyFile);
-
-	int x, y;
-
 	void showClicked(int x, int y);
 public:	
 	void getBookMarks(); //LATER, treba actions zisti, ako sa vykoavaju
 //	void changeImageProp(); // v selected mame images//LATER
-	void insertImage(int x, int y, const QImage & img);
 	//nastavi u page cakanie na skoncenie kreslenie ( nieco emitne:)
 	void draw();
 	void wheelEvent( QWheelEvent * event ); 
@@ -367,6 +358,7 @@ public slots:
 	void deleteSelectedText();
 	void eraseSelectedText();
 	void replaceSelectedText(std::string by);
+	void insertImage(PdfOp op);
 	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
 	void toRows(libs::Rectangle);
 	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu

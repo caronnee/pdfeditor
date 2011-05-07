@@ -85,12 +85,12 @@ void DisplayPage::mousePressEvent(QMouseEvent * event)
 	//ak to bol lavy button, nerob nic)
 	switch(event->button())
 	{
-	case Qt::MouseButton::RightButton:
+	case Qt::RightButton:
 		{
 			menu->exec(event->globalPos());
 			return;
 		}
-	case Qt::MouseButton::LeftButton:
+	case Qt::LeftButton:
 		{
 			//pass parent the coordinates
 			//chceme suradnice vzhladom na label //TODO co ak budeme v continuous mode?

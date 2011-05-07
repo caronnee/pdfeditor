@@ -11,7 +11,7 @@ class InsertImage : public QWidget
 
 	Ui::Image ui;
 public:
-	InsertImage();
+	InsertImage(QWidget * parent);
 public slots:
 	void apply();
 	void rotationCm(int angle);

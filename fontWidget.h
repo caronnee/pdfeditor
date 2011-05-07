@@ -53,7 +53,7 @@ class FontWidget : public QWidget
 	float _pdfPosX,_pdfPosY;
 	PdfOp createMatrix(std::string op);
 public:
-	std::string FontWidget::getText();
+	std::string getText();
 	static PdfOp createTranslationTd(double x, double y);
 	void setText(std::string s);
 	void reset();

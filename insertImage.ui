@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_2">
+  <layout class="QHBoxLayout" name="layout">
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -83,6 +83,9 @@
           <width>50</width>
           <height>50</height>
          </size>
+        </property>
+	<property name="maximum">
+         <number>200</number>
         </property>
         <property name="wrapping">
          <bool>true</bool>

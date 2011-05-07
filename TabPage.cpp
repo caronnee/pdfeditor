@@ -7,7 +7,7 @@
 #include "tree.h"
 #include "bookmark.h"
 #include "globalfunctions.h"
-#include "utils\types\coordinates.h"
+#include "utils/types/coordinates.h"
 #include <float.h>
 //QT$
 #include <QMessageBox>
@@ -44,9 +44,9 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	_cmts = NULL;
 	ui.setupUi(this);
 	labelPage = new DisplayPage();
-	_search = new Search();
+	_search = new Search(NULL);//neptraia k tomuto mimiokienku
 	//_search->show();
-	_image = new InsertImage();
+	_image = new InsertImage(NULL);
 	this->ui.scrollArea->setWidget(labelPage);
 	//hide everything except...
 	//this->ui.pageManipulation->hide();
@@ -75,6 +75,7 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	connect (labelPage,SIGNAL(InsertImageSignal()),this,SLOT(raiseInsertImage()));
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	//end of connections
+	connect( _image, SIGNAL(insertImage(PdfOP)),this,SLOT(insertImage(PdfOp)));
 
 	pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 
@@ -291,7 +292,7 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 				_mousePos = QPoint(x,y);
 				Ops ops;
 				getSelected( x, y, ops);
-				for ( int i =0 ; i < ops.size(); i++)
+				for ( size_t i =0 ; i < ops.size(); i++)
 				{
 					std::string s;
 					ops[i]->getOperatorName(s);
@@ -686,16 +687,12 @@ void TabPage::removeObjects() //vsetko, co je vo working
 	}
 	workingOpSet.clear();
 }
-void TabPage::insertImage(int x, int y, const QImage& img) //positions
+void TabPage::insertImage(PdfOp op) //positions
 {
-	const uchar * c = img.bits();
-	std::vector<char> ch(c, c + img.byteCount() );
-	CStream::Buffer buf(ch);
-
-	QSize size = img.size();
-	page->addInlineImage(buf,libs::Point(size.width(),size.height()), libs::Point(x,y));
+	Ops ops;
+	ops.push_back(op);
+	page->addContentStreamToBack(ops);
 	setFromSplash();
-
 }
 void TabPage::insertPageRangeFromExisting()
 { 
