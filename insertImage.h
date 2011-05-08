@@ -10,13 +10,16 @@ class InsertImage : public QWidget
 	Q_OBJECT
 
 	Ui::Image ui;
+	//to, kde sa pridava obrazok, je uz v matici
 public:
 	InsertImage(QWidget * parent);
 public slots:
 	void apply();
 	void rotationCm(int angle);
 	void setImagePath();
+	void setPosition(float f1, float f2);
 signals:
 	void insertImage(PdfOp op); //jake casti
 };
 #endif
+

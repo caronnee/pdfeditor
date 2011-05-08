@@ -72,10 +72,10 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	connect (labelPage,SIGNAL(DeleteTextSignal()),this,SLOT(deleteSelectedText()));
 	connect (labelPage,SIGNAL(EraseTextSignal()),this,SLOT(eraseSelectedText()));
 	connect (labelPage,SIGNAL(ChangeTextSignal()),this,SLOT(raiseChangeSelectedText()));
-	connect (labelPage,SIGNAL(InsertImageSignal()),this,SLOT(raiseInsertImage()));
+	connect (labelPage,SIGNAL(InsertImageSignal(QPoint)),this,SLOT(raiseInsertImage(QPoint)));
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	//end of connections
-	connect( _image, SIGNAL(insertImage(PdfOP)),this,SLOT(insertImage(PdfOp)));
+	connect( _image, SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
 
 	pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 
@@ -105,8 +105,14 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	this->ui.zoom->setCurrentIndex(1);
 	SetModeTextSelect();
 }
-void TabPage::raiseInsertImage()
+void TabPage::raiseInsertImage(QPoint point)
 {
+	double x,y;
+	toPdfPos(point.x(),point.y(),x,y);
+	//do povodneho stavu .. hotfix
+	x/=displayparams.vDpi/72;
+	y/=displayparams.hDpi/72;
+	_image->setPosition(x,y);
 	_image->show();
 }
 void TabPage::zoom(QString zoomscale)//later with how much pages, if all or not
@@ -1524,7 +1530,7 @@ void TabPage::exportText(QTextEdit * edit)
 {
 	//TODO nejaka inicializacia
 	QString text;//TODO check ci nie je text moc dlhy, odmedzenia?
-	for ( int i =0; i < pdf->getPageCount(); i++)
+	for ( size_t i =0; i < pdf->getPageCount(); i++)
 	{
 		float prev =_textList.size() > 0  ? _textList.begin()->_begin : 0;
 		for (TextData::iterator iter = _textList.begin(); iter != _textList.end(); iter++)

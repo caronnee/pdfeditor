@@ -20,7 +20,7 @@ DisplayPage::DisplayPage(QWidget *parent)
 }
 void DisplayPage::insertImage()
 {
-	emit InsertImageSignal();
+	emit InsertImageSignal(_point);
 }
 void DisplayPage::changeText()
 {

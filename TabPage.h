@@ -376,7 +376,7 @@ public slots:
 	void insertText( PdfOp op );
 	void raiseInsertText(QPoint);
 	void raiseChangeSelectedText();
-	void raiseInsertImage();
+	void raiseInsertImage(QPoint);
 
 	///Sets image to previous page
 	bool previousPage();

@@ -10,17 +10,23 @@
 using namespace boost;
 using namespace pdfobjects;
 
-InsertImage::InsertImage(QWidget * parent) : QWidget(parent)
+InsertImage::InsertImage( QWidget * parent) : QWidget(parent)
 {
 	ui.setupUi(this);
-	QVariant x(100); //todo zmazat
 	ui.cm->setItem(0,0,new QTableWidgetItem("1"));
 	ui.cm->setItem(0,1,new QTableWidgetItem("0"));
 	ui.cm->setItem(1,0,new QTableWidgetItem("0"));
 	ui.cm->setItem(1,1,new QTableWidgetItem("1"));
-	ui.cm->setItem(2,0,new QTableWidgetItem(x.toString()));
-	ui.cm->setItem(2,1,new QTableWidgetItem(x.toString()));
+	ui.cm->setItem(2,0,new QTableWidgetItem("0"));
+	ui.cm->setItem(2,1,new QTableWidgetItem("0"));
 	ui.scale->setValue(100);
+}
+void InsertImage::setPosition(float pdfX,float pdfY)
+{
+	QVariant var(pdfX);
+	QVariant var2(pdfY);
+	ui.cm->setItem(2,0,new QTableWidgetItem(var.toString()));
+	ui.cm->setItem(2,1,new QTableWidgetItem(var2.toString()));
 }
 void InsertImage::setImagePath()
 {
@@ -55,26 +61,6 @@ void InsertImage::apply()
 			return;
 		fclose(f);
 	}
-	//add to buffer everything that is in image
-	shared_ptr<UnknownCompositePdfOperator> q(new UnknownCompositePdfOperator("q", "Q"));
-
-	float scale = this->ui.scale->value()/100.0f;
-	//mame maticy translacie & scale ( mozeme to dat dokopy))
-	PdfOperator::Operands posOperands;
-	QVariant var = ui.cm->item(0,0)->data(0);
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>()*scale)));
-	var = ui.cm->item(0,1)->data(0);
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>()*scale)));
-	var = ui.cm->item(1,0)->data(0);
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>()*scale)));
-	var = ui.cm->item(1,1)->data(0);
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>()*scale)));
-	var = ui.cm->item(2,0)->data(0);
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>()*scale)));
-	var = ui.cm->item(2,1)->data(0);
-	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>()*scale)));
-
-	q->push_back(createOperator("cm",posOperands),getLastOperator(q));
 
 	QImage image;
 	if (!image.load(ui.lineEdit->text()))
@@ -86,10 +72,44 @@ void InsertImage::apply()
 	image_dict.addProperty ("W", CInt (image.width())); //TODO sizex
 	image_dict.addProperty ("H", CInt (image.height())); //TODO sizey
 	image_dict.addProperty ("CS", CName ("RGB"));
-	image_dict.addProperty ("BPC", CInt (image.bytesPerLine()));
+	image_dict.addProperty ("BPC", CInt (8)); //bits per component, kontanta, ine pdf nevie:)
 
-	std::vector<char> imageData(image.bits(),image.bits()+image.byteCount());
+	//add to buffer everything that is in image
+	shared_ptr<UnknownCompositePdfOperator> q(new UnknownCompositePdfOperator("q", "Q"));
+	
+	float scale = this->ui.scale->value()/100.0f;
+	int pixW = image.width();
+	int pixH = image.height();
+	float scaleX = scale * pixW;
+	float scaleY = scale * pixH; //POCET KOMPONENT
+	//mame maticy translacie & scale ( mozeme to dat dokopy))
+	PdfOperator::Operands posOperands;
+	QVariant var = ui.cm->item(0,0)->data(0);
+	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>()*scaleX)));
+	var = ui.cm->item(0,1)->data(0);
+	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>()*scaleY)));
+	var = ui.cm->item(1,0)->data(0);
+	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>()*scaleX)));
+	var = ui.cm->item(1,1)->data(0);
+	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>()*scaleY)));
+	var = ui.cm->item(2,0)->data(0);
+	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
+	var = ui.cm->item(2,1)->data(0);
+	//y-ova suradnica sa pozunie vzhladom na obrazok
+	float y =var.value<float>();
+	y -= pixH; //TODO co sa stane, ak je to mimo oblasti?
+	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(y)));
 
+	q->push_back(createOperator("cm",posOperands),getLastOperator(q));
+
+	//vyhod alpha channel
+	std::vector<char> imageData;
+	for ( int i = 0; i < image.byteCount(); i++)
+	{
+		if (i%4 ==3)
+			continue;
+		imageData.push_back(image.bits()[i]);//invert, vie to robit aj QImage
+	}
 	shared_ptr<CInlineImage> inline_image (new CInlineImage (image_dict,imageData));
 	shared_ptr<InlineImageCompositePdfOperator> BI(new InlineImageCompositePdfOperator (inline_image));
 

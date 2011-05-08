@@ -15,7 +15,6 @@ FIXED	spravne vysvietenie hladaneho slova
 FIXED	v okamziku, ked je to dalej/predchadzajuce, zrusi sa vysvietenie prechodzieho testu
 FIXED	ak nie je vysvieteni viditelne, zaskroluj na miesto, aby viditelne bolo( set scroll)
 FIXED	hladat aj predchadzajuce vyskyty
-	---------------
 FIXED BUG	-extrahovanie textu
 DENIED				-export do textoveho suboru
 FIXED		- pri zamietnuti  vytvorenia suboru sa vytvori hlaska, ze cration failed -> nezodpoveda
@@ -45,12 +44,15 @@ FIXED - pridat do odtien farby, tvar	(cs non-stroking)	(CS stroking) .//set oper
 ----IMAGE-----
 FIXED - dialog pre pridanie obrazka (context doteraz)
 FIXED - v zavislosti na rotacii v dialogu spravit to, jak sa vypocitava cm
-- pridanie obrazka
------------------------------
--nasetovat scale v zavislosi na obrazku(4-stvrtina)
--skalovaie obrazk
+FIXED - pridanie obrazka
+FIXED - pridat poziciu, na ktoru sa pridava(spravnu)
+REJECTED -spravne farby zobrazovat
+FIXED -nasetovat tak, aby to pozeralo DOLE, a nie hore
+IMPLEMENTED -nasetovat scale v zavislosi na obrazku(4-stvrtina)
+REJECTED - pridat len cast obrazks
 -extrakcia casti obrazka (click- vyber vsetko, click&drag->painter, transform to bmp position a extract)
--zmena atributov obrazka(on click show window, set selected)
+-zmena atributov obrazka(on click show window, set selected)(pozicia, scale,
+otocenie)
 --------------------COMMENTY---------------
 -dialog pre pridanie comments
 -dialog pre pridai roznych typov commentu
@@ -86,3 +88,4 @@ FIXED - v zavislosti na rotacii v dialogu spravit to, jak sa vypocitava cm
 - context menu - move
 - pohnut vysvietenym textom
 -ako pozadie dat obrazok, na ktorom sa vsetko bude vykreslovat
+- ukazovat nejakym tentintkom, kde sa pohybuje pridanie textu, obrazky
