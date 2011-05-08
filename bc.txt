@@ -1,0 +1,56 @@
+Svoj pocitac som musel preinstalvoat, takze som nemal ani len VS a preto ti posielam komplet navod ako som to co si mi poslala rozbehal.
+
+1. stiahol som si tvoje zdrojaky a
+
+== VS 2008 ==
+2. download and install VS 2008! C++ Express Edition
+http://www.microsoft.com/express/Downloads/ 
+
+ked budes otvarat .sln vo VS 2008 budes musiet asi odklikat par dialogov ohladom directories a not supported feature ale to je v poriadku.
+
+== boost ==
+3. install boost
+http://www.boostpro.com/download/
+- select 2008 compiler
+- select optional packages - programoptions  should be enough
+3.1 open VS Tools->Options->Projects and Solutions->VC++ Directories and add 
+Include files: (e.g. c:\Program Files\boost\boost_1_44\)
+Library files: (e.g. c:\Program Files\boost\boost_1_44\lib\)
+4. try to build test_boost 
+if NOT  OK go to #3 and try again?
+if OK continue
+
+== zlib ==
+5. download e.g. zlib-1.2.3. sources and unpack it somewhere and
+http://www.zlib.net/
+5.1 open VS Tools->Options->Projects and Solutions->VC++ Directories and add 
+Include files: (e.g. g:\private\work\projects\pdfedit\zlib\zlib-1.2.3\)
+6. build test_zlib
+if NOT  OK go to #5 and try again?
+if OK continue
+
+==freetype==
+7. download freetype and unpack it somewhere
+https://sourceforge.net/projects/freetype/files/freetype2/2.3.12/ft2312.zip/download
+7.1 open VS Tools->Options->Projects and Solutions->VC++ Directories and add 
+Include files: (e.g. g:\private\work\projects\pdfedit\freetype\include\)
+8. build test_freetype2
+if NOT  OK go to #5 and try again?
+if OK continue
+
+specialny krok pre teba
+copy v projects/libs
+copy zlib1.lib zdll.lib
+(inak mi to neslo skompilovat)
+
+Select Platform/Configuration Debug-Win32 / Win32 and build it
+
+a potom BUD
+
+1. nainstajuj si python, 7z, zatvor VS a otvor :) a skompiluj aj gui.installer - spravi celu package
+v output, odzipuj, skopiruj do adresara bin test.pdf a spusti
+
+2. namapuj si nieco na g:\ a skopiruj tam test.pdf a spusti
+Select gui.win32 project a daj Run alebo F5 
+
+mne tento postup funguje = gui.win32 mi zobrazi pdfko aj s textom.. 

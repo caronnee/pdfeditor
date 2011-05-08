@@ -74,6 +74,8 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	connect (labelPage,SIGNAL(ChangeTextSignal()),this,SLOT(raiseChangeSelectedText()));
 	connect (labelPage,SIGNAL(InsertImageSignal(QPoint)),this,SLOT(raiseInsertImage(QPoint)));
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
+	
+	connect(_image,SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
 	//end of connections
 	connect( _image, SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
 

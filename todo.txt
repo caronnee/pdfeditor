@@ -49,10 +49,9 @@ FIXED - pridat poziciu, na ktoru sa pridava(spravnu)
 REJECTED -spravne farby zobrazovat
 FIXED -nasetovat tak, aby to pozeralo DOLE, a nie hore
 IMPLEMENTED -nasetovat scale v zavislosi na obrazku(4-stvrtina)
-REJECTED - pridat len cast obrazks
+NICE-TO-HAVE - pridat len cast obrazka - to si staci orezat v nejakom editore
+-zmena atributov obrazka(on click show window, set selected)(pozicia, scale, otocenie
 -extrakcia casti obrazka (click- vyber vsetko, click&drag->painter, transform to bmp position a extract)
--zmena atributov obrazka(on click show window, set selected)(pozicia, scale,
-otocenie)
 --------------------COMMENTY---------------
 -dialog pre pridanie comments
 -dialog pre pridai roznych typov commentu
