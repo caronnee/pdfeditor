@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9,00"
 	Name="pdfEd"
 	ProjectGUID="{31BB9A02-9199-42BB-AC07-9BBB0EF1837A}"
 	Keyword="Qt4VSv1.0"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -37,8 +38,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="D:\work\PdfEdit\svnsource\core\xpdf;D:\work\PdfEdit\svnsource\core;D:\work\PdfEdit\svnsource;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.\"
-				PreprocessorDefinitions="UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB"
+				AdditionalIncludeDirectories="..;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.\"
+				PreprocessorDefinitions="UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_DLL"
 				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="false"
 				DebugInformationFormat="0"
@@ -60,6 +61,8 @@
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="false"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -80,16 +83,13 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)pdfEd"
+			IntermediateDirectory="$(SolutionDir)i_pdfEd"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -111,8 +111,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="D:\work\PdfEdit\lpng152;D:\work\PdfEdit\svnsource\core\xpdf;D:\work\PdfEdit\svnsource\core;D:\work\PdfEdit\svnsource;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.\"
-				PreprocessorDefinitions=",WIN32,QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB"
+				AdditionalIncludeDirectories="..\core\xpdf\xpdf;..\core\xpdf;..\core\utils;..;..\core;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;"
+				PreprocessorDefinitions=",WIN32,QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_DLL"
 				RuntimeLibrary="1"
 				TreatWChar_tAsBuiltInType="false"
 				DebugInformationFormat="3"
@@ -128,16 +128,18 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib freetype.lib zdll.lib libpng.lib"
+				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib freetype.lib zdll.lib"
 				ShowProgress="2"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="D:\work\PdfEdit\svnsource\dlls;&quot;D:\Program Files\GnuWin32\lib&quot;;D:\work\zlib\lib;&quot;$(QTDIR)\lib&quot;"
+				AdditionalLibraryDirectories="..\dlls;&quot;D:\Program Files\GnuWin32\lib&quot;;D:\work\zlib\lib;&quot;$(QTDIR)\lib&quot;"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="msvcrtd.lib"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -158,9 +160,6 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -174,55 +173,55 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\svnsource\comments.cpp"
+				RelativePath="..\comments.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\fontWidget.cpp"
+				RelativePath="..\fontWidget.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\globalfunctions.cpp"
+				RelativePath="..\globalfunctions.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\insertImage.cpp"
+				RelativePath="..\insertImage.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\insertpagerange.cpp"
+				RelativePath="..\insertpagerange.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\main.cpp"
+				RelativePath="..\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\MyWidget.cpp"
+				RelativePath="..\MyWidget.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\openpdf.cpp"
+				RelativePath="..\openpdf.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\page.cpp"
+				RelativePath="..\page.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\pdfgui.cpp"
+				RelativePath="..\pdfgui.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\rotatepagerange.cpp"
+				RelativePath="..\rotatepagerange.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\Search.cpp"
+				RelativePath="..\Search.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\TabPage.cpp"
+				RelativePath="..\TabPage.cpp"
 				>
 			</File>
 		</Filter>
@@ -232,11 +231,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\svnsource\bookmark.h"
+				RelativePath="..\bookmark.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\colorpicker.h"
+				RelativePath="..\colorpicker.h"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -244,7 +243,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB &quot;-I.&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL  -I&quot;.\..&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; &quot;..\colorpicker.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -255,14 +254,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB &quot;-I.&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE -DUNICODE  -I&quot;.\..\core\xpdf\xpdf&quot; -I&quot;.\..\core\xpdf&quot; -I&quot;.\..\core\utils&quot; -I&quot;.\..&quot; -I&quot;.\..\core&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;..\colorpicker.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\comments.h"
+				RelativePath="..\comments.h"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -270,7 +269,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\comments.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL  -I&quot;.\..&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; &quot;..\comments.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -281,18 +280,18 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  &quot;-ID:\work\PdfEdit\lpng152&quot; &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\comments.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE -DUNICODE  -I&quot;.\..\core\xpdf\xpdf&quot; -I&quot;.\..\core\xpdf&quot; -I&quot;.\..\core\utils&quot; -I&quot;.\..&quot; -I&quot;.\..\core&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;..\comments.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\debug.h"
+				RelativePath="..\debug.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\fontWidget.h"
+				RelativePath="..\fontWidget.h"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -300,7 +299,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\fontWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL  -I&quot;.\..&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; &quot;..\fontWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -311,18 +310,18 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  &quot;-ID:\work\PdfEdit\lpng152&quot; &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\fontWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE -DUNICODE  -I&quot;.\..\core\xpdf\xpdf&quot; -I&quot;.\..\core\xpdf&quot; -I&quot;.\..\core\utils&quot; -I&quot;.\..&quot; -I&quot;.\..\core&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;..\fontWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\globalfunctions.h"
+				RelativePath="..\globalfunctions.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\insertImage.h"
+				RelativePath="..\insertImage.h"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -330,7 +329,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\insertImage.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL  -I&quot;.\..&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; &quot;..\insertImage.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -341,14 +340,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  &quot;-ID:\work\PdfEdit\lpng152&quot; &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\insertImage.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE -DUNICODE  -I&quot;.\..\core\xpdf\xpdf&quot; -I&quot;.\..\core\xpdf&quot; -I&quot;.\..\core\utils&quot; -I&quot;.\..&quot; -I&quot;.\..\core&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;..\insertImage.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\insertpagerange.h"
+				RelativePath="..\insertpagerange.h"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -356,7 +355,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\insertpagerange.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL  -I&quot;.\..&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; &quot;..\insertpagerange.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -367,14 +366,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  &quot;-ID:\work\PdfEdit\lpng152&quot; &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\insertpagerange.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE -DUNICODE  -I&quot;.\..\core\xpdf\xpdf&quot; -I&quot;.\..\core\xpdf&quot; -I&quot;.\..\core\utils&quot; -I&quot;.\..&quot; -I&quot;.\..\core&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;..\insertpagerange.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\MyWidget.h"
+				RelativePath="..\MyWidget.h"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -382,7 +381,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\MyWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL  -I&quot;.\..&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; &quot;..\MyWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -393,14 +392,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  &quot;-ID:\work\PdfEdit\lpng152&quot; &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\MyWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE -DUNICODE  -I&quot;.\..\core\xpdf\xpdf&quot; -I&quot;.\..\core\xpdf&quot; -I&quot;.\..\core\utils&quot; -I&quot;.\..&quot; -I&quot;.\..\core&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;..\MyWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\openpdf.h"
+				RelativePath="..\openpdf.h"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -408,7 +407,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\openpdf.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL  -I&quot;.\..&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; &quot;..\openpdf.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -419,14 +418,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  &quot;-ID:\work\PdfEdit\lpng152&quot; &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\openpdf.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE -DUNICODE  -I&quot;.\..\core\xpdf\xpdf&quot; -I&quot;.\..\core\xpdf&quot; -I&quot;.\..\core\utils&quot; -I&quot;.\..&quot; -I&quot;.\..\core&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;..\openpdf.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\page.h"
+				RelativePath="..\page.h"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -434,7 +433,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\page.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL  -I&quot;.\..&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; &quot;..\page.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -445,14 +444,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  &quot;-ID:\work\PdfEdit\lpng152&quot; &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\page.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE -DUNICODE  -I&quot;.\..\core\xpdf\xpdf&quot; -I&quot;.\..\core\xpdf&quot; -I&quot;.\..\core\utils&quot; -I&quot;.\..&quot; -I&quot;.\..\core&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;..\page.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\pdfgui.h"
+				RelativePath="..\pdfgui.h"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -460,7 +459,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\pdfgui.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL  -I&quot;.\..&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; &quot;..\pdfgui.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -471,14 +470,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  &quot;-ID:\work\PdfEdit\lpng152&quot; &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\pdfgui.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE -DUNICODE  -I&quot;.\..\core\xpdf\xpdf&quot; -I&quot;.\..\core\xpdf&quot; -I&quot;.\..\core\utils&quot; -I&quot;.\..&quot; -I&quot;.\..\core&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;..\pdfgui.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\rotatepagerange.h"
+				RelativePath="..\rotatepagerange.h"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -486,7 +485,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\rotatepagerange.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL  -I&quot;.\..&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; &quot;..\rotatepagerange.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -497,14 +496,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  &quot;-ID:\work\PdfEdit\lpng152&quot; &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\rotatepagerange.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE -DUNICODE  -I&quot;.\..\core\xpdf\xpdf&quot; -I&quot;.\..\core\xpdf&quot; -I&quot;.\..\core\utils&quot; -I&quot;.\..&quot; -I&quot;.\..\core&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;..\rotatepagerange.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\Search.h"
+				RelativePath="..\Search.h"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -512,7 +511,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\Search.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL  -I&quot;.\..&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; &quot;..\Search.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -523,14 +522,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  &quot;-ID:\work\PdfEdit\lpng152&quot; &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\Search.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE -DUNICODE  -I&quot;.\..\core\xpdf\xpdf&quot; -I&quot;.\..\core\xpdf&quot; -I&quot;.\..\core\utils&quot; -I&quot;.\..&quot; -I&quot;.\..\core&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;..\Search.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\TabPage.h"
+				RelativePath="..\TabPage.h"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -538,7 +537,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL  -I&quot;.\..&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; &quot;..\TabPage.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -549,18 +548,18 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE -DUNICODE  &quot;-ID:\work\PdfEdit\lpng152&quot; &quot;-ID:\work\PdfEdit\svnsource\core\xpdf&quot; &quot;-ID:\work\PdfEdit\svnsource\core&quot; &quot;-ID:\work\PdfEdit\svnsource&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;..\svnsource\TabPage.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE -DUNICODE  -I&quot;.\..\core\xpdf\xpdf&quot; -I&quot;.\..\core\xpdf&quot; -I&quot;.\..\core\utils&quot; -I&quot;.\..&quot; -I&quot;.\..\core&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\qtmain&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;..\TabPage.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\tree.h"
+				RelativePath="..\tree.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\typedefs.h"
+				RelativePath="..\typedefs.h"
 				>
 			</File>
 		</Filter>
@@ -570,7 +569,7 @@
 			UniqueIdentifier="{99349809-55BA-4b9d-BF79-8FDBB0286EB3}"
 			>
 			<File
-				RelativePath="..\svnsource\colorPicker.ui"
+				RelativePath="..\colorPicker.ui"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -596,7 +595,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\comments.ui"
+				RelativePath="..\comments.ui"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -622,7 +621,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\insertImage.ui"
+				RelativePath="..\insertImage.ui"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -648,7 +647,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\insertpagerange.ui"
+				RelativePath="..\insertpagerange.ui"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -674,7 +673,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\OpenPdf.ui"
+				RelativePath="..\OpenPdf.ui"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -700,7 +699,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\page.ui"
+				RelativePath="..\page.ui"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -726,7 +725,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\pdfgui.ui"
+				RelativePath="..\pdfgui.ui"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -752,7 +751,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\properties.ui"
+				RelativePath="..\properties.ui"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -778,7 +777,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\rotatepagerange.ui"
+				RelativePath="..\rotatepagerange.ui"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -804,7 +803,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\search.ui"
+				RelativePath="..\search.ui"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -830,7 +829,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\svnsource\Tab.ui"
+				RelativePath="..\Tab.ui"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1339,7 +1338,7 @@
 			Name="doc"
 			>
 			<File
-				RelativePath="..\svnsource\todo.txt"
+				RelativePath="..\todo.txt"
 				>
 			</File>
 		</Filter>
@@ -1359,7 +1358,7 @@
 		/>
 		<Global
 			Name="QtVersion Win32"
-			Value="4.7.2"
+			Value="qt1"
 		/>
 		<Global
 			Name="RccDir"

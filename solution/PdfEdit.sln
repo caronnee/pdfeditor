@@ -1,16 +1,14 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xpdf", "xpdf\xpdf.vcproj", "{CC31489D-6ECD-4980-BF43-A432EB01DCC2}"
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xpdf", "xpdf.vcproj", "{CC31489D-6ECD-4980-BF43-A432EB01DCC2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pdfedit-kernel", "pdfedit-kernel\pdfedit-kernel.vcproj", "{709C0CED-8D2F-493F-B017-E23156ED51B2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pdfedit-kernel", "pdfedit-kernel.vcproj", "{709C0CED-8D2F-493F-B017-E23156ED51B2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CC31489D-6ECD-4980-BF43-A432EB01DCC2} = {CC31489D-6ECD-4980-BF43-A432EB01DCC2}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boostTest", "boostTest\boostTest.vcproj", "{0D87E70D-B595-47CB-BFB2-6B6FEC5985A3}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pdfEd", "pdfEd\pdfEd.vcproj", "{31BB9A02-9199-42BB-AC07-9BBB0EF1837A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pdfEd", "pdfEd.vcproj", "{31BB9A02-9199-42BB-AC07-9BBB0EF1837A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{709C0CED-8D2F-493F-B017-E23156ED51B2} = {709C0CED-8D2F-493F-B017-E23156ED51B2}
 		{CC31489D-6ECD-4980-BF43-A432EB01DCC2} = {CC31489D-6ECD-4980-BF43-A432EB01DCC2}
@@ -30,10 +28,6 @@ Global
 		{709C0CED-8D2F-493F-B017-E23156ED51B2}.Debug|Win32.Build.0 = Debug|Win32
 		{709C0CED-8D2F-493F-B017-E23156ED51B2}.Release|Win32.ActiveCfg = Release|Win32
 		{709C0CED-8D2F-493F-B017-E23156ED51B2}.Release|Win32.Build.0 = Release|Win32
-		{0D87E70D-B595-47CB-BFB2-6B6FEC5985A3}.Debug|Win32.ActiveCfg = Debug|Win32
-		{0D87E70D-B595-47CB-BFB2-6B6FEC5985A3}.Debug|Win32.Build.0 = Debug|Win32
-		{0D87E70D-B595-47CB-BFB2-6B6FEC5985A3}.Release|Win32.ActiveCfg = Release|Win32
-		{0D87E70D-B595-47CB-BFB2-6B6FEC5985A3}.Release|Win32.Build.0 = Release|Win32
 		{31BB9A02-9199-42BB-AC07-9BBB0EF1837A}.Debug|Win32.ActiveCfg = Debug|Win32
 		{31BB9A02-9199-42BB-AC07-9BBB0EF1837A}.Debug|Win32.Build.0 = Debug|Win32
 		{31BB9A02-9199-42BB-AC07-9BBB0EF1837A}.Release|Win32.ActiveCfg = Release|Win32

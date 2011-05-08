@@ -5,6 +5,7 @@
 //created files
 #include "insertpagerange.h"
 #include "tree.h"
+#include "page.h"
 #include "bookmark.h"
 #include "globalfunctions.h"
 #include "utils/types/coordinates.h"
@@ -73,6 +74,7 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	connect (labelPage,SIGNAL(EraseTextSignal()),this,SLOT(eraseSelectedText()));
 	connect (labelPage,SIGNAL(ChangeTextSignal()),this,SLOT(raiseChangeSelectedText()));
 	connect (labelPage,SIGNAL(InsertImageSignal(QPoint)),this,SLOT(raiseInsertImage(QPoint)));
+	connect (labelPage,SIGNAL(DeleteImageSignal(QPoint)),this,SLOT(deleteImage(QPoint)));
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	
 	connect(_image,SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
@@ -106,6 +108,32 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	}
 	this->ui.zoom->setCurrentIndex(1);
 	SetModeTextSelect();
+}
+void TabPage::deleteImage(QPoint point)
+{
+	//zistime, co mame pod pointom;
+	double x,y;
+	toPdfPos(point.x(),point.y(),x,y);
+	Ops ops;
+	page->getObjectsAtPosition(ops,libs::Point(x,y));
+	//hladame BI. Dictionary nevymazavame - bez operatora sa to stejne nezobrazi
+	int i =0;
+	while ( i< ops.size())
+	{
+		std::string name;
+		ops[i]->getOperatorName(name);
+		if (typeChecker.isType(OpImageName,name))
+		{
+			i++;
+			continue;
+		}
+		ops[i] = ops.back();
+		ops.pop_back();//zmazem posledne
+	}
+	//mame iba obrazky
+	//zmaz len ten, ktore je 'navrchu' -> je v ops posledny?
+	ops.back()->getContentStream()->deleteOperator(ops.back());
+	setFromSplash();
 }
 void TabPage::raiseInsertImage(QPoint point)
 {

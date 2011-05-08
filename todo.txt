@@ -45,13 +45,16 @@ FIXED - pridat do odtien farby, tvar	(cs non-stroking)	(CS stroking) .//set oper
 FIXED - dialog pre pridanie obrazka (context doteraz)
 FIXED - v zavislosti na rotacii v dialogu spravit to, jak sa vypocitava cm
 FIXED - pridanie obrazka
-FIXED - pridat poziciu, na ktoru sa pridava(spravnu)
-REJECTED -spravne farby zobrazovat
-FIXED -nasetovat tak, aby to pozeralo DOLE, a nie hore
+FIXED(skoro) - pridat poziciu, na ktoru sa pridava(spravnu)
+FIXED - spravne farby zobrazovat
+FIXED - nasetovat tak, aby to pozeralo DOLE, a nie hore
 IMPLEMENTED -nasetovat scale v zavislosi na obrazku(4-stvrtina)
 NICE-TO-HAVE - pridat len cast obrazka - to si staci orezat v nejakom editore
+-zmazat obrazok
+WONTFIX - spytat sa, ktory obrazok zmazat - zmaze ten horny, ktory iny by asi uzivatel chcel?
 -zmena atributov obrazka(on click show window, set selected)(pozicia, scale, otocenie
 -extrakcia casti obrazka (click- vyber vsetko, click&drag->painter, transform to bmp position a extract)
+-extrakcia celeho obrazka
 --------------------COMMENTY---------------
 -dialog pre pridanie comments
 -dialog pre pridai roznych typov commentu

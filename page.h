@@ -53,8 +53,10 @@ public slots:
 	void eraseText();
 	void changeText();
 	void insertImage();
+	void deleteImage();
 signals:
-	void InsertImageSignal(QPoint point);
+	void DeleteImageSignal(QPoint);
+	void InsertImageSignal(QPoint);
 	void ChangeTextSignal();
 	void EraseTextSignal();
 	void DeleteTextSignal();

@@ -97,18 +97,21 @@ void InsertImage::apply()
 	var = ui.cm->item(2,1)->data(0);
 	//y-ova suradnica sa pozunie vzhladom na obrazok
 	float y =var.value<float>();
-	y -= pixH; //TODO co sa stane, ak je to mimo oblasti?
+	//y -= pixH; //TODO co sa stane, ak je to mimo oblasti?
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(y)));
 
 	q->push_back(createOperator("cm",posOperands),getLastOperator(q));
 
 	//vyhod alpha channel
-	std::vector<char> imageData;
-	for ( int i = 0; i < image.byteCount(); i++)
+	std::vector<char> imageData; //32 bitove sa musia pretypovat na QRGB
+	int size = image.byteCount()/4;
+	const QRgb * data = (const QRgb *)image.bits(); //4 byty na kazdeho
+	for ( int i = 0; i < size; i++)
 	{
-		if (i%4 ==3)
-			continue;
-		imageData.push_back(image.bits()[i]);//invert, vie to robit aj QImage
+		QRgb col = data[i];
+		imageData.push_back(qRed(col));//invert, vie to robit aj QImage
+		imageData.push_back(qGreen(col));//invert, vie to robit aj QImage
+		imageData.push_back(qBlue(col));//invert, vie to robit aj QImage
 	}
 	shared_ptr<CInlineImage> inline_image (new CInlineImage (image_dict,imageData));
 	shared_ptr<InlineImageCompositePdfOperator> BI(new InlineImageCompositePdfOperator (inline_image));

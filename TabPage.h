@@ -278,7 +278,7 @@ private: //variables
 	boost::shared_ptr<pdfobjects::CPdf> pdf;
 	boost::shared_ptr<pdfobjects::CPage> page;
 	TextData _textList;
-	//oterator	 of selected
+	//oterator	of selected
 	TextData::iterator sTextIt;
 	TextData::iterator sTextItEnd; //kde ten iterator konci
 	bool _dataReady; //pouzivane vseobecne, kedy sa to hodi
@@ -378,6 +378,7 @@ public slots:
 	void raiseChangeSelectedText();
 	void raiseInsertImage(QPoint);
 
+	void deleteImage(QPoint point);
 	///Sets image to previous page
 	bool previousPage();
 	///Sets image to next page

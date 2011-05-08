@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9,00"
 	Name="pdfedit-kernel"
 	ProjectGUID="{709C0CED-8D2F-493F-B017-E23156ED51B2}"
 	RootNamespace="pdfeditkernel"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -17,8 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)\output\"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\lib"
+			IntermediateDirectory="$(SolutionDir)I_kernel"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -40,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;D:\Program Files\GnuWin32\include&quot;;D:\work\zlib\include;D:\work\PdfEdit\svnsource\core\xpdf;D:\work\PdfEdit\svnsource\core"
+				AdditionalIncludeDirectories="&quot;D:\Program Files\GnuWin32\include&quot;;..\core;..\core\utils;..\\core\kernel;..\core\xpdf\xpdf;..\core\xpdf"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -104,7 +105,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;D:\Program Files\GnuWin32\include&quot;;D:\work\zlib\include;D:\work\PdfEdit\svnsource\core\xpdf;D:\work\PdfEdit\svnsource\core"
+				AdditionalIncludeDirectories="&quot;D:\Program Files\GnuWin32\include&quot;;..\core"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -149,15 +150,15 @@
 			Name="os"
 			>
 			<File
-				RelativePath="..\svnsource\core\os\compiler.h"
+				RelativePath="..\core\os\compiler.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\os\posix.h"
+				RelativePath="..\core\os\posix.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\os\win.h"
+				RelativePath="..\core\os\win.h"
 				>
 			</File>
 		</Filter>
@@ -165,67 +166,67 @@
 			Name="utils"
 			>
 			<File
-				RelativePath="..\svnsource\core\utils\algorithms.h"
+				RelativePath="..\core\utils\algorithms.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\algorithms\basic_algos.h"
+				RelativePath="..\core\utils\algorithms\basic_algos.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\types\basic_types.h"
+				RelativePath="..\core\utils\types\basic_types.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\confparser.cc"
+				RelativePath="..\core\utils\confparser.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\confparser.h"
+				RelativePath="..\core\utils\confparser.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\types\coordinates.h"
+				RelativePath="..\core\utils\types\coordinates.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\debug.cc"
+				RelativePath="..\core\utils\debug.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\debug.h"
+				RelativePath="..\core\utils\debug.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\doxygen.h"
+				RelativePath="..\core\utils\doxygen.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\iterator.h"
+				RelativePath="..\core\utils\iterator.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\listitem.h"
+				RelativePath="..\core\utils\listitem.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\logger.h"
+				RelativePath="..\core\utils\logger.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\objectstorage.h"
+				RelativePath="..\core\utils\objectstorage.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\observer.h"
+				RelativePath="..\core\utils\observer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\rulesmanager.h"
+				RelativePath="..\core\utils\rulesmanager.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\utils\types.h"
+				RelativePath="..\core\utils\types.h"
 				>
 			</File>
 		</Filter>
@@ -233,362 +234,362 @@
 			Name="kernel"
 			>
 			<File
-				RelativePath="..\svnsource\core\kernel\cannotation.cc"
+				RelativePath="..\core\kernel\cannotation.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\carray.cc"
+				RelativePath="..\core\kernel\carray.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\ccontentstream.cc"
+				RelativePath="..\core\kernel\ccontentstream.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cdict.cc"
+				RelativePath="..\core\kernel\cdict.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cinlineimage.cc"
+				RelativePath="..\core\kernel\cinlineimage.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cobject.cc"
+				RelativePath="..\core\kernel\cobject.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cobject2string.cc"
+				RelativePath="..\core\kernel\cobject2string.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cobject2xpdf.cc"
+				RelativePath="..\core\kernel\cobject2xpdf.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cobjecthelpers.cc"
+				RelativePath="..\core\kernel\cobjecthelpers.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\contentschangetag.cc"
+				RelativePath="..\core\kernel\contentschangetag.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\coutline.cc"
+				RelativePath="..\core\kernel\coutline.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cpage.cc"
+				RelativePath="..\core\kernel\cpage.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cpageannots.cc"
+				RelativePath="..\core\kernel\cpageannots.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cpageattributes.cc"
+				RelativePath="..\core\kernel\cpageattributes.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cpagechanges.cc"
+				RelativePath="..\core\kernel\cpagechanges.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cpagecontents.cc"
+				RelativePath="..\core\kernel\cpagecontents.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cpagedisplay.cc"
+				RelativePath="..\core\kernel\cpagedisplay.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cpagefonts.cc"
+				RelativePath="..\core\kernel\cpagefonts.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cpdf.cc"
+				RelativePath="..\core\kernel\cpdf.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cstream.cc"
+				RelativePath="..\core\kernel\cstream.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\cxref.cc"
+				RelativePath="..\core\kernel\cxref.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\delinearizator.cc"
+				RelativePath="..\core\kernel\delinearizator.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\factories.cc"
+				RelativePath="..\core\kernel\factories.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\flattener.cc"
+				RelativePath="..\core\kernel\flattener.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\flattener.h"
+				RelativePath="..\core\kernel\flattener.h"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\iproperty.cc"
+				RelativePath="..\core\kernel\iproperty.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\modecontroller.cc"
+				RelativePath="..\core\kernel\modecontroller.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\pdfedit-core-dev.cc"
+				RelativePath="..\core\kernel\pdfedit-core-dev.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\pdfoperators.cc"
+				RelativePath="..\core\kernel\pdfoperators.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\pdfoperatorsbase.cc"
+				RelativePath="..\core\kernel\pdfoperatorsbase.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\pdfoperatorsiter.cc"
+				RelativePath="..\core\kernel\pdfoperatorsiter.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\pdfspecification.cc"
+				RelativePath="..\core\kernel\pdfspecification.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\pdfwriter.cc"
+				RelativePath="..\core\kernel\pdfwriter.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\stateupdater.cc"
+				RelativePath="..\core\kernel\stateupdater.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\static.cc"
+				RelativePath="..\core\kernel\static.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\streamwriter.cc"
+				RelativePath="..\core\kernel\streamwriter.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\textoutputbuilder.cc"
+				RelativePath="..\core\kernel\textoutputbuilder.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\textoutputengines.cc"
+				RelativePath="..\core\kernel\textoutputengines.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\textoutputentities.cc"
+				RelativePath="..\core\kernel\textoutputentities.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\xpdf.cc"
+				RelativePath="..\core\kernel\xpdf.cc"
 				>
 			</File>
 			<File
-				RelativePath="..\svnsource\core\kernel\xrefwriter.cc"
+				RelativePath="..\core\kernel\xrefwriter.cc"
 				>
 			</File>
 			<Filter
 				Name="Headers"
 				>
 				<File
-					RelativePath="..\svnsource\core\kernel\cannotation.h"
+					RelativePath="..\core\kernel\cannotation.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\carray.h"
+					RelativePath="..\core\kernel\carray.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\ccontentstream.h"
+					RelativePath="..\core\kernel\ccontentstream.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cdict.h"
+					RelativePath="..\core\kernel\cdict.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cinlineimage.h"
+					RelativePath="..\core\kernel\cinlineimage.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cobject.h"
+					RelativePath="..\core\kernel\cobject.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cobjecthelpers.h"
+					RelativePath="..\core\kernel\cobjecthelpers.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cobjectsimple.h"
+					RelativePath="..\core\kernel\cobjectsimple.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cobjectsimpleI.h"
+					RelativePath="..\core\kernel\cobjectsimpleI.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\contentschangetag.h"
+					RelativePath="..\core\kernel\contentschangetag.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\coutline.h"
+					RelativePath="..\core\kernel\coutline.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cpage.h"
+					RelativePath="..\core\kernel\cpage.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cpageannots.h"
+					RelativePath="..\core\kernel\cpageannots.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cpageattributes.h"
+					RelativePath="..\core\kernel\cpageattributes.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cpagechanges.h"
+					RelativePath="..\core\kernel\cpagechanges.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cpagecontents.h"
+					RelativePath="..\core\kernel\cpagecontents.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cpagedisplay.h"
+					RelativePath="..\core\kernel\cpagedisplay.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cpagefonts.h"
+					RelativePath="..\core\kernel\cpagefonts.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cpagemodule.h"
+					RelativePath="..\core\kernel\cpagemodule.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cpdf.h"
+					RelativePath="..\core\kernel\cpdf.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cstream.h"
+					RelativePath="..\core\kernel\cstream.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cstreamsxpdfreader.h"
+					RelativePath="..\core\kernel\cstreamsxpdfreader.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\cxref.h"
+					RelativePath="..\core\kernel\cxref.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\delinearizator.h"
+					RelativePath="..\core\kernel\delinearizator.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\displayparams.h"
+					RelativePath="..\core\kernel\displayparams.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\exceptions.h"
+					RelativePath="..\core\kernel\exceptions.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\factories.h"
+					RelativePath="..\core\kernel\factories.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\indiref.h"
+					RelativePath="..\core\kernel\indiref.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\iproperty.h"
+					RelativePath="..\core\kernel\iproperty.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\modecontroller.h"
+					RelativePath="..\core\kernel\modecontroller.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\operatorhinter.h"
+					RelativePath="..\core\kernel\operatorhinter.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\pdfedit-core-dev.h"
+					RelativePath="..\core\kernel\pdfedit-core-dev.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\pdfoperators.h"
+					RelativePath="..\core\kernel\pdfoperators.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\pdfoperatorsbase.h"
+					RelativePath="..\core\kernel\pdfoperatorsbase.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\pdfoperatorsiter.h"
+					RelativePath="..\core\kernel\pdfoperatorsiter.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\pdfspecification.h"
+					RelativePath="..\core\kernel\pdfspecification.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\pdfwriter.h"
+					RelativePath="..\core\kernel\pdfwriter.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\stateupdater.h"
+					RelativePath="..\core\kernel\stateupdater.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\static.h"
+					RelativePath="..\core\kernel\static.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\streamwriter.h"
+					RelativePath="..\core\kernel\streamwriter.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\textoutput.h"
+					RelativePath="..\core\kernel\textoutput.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\textoutputbuilder.h"
+					RelativePath="..\core\kernel\textoutputbuilder.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\textoutputengines.h"
+					RelativePath="..\core\kernel\textoutputengines.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\textoutputentities.h"
+					RelativePath="..\core\kernel\textoutputentities.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\textsearchparams.h"
+					RelativePath="..\core\kernel\textsearchparams.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\utils.h"
+					RelativePath="..\core\kernel\utils.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\xpdf.h"
+					RelativePath="..\core\kernel\xpdf.h"
 					>
 				</File>
 				<File
-					RelativePath="..\svnsource\core\kernel\xrefwriter.h"
+					RelativePath="..\core\kernel\xrefwriter.h"
 					>
 				</File>
 			</Filter>
