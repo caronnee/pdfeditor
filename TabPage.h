@@ -64,7 +64,7 @@ struct OperatorData
 	OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _op(op), _origX(0), _origX2(0), _text("")
 	{
 		shared_ptr<TextSimpleOperator> txt = boost::dynamic_pointer_cast<TextSimpleOperator>(op);
-		txt->getRawText(_text);
+		txt->getFontText(_text);
 		libs::Rectangle r = _op->getBBox();
 		_ymin = min<double>(r.yleft, r.yright);
 		_ymax = max<double>(r.yleft, r.yright);
@@ -264,13 +264,12 @@ private: //variables
 	InsertImage * _image;
 	QPoint _mousePos;
 	Tree _searchEngine;
-
+	Comments * _cmts;
 	std::vector<std::string> acceptedAnotName;//TODO static alebo enum alebo cos
 	//could be static. but :)
 	QRegion _region;
 	QString _name; //name of the file to be opened
 	FontWidget * _font;	
-	Comments * _cmts;
 	Mode _mode;
 
 	IsType typeChecker;
@@ -354,6 +353,7 @@ public:
 	//rotate page
 
 public slots:
+	void closeAnnotDiag();
 	void changeSelectedText();
 	void deleteSelectedText();
 	void eraseSelectedText();
@@ -364,8 +364,7 @@ public slots:
 	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
 	void insertAnnotation(Annot a);
 	void search(std::string text,bool forw);
-	void showAnnotDiag();
-	void closeAnnotDiag();
+
 	void handleBookMark(QTreeWidget * item);
 	void removeObjects();
 	void clicked(int x, int y);
@@ -377,6 +376,7 @@ public slots:
 	void raiseInsertText(QPoint);
 	void raiseChangeSelectedText();
 	void raiseInsertImage(QPoint);
+	void raiseAnnotation();
 
 	void deleteImage(QPoint point);
 	///Sets image to previous page

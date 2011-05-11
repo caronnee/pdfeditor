@@ -32,7 +32,7 @@ signals:
 	void parseToRows(libs::Rectangle);
 
 public slots:
-	void setRectangle(float x, float y, int width, int height);
+	void setRectangle(float pdfx, float pdfy, int pdfwidth, int pdfheight);
 	void setPoints(std::vector<float> flts);
 	void setDestination(pdfobjects::IndiRef ref);
 	void onChange(int index);

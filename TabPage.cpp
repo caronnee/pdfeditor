@@ -75,6 +75,7 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	connect (labelPage,SIGNAL(ChangeTextSignal()),this,SLOT(raiseChangeSelectedText()));
 	connect (labelPage,SIGNAL(InsertImageSignal(QPoint)),this,SLOT(raiseInsertImage(QPoint)));
 	connect (labelPage,SIGNAL(DeleteImageSignal(QPoint)),this,SLOT(deleteImage(QPoint)));
+	connect (labelPage,SIGNAL(AnnotationSignal()),this,SLOT(raiseAnnotation()));
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	
 	connect(_image,SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
@@ -115,24 +116,34 @@ void TabPage::deleteImage(QPoint point)
 	double x,y;
 	toPdfPos(point.x(),point.y(),x,y);
 	Ops ops;
-	page->getObjectsAtPosition(ops,libs::Point(x,y));
+	page->getObjectsAtPosition(ops,libs::Rectangle(0,0,1000,1000));
 	//hladame BI. Dictionary nevymazavame - bez operatora sa to stejne nezobrazi
 	int i =0;
-	while ( i< ops.size())
+	InlineImageOperatorIterator it(ops.back(),false);
+	PdfOp op =it.getCurrent();
+	while(it.valid())
 	{
-		std::string name;
-		ops[i]->getOperatorName(name);
-		if (typeChecker.isType(OpImageName,name))
+		shared_ptr<InlineImageCompositePdfOperator> img = boost::dynamic_pointer_cast<InlineImageCompositePdfOperator>(op);
+		PdfOperator::PdfOperators child;
+		img->getChildren(child);
+		for (PdfOperator::PdfOperators::iterator iter = child.begin(); iter != child.end();iter++)
 		{
-			i++;
-			continue;
+			std::string n;
+			(*iter)->getOperatorName(n);
+			BBox b = (*iter)->getBBox();
+			iter;
 		}
-		ops[i] = ops.back();
-		ops.pop_back();//zmazem posledne
+		it.next();
+		op = it.getCurrent();
 	}
+	if (!it.valid())
+		return;
 	//mame iba obrazky
 	//zmaz len ten, ktore je 'navrchu' -> je v ops posledny?
-	ops.back()->getContentStream()->deleteOperator(ops.back());
+	//zisti, kde lezia nase pointy, pretoe BBox je zjavne debilne nastaveny
+	
+
+	op->getContentStream()->deleteOperator(op);
 	setFromSplash();
 }
 void TabPage::raiseInsertImage(QPoint point)
@@ -212,7 +223,7 @@ void TabPage::waitForPosition()
 {
 	_mode = ModeEmitPosition;
 }
-void TabPage::showAnnotDiag()
+void TabPage::raiseAnnotation()
 {
 	_cmts = new Comments();
 	_cmts->show();
@@ -221,8 +232,7 @@ void TabPage::showAnnotDiag()
 	//pridanie anotacie
 	connect(_cmts,SIGNAL(annotation(Annot)),this,SLOT(insertAnnotation(Annot)));
 	connect(this,SIGNAL(pdfPosition(float,float,int,int)),_cmts,SLOT(setRectangle(float,float,int,int)));
-	connect(_cmts,SIGNAL(parseToRows(libs::Rectangle)),
-		this,SLOT(toRows(libs::Rectangle)));
+	connect(_cmts,SIGNAL(parseToRows(libs::Rectangle)),this,SLOT(toRows(libs::Rectangle)));
 	connect(this,SIGNAL(parsed(std::vector<float>)),_cmts,SLOT(setPoints(std::vector<float>)));
 }
 void TabPage::SetModeTextSelect()

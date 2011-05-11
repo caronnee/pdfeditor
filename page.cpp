@@ -12,12 +12,16 @@ DisplayPage::DisplayPage(QWidget *parent)
      setScaledContents(true);
 	 menu = new QMenu();
 	 menu->addAction("InsertText",this,SLOT(insertText()));
-	 //connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 	 menu->addAction("Delete",this,SLOT(deleteText()));
 	 menu->addAction("Erase", this, SLOT(eraseText()));
 	 menu->addAction("Change",this,SLOT(changeText()));
 	 menu->addAction("InsertImage",this,SLOT(insertImage()));
 	 menu->addAction("DeleteImage",this,SLOT(deleteImage()));
+	 menu->addAction("Annotate",this,SLOT(annotation()));
+}
+void DisplayPage::annotation()
+{
+	emit AnnotationSignal();
 }
 void DisplayPage::deleteImage()
 {

@@ -356,20 +356,19 @@ void TextSimpleOperator::getFontText(std::string& str)const
 		return;
 	utilsPrintDbg(debug::DBG_INFO, "Textoperator uses font="<<fontData->getFontName());
  	CharCode code;
- 	Unicode u[8];
+ 	Unicode u;
  	int uLen;
  	double dx, dy, originX, originY;
  	char * p=raw.getCString();
  	while(len>0)
  	{
- 		int n = font->getNextChar(p, len, &code, u, (int)(sizeof(u) / sizeof(Unicode)), &uLen,
+ 		int n = font->getNextChar(p, len, &code, &u, (int)(sizeof(u) / sizeof(Unicode)), &uLen,
  			    &dx, &dy, &originX, &originY);
-		assert(uLen <= 8);
- 		//for (int i=0; i<uLen; ++i)
- 		str += code;
+ 		for (int i=0; i<uLen; ++i)
+ 			str += (&u)[i];
  		p += n;
  		len -= n;
-  	}
+  	} 
 }
 
 TextSimpleOperator::~TextSimpleOperator()

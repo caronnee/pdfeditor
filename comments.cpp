@@ -30,7 +30,7 @@ void Comments::setPoints(std::vector<float> flts)
 void Comments::onChange(int index)
 {
 	//prida ten typ na urcity rect
-	_an =  pdfobjects::CAnnotation::createAnnotation(rect, ui.annotType->currentText().toAscii().data());
+	_an = pdfobjects::CAnnotation::createAnnotation(rect, ui.annotType->currentText().toAscii().data());
 	//cela annotacia sa bude diat v page
 }
 void Comments::apply()
@@ -46,7 +46,7 @@ void Comments::apply()
 			d->addProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CNameFactory::getInstance(std::string(ui.text->toPlainText().toAscii().data()))));
 			break;
 		} 
-	case ALink: //co ked je to URL? - linkova anotacia, vyriesit v texte. Tot sa odkazuje oba  raci textu
+	case ALink: //co ked je to URL? - linkova anotacia, vyriesit v texte. Tot sa odkazuje oba ramci textu
 		{
 			d->addProperty("Subtype", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CNameFactory::getInstance("Link")));
 			//d->addProprty

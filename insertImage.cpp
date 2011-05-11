@@ -63,17 +63,19 @@ void InsertImage::apply()
 	}
 
 	QImage image;
-	if (!image.load(ui.lineEdit->text()))
+	if (!image.load(tr(ui.lineEdit->text().toAscii().data())))
 	{
 		QMessageBox::warning(this,tr("Unable to load file"),tr("LoadFailed"),QMessageBox::Ok);
 		return;
 	}
+	image = image.scaled(image.width()/4,image.height()/4); //proporcie
 	CDict image_dict;
-	image_dict.addProperty ("W", CInt (image.width())); //TODO sizex
-	image_dict.addProperty ("H", CInt (image.height())); //TODO sizey
+	image_dict.addProperty ("W", CInt (image.width())); 
+	image_dict.addProperty ("H", CInt (image.height()));
 	image_dict.addProperty ("CS", CName ("RGB"));
 	image_dict.addProperty ("BPC", CInt (8)); //bits per component, kontanta, ine pdf nevie:)
 
+	int depth = image.depth(); //8 - 8 bitov per pixel
 	//add to buffer everything that is in image
 	shared_ptr<UnknownCompositePdfOperator> q(new UnknownCompositePdfOperator("q", "Q"));
 	
@@ -97,21 +99,31 @@ void InsertImage::apply()
 	var = ui.cm->item(2,1)->data(0);
 	//y-ova suradnica sa pozunie vzhladom na obrazok
 	float y =var.value<float>();
-	//y -= pixH; //TODO co sa stane, ak je to mimo oblasti?
+	y -= pixH; //TODO co sa stane, ak je to mimo oblasti?
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(y)));
 
 	q->push_back(createOperator("cm",posOperands),getLastOperator(q));
 
+	//image.save("outputSave.png");
 	//vyhod alpha channel
+	
 	std::vector<char> imageData; //32 bitove sa musia pretypovat na QRGB
-	int size = image.byteCount()/4;
-	const QRgb * data = (const QRgb *)image.bits(); //4 byty na kazdeho
-	for ( int i = 0; i < size; i++)
+
+	/*QImage im = image.alphaChannel();
+	im.save("aplhaChangge.png");*/ //alfa neskor
+
+	for(int h = 0; h< pixH; h++)
 	{
-		QRgb col = data[i];
-		imageData.push_back(qRed(col));//invert, vie to robit aj QImage
-		imageData.push_back(qGreen(col));//invert, vie to robit aj QImage
-		imageData.push_back(qBlue(col));//invert, vie to robit aj QImage
+		for ( int w = 0; w < pixW; w++)
+		{
+			QRgb color = image.pixel(w,h);
+			int r = qRed(color);
+			int g = qGreen(color);
+			int b = qBlue(color);
+			imageData.push_back(r);
+			imageData.push_back(g);
+			imageData.push_back(b);
+		}
 	}
 	shared_ptr<CInlineImage> inline_image (new CInlineImage (image_dict,imageData));
 	shared_ptr<InlineImageCompositePdfOperator> BI(new InlineImageCompositePdfOperator (inline_image));

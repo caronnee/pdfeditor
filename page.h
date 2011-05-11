@@ -45,6 +45,7 @@ private:
 	QSize _size;
 
 public slots:
+	void annotation();
 	void fillRect( QRegion reg, const QColor color);
 	void mousePressEvent(QMouseEvent * event);
 	void fillRect(int x, int y, int x2, int y2, const QColor color);
@@ -55,6 +56,7 @@ public slots:
 	void insertImage();
 	void deleteImage();
 signals:
+	void AnnotationSignal();
 	void DeleteImageSignal(QPoint);
 	void InsertImageSignal(QPoint);
 	void ChangeTextSignal();

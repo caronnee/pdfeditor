@@ -55,10 +55,16 @@ WONTFIX - spytat sa, ktory obrazok zmazat - zmaze ten horny, ktory iny by asi uz
 -zmena atributov obrazka(on click show window, set selected)(pozicia, scale, otocenie
 -extrakcia casti obrazka (click- vyber vsetko, click&drag->painter, transform to bmp position a extract)
 -extrakcia celeho obrazka
+-------LATER---------
 --------------------COMMENTY---------------
--dialog pre pridanie comments
--dialog pre pridai roznych typov commentu
--po klikuti na link vybehnut na danu poziciu
+FIXED - dialog pre pridanie comments, dialog pre pridanie roznych typov commentu
+-pridat comment
+-po klikuti na link vybehnut na danu poziciu pre link annotation
+-po kliknuti na textovu anotaciu zobrazit textu ( v textboxe alebo tak nejak )
+-zobrazit strikeout
+-zobrazit highlight
+-zmenit farbu highlighty
+-zmenit farbu strokeout
 -ignorovat ostatne 
 ---------------------HIGHLIGHT----------------------
 -pridanie commentu ( context menu - > add comennt, emit point, od, okaa, emit  refresh(rectangle to refresh
@@ -73,6 +79,8 @@ WONTFIX - spytat sa, ktory obrazok zmazat - zmaze ten horny, ktory iny by asi uz
 - (upravit text tak, aby bol zarovnany vzhladom na ine viditelne operatory)
 - attachments, zobrazit, stiahnut
 - heslo, ak sa nemoze nic menit
+---------------TEXT-------
+- spravot iba systemove fonty, aby sa zobrazilo spravne
 ----------------------SETTINGS--------------------------
 - zadanie, aka farba v pozadi sa ma zobrazovat 
 - defaultne, 1/2 stranok
@@ -91,3 +99,8 @@ WONTFIX - spytat sa, ktory obrazok zmazat - zmaze ten horny, ktory iny by asi uz
 - pohnut vysvietenym textom
 -ako pozadie dat obrazok, na ktorom sa vsetko bude vykreslovat
 - ukazovat nejakym tentintkom, kde sa pohybuje pridanie textu, obrazky
+---------------------------------------PATCHES------
+- getfontwidth - pridava funkcia na sirku glyfu
+- mozne memor leak pri zistovani priameho textu (font text)
+- iterator debugging 
+- ulozit PDF v neecrptovanej podobe - 
