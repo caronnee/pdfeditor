@@ -363,6 +363,7 @@ public slots:
 	void toRows(libs::Rectangle);
 	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
 	void insertAnnotation(Annot a);
+	void deleteAnnotation(QPoint);
 	void search(std::string text,bool forw);
 
 	void handleBookMark(QTreeWidget * item);

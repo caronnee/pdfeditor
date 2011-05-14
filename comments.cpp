@@ -59,8 +59,9 @@ void Comments::apply()
 	{
 	case AText: //text, obycajny
 		{//mame spravne KDE ma byt, zostava zistit obsah
-			d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CNameFactory::getInstance(std::string(ui.text->toPlainText().toAscii().data()))));
-			
+			d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string(ui.text->toPlainText().toAscii().data()))));
+			d->addProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance("Muf!")));
+			d->addProperty("Subj", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance("pdftest")));
 			emit (annotation (_an));
 			return;
 		} 

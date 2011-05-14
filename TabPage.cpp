@@ -76,6 +76,7 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	connect (labelPage,SIGNAL(InsertImageSignal(QPoint)),this,SLOT(raiseInsertImage(QPoint)));
 	connect (labelPage,SIGNAL(DeleteImageSignal(QPoint)),this,SLOT(deleteImage(QPoint)));
 	connect (labelPage,SIGNAL(AnnotationSignal(QPoint)),this,SLOT(raiseAnnotation(QPoint)));
+	connect (labelPage,SIGNAL(DeleteAnnotationSignal(QPoint)),this,SLOT(deleteAnnotation(QPoint)));
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	
 	connect(_image,SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
@@ -207,6 +208,31 @@ void TabPage::insertAnnotation(Annot a)
 	///updatneme annots:)
 	page->getAllAnnotations(_annots);
 	setFromSplash();
+}
+void TabPage::deleteAnnotation(QPoint point)
+{
+	page->getAllAnnotations(_annots);
+	for (int i =0; i < _annots.size(); i++)
+	{
+		shared_ptr<CArray> rect;
+		PdfProperty prop = _annots[i]->getDictionary()->getProperty("Rect");
+		rect = pdfobjects::IProperty::getSmartCObjectPtr<CArray>(prop);
+		float x1,x2,y1,y2;
+		x1 = utils::getSimpleValueFromArray<CReal>(rect,0);
+		y1 = utils::getSimpleValueFromArray<CReal>(rect,1);
+		x2 = utils::getSimpleValueFromArray<CReal>(rect,2);
+		y2 = utils::getSimpleValueFromArray<CReal>(rect,3);
+		//dostat annotecny rectangle
+		BBox b(x1,y1,x2,y2);
+		QRect convertedRect = getRectangle(b);
+		if (convertedRect.contains(point))
+		{
+			page->delAnnotation(_annots[i]);
+			setFromSplash();
+			return;
+		}
+	}
+	printf("Anotation was not deleted");
 }
 void TabPage::raiseChangeSelectedText()
 {
@@ -1039,6 +1065,18 @@ void TabPage::showAnnotation()
 	//v page nastav vsetky aktivne miesta
 	for(size_t i =0; i< _annots.size(); i++)
 	{
+		std::vector<std::string> names;
+		_annots[i]->getDictionary()->getAllPropertyNames(names);
+		std::string m;
+		/*for (int a = 0; a< names.size();a++)
+		{
+			_annots[i]->getDictionary()->getProperty(names[a])->getStringRepresentation(m);
+		}*/
+		_annots[i]->getDictionary()->getStringRepresentation(m);
+		printf("%s\n",m.c_str());
+	/*	PdfProperty prop = _annots[i]->getDictionary()->getProperty("Subtype");
+		if (pdfobjects::IProperty::getSmartCObjectPtr(*/
+		//pre vsetky mi napis do konzole ich properties
 		shared_ptr<CArray> rect;
 		PdfProperty prop = _annots[i]->getDictionary()->getProperty("Rect");
 		rect = pdfobjects::IProperty::getSmartCObjectPtr<CArray>(prop);

@@ -18,7 +18,7 @@ DisplayPage::DisplayPage(QWidget *parent)
 	 menu->addAction("InsertImage",this,SLOT(insertImage()));
 	 menu->addAction("DeleteImage",this,SLOT(deleteImage()));
 	 menu->addAction("Annotate",this,SLOT(annotation()));
-	 menu->addAction("Delete Annotation",this,SLOT(deleteAnnotation));
+	 menu->addAction("Delete Annotation",this,SLOT(deleteAnnotation()));
 }
 void DisplayPage::deleteAnnotation()
 {
