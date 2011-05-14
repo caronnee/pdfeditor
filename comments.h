@@ -17,7 +17,7 @@ class Comments : public  QWidget
 {
 	Q_OBJECT
 
-		typedef boost::shared_ptr<pdfobjects::CDict> ADictionary;
+	typedef boost::shared_ptr<pdfobjects::CDict> ADictionary;
 
 	boost::shared_ptr<pdfobjects::CArray> points;
 	Ui::Comments ui;
@@ -28,10 +28,12 @@ public:
 	Comments();
 	
 signals:
+	void annotationTextMarkup (Annot);
 	void annotation(Annot);
 	void parseToRows(libs::Rectangle);
 
 public slots:
+	void setRectangle(libs::Rectangle rectangle);
 	void setRectangle(float pdfx, float pdfy, int pdfwidth, int pdfheight);
 	void setPoints(std::vector<float> flts);
 	void setDestination(pdfobjects::IndiRef ref);

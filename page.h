@@ -21,11 +21,15 @@ public:
 
 	void setImage( const QImage & image);
 
+	void fillRect(QRect rect,QColor color);
 	//adds interactive rectagle (annotation)
 	void addPlace(QRect r)
 	{
 		_interactive.push_back(r);
 		//FIXME zotriedit pre lepsi pristup
+		//ukaz
+		QColor col(0,255,0);
+		fillRect(r,col);
 	}
 	const QImage & getImage()const
 	{
@@ -55,8 +59,10 @@ public slots:
 	void changeText();
 	void insertImage();
 	void deleteImage();
+	void deleteAnnotation();
 signals:
-	void AnnotationSignal();
+	void DeleteAnnotationSignal(QPoint);
+	void AnnotationSignal(QPoint);
 	void DeleteImageSignal(QPoint);
 	void InsertImageSignal(QPoint);
 	void ChangeTextSignal();
@@ -64,7 +70,7 @@ signals:
 	void DeleteTextSignal();
 	void InsertTextSignal(QPoint point);
 	void MouseClicked(int, int); //bolo na mna kliknute, robte s tym nieco!
-	void highlightText(int x, int y);
+	void highlightText(int, int);
 	void MouseReleased();
 public:
 	void unsetImg();

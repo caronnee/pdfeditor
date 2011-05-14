@@ -18,10 +18,15 @@ DisplayPage::DisplayPage(QWidget *parent)
 	 menu->addAction("InsertImage",this,SLOT(insertImage()));
 	 menu->addAction("DeleteImage",this,SLOT(deleteImage()));
 	 menu->addAction("Annotate",this,SLOT(annotation()));
+	 menu->addAction("Delete Annotation",this,SLOT(deleteAnnotation));
+}
+void DisplayPage::deleteAnnotation()
+{
+	emit DeleteAnnotationSignal(_point);
 }
 void DisplayPage::annotation()
 {
-	emit AnnotationSignal();
+	emit AnnotationSignal(_point);
 }
 void DisplayPage::deleteImage()
 {
@@ -54,8 +59,15 @@ void DisplayPage::setImage( const QImage & image )
 	_image = image.copy();
 	unsetImg();
 }
+void DisplayPage::fillRect(QRect rect,QColor color)
+{
+	QPainter painter(&_copyImg); //mozno az na this?
+	painter.fillRect(rect, color);
+	setImg();
+}
 void DisplayPage::fillRect( QRegion region, const QColor color)
 {
+	assert(false); //for now
 	QVector<QRect> r = region.rects();
 	for ( int i= 0; i < r.size(); i++)
 	{

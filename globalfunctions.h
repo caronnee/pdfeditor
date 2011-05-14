@@ -19,8 +19,8 @@ void rotatePosition( T xin, T yin, T& xout, T &yout, int angle )
 	yout = s*sin(toRadians(angle));
 };
 #define ANNOTS(XX) \
-	XX( "Link", Link) \
-	XX( "Text", Text) \
+	XX("Text", Text) \
+	XX("Link", Link) \
 	XX("Highlight", Highlight) \
 	XX("Underline", Underline) \
 	XX("Strikeout", Strike) \
@@ -33,4 +33,5 @@ enum SupportedAnnotation
 {
 	ANNOTS(ENUMS)
 };
+
 #endif // __GLOBAL_F__

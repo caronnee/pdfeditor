@@ -29,7 +29,10 @@
 #include <kernel/cannotation.h>
 //#include <kernel/carray.h>
 
-//operators to be cloned
+typedef boost::shared_ptr<pdfobjects::IProperty> PdfProperty;
+
+//operatory, ktore musim zaklonovat, ked chcem pohnut textom
+
 std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","cs", "SC","SCN", "sc","scn", "G","g","RG","rg","k","K","Tc","Tw", "Tz", "TL", "Tf","Tr","Ts","Td","TD","Tm","T*" };
 
 void TabPage::handleBookMark(QTreeWidget * item)
@@ -48,10 +51,7 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	_search = new Search(NULL);//neptraia k tomuto mimiokienku
 	//_search->show();
 	_image = new InsertImage(NULL);
-	this->ui.scrollArea->setWidget(labelPage);
-	//hide everything except...
-	//this->ui.pageManipulation->hide();
-	
+	this->ui.scrollArea->setWidget(labelPage);	
 	this->ui.displayManipulation->hide();
 	QObject::connect(_search, SIGNAL(search(std::string,bool)),this,SLOT(search(std::string,bool)));
 	QObject::connect(_search, SIGNAL(replaceTextSignal(std::string,std::string)),this,SLOT(replaceText(std::string,std::string)));
@@ -60,7 +60,7 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 		std::string links[] = { ANNOTS(CREATE_ARRAY) };
 		for ( int i =0; i < ASupported; i++)
 		{
-			acceptedAnotName.push_back(links[i]);
+//			this->ui._annots-> (links[i]);
 		}
 	}
 
@@ -75,7 +75,7 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	connect (labelPage,SIGNAL(ChangeTextSignal()),this,SLOT(raiseChangeSelectedText()));
 	connect (labelPage,SIGNAL(InsertImageSignal(QPoint)),this,SLOT(raiseInsertImage(QPoint)));
 	connect (labelPage,SIGNAL(DeleteImageSignal(QPoint)),this,SLOT(deleteImage(QPoint)));
-	connect (labelPage,SIGNAL(AnnotationSignal()),this,SLOT(raiseAnnotation()));
+	connect (labelPage,SIGNAL(AnnotationSignal(QPoint)),this,SLOT(raiseAnnotation(QPoint)));
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	
 	connect(_image,SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
@@ -201,9 +201,12 @@ void TabPage::closeAnnotDiag()
 void TabPage::insertAnnotation(Annot a)
 {
 	//vlozeime do aktualnej stranky
+	//pre kazdu vysvieten
+	//boundigbox pre vysvitey text - ak ziady nie je, tak bod
 	page->addAnnotation(a);
 	///updatneme annots:)
 	page->getAllAnnotations(_annots);
+	setFromSplash();
 }
 void TabPage::raiseChangeSelectedText()
 {
@@ -223,13 +226,16 @@ void TabPage::waitForPosition()
 {
 	_mode = ModeEmitPosition;
 }
-void TabPage::raiseAnnotation()
+void TabPage::raiseAnnotation(QPoint point)
 {
 	_cmts = new Comments();
 	_cmts->show();
 	_mode = ModeEmitPosition;
 	connect(_cmts,SIGNAL(close),this,SLOT(closeAnnotDiag));
 	//pridanie anotacie
+	double x,y;
+	displayparams.convertPixmapPosToPdfPos(point.x(), point.y(),x,y);
+	_cmts->setRectangle(x,y,30,30);//pre zvysok sa to vyhodi a nahradi sadou anotacii
 	connect(_cmts,SIGNAL(annotation(Annot)),this,SLOT(insertAnnotation(Annot)));
 	connect(this,SIGNAL(pdfPosition(float,float,int,int)),_cmts,SLOT(setRectangle(float,float,int,int)));
 	connect(_cmts,SIGNAL(parseToRows(libs::Rectangle)),this,SLOT(toRows(libs::Rectangle)));
@@ -285,10 +291,11 @@ void TabPage::createList()
 void TabPage::raiseInsertText(QPoint point)
 {
 	double x,y;
-	toPdfPos(point.x(),point.y(),x,y);
-	//do povodneho stavu .. hotfix
-	x/=displayparams.vDpi/72;
-	y/=displayparams.hDpi/72;
+	displayparams.convertPixmapPosToPdfPos(point.x(), point.y(), x, y); //TODO upravit aby to neblblo
+	//toPdfPos(point.x(),point.y(),x,y);
+	////do povodneho stavu .. hotfix
+	//x/=displayparams.vDpi/72;
+	//y/=displayparams.hDpi/72;
 	_font->setPosition(x,y);
 	_font->setInsert();
 }
@@ -570,7 +577,7 @@ void TabPage::getAtPosition(Ops& ops, int x, int y )
 }
 void TabPage::toPdfPos(int x, int y, double & x1, double &y1)
 {
-	displayparams.convertPixmapPosToPdfPos(x, y, x1, y1);
+	displayparams.convertPixmapPosToPdfPos(x, y, x1, y1); //TODO upravit aby to neblblo
 	x1 *=displayparams.hDpi/72;
 	y1 *=displayparams.vDpi/72; //zakomentovane kvoli tome, ze to blblo pri pridavani textu.
 }
@@ -787,6 +794,7 @@ void TabPage::setFromSplash()
 	//image.save("mytest.bmp","BMP");
 	//this->ui.label->adjustSize();
 	updatePageInfoBar();
+	showAnnotation();
 }
 void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
 {
@@ -1023,7 +1031,7 @@ void TabPage::draw() //change mode to drawing
 }
 //na kazdej stranke mozu byt anotacie, po kliknuti na ne vyskoci pop-up alebo sa inak spravi akcia
 //page bude vediet o interaktovnyh miestach -> kvoli mouseMove
-void TabPage::setAnnotations()
+void TabPage::showAnnotation()
 {
 	//akonahle sa zmeni stranka, upozornim page na to ze tam moze mat anotacie
 	//dostan oblasti anotacii z pdf
@@ -1032,14 +1040,15 @@ void TabPage::setAnnotations()
 	for(size_t i =0; i< _annots.size(); i++)
 	{
 		shared_ptr<CArray> rect;
-		_annots[i]->getDictionary()->getProperty("Rect")->getSmartCObjectPtr<CArray>(rect);
-		int x1,x2,y1,y2;
-		x1 = utils::getSimpleValueFromArray<CInt>(rect,0);
-		y1 = utils::getSimpleValueFromArray<CInt>(rect,0);
-		x2 = utils::getSimpleValueFromArray<CInt>(rect,0);
-		y2 = utils::getSimpleValueFromArray<CInt>(rect,0);
+		PdfProperty prop = _annots[i]->getDictionary()->getProperty("Rect");
+		rect = pdfobjects::IProperty::getSmartCObjectPtr<CArray>(prop);
+		float x1,x2,y1,y2;
+		x1 = utils::getSimpleValueFromArray<CReal>(rect,0);
+		y1 = utils::getSimpleValueFromArray<CReal>(rect,1);
+		x2 = utils::getSimpleValueFromArray<CReal>(rect,2);
+		y2 = utils::getSimpleValueFromArray<CReal>(rect,3);
 		//dostat annotecny rectangle
-		BBox b(x1,y1,x2,y2);	
+		BBox b(x1,y1,x2,y2);
 		QRect convertedRect = getRectangle(b);
 		labelPage->addPlace(convertedRect); //teraz vie o vsetkych miestach
 	}
@@ -1071,10 +1080,10 @@ void TabPage::delAnnot(int i) //page to u seba upravi, aby ID zodpovedali
 }
 QRect TabPage::getRectangle(BBox b)
 {
-	int x1,x2,y1,y2;
+	double x1,x2,y1,y2;
 	//TODO tot snad ani nemusi fungovat...check!
-	toPixmapPos(b.xleft, b.yleft, x1,y1);
-	toPixmapPos(b.xright, b.yright, x2,y2);
+	displayparams.convertPdfPosToPixmapPos( b.xleft, b.yleft, x1,y1);
+	displayparams.convertPdfPosToPixmapPos( b.xright, b.yright, x2,y2);
 	QRect r(QPoint(min(x1,x2),max(y1,y2)),QPoint(max(x1,x2),min(y1,y2)));
 	return r;
 }

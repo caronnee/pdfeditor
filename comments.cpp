@@ -9,10 +9,22 @@ void Comments::setRectangle(float x, float y, int width, int height)
 	rect.xleft = x; //big line
 	rect.yright = y+width; //big line
 	rect.xright = x+height; //big line
+	pdfobjects::CArray arr;
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.xleft)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.yleft)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.xright)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.yright)));
+	_an->getDictionary()->setProperty("Rect",arr);
+}
+void Comments::setRectangle(libs::Rectangle rectangle)
+{
+	rect = rectangle;
 }
 Comments::Comments()
 {
-	ui.setupUi(this);	
+	typedef boost::shared_ptr<pdfobjects::utils::IAnnotInitializator> CAInit;
+	pdfobjects::CAnnotation::setAnnotInitializator(CAInit(new pdfobjects::utils::TextAnnotInitializer()));
+	ui.setupUi(this);
 	//rect sa potom este upravi podla to, ci je to link a ako velky je
 	{
 		char b[] = { 'N','I','O','P', '\0' };
@@ -21,6 +33,10 @@ Comments::Comments()
 			ui.annotLinkStyle->addItem(QString(b[i]));
 		}
 	}
+	this->ui.annotType->addItem(QString("Comment"),QVariant("Text"));
+	this->ui.annotType->addItem(QString("Link"),QVariant("Link"));
+	this->ui.annotType->addItem(QString("Highlight"),QVariant("Highlight"));
+	this->ui.annotType->addItem(QString("Strikeout"),QVariant("StrikeOut"));
 }
 void Comments::setPoints(std::vector<float> flts)
 {
@@ -30,7 +46,8 @@ void Comments::setPoints(std::vector<float> flts)
 void Comments::onChange(int index)
 {
 	//prida ten typ na urcity rect
-	_an = pdfobjects::CAnnotation::createAnnotation(rect, ui.annotType->currentText().toAscii().data());
+	QString strong = ui.annotType->itemData(index).toString();
+	_an = pdfobjects::CAnnotation::createAnnotation(rect, "Text");
 	//cela annotacia sa bude diat v page
 }
 void Comments::apply()
@@ -42,9 +59,10 @@ void Comments::apply()
 	{
 	case AText: //text, obycajny
 		{//mame spravne KDE ma byt, zostava zistit obsah
-			ADictionary d = _an->getDictionary();
-			d->addProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CNameFactory::getInstance(std::string(ui.text->toPlainText().toAscii().data()))));
-			break;
+			d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CNameFactory::getInstance(std::string(ui.text->toPlainText().toAscii().data()))));
+			
+			emit (annotation (_an));
+			return;
 		} 
 	case ALink: //co ked je to URL? - linkova anotacia, vyriesit v texte. Tot sa odkazuje oba ramci textu
 		{
@@ -71,7 +89,7 @@ void Comments::apply()
 	default:
 		throw "unimplemented";
 	}
-	emit (annotation (_an));
+	emit (annotationTextMarkup (_an));
 }
 void Comments::setDestination(pdfobjects::IndiRef ref)
 {

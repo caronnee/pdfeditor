@@ -265,7 +265,7 @@ private: //variables
 	QPoint _mousePos;
 	Tree _searchEngine;
 	Comments * _cmts;
-	std::vector<std::string> acceptedAnotName;//TODO static alebo enum alebo cos
+	//std::vector<std::string> acceptedAnotName;//TODO static alebo enum alebo cos
 	//could be static. but :)
 	QRegion _region;
 	QString _name; //name of the file to be opened
@@ -299,6 +299,7 @@ private:
 	void toPixmapPos(double x1, double y1, int & x, int & y);
 	void inDirection(TextData::iterator & it, bool forw);
 	void setSelected(TextData::iterator& first, TextData::iterator& last);
+	void showAnnotation();
 public:
 	void createAnnot(AnnotType t, std::string * params);
 	void delAnnot(int i); //page to u seba upravi, aby ID zodpovedali
@@ -321,7 +322,6 @@ public:
 	void insertTextAfter(PdfOp opBehind, double td, double ymax, std::string s);
 
 private:
-	void setAnnotations();
 	void loadFonts(FontWidget * font);
 	void getAtPosition(Ops& ops, int x, int y );
 	void setTextData(TextData::iterator &begin, TextData::iterator end, shared_ptr<PdfOperator> op);
@@ -376,7 +376,7 @@ public slots:
 	void raiseInsertText(QPoint);
 	void raiseChangeSelectedText();
 	void raiseInsertImage(QPoint);
-	void raiseAnnotation();
+	void raiseAnnotation(QPoint point);
 
 	void deleteImage(QPoint point);
 	///Sets image to previous page
