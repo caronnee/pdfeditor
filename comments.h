@@ -24,13 +24,14 @@ class Comments : public  QWidget
 	boost::shared_ptr<pdfobjects::CArray> arr;
 	Annot _an;
 	libs::Rectangle rect;
+	typedef boost::shared_ptr<pdfobjects::utils::IAnnotInitializator> CAInit;
+	std::vector<CAInit> _inits;
 public:
 	Comments();
-	
 signals:
-	void annotationTextMarkup (Annot);
+	void annotationTextMarkup(Annot);
 	void annotation(Annot);
-	void parseToRows(libs::Rectangle);
+	void markupPropertySignal();
 
 public slots:
 	void setRectangle(libs::Rectangle rectangle);

@@ -360,7 +360,7 @@ public slots:
 	void replaceSelectedText(std::string by);
 	void insertImage(PdfOp op);
 	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
-	void toRows(libs::Rectangle);
+	void insertTextMarkup(Annot annot);
 	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
 	void insertAnnotation(Annot a);
 	void deleteAnnotation(QPoint);

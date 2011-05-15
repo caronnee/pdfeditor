@@ -10,6 +10,7 @@
 #include "globalfunctions.h"
 #include "utils/types/coordinates.h"
 #include <float.h>
+#include <vector>
 //QT$
 #include <QMessageBox>
 #include <QKeyEvent>
@@ -27,6 +28,7 @@
 //PDF
 #include <kernel/pdfoperators.h>
 #include <kernel/cannotation.h>
+
 //#include <kernel/carray.h>
 
 typedef boost::shared_ptr<pdfobjects::IProperty> PdfProperty;
@@ -83,6 +85,7 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	//end of connections
 	connect( _image, SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
 
+	connect( _cmts,SIGNAL(annotationTextMarkup(Annot)),this,SLOT(insertTextMarkup(Annot)));
 	pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 
 	page = boost::shared_ptr<pdfobjects::CPage> (pdf->getPage(1)); //or set from last
@@ -111,6 +114,7 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	this->ui.zoom->setCurrentIndex(1);
 	SetModeTextSelect();
 }
+
 void TabPage::deleteImage(QPoint point)
 {
 	//zistime, co mame pod pointom;
@@ -169,11 +173,33 @@ void TabPage::zoom(QString zoomscale)//later with how much pages, if all or not
 	displayparams.vDpi = dpiy * scale;
 	this->setFromSplash();
 }
-void TabPage::toRows(libs::Rectangle r)
+void TabPage::insertTextMarkup(Annot annot)
 {
+	//for all selected text
+	if (!_selected)
+		return;
+	TextData::iterator iter = sTextIt;
+	std::vector<float> coordinates;
+	while (iter!= sTextItEnd)
+	{
+		coordinates.push_back(iter->_begin);
+		coordinates.push_back(iter->_ymax);
+		coordinates.push_back(iter->_end);
+		coordinates.push_back(iter->_ymax);
+		coordinates.push_back(iter->_end);
+		coordinates.push_back(iter->_ymin);
+		coordinates.push_back(iter->_begin);
+		coordinates.push_back(iter->_ymin);
+		iter++;
+	}
+	CArray points;
+	for ( int i = 0; i < coordinates.size();i++)
+		points.addProperty(*(PdfProperty(CRealFactory::getInstance(coordinates[i]))));
+	annot->getDictionary()->addProperty("QuadPoints",points);
+	insertAnnotation(annot);
 	//najsi mi vssetky textove oeratory a z nich vycuvam svojich 8 cisel, pravepodobne z gxfconfu a pozicie offset operatorov ( vektory )
 	//TODO treba osetrit na to, ak chceme zvyraznit len jednu cast textoveho operatora
-	Ops ops;
+	/*Ops ops;
 	page->getObjectsAtPosition(ops,r);
 	TextOperatorIterator it = PdfOperator::getIterator<TextOperatorIterator> (ops.front());
 	std::vector<float> flts;
@@ -190,7 +216,8 @@ void TabPage::toRows(libs::Rectangle r)
 		flts.push_back(r2.yright);
 		it.next();
 	}
-	emit parsed(flts);
+	emit parsed(flts);*/
+
 }
 void TabPage::closeAnnotDiag()
 {
@@ -264,7 +291,7 @@ void TabPage::raiseAnnotation(QPoint point)
 	_cmts->setRectangle(x,y,30,30);//pre zvysok sa to vyhodi a nahradi sadou anotacii
 	connect(_cmts,SIGNAL(annotation(Annot)),this,SLOT(insertAnnotation(Annot)));
 	connect(this,SIGNAL(pdfPosition(float,float,int,int)),_cmts,SLOT(setRectangle(float,float,int,int)));
-	connect(_cmts,SIGNAL(parseToRows(libs::Rectangle)),this,SLOT(toRows(libs::Rectangle)));
+	connect(_cmts,SIGNAL(parsesetMarkupProperty(libs::Rectangle)),this,SLOT(setMarkupProperty(libs::Rectangle)));
 	connect(this,SIGNAL(parsed(std::vector<float>)),_cmts,SLOT(setPoints(std::vector<float>)));
 }
 void TabPage::SetModeTextSelect()
@@ -1062,18 +1089,23 @@ void TabPage::showAnnotation()
 	//akonahle sa zmeni stranka, upozornim page na to ze tam moze mat anotacie
 	//dostan oblasti anotacii z pdf
 	page->getAllAnnotations(_annots);
-	//v page nastav vsetky aktivne miesta
+	//v page nastav vsetky aktivne miesta - text only
 	for(size_t i =0; i< _annots.size(); i++)
 	{
-		std::vector<std::string> names;
+		std::vector<std::string> names; //subtype == text
 		_annots[i]->getDictionary()->getAllPropertyNames(names);
+		PdfProperty p = _annots[i]->getDictionary()->getProperty("Subtype");
+		std::string type = utils::getNameFromIProperty(p);
+		
 		std::string m;
 		/*for (int a = 0; a< names.size();a++)
 		{
 			_annots[i]->getDictionary()->getProperty(names[a])->getStringRepresentation(m);
 		}*/
 		_annots[i]->getDictionary()->getStringRepresentation(m);
-		printf("%s\n",m.c_str());
+		if ( type != "Text")
+			continue;
+		//printf("%s\n",m.c_str());
 	/*	PdfProperty prop = _annots[i]->getDictionary()->getProperty("Subtype");
 		if (pdfobjects::IProperty::getSmartCObjectPtr(*/
 		//pre vsetky mi napis do konzole ich properties

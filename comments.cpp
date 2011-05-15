@@ -19,11 +19,15 @@ void Comments::setRectangle(float x, float y, int width, int height)
 void Comments::setRectangle(libs::Rectangle rectangle)
 {
 	rect = rectangle;
+	pdfobjects::CArray arr;
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.xleft)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.yleft)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.xright)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.yright)));
+	_an->getDictionary()->setProperty("Rect",arr);
 }
 Comments::Comments()
 {
-	typedef boost::shared_ptr<pdfobjects::utils::IAnnotInitializator> CAInit;
-	pdfobjects::CAnnotation::setAnnotInitializator(CAInit(new pdfobjects::utils::TextAnnotInitializer()));
 	ui.setupUi(this);
 	//rect sa potom este upravi podla to, ci je to link a ako velky je
 	{
@@ -34,9 +38,13 @@ Comments::Comments()
 		}
 	}
 	this->ui.annotType->addItem(QString("Comment"),QVariant("Text"));
+	_inits.push_back(CAInit(new pdfobjects::utils::TextAnnotInitializer()));
 	this->ui.annotType->addItem(QString("Link"),QVariant("Link"));
+	_inits.push_back(CAInit(new pdfobjects::utils::LinkAnnotInitializer())) ;
 	this->ui.annotType->addItem(QString("Highlight"),QVariant("Highlight"));
+	_inits.push_back(CAInit(new pdfobjects::utils::UniversalAnnotInitializer()));
 	this->ui.annotType->addItem(QString("Strikeout"),QVariant("StrikeOut"));
+	_inits.push_back(CAInit(new pdfobjects::utils::UniversalAnnotInitializer()));
 }
 void Comments::setPoints(std::vector<float> flts)
 {
@@ -45,9 +53,10 @@ void Comments::setPoints(std::vector<float> flts)
 }
 void Comments::onChange(int index)
 {
+	pdfobjects::CAnnotation::setAnnotInitializator(_inits[index]);
 	//prida ten typ na urcity rect
 	QString strong = ui.annotType->itemData(index).toString();
-	_an = pdfobjects::CAnnotation::createAnnotation(rect, "Text");
+	_an = pdfobjects::CAnnotation::createAnnotation(rect, strong.toAscii().data());
 	//cela annotacia sa bude diat v page
 }
 void Comments::apply()
@@ -55,12 +64,13 @@ void Comments::apply()
 	//ak je to highlight, potom parsni
 	//zisti, ci je to text
 	ADictionary d = _an->getDictionary();
+	d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string(ui.text->toPlainText().toAscii().data()))));
+	d->addProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance("Muf!")));
 	switch (ui.annotType->currentIndex())
 	{
 	case AText: //text, obycajny
 		{//mame spravne KDE ma byt, zostava zistit obsah
-			d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string(ui.text->toPlainText().toAscii().data()))));
-			d->addProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance("Muf!")));
+			
 			d->addProperty("Subj", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance("pdftest")));
 			emit (annotation (_an));
 			return;
@@ -81,16 +91,15 @@ void Comments::apply()
 	case AUnderline:
 	case AStrike:
 		{
-			emit parseToRows(rect); //potom to budeme mat setle, TODO netreba cakat?
 			d->addProperty("Subtype", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CNameFactory::getInstance(std::string(ui.annotType->currentText().toAscii().data()))));
-
-			d->addProperty("QuadPoints",*boost::shared_ptr<pdfobjects::IProperty>(points));
+			emit (annotationTextMarkup (_an)); //jedine, co chyba doplnit, je quadpoint -> doplni sa v taboage
 			break;
 		}
 	default:
 		throw "unimplemented";
 	}
-	emit (annotationTextMarkup (_an));
+	assert(false);
+	return;
 }
 void Comments::setDestination(pdfobjects::IndiRef ref)
 {

@@ -58,7 +58,7 @@ WONTFIX - spytat sa, ktory obrazok zmazat - zmaze ten horny, ktory iny by asi uz
 -------LATER---------
 --------------------COMMENTY---------------
 FIXED - dialog pre pridanie comments, dialog pre pridanie roznych typov commentu
--pridat comment
+FIXED - pridat comment
 -po klikuti na link vybehnut na danu poziciu pre link annotation
 -po kliknuti na textovu anotaciu zobrazit textu ( v textboxe alebo tak nejak )
 -zobrazit strikeout
