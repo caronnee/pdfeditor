@@ -175,6 +175,13 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QPushButton" name="search">
+        <property name="text">
+         <string>Search</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -196,6 +203,12 @@
  </widget>
  <resources/>
  <connections>
+	 <connection>
+		 <sender>search</sender>
+		 <signal>clicked()</signal>
+		 <receiver>TabUI</receiver>
+		 <slot>raiseSearch()</slot>
+  </connection>
   <connection>
    <sender>commit</sender>
    <signal>clicked()</signal>

@@ -50,11 +50,12 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	_cmts = NULL;
 	ui.setupUi(this);
 	labelPage = new DisplayPage();
+	_cmts = new Comments();
 	_search = new Search(NULL);//neptraia k tomuto mimiokienku
 	//_search->show();
 	_image = new InsertImage(NULL);
 	this->ui.scrollArea->setWidget(labelPage);	
-	this->ui.displayManipulation->hide();
+	//this->ui.displayManipulation->hide();
 	QObject::connect(_search, SIGNAL(search(std::string,bool)),this,SLOT(search(std::string,bool)));
 	QObject::connect(_search, SIGNAL(replaceTextSignal(std::string,std::string)),this,SLOT(replaceText(std::string,std::string)));
 	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
@@ -67,6 +68,14 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	}
 
 	//connections
+	connect(_cmts,SIGNAL(close),this,SLOT(closeAnnotDiag));
+	//pridanie anotacie
+
+	connect(_cmts,SIGNAL(annotation(Annot)),this,SLOT(insertAnnotation(Annot)));
+	connect(this,SIGNAL(pdfPosition(float,float,int,int)),_cmts,SLOT(setRectangle(float,float,int,int)));
+	connect(_cmts,SIGNAL(annotationTextMarkup(Annot)),this,SLOT(setMarkupProperty()));
+	connect(this,SIGNAL(parsed(std::vector<float>)),_cmts,SLOT(setPoints(std::vector<float>)));
+
 	connect (ui.previous,SIGNAL(clicked()),this,SLOT(previousPage()));
 	connect (ui.next,SIGNAL(clicked()),this,SLOT(nextPage()));
 	connect (labelPage,SIGNAL(MouseClicked(int, int)),this, SLOT(clicked(int, int))); //pri selecte sa to disconnectne a nahrasi inym modom
@@ -113,6 +122,10 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	}
 	this->ui.zoom->setCurrentIndex(1);
 	SetModeTextSelect();
+}
+void TabPage::raiseSearch()
+{
+	_search->show();
 }
 
 void TabPage::deleteImage(QPoint point)
@@ -180,16 +193,20 @@ void TabPage::insertTextMarkup(Annot annot)
 		return;
 	TextData::iterator iter = sTextIt;
 	std::vector<float> coordinates;
-	while (iter!= sTextItEnd)
+	float dpix = displayparams.vDpi/72;
+	float dpiy = displayparams.hDpi/72;
+	while (true)
 	{
-		coordinates.push_back(iter->_begin);
-		coordinates.push_back(iter->_ymax);
-		coordinates.push_back(iter->_end);
-		coordinates.push_back(iter->_ymax);
-		coordinates.push_back(iter->_end);
-		coordinates.push_back(iter->_ymin);
-		coordinates.push_back(iter->_begin);
-		coordinates.push_back(iter->_ymin);
+		coordinates.push_back(iter->_begin*dpix);
+		coordinates.push_back((displayparams.DEFAULT_PAGE_RY - iter->_ymax)*dpiy);
+		coordinates.push_back(iter->_end*dpix);
+		coordinates.push_back((displayparams.DEFAULT_PAGE_RY - iter->_ymax)*dpiy);
+		coordinates.push_back(iter->_begin*dpix);
+		coordinates.push_back((displayparams.DEFAULT_PAGE_RY - iter->_ymin)*dpiy);
+		coordinates.push_back(iter->_end*dpix);
+		coordinates.push_back((displayparams.DEFAULT_PAGE_RY - iter->_ymin)*dpix);
+		if ( iter == sTextItEnd )
+			break;
 		iter++;
 	}
 	CArray points;
@@ -197,7 +214,7 @@ void TabPage::insertTextMarkup(Annot annot)
 		points.addProperty(*(PdfProperty(CRealFactory::getInstance(coordinates[i]))));
 	annot->getDictionary()->addProperty("QuadPoints",points);
 	insertAnnotation(annot);
-	//najsi mi vssetky textove oeratory a z nich vycuvam svojich 8 cisel, pravepodobne z gxfconfu a pozicie offset operatorov ( vektory )
+	//najsi mi vsetky textove oeratory a z nich vycuvam svojich 8 cisel, pravepodobne z gxfconfu a pozicie offset operatorov ( vektory )
 	//TODO treba osetrit na to, ak chceme zvyraznit len jednu cast textoveho operatora
 	/*Ops ops;
 	page->getObjectsAtPosition(ops,r);
@@ -281,18 +298,11 @@ void TabPage::waitForPosition()
 }
 void TabPage::raiseAnnotation(QPoint point)
 {
-	_cmts = new Comments();
-	_cmts->show();
-	_mode = ModeEmitPosition;
-	connect(_cmts,SIGNAL(close),this,SLOT(closeAnnotDiag));
-	//pridanie anotacie
+	//_mode = ModeEmitPosition;
 	double x,y;
 	displayparams.convertPixmapPosToPdfPos(point.x(), point.y(),x,y);
-	_cmts->setRectangle(x,y,30,30);//pre zvysok sa to vyhodi a nahradi sadou anotacii
-	connect(_cmts,SIGNAL(annotation(Annot)),this,SLOT(insertAnnotation(Annot)));
-	connect(this,SIGNAL(pdfPosition(float,float,int,int)),_cmts,SLOT(setRectangle(float,float,int,int)));
-	connect(_cmts,SIGNAL(parsesetMarkupProperty(libs::Rectangle)),this,SLOT(setMarkupProperty(libs::Rectangle)));
-	connect(this,SIGNAL(parsed(std::vector<float>)),_cmts,SLOT(setPoints(std::vector<float>)));
+	_cmts->setRectangle(x,y,30,30);//pre zvysok sa to vyhodi a nahradi sadou anotacii	
+	_cmts->show();
 }
 void TabPage::SetModeTextSelect()
 {
@@ -1090,6 +1100,7 @@ void TabPage::showAnnotation()
 	//dostan oblasti anotacii z pdf
 	page->getAllAnnotations(_annots);
 	//v page nastav vsetky aktivne miesta - text only
+	FILE * f = fopen("output","w");
 	for(size_t i =0; i< _annots.size(); i++)
 	{
 		std::vector<std::string> names; //subtype == text
@@ -1103,6 +1114,7 @@ void TabPage::showAnnotation()
 			_annots[i]->getDictionary()->getProperty(names[a])->getStringRepresentation(m);
 		}*/
 		_annots[i]->getDictionary()->getStringRepresentation(m);
+		fprintf(f,"%s\n", m.c_str());
 		if ( type != "Text")
 			continue;
 		//printf("%s\n",m.c_str());
@@ -1122,26 +1134,9 @@ void TabPage::showAnnotation()
 		QRect convertedRect = getRectangle(b);
 		labelPage->addPlace(convertedRect); //teraz vie o vsetkych miestach
 	}
+	fclose(f);
 }
 
-void TabPage::createAnnot(AnnotType t, std::string * params)
-{
-	//mame begin iter a enditer
-	shared_ptr<CAnnotation> annot;
-	switch (t)
-	{
-	case TextAnnot:
-		{
-			//potrebujeme iba text
-			shared_ptr<IProperty> prop ( CNameFactory::getInstance(params[0].c_str()));
-			std::string n = "Contents";
-			annot->getDictionary()->addProperty(n,*prop);
-			break;
-		}
-	default:
-		break;
-	}
-}
 void TabPage::delAnnot(int i) //page to u seba upravi, aby ID zodpovedali
 {
 	page->delAnnotation(_annots[i]);

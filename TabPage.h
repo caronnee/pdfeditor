@@ -301,7 +301,6 @@ private:
 	void setSelected(TextData::iterator& first, TextData::iterator& last);
 	void showAnnotation();
 public:
-	void createAnnot(AnnotType t, std::string * params);
 	void delAnnot(int i); //page to u seba upravi, aby ID zodpovedali
 	void SetTextSelect();
 	
@@ -353,6 +352,7 @@ public:
 	//rotate page
 
 public slots:
+	void raiseSearch();
 	void closeAnnotDiag();
 	void changeSelectedText();
 	void deleteSelectedText();

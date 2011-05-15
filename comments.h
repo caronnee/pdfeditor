@@ -31,7 +31,6 @@ public:
 signals:
 	void annotationTextMarkup(Annot);
 	void annotation(Annot);
-	void markupPropertySignal();
 
 public slots:
 	void setRectangle(libs::Rectangle rectangle);

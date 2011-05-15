@@ -28,6 +28,10 @@ void Comments::setRectangle(libs::Rectangle rectangle)
 }
 Comments::Comments()
 {
+	_inits.push_back(CAInit(new pdfobjects::utils::TextAnnotInitializer()));
+	_inits.push_back(CAInit(new pdfobjects::utils::LinkAnnotInitializer())) ;
+	_inits.push_back(CAInit(new pdfobjects::utils::UniversalAnnotInitializer()));
+	_inits.push_back(CAInit(new pdfobjects::utils::UniversalAnnotInitializer()));
 	ui.setupUi(this);
 	//rect sa potom este upravi podla to, ci je to link a ako velky je
 	{
@@ -38,13 +42,9 @@ Comments::Comments()
 		}
 	}
 	this->ui.annotType->addItem(QString("Comment"),QVariant("Text"));
-	_inits.push_back(CAInit(new pdfobjects::utils::TextAnnotInitializer()));
 	this->ui.annotType->addItem(QString("Link"),QVariant("Link"));
-	_inits.push_back(CAInit(new pdfobjects::utils::LinkAnnotInitializer())) ;
 	this->ui.annotType->addItem(QString("Highlight"),QVariant("Highlight"));
-	_inits.push_back(CAInit(new pdfobjects::utils::UniversalAnnotInitializer()));
 	this->ui.annotType->addItem(QString("Strikeout"),QVariant("StrikeOut"));
-	_inits.push_back(CAInit(new pdfobjects::utils::UniversalAnnotInitializer()));
 }
 void Comments::setPoints(std::vector<float> flts)
 {
@@ -93,7 +93,7 @@ void Comments::apply()
 		{
 			d->addProperty("Subtype", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CNameFactory::getInstance(std::string(ui.annotType->currentText().toAscii().data()))));
 			emit (annotationTextMarkup (_an)); //jedine, co chyba doplnit, je quadpoint -> doplni sa v taboage
-			break;
+			return;
 		}
 	default:
 		throw "unimplemented";

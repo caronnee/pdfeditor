@@ -55,7 +55,6 @@ WONTFIX - spytat sa, ktory obrazok zmazat - zmaze ten horny, ktory iny by asi uz
 -zmena atributov obrazka(on click show window, set selected)(pozicia, scale, otocenie
 -extrakcia casti obrazka (click- vyber vsetko, click&drag->painter, transform to bmp position a extract)
 -extrakcia celeho obrazka
--------LATER---------
 --------------------COMMENTY---------------
 FIXED - dialog pre pridanie comments, dialog pre pridanie roznych typov commentu
 FIXED - pridat comment

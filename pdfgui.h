@@ -29,7 +29,7 @@ public:
 	~pdfGui();
 
 protected:
-//	void closeEvent(QCloseEvent *event);
+	void closeEvent(QCloseEvent *event);
 	//void keyPressEvent(QKeyEvent *event);
 
 private:

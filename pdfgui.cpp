@@ -5,13 +5,13 @@
 
 #include "pdfgui.h"
 
-/*void pdfGui::closeEvent(QCloseEvent *event)
+void pdfGui::closeEvent(QCloseEvent *event)
 {
-#ifndef _WIN32_
-	qApp->closeAllWindows();
-#endif
+//#ifdef _WIN32
+//	qApp->closeAllWindows();
+//#endif
 	event->accept();
-}*/
+}
 
 pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags) 
 	: QMainWindow(parent, flags), init()
