@@ -490,6 +490,23 @@ RefState XRefWriter::knowsRef(const IndiRef& ref)const
 //		return;
 //	}
 //}
+void XRefWriter::saveToNew(char * name) //name of the new file
+{
+	using namespace utils;
+
+	kernelPrintDbg(DBG_DBG, "");
+	check_need_credentials(this);
+	if(linearized)
+		kernelPrintDbg(DBG_WARN, "Pdf is linearized and changes may break rules for linearization.");
+
+	// checks if we have pdf content writer
+	if(!pdfWriter)
+	{
+		kernelPrintDbg(DBG_ERR, "No pdfWriter defined");
+		return;
+	}
+}
+
 void XRefWriter::saveChanges(bool newRevision)
 {
 	using namespace utils;

@@ -122,6 +122,18 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	}
 	this->ui.zoom->setCurrentIndex(1);
 	SetModeTextSelect();
+	{
+		//FILE * f = fopen("xxx","w");
+		//std::string m;
+		// //page->getDictionary()->getProperty("AP")->getStringRepresentation(m);
+		//IndiRef ii;
+		//ii.gen = 0;
+		//ii.num = 10;
+		//PdfProperty ptest = pdf->getIndirectProperty(ii);
+		//ptest->getStringRepresentation(m);
+		//fprintf(f,"%s\n",m.c_str());
+		//fclose(f);
+	}
 }
 void TabPage::raiseSearch()
 {
@@ -195,24 +207,86 @@ void TabPage::insertTextMarkup(Annot annot)
 	std::vector<float> coordinates;
 	float dpix = displayparams.vDpi/72;
 	float dpiy = displayparams.hDpi/72;
+	float dim[4] = {FLT_MAX,FLT_MAX,0,0};
 	while (true)
 	{
-		coordinates.push_back(iter->_begin*dpix);
-		coordinates.push_back((displayparams.DEFAULT_PAGE_RY - iter->_ymax)*dpiy);
-		coordinates.push_back(iter->_end*dpix);
-		coordinates.push_back((displayparams.DEFAULT_PAGE_RY - iter->_ymax)*dpiy);
-		coordinates.push_back(iter->_begin*dpix);
-		coordinates.push_back((displayparams.DEFAULT_PAGE_RY - iter->_ymin)*dpiy);
-		coordinates.push_back(iter->_end*dpix);
-		coordinates.push_back((displayparams.DEFAULT_PAGE_RY - iter->_ymin)*dpix);
+		coordinates.push_back(iter->_begin/dpix);
+		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymin/dpiy);
+		coordinates.push_back(iter->_end/dpix);
+		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymin/dpiy);
+		coordinates.push_back(iter->_begin/dpix);
+		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymax/dpiy);
+		coordinates.push_back(iter->_end/dpix);
+		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymax/dpiy);
+		dim[0] = min(dim[0],iter->_begin/dpix);
+		dim[1] = min(dim[1],displayparams.DEFAULT_PAGE_RY - iter->_ymin/dpiy);
+		dim[2] = max(dim[2],iter->_end/dpix);
+		dim[3] = max(dim[3],displayparams.DEFAULT_PAGE_RY -iter->_ymax/dpiy);
 		if ( iter == sTextItEnd )
 			break;
 		iter++;
 	}
+	
+	//vytvor ApearanceStream
+	boost::shared_ptr<pdfobjects::CDict> apDict(pdfobjects::CDictFactory::getInstance());
+	CArray rect;
+	for ( int i = 0; i < 4;i++)
+		rect.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[i]))));
+
+	apDict->addProperty("Type",*PdfProperty(CNameFactory::getInstance("XObject")));
+	apDict->addProperty("SubType",*PdfProperty(CNameFactory::getInstance("Form")));
+	{
+		CArray rct;
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(0))));
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(0))));
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(fabs(dim[0] - dim[2])))));
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(fabs(dim[1] - dim[3])))));
+		apDict->addProperty("BBox",rct);
+	}
+	apDict->addProperty("FormType",*boost::shared_ptr<CInt>(CIntFactory::getInstance(1)));
+	{
+		CArray arr;
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(1)));
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(0)));
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(0)));
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(1)));
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(0)));
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(0)));
+		apDict->addProperty("Matrix",arr);
+		//resource
+		boost::shared_ptr<pdfobjects::CDict> resDict(CDictFactory::getInstance());
+		boost::shared_ptr<pdfobjects::CDict> grDict(CDictFactory::getInstance());
+		boost::shared_ptr<pdfobjects::CDict> g0Dict(CDictFactory::getInstance());
+
+		g0Dict->addProperty("BM",*PdfProperty(CNameFactory::getInstance("Multiply")));
+		g0Dict->addProperty("Type",*PdfProperty(CNameFactory::getInstance("ExtGState")));
+
+				grDict->addProperty("R0",*g0Dict);
+		resDict->addProperty("ExtGState",*grDict);
+
+		CArray arr2;
+		arr2.addProperty(*PdfProperty(CNameFactory::getInstance("PDF")));
+		resDict->addProperty("ProcSet",arr2);
+
+		apDict->addProperty("Resources",*resDict);
+	}
+
 	CArray points;
 	for ( int i = 0; i < coordinates.size();i++)
 		points.addProperty(*(PdfProperty(CRealFactory::getInstance(coordinates[i]))));
+	
+	//annot->getDictionary
 	annot->getDictionary()->addProperty("QuadPoints",points);
+	//uprav rectangle
+	annot->getDictionary()->setProperty("Rect",rect); 
+	IndiRef indi = pdf->addIndirectProperty(apDict,true);
+	std::string m;
+	PdfProperty prop(pdfobjects::CRefFactory::getInstance(indi));
+	boost::shared_ptr<pdfobjects::CDict> nDict(CDictFactory::getInstance());
+	nDict->addProperty("N",*apDict);
+	annot->getDictionary()->setProperty("AP",*nDict);
+	annot->getDictionary()->setProperty("R0",*PdfProperty(CNameFactory::getInstance("gs")));
+	annot->getDictionary()->getStringRepresentation(m);
 	insertAnnotation(annot);
 	//najsi mi vsetky textove oeratory a z nich vycuvam svojich 8 cisel, pravepodobne z gxfconfu a pozicie offset operatorov ( vektory )
 	//TODO treba osetrit na to, ak chceme zvyraznit len jednu cast textoveho operatora
@@ -301,7 +375,9 @@ void TabPage::raiseAnnotation(QPoint point)
 	//_mode = ModeEmitPosition;
 	double x,y;
 	displayparams.convertPixmapPosToPdfPos(point.x(), point.y(),x,y);
-	_cmts->setRectangle(x,y,30,30);//pre zvysok sa to vyhodi a nahradi sadou anotacii	
+	float xdif = displayparams.vDpi/72;
+	float ydif = displayparams.hDpi/72;
+	_cmts->setRectangle(x/xdif,y/ydif,30,30);//pre zvysok sa to vyhodi a nahradi sadou anotacii	
 	_cmts->show();
 }
 void TabPage::SetModeTextSelect()
@@ -900,7 +976,7 @@ void TabPage::savePdf(char * name)
 	}
 	int i = pdf->getRevisionsCount();
 //	commitRevision(); //TODO plikovat na kopiu!
-//	pdf->saveChangesToNew(f);
+	pdf->SaveChangesToNew(name);
 //	revertRevision();
 	throw "Not implemented so far";
 	fclose(f);
@@ -1100,7 +1176,7 @@ void TabPage::showAnnotation()
 	//dostan oblasti anotacii z pdf
 	page->getAllAnnotations(_annots);
 	//v page nastav vsetky aktivne miesta - text only
-	FILE * f = fopen("output","w");
+	FILE * f = fopen("brk","w");
 	for(size_t i =0; i< _annots.size(); i++)
 	{
 		std::vector<std::string> names; //subtype == text

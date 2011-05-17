@@ -33,6 +33,8 @@
 #include "kernel/cpageattributes.h"
 #include "kernel/pdfedit-core-dev.h"
 #include "kernel/streamwriter.h"
+#include "kernel/pdfwriter.h"
+#include "kernel/flattener.h"
 
 using namespace boost;
 using namespace std;
@@ -3179,13 +3181,14 @@ void CPdf::save(bool newRevision)const
 	xref->saveChanges(newRevision);
 	change=false;
 }
-void CPdf::SaveChangesToNew(FILE* file)
+void CPdf::SaveChangesToNew( char * name )
 {
-	// Saving linearized document results in demaged documents
-	if(isLinearized())
-		throw NotImplementedException("Linearized PDF cloning is not supported");
-	clone(file);
-//	xref->cloneChanges(f);
+	//stream je uz naloadovany
+//	StreamWriter * streamWriter=dynamic_cast<StreamWriter *>(XRef::str);
+//	pdfobjects::utils::Flattener(streamWriter,getPdfWriter()); //vytvor novy stream z uz terajsieho
+	xref->saveToNew(name);
+	//IPdfWriter * writer = new 
+	//pdfobjects::utils::PdfDocumentWriter * write = new pdfobjects::utils::Flattener
 }
 void CPdf::clone(FILE * file)const
 {

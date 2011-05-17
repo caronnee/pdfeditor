@@ -64,7 +64,7 @@ void Comments::apply()
 	//ak je to highlight, potom parsni
 	//zisti, ci je to text
 	ADictionary d = _an->getDictionary();
-	d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string(ui.text->toPlainText().toAscii().data()))));
+	//d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string(ui.text->toPlainText().toAscii().data()))));
 	d->addProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance("Muf!")));
 	switch (ui.annotType->currentIndex())
 	{
@@ -92,6 +92,13 @@ void Comments::apply()
 	case AStrike:
 		{
 			d->addProperty("Subtype", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CNameFactory::getInstance(std::string(ui.annotType->currentText().toAscii().data()))));
+			//farba
+			pdfobjects::CArray arr;
+			arr.addProperty(*boost::shared_ptr< pdfobjects::CReal>(pdfobjects::CRealFactory::getInstance(1))); //add color
+			arr.addProperty(*boost::shared_ptr< pdfobjects::CReal>(pdfobjects::CRealFactory::getInstance(1))); //add color
+			arr.addProperty(*boost::shared_ptr< pdfobjects::CReal>(pdfobjects::CRealFactory::getInstance(0))); //add color
+			d->addProperty("C",arr);
+			d->addProperty("F", *boost::shared_ptr<pdfobjects::CInt>(pdfobjects::CIntFactory::getInstance(4)));
 			emit (annotationTextMarkup (_an)); //jedine, co chyba doplnit, je quadpoint -> doplni sa v taboage
 			return;
 		}
