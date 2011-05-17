@@ -32,6 +32,7 @@
 
 #include "kernel/ccontentstream.h"
 #include "kernel/stateupdater.h"
+#include "kernel/factories.h"
 
 //==========================================================
 namespace pdfobjects {
@@ -171,6 +172,22 @@ SimpleGenericOperator::init_operands (shared_ptr<observer::IObserver<IProperty> 
 	} // for
 }
 
+namespace utils {
+static std::string transformToCodeString(const std::string& what, const GfxFont *font)
+{
+	std::string out;
+	for (unsigned i=0; i < what.length(); ++i) {
+		int ch = what[i];
+		CharCode code = ch;
+		if (font)
+			code = font->getCodeFromUnicode((const Unicode *)&ch, 1);
+		out += (char)code;
+	}
+	return out;
+
+}
+
+}
 
 void TextSimpleOperator::getRawText(std::string& str)const
 {
@@ -235,12 +252,14 @@ using namespace utils;
 }
 
 void 
-TextSimpleOperator::setRawText (std::string& str)
+TextSimpleOperator::setFontText (const std::string& str)
 {
 		utilsPrintDbg(debug::DBG_DBG, "");
 	
 	std::string name;
 	getOperatorName(name);
+
+	std::string codeStr = utils::transformToCodeString(str, getCurrentFont());
 
 	Operands ops;
 	getParameters(ops);
@@ -251,7 +270,7 @@ TextSimpleOperator::setRawText (std::string& str)
 				utilsPrintDbg(debug::DBG_WARN, "Bad operands for operator " <<name<<" count="<<ops.size()<<" ops[0] type="<< ops[0]->getType());
 				return;
 			}
-		setValueToSimple<CString, pString>(ops[0], str);
+		setValueToSimple<CString, pString>(ops[0], codeStr);
 	}
 	else if (name == "\"")
 	{
@@ -260,18 +279,29 @@ TextSimpleOperator::setRawText (std::string& str)
 				utilsPrintDbg(debug::DBG_WARN, "Bad operands for operator "<<name<<" count="<<ops.size()<<" ops[2] type="<< ops[2]->getType());
 				return;
 			}
-		setValueToSimple<CString, pString>(ops[2], str);
+		setValueToSimple<CString, pString>(ops[2], codeStr);
 	}
 	else if (name == "TJ")
 	{
 		shared_ptr<IProperty> op = ops[0];
-			if (!isArray(op) || ops.size() != 1)
-			{
-				utilsPrintDbg(debug::DBG_WARN, "Bad operands for TJ operator: ops[type="<< op->getType() <<" size="<<ops.size()<<"]");
-				return;
-			}
-		// am to lazy to do it
-		utilsPrintDbg(debug::DBG_WARN, "todo!");
+		if (!isArray(op) || ops.size() != 1)
+		{
+			utilsPrintDbg(debug::DBG_WARN, "Bad operands for TJ operator: ops[type="<< op->getType() <<" size="<<ops.size()<<"]");
+			return;
+		}
+		// We want to set a new text for this operator so let's 
+		// forget about the original parameters along with the
+		// formatting and add the given string as an only one
+		// parameter in the array.
+		if (isArray(op)) {
+			shared_ptr<CArray> array = IProperty::getSmartCObjectPtr<CArray>(op);
+			while (array->getPropertyCount() > 1)
+				array->delProperty(array->getPropertyCount()-1);
+			shared_ptr<IProperty> p = array->getProperty(0);
+			setValueToSimple<CString, pString>(p, codeStr);
+		}else
+			setValueToSimple<CString, pString>(ops[0], codeStr);
+		return;
 
 	}else
 	{
@@ -368,7 +398,7 @@ void TextSimpleOperator::getFontText(std::string& str)const
  			str += (&u)[i];
  		p += n;
  		len -= n;
-  	} 
+  	}
 }
 
 TextSimpleOperator::~TextSimpleOperator()
@@ -445,6 +475,18 @@ UnknownCompositePdfOperator::clone ()
 //
 // InlineImageCompositePdfOperator
 //
+
+size_t 
+InlineImageCompositePdfOperator::getWidth() const 
+{
+  return _inlineimage->width();
+}
+size_t 
+InlineImageCompositePdfOperator::getHeight() const
+{
+  return _inlineimage->height();
+}
+
 
 //
 //
@@ -572,7 +614,7 @@ boost::shared_ptr<PdfOperator> createOperatorTranslation (double x, double y)
 	ops.push_back (boost::shared_ptr<IProperty>(new CReal (1)));
 	ops.push_back (boost::shared_ptr<IProperty>(new CReal (x)));
 	ops.push_back (boost::shared_ptr<IProperty>(new CReal (y)));
-	return createOperator("Tm", ops);
+	return createOperator("cm", ops);
 }
 
 
@@ -586,6 +628,42 @@ boost::shared_ptr<PdfOperator> createOperatorScale (double width, double height)
 	ops.push_back (boost::shared_ptr<IProperty>(new CReal (0)));
 	ops.push_back (boost::shared_ptr<IProperty>(new CReal (0)));
 	return createOperator("cm", ops);
+}
+
+boost::shared_ptr<PdfOperator> createOperatorText (boost::shared_ptr<CContentStream> &cc,
+		const std::string &fontName, const std::string &op, const std::string &text)
+{
+	utilsPrintDbg(debug::DBG_DBG, "");
+
+	boost::shared_ptr<GfxResources> res = cc->getResources();
+	GfxFont *font = res->lookupFont(fontName.c_str());
+	std::string encText;
+	if (font) {
+		encText = transformToCodeString(text, font);
+	}
+	else {
+		encText = text;
+		utilsPrintDbg(debug::DBG_WARN, "No font found for "+fontName);
+	}
+
+	PdfOperator::Operands ops;
+
+	if (op == "'" || op == "Tj") {
+		ops.push_back(boost::shared_ptr<IProperty>(CStringFactory::getInstance(encText)));
+	} else if (op == "TJ") {
+		boost::shared_ptr<CArray> array(CArrayFactory::getInstance());
+		boost::shared_ptr<IProperty> str(CStringFactory::getInstance(encText));
+		array->addProperty(*str);
+		ops.push_back(array);
+	} else if (op == "\"") {
+		utilsPrintDbg(debug::DBG_WARN, op+" text operator is not supported");
+		throw NotImplementedException(op +" text operator is not supported");
+
+	}else {
+		utilsPrintDbg(debug::DBG_ERR, "Unknown text operator "+op);
+		throw ElementBadTypeException("Unknown text operator "+op);
+	}
+	return createOperator(op, ops);
 }
 
 //

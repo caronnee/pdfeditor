@@ -18,7 +18,7 @@ FIXED	hladat aj predchadzajuce vyskyty
 FIXED BUG	-extrahovanie textu
 DENIED				-export do textoveho suboru
 FIXED		- pri zamietnuti  vytvorenia suboru sa vytvori hlaska, ze cration failed -> nezodpoveda
-			- nazvy fontov budu unikatne (set?)
+			- nazvy fontov budu unikatne (set?) - iba z windowsu
 FIXED scasti -insert text ( context menu )
 FIXED	- vyhladava sa insertneny text?	
 		- vysvietenie zvrhlosti ( operatory inych fontov, otocenie )
