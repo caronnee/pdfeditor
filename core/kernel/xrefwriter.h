@@ -249,7 +249,6 @@ protected:
 	size_t getRevisionEnd(size_t xrefStart)const;
 
 public:
-	void saveToNew(char * name); //name of the new file
 	/** Initialize constructor with file stream writer.
 	 * @param stream File stream with pdf content.
 	 * @param _pdf Pdf instance which maintains this instance (may be also NULL,

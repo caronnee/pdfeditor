@@ -271,7 +271,7 @@ private: //variables
 	QString _name; //name of the file to be opened
 	FontWidget * _font;	
 	Mode _mode;
-
+	PdfOp _workingOp;
 	IsType typeChecker;
 	pdfobjects::DisplayParams displayparams;	
 	boost::shared_ptr<pdfobjects::CPdf> pdf;

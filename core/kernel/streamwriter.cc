@@ -129,10 +129,7 @@ using namespace debug;
 		size_t chunkWriten=0, writen;
 		// writes whole read chunk
 		while((writen=fwrite(buffer+chunkWriten, sizeof(char), read-chunkWriten, file))>0)
-		{
-			fflush(file);
 			chunkWriten+=writen;
-		}
 
 		totalWriten+=chunkWriten;
 	}

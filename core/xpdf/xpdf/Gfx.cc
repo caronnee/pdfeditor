@@ -475,6 +475,8 @@ Gfx::Gfx(XRef *xrefA, OutputDev *outA, int pageNum, const Dict *resDict,
     out->clip(state);
     state->clearPath();
   }
+
+  parser = NULL;
 }
 
 Gfx::Gfx(XRef *xrefA, OutputDev *outA, const Dict *resDict,
@@ -514,6 +516,8 @@ Gfx::Gfx(XRef *xrefA, OutputDev *outA, const Dict *resDict,
     out->clip(state);
     state->clearPath();
   }
+
+  parser = NULL;
 }
 
 Gfx::~Gfx() {
@@ -1245,6 +1249,8 @@ void Gfx::opSetFillColorN(Object args[], int numArgs) {
       for (i = 0; i < numArgs - 1 && i < gfxColorMaxComps; ++i) {
 	if (args[i].isNum()) {
 	  color.c[i] = dblToCol(args[i].getNum());
+	} else {
+	  color.c[i] = 0; // TODO Investigate if this is what Adobe does
 	}
       }
       state->setFillColor(&color);
@@ -1264,6 +1270,8 @@ void Gfx::opSetFillColorN(Object args[], int numArgs) {
     for (i = 0; i < numArgs && i < gfxColorMaxComps; ++i) {
       if (args[i].isNum()) {
 	color.c[i] = dblToCol(args[i].getNum());
+      } else {
+        color.c[i] = 0; // TODO Investigate if this is what Adobe does
       }
     }
     state->setFillColor(&color);
@@ -1288,6 +1296,8 @@ void Gfx::opSetStrokeColorN(Object args[], int numArgs) {
       for (i = 0; i < numArgs - 1 && i < gfxColorMaxComps; ++i) {
 	if (args[i].isNum()) {
 	  color.c[i] = dblToCol(args[i].getNum());
+	} else {
+	  color.c[i] = 0; // TODO Investigate if this is what Adobe does
 	}
       }
       state->setStrokeColor(&color);
@@ -1307,6 +1317,8 @@ void Gfx::opSetStrokeColorN(Object args[], int numArgs) {
     for (i = 0; i < numArgs && i < gfxColorMaxComps; ++i) {
       if (args[i].isNum()) {
 	color.c[i] = dblToCol(args[i].getNum());
+      } else {
+        color.c[i] = 0; // TODO Investigate if this is what Adobe does
       }
     }
     state->setStrokeColor(&color);
@@ -3719,8 +3731,14 @@ void Gfx::doForm(const Object *str) {
   }
   for (i = 0; i < 4; ++i) {
     bboxObj.arrayGet(i, &obj1);
-    bbox[i] = obj1.getNum();
-    obj1.free();
+    if (obj1.isNum()) {
+      bbox[i] = obj1.getNum();
+      obj1.free();
+    } else {
+      obj1.free();
+      error(getPos(), "Bad form bounding box value");
+      return;
+    }
   }
   bboxObj.free();
 
@@ -3936,9 +3954,13 @@ Stream *Gfx::buildImageStream() {
   obj.free();
 
   // make stream
-  str = new EmbedStream(parser->getStream(), &dict, gFalse, 0);
-  if (str)
+  if (parser->getStream()) {
+    str = new EmbedStream(parser->getStream(), &dict, gFalse, 0);
     str = str->addFilters(&dict);
+  } else {
+    str = NULL;
+    dict.free();
+  }
 
   return str;
 
@@ -4072,8 +4094,14 @@ void Gfx::drawAnnot(Object *str, AnnotBorderStyle *borderStyle,
     }
     for (i = 0; i < 4; ++i) {
       bboxObj.arrayGet(i, &obj1);
-      bbox[i] = obj1.getNum();
-      obj1.free();
+      if (obj1.isNum()) {
+        bbox[i] = obj1.getNum();
+        obj1.free();
+      } else {
+        obj1.free();
+        error(getPos(), "Bad form bounding box value");
+        return;
+      }
     }
     bboxObj.free();
 

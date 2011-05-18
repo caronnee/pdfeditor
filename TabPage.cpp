@@ -93,6 +93,7 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	connect(_image,SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
 	//end of connections
 	connect( _image, SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
+	connect( _image, SIGNAL(changeImage(PdfOp)),this,SLOT(changeImage(PdfOp)));
 
 	connect( _cmts,SIGNAL(annotationTextMarkup(Annot)),this,SLOT(insertTextMarkup(Annot)));
 	pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
@@ -150,29 +151,20 @@ void TabPage::deleteImage(QPoint point)
 	//hladame BI. Dictionary nevymazavame - bez operatora sa to stejne nezobrazi
 	int i =0;
 	InlineImageOperatorIterator it(ops.back(),false);
-	PdfOp op =it.getCurrent();
-	while(it.valid())
+	PdfOp op;
+	/*if (it.valid())
 	{
-		shared_ptr<InlineImageCompositePdfOperator> img = boost::dynamic_pointer_cast<InlineImageCompositePdfOperator>(op);
-		PdfOperator::PdfOperators child;
-		img->getChildren(child);
-		for (PdfOperator::PdfOperators::iterator iter = child.begin(); iter != child.end();iter++)
-		{
-			std::string n;
-			(*iter)->getOperatorName(n);
-			BBox b = (*iter)->getBBox();
-			iter;
-		}
-		it.next();
 		op = it.getCurrent();
-	}
+		shared_ptr<InlineImageCompositePdfOperator> img = boost::dynamic_pointer_cast<InlineImageCompositePdfOperator>(op);
+		BBox b = op->getBBox();
+		PdfOperator::PdfOperators child;		
+		it.next();
+	}*/
 	if (!it.valid())
 		return;
 	//mame iba obrazky
 	//zmaz len ten, ktore je 'navrchu' -> je v ops posledny?
 	//zisti, kde lezia nase pointy, pretoe BBox je zjavne debilne nastaveny
-	
-
 	op->getContentStream()->deleteOperator(op);
 	setFromSplash();
 }
@@ -879,6 +871,13 @@ void TabPage::removeObjects() //vsetko, co je vo working
 	}
 	workingOpSet.clear();
 }
+void TabPage::changeImage(PdfOp qOp) //selected
+{
+	if (!selected)
+		return;
+	//dostan BI image, ktory mas
+	//zmen len CM
+}
 void TabPage::insertImage(PdfOp op) //positions
 {
 	Ops ops;
@@ -976,7 +975,7 @@ void TabPage::savePdf(char * name)
 	}
 	int i = pdf->getRevisionsCount();
 //	commitRevision(); //TODO plikovat na kopiu!
-	pdf->SaveChangesToNew(name);
+//	pdf->SaveChangesToNew(name);
 //	revertRevision();
 	throw "Not implemented so far";
 	fclose(f);

@@ -19,6 +19,11 @@ DisplayPage::DisplayPage(QWidget *parent)
 	 menu->addAction("DeleteImage",this,SLOT(deleteImage()));
 	 menu->addAction("Annotate",this,SLOT(annotation()));
 	 menu->addAction("Delete Annotation",this,SLOT(deleteAnnotation()));
+	 menu->addAction("Change image",this,SLOT(changeImage()));
+}
+void DisplayPage::changeImage()
+{
+	emit ChangeImageSignal();//vieme o ktory obrazok ide
 }
 void DisplayPage::deleteAnnotation()
 {
@@ -30,7 +35,8 @@ void DisplayPage::annotation()
 }
 void DisplayPage::deleteImage()
 {
-	emit DeleteImageSignal(_point);
+	QPoint p(_point.x(), this->size().height() - _point.y());
+	emit DeleteImageSignal(p);
 }
 void DisplayPage::insertImage()
 {

@@ -470,42 +470,6 @@ RefState XRefWriter::knowsRef(const IndiRef& ref)const
 	// delegates to CXref
 	return CXref::createObject(type, ref);
 }
-//void XRefWriter::cloneChanges(FILE* f)
-//{
-//	using namespace utils;
-//	kernelPrintDbg(DBG_DBG, "");
-//	check_need_credentials(this);
-//	if(linearized)
-//		kernelPrintDbg(DBG_WARN, "Pdf is linearized and changes may break rules for linearization.");
-//	// if changedStorage is empty, there is nothing to do
-//	if(changedStorage.size()==0)
-//	{
-//		kernelPrintDbg(DBG_DBG, "Nothing to be saved - changedStorage is empty");
-//		return;
-//	}
-//	// checks if we have pdf content writer
-//	if(!pdfWriter)
-//	{
-//		kernelPrintDbg(DBG_ERR, "No pdfWriter defined");
-//		return;
-//	}
-//}
-void XRefWriter::saveToNew(char * name) //name of the new file
-{
-	using namespace utils;
-
-	kernelPrintDbg(DBG_DBG, "");
-	check_need_credentials(this);
-	if(linearized)
-		kernelPrintDbg(DBG_WARN, "Pdf is linearized and changes may break rules for linearization.");
-
-	// checks if we have pdf content writer
-	if(!pdfWriter)
-	{
-		kernelPrintDbg(DBG_ERR, "No pdfWriter defined");
-		return;
-	}
-}
 
 void XRefWriter::saveChanges(bool newRevision)
 {

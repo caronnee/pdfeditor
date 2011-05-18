@@ -45,6 +45,21 @@ using namespace boost;
 using namespace observer;
 using namespace utils;
 
+boost::shared_ptr<CContentStream> CPageContents::createContentStream(const CPage &page, CContentStream::CStreams *streams) {
+
+	boost::shared_ptr<GfxResources> res;
+	boost::shared_ptr<GfxState> state;
+	page.display()->createXpdfDisplayParams(res, state);
+
+	boost::shared_ptr<CContentStream> cc(streams
+			?new CContentStream(*streams, state, res)
+			:new CContentStream(state, res));
+
+	// Init cc and save smart pointer of the content stream so pdfoperators can get it
+	cc->setSmartPointer(cc);
+	return cc;
+}
+
 
 //==========================================================
 // Contents watchdog
@@ -262,7 +277,7 @@ CPageContents::getContentStream (size_t pos)
 //
 template<typename Container>
 void 
-CPageContents::addToFront (const Container& cont)
+CPageContents::addToFront (boost::shared_ptr<CContentStream> &cc, const Container& cont)
 { 
 	// Create cstream from container of pdf operators
 	shared_ptr<CStream> stream = createStreamFromObjects (cont, _dict->getPdf());
@@ -277,15 +292,10 @@ CPageContents::addToFront (const Container& cont)
 	// Parse new stream to content stream and add it to the streams
 	CContentStream::CStreams streams;
 	streams.push_back (stream);
-	boost::shared_ptr<GfxResources> res;
-	boost::shared_ptr<GfxState> state;
-	_xpdf_display_params (res, state);
-	CCs _tmp;
-	// Init cc and save smart pointer of the content stream so pdfoperators can get it
-	boost::shared_ptr<CContentStream> cc (new CContentStream(streams,state,res));
-	cc->setSmartPointer (cc);
+	cc->setStreams(streams);
 
 	// copy it to front
+	CCs _tmp;
 	_tmp.push_back (cc);
 	init();
 	std::copy (_ccs.begin(), _ccs.end(), std::back_inserter(_tmp));
@@ -294,15 +304,21 @@ CPageContents::addToFront (const Container& cont)
 	// Indicate change
 	change ();
 }
+
+template<typename Container>
+void 
+CPageContents::addToFront (const Container& cont)
+{ 
+	boost::shared_ptr<CContentStream> cc = createContentStream(*_page, NULL);
+	addToFront(cc, cont);
+}
+
 template void CPageContents::addToFront<vector<shared_ptr<PdfOperator> > > (const vector<shared_ptr<PdfOperator> >& cont);
 template void CPageContents::addToFront<deque<shared_ptr<PdfOperator> > > (const deque<shared_ptr<PdfOperator> >& cont);
 
-//
-//
-//
 template<typename Container>
 void 
-CPageContents::addToBack (const Container& cont)
+CPageContents::addToBack (boost::shared_ptr<CContentStream> &cc, const Container& cont)
 {
 	// Create cstream from container of pdf operators
 	if (!hasValidPdf(_dict))
@@ -320,17 +336,22 @@ CPageContents::addToBack (const Container& cont)
 	// Parse new stream to content stream and add it to the streams
 	CContentStream::CStreams streams;
 	streams.push_back (stream);
-	boost::shared_ptr<GfxResources> res;
-	boost::shared_ptr<GfxState> state;
-	_xpdf_display_params (res, state);
-	// Init and save smart pointer
-	boost::shared_ptr<CContentStream> cc (new CContentStream(streams,state,res));
-	cc->setSmartPointer (cc);
+	cc->setStreams(streams);
 	init();
 	_ccs.push_back (cc);
 
 	// Indicate change
 	change ();
+}
+//
+//
+//
+template<typename Container>
+void 
+CPageContents::addToBack (const Container& cont)
+{
+	boost::shared_ptr<CContentStream> cc = createContentStream(*_page, NULL);
+	addToBack(cc, cont);
 }
 template void CPageContents::addToBack<vector<shared_ptr<PdfOperator> > > (const vector<shared_ptr<PdfOperator> >& cont);
 template void CPageContents::addToBack<deque<shared_ptr<PdfOperator> > > (const deque<shared_ptr<PdfOperator> >& cont);
@@ -379,6 +400,12 @@ CPageContents::getText (std::string& text, const string* encoding, const libs::R
 
 	// Get the text
 	libs::Rectangle rec = (rc)? *rc : _page->display()->getPageRect();
+	// if we use rotation 90,270 then we must change the rectangle from which we want the text
+	// accordingly (TODO - verify for all rotations)
+	int rot = _page->getRotation ();
+	if (90 == rot || 270 == rot)
+		std::swap (rec.xright, rec.yright);
+
 	scoped_ptr<GString> gtxt (textDev->getText(rec.xleft, rec.yleft, rec.xright, rec.yright));
 	text = gtxt->getCString();
 }
@@ -496,9 +523,8 @@ CPageContents::addText (const std::string& what,
 	PdfOperator::Operands posOperands = _likely_tm;
     BT->push_back(createOperator("Tm", posOperands), getLastOperator(BT));
 
-    PdfOperator::Operands textOperands;
-    textOperands.push_back(shared_ptr<IProperty>(new CString (what)));
-    BT->push_back(createOperator("Tj", textOperands), getLastOperator(BT));
+    shared_ptr<CContentStream> cc = createContentStream(*_page, NULL);
+    BT->push_back(createOperatorText(cc, fontName, "TJ", what));
     PdfOperator::Operands emptyOperands;
     BT->push_back(createOperator("ET", emptyOperands), getLastOperator(BT));
     q->push_back(createOperator("Q", emptyOperands), getLastOperator(q));
@@ -506,7 +532,7 @@ CPageContents::addText (const std::string& what,
 	std::vector<shared_ptr<PdfOperator> > contents;
     contents.push_back(q);
     
-	addToBack (contents);
+	addToBack (cc, contents);
 }
 
 void 
@@ -854,9 +880,7 @@ CPageContents::parse ()
 	// True if Contents is not [ ]
 	while (!streams.empty())
 	{
-		shared_ptr<CContentStream> cc (new CContentStream(streams,state,res));
-		// Save smart pointer of the content stream so pdfoperators can return it
-		cc->setSmartPointer (cc);
+		shared_ptr<CContentStream> cc = createContentStream(*_page, &streams);
 		_ccs.push_back (cc);
 	}
 

@@ -79,11 +79,11 @@ struct GfxFontCIDWidths {
 // GfxFont
 //------------------------------------------------------------------------
 
-#define PDF_fontFixedWidth (1 << 0)
-#define PDF_fontSerif      (1 << 1)
-#define PDF_fontSymbolic   (1 << 2)
-#define PDF_fontItalic     (1 << 6)
-#define PDF_fontBold       (1 << 18)
+#define fontFixedWidth (1 << 0)
+#define fontSerif      (1 << 1)
+#define fontSymbolic   (1 << 2)
+#define fontItalic     (1 << 6)
+#define fontBold       (1 << 18)
 
 class GfxFont {
 public:
@@ -132,11 +132,11 @@ public:
 
   // Get font descriptor flags.
   int getFlags()const { return flags; }
-  GBool isFixedWidth()const { return flags & PDF_fontFixedWidth; }
-  GBool isSerif()const { return flags & PDF_fontSerif; }
-  GBool isSymbolic()const { return flags & PDF_fontSymbolic; }
-  GBool isItalic()const { return flags & PDF_fontItalic; }
-  GBool isBold()const { return flags & PDF_fontBold; }
+  GBool isFixedWidth()const { return flags & fontFixedWidth; }
+  GBool isSerif()const { return flags & fontSerif; }
+  GBool isSymbolic()const { return flags & fontSymbolic; }
+  GBool isItalic()const { return flags & fontItalic; }
+  GBool isBold()const { return flags & fontBold; }
 
   // Return the font matrix.
   const double *getFontMatrix()const { return fontMat; }
@@ -165,12 +165,16 @@ public:
 			  Unicode *u, int uSize, int *uLen,
 			  double *dx, double *dy, double *ox, double *oy)const = 0;
 
+  // Transfroms given unicode to the code which can be stored to the
+  // text operator - this is kind of inversion function to getNextChar
+  virtual CharCode getCodeFromUnicode(const Unicode *u, int uSize)const;
 protected:
 
   void readFontDescriptor(XRef *xref, const Dict *fontDict);
   CharCodeToUnicode *readToUnicodeCMap(const Dict *fontDict, int nBits,
 				       CharCodeToUnicode *ctu)const;
   void findExtFontFile();
+  virtual const CharCodeToUnicode * getCtu()const =0;
 
   GString *tag;			// PDF font tag
   Ref id;			// reference (used as unique ID)
@@ -221,10 +225,7 @@ public:
   GBool getUsesMacRomanEnc() { return usesMacRomanEnc; }
 
   // Get width of a character.
-  double getWidth(Guchar c) 
-  { 
-	  return widths[c]; 
-  }
+  double getWidth(Guchar c) { return widths[c]; }
 
   // Return a char code-to-GID mapping for the provided font file.
   // (This is only useful for TrueType fonts.)
@@ -238,6 +239,9 @@ public:
 
   // Return the Type 3 Resources dictionary, or NULL if none.
   const Dict *getResources()const;
+
+protected:
+  const CharCodeToUnicode *getCtu()const { return ctu; }
 
 private:
 
@@ -283,7 +287,8 @@ public:
   // if type is fontCIDType2.
   const Gushort *getCIDToGID()const { return cidToGID; }
   int getCIDToGIDLen()const { return cidToGIDLen; }
-
+protected:
+  const CharCodeToUnicode *getCtu()const { return ctu; }
 private:
 
   CMap *cMap;			// char code --> CID

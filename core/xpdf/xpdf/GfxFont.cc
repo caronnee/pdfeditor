@@ -168,7 +168,7 @@ void GfxFont::readFontDescriptor(XRef *xref, const Dict *fontDict) {
   int i;
 
   // assume Times-Roman by default (for substitution purposes)
-  flags = PDF_fontSerif;
+  flags = fontSerif;
 
   embFontID.num = -1;
   embFontID.gen = -1;
@@ -398,6 +398,11 @@ char *GfxFont::readEmbFontFile(XRef *xref, int *len) {
   obj1.free();
 
   return buf;
+}
+
+CharCode GfxFont::getCodeFromUnicode(const Unicode *u, int uSize)const {
+	CharCode c = getCtu()->mapFromUnicode(u, uSize);
+	return (c & 0xff);
 }
 
 //------------------------------------------------------------------------
@@ -712,7 +717,7 @@ Gfx8BitFont::Gfx8BitFont(XRef *xref, const char *tagA, Ref idA, GString *nameA,
 	// name that looks like 'Axx' or 'xx', where 'A' is any letter
 	// and 'xx' is two hex digits
 	if ((strlen(charName) == 3 &&
-	     isalpha(charName[0]) &&
+	     isalpha((unsigned char)charName[0]) &&
 	     isxdigit((unsigned char)charName[1]) && isxdigit((unsigned char)charName[2]) &&
 	     ((charName[1] >= 'a' && charName[1] <= 'f') ||
 	      (charName[1] >= 'A' && charName[1] <= 'F') ||
@@ -743,7 +748,7 @@ Gfx8BitFont::Gfx8BitFont(XRef *xref, const char *tagA, Ref idA, GString *nameA,
 	  strcmp(charName, ".notdef")) {
 	n = strlen(charName);
 	code2 = -1;
-	if (hex && n == 3 && isalpha(charName[0]) &&
+	if (hex && n == 3 && isalpha((unsigned char)charName[0]) &&
 	    isxdigit((unsigned char)charName[1]) && isxdigit((unsigned char)charName[2])) {
 	  sscanf(charName+1, "%x", &code2);
 	} else if (hex && n == 2 &&
@@ -827,7 +832,7 @@ Gfx8BitFont::Gfx8BitFont(XRef *xref, const char *tagA, Ref idA, GString *nameA,
   mul = (type == fontType3) ? fontMat[0] : 0.001;
   fontDict->lookup("Widths", &obj1);
   if (obj1.isArray()) {
-    flags |= PDF_fontFixedWidth;
+    flags |= fontFixedWidth;
     if (obj1.arrayGetLength() < lastChar - firstChar + 1) {
       lastChar = firstChar + obj1.arrayGetLength() - 1;
     }
@@ -836,7 +841,7 @@ Gfx8BitFont::Gfx8BitFont(XRef *xref, const char *tagA, Ref idA, GString *nameA,
       if (obj2.isNum()) {
 	widths[code] = obj2.getNum() * mul;
 	if (widths[code] != widths[firstChar]) {
-	  flags &= ~PDF_fontFixedWidth;
+	  flags &= ~fontFixedWidth;
 	}
       }
       obj2.free();
@@ -986,9 +991,9 @@ Gushort *Gfx8BitFont::getCodeToGIDMap(FoFiTrueType *ff) {
     } else if (unicodeCmap >= 0) {
       cmap = unicodeCmap;
       useUnicode = gTrue;
-    } else if ((flags & PDF_fontSymbolic) && msSymbolCmap >= 0) {
+    } else if ((flags & fontSymbolic) && msSymbolCmap >= 0) {
       cmap = msSymbolCmap;
-    } else if ((flags & PDF_fontSymbolic) && macRomanCmap >= 0) {
+    } else if ((flags & fontSymbolic) && macRomanCmap >= 0) {
       cmap = macRomanCmap;
     } else if (macRomanCmap >= 0) {
       cmap = macRomanCmap;

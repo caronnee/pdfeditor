@@ -266,7 +266,6 @@ typedef std::map<cpdf_id_t, ResolvedRefStorage *> ResolvedRefMapping;
 class CPdf: public noncopyable
 {
 public:
-	void SaveChangesToNew(char * name);
 	// NOTE: this declaration has to be here, because mode field is private and
 	// so type has to be declared and also type has to be public
 
@@ -1577,7 +1576,7 @@ public:
 		boost::shared_ptr<CDict> toplevel;
 		try {
 			
-			toplevel = utils::getCDictFromDict (docCatalog, "Outlines");
+			toplevel = docCatalog->getProperty<CDict>("Outlines");
 			
 		}catch (ElementNotFoundException&)
 		{

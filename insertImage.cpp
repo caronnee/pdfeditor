@@ -52,36 +52,61 @@ void InsertImage::rotationCm(int angle)
 }
 void InsertImage::apply()
 {
-	if (ui.lineEdit->text()==NULL)
-		return;
-	//snaz sa ho otvorit
+	bool create = false;
+	if (inline_image == null)
 	{
-		FILE * f = fopen(ui.lineEdit->text().toAscii().data(),"r");
-		if (!f)
+		create = true;
+		if (ui.lineEdit->text()==NULL)
 			return;
-		fclose(f);
-	}
+		//snaz sa ho otvorit
+		{
+			FILE * f = fopen(ui.lineEdit->text().toAscii().data(),"r");
+			if (!f)
+				return;
+			fclose(f);
+		}
 
-	QImage image;
-	if (!image.load(tr(ui.lineEdit->text().toAscii().data())))
-	{
-		QMessageBox::warning(this,tr("Unable to load file"),tr("LoadFailed"),QMessageBox::Ok);
-		return;
-	}
-	image = image.scaled(image.width()/4,image.height()/4); //proporcie
-	CDict image_dict;
-	image_dict.addProperty ("W", CInt (image.width())); 
-	image_dict.addProperty ("H", CInt (image.height()));
-	image_dict.addProperty ("CS", CName ("RGB"));
-	image_dict.addProperty ("BPC", CInt (8)); //bits per component, kontanta, ine pdf nevie:)
+		QImage image;
+		if (!image.load(tr(ui.lineEdit->text().toAscii().data())))
+		{
+			QMessageBox::warning(this,tr("Unable to load file"),tr("LoadFailed"),QMessageBox::Ok);
+			return;
+		}
+		image = image.scaled(image.width()/4,image.height()/4); //proporcie
+		CDict image_dict;
+		image_dict.addProperty ("W", CInt (image.width())); 
+		image_dict.addProperty ("H", CInt (image.height()));
+		image_dict.addProperty ("CS", CName ("RGB"));
+		image_dict.addProperty ("BPC", CInt (8)); //bits per component, kontanta, ine pdf nevie:)
 
-	int depth = image.depth(); //8 - 8 bitov per pixel
+		int depth = image.depth(); //8 - 8 bitov per pixel
+
+		std::vector<char> imageData; //32 bitove sa musia pretypovat na QRGB
+
+		/*QImage im = image.alphaChannel();
+		im.save("aplhaChangge.png");*/ //alfa neskor
+
+		for(int h = 0; h< pixH; h++)
+		{
+			for ( int w = 0; w < pixW; w++)
+			{
+				QRgb color = image.pixel(w,h);
+				int r = qRed(color);
+				int g = qGreen(color);
+				int b = qBlue(color);
+				imageData.push_back(r);
+				imageData.push_back(g);
+				imageData.push_back(b);
+			}
+		}
+		inline_image = (new CInlineImage (image_dict,imageData));
+	}
 	//add to buffer everything that is in image
 	shared_ptr<UnknownCompositePdfOperator> q(new UnknownCompositePdfOperator("q", "Q"));
 	
 	float scale = this->ui.scale->value()/100.0f;
-	int pixW = image.width();
-	int pixH = image.height();
+	int pixW = inline_image->width(); //get property from image-dic
+	int pixH = inline_image->height();
 	float scaleX = scale * pixW;
 	float scaleY = scale * pixH; //POCET KOMPONENT
 	//mame maticy translacie & scale ( mozeme to dat dokopy))
@@ -107,30 +132,16 @@ void InsertImage::apply()
 	//image.save("outputSave.png");
 	//vyhod alpha channel
 	
-	std::vector<char> imageData; //32 bitove sa musia pretypovat na QRGB
-
-	/*QImage im = image.alphaChannel();
-	im.save("aplhaChangge.png");*/ //alfa neskor
-
-	for(int h = 0; h< pixH; h++)
-	{
-		for ( int w = 0; w < pixW; w++)
-		{
-			QRgb color = image.pixel(w,h);
-			int r = qRed(color);
-			int g = qGreen(color);
-			int b = qBlue(color);
-			imageData.push_back(r);
-			imageData.push_back(g);
-			imageData.push_back(b);
-		}
-	}
-	shared_ptr<CInlineImage> inline_image (new CInlineImage (image_dict,imageData));
 	shared_ptr<InlineImageCompositePdfOperator> BI(new InlineImageCompositePdfOperator (inline_image));
-
 	q->push_back(BI,getLastOperator(q));
 	PdfOperator::Operands o;
 	q->push_back(createOperator("Q", o), getLastOperator(q));
-
-	emit(insertImage(q));
+	if (create)
+		emit(insertImage(q));
+	else
+		emit(changeImage(q));
+}
+void InsertImage::setImage(shared_ptr<CInlineImage> ii)
+{
+	inline_image = ii;
 }

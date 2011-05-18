@@ -196,6 +196,7 @@ using namespace debug;
 	return changed;
 }
 
+
 ::Object * CXref::changeTrailer(const char * name, ::Object * value)
 {
 	using namespace debug;

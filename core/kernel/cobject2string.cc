@@ -210,17 +210,9 @@ simpleValueToString<pRef> (const IndiRef& ref, string& str)
 
 bool isBinaryString(const std::string& val)
 {
-	const char * c = val.c_str();
-	//for(std::string::const_iterator i = val.begin(); i != val.end(); ++i)
-	//	if(!isprint(*i))
-	for(int i = 0; i < val.length(); ++i)
-	{
-		unsigned char x;
-		if (c[i] < 0)
-			x = c[i]+256;
-		else
-			x = c[i];
-		if(!isprint(x))
+	for(std::string::const_iterator i = val.begin(); i != val.end(); ++i) {
+		unsigned char ch = *i;
+		if(!isprint(ch))
 			return true;
 	}
 	return false;
@@ -252,7 +244,7 @@ simpleValueToString (const std::string& val, std::string& str)
 	{
 		case pString:
 		{
-			std::string validateStr = makeStringPdfValid (val.begin(), val.end());
+			std::string validateStr = makeStringPdfValid (val);
 			if (!isBinaryString(val))
 				str = Specification::CSTRING_PREFIX + validateStr + Specification::CSTRING_SUFFIX;
 			else

@@ -568,13 +568,25 @@ throw ()
 //
 // Constructors
 //
+CContentStream::CContentStream (boost::shared_ptr<GfxState> state, 
+		boost::shared_ptr<GfxResources> res) : gfxstate (state), gfxres (res) {
+}
+
 CContentStream::CContentStream (CStreams& strs, 
 								boost::shared_ptr<GfxState> state, 
 								boost::shared_ptr<GfxResources> res) 
 	: gfxstate (state), gfxres (res)
 {
 	kernelPrintDbg (DBG_DBG, "");
+	setStreams(strs);
+}
+
+void CContentStream::setStreams (CStreams& strs) {
 	
+	// cleanup
+	if (cstreamobserver)
+		unregisterCStreamObservers();
+
 	// If streams are empty return
 	if (strs.empty())
 		return;
@@ -588,8 +600,8 @@ CContentStream::CContentStream (CStreams& strs,
 	}
 	
 	// Parse it into small objects
-		assert (gfxres);
-		assert (gfxstate);
+	assert (gfxres);
+	assert (gfxstate);
 	
 	// Create cstream observer and register it on all operands
 	cstreamobserver = boost::shared_ptr<CStreamObserver> (new CStreamObserver (this));
@@ -659,14 +671,14 @@ CContentStream::replaceText (const std::string& what, const std::string& with)
 		boost::shared_ptr<TextSimpleOperator> _cur 
 				= boost::dynamic_pointer_cast<TextSimpleOperator, PdfOperator> (tit.getCurrent());
 		std::string tmp;
-		_cur->getRawText (tmp);
+		_cur->getFontText (tmp);
 		string replaced = boost::replace_all_copy (tmp, what, with);
 		if (tmp != replaced)
 		{
 			dirty = true;
 			boost::shared_ptr<TextSimpleOperator> _cur 
 					= boost::dynamic_pointer_cast<TextSimpleOperator, PdfOperator> (tit.getCurrent());
-			_cur->setRawText (replaced);
+			_cur->setFontText (replaced);
 		}
 		tit.next();
 	}
