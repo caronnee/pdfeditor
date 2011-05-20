@@ -51,7 +51,7 @@ private:
 public slots:
 	void changeImage();
 	void annotation();
-	void fillRect( QRegion reg, const QColor color);
+	void fillRect( QVector<QRect>& reg, const QColor color);
 	void mousePressEvent(QMouseEvent * event);
 	void fillRect(int x, int y, int x2, int y2, const QColor color);
 	void insertText();
@@ -62,7 +62,7 @@ public slots:
 	void deleteImage();
 	void deleteAnnotation();
 signals:
-	void ChangeImageSignal();
+	void ChangeImageSignal(QPoint p);
 	void DeleteAnnotationSignal(QPoint);
 	void AnnotationSignal(QPoint);
 	void DeleteImageSignal(QPoint);

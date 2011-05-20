@@ -77,6 +77,10 @@ struct OperatorData
 			_charSpace -= txt->getWidth(_text[i]);
 		_charSpace/=_text.size();
 	}
+	float GetNextStop()
+	{
+		return position(letters(_end));
+	}
 	void change(bool from_beg)
 	{
 		double b = _begin;
@@ -352,6 +356,8 @@ public:
 	//rotate page
 
 public slots:
+	void changeImage(PdfOp op);
+	void raiseChangeImage(QPoint point);
 	void raiseSearch();
 	void closeAnnotDiag();
 	void changeSelectedText();

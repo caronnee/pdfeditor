@@ -23,7 +23,8 @@ DisplayPage::DisplayPage(QWidget *parent)
 }
 void DisplayPage::changeImage()
 {
-	emit ChangeImageSignal();//vieme o ktory obrazok ide
+	QPoint p(_point.x(), this->size().height() - _point.y());
+	emit ChangeImageSignal(p);//vieme o ktory obrazok ide
 }
 void DisplayPage::deleteAnnotation()
 {
@@ -67,33 +68,48 @@ void DisplayPage::setImage( const QImage & image )
 }
 void DisplayPage::fillRect(QRect rect,QColor color)
 {
-	QPainter painter(&_copyImg); //mozno az na this?
+	QImage resultImage(_copyImg.size(),QImage::Format_ARGB32_Premultiplied);
+
+	QPainter painter(&resultImage);
+	painter.setCompositionMode(QPainter::CompositionMode_Source);
+	painter.fillRect(resultImage.rect(), Qt::transparent);
 	painter.fillRect(rect, color);
-	setImg();
+	painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
+	painter.drawImage(0, 0, _copyImg);
+	painter.end();
+
+	this->setPixmap(QPixmap::fromImage(resultImage));
 }
-void DisplayPage::fillRect( QRegion region, const QColor color)
+void DisplayPage::fillRect( QVector<QRect>& r, const QColor color)
 {
-	assert(false); //for now
-	QVector<QRect> r = region.rects();
+	QImage resultImage(_copyImg.size(),QImage::Format_ARGB32_Premultiplied);
+	QPainter painter(&resultImage);
+	painter.setCompositionMode(QPainter::CompositionMode_Source);
+	painter.fillRect(resultImage.rect(), Qt::transparent);
 	for ( int i= 0; i < r.size(); i++)
 	{
-		fillRect(r[i].x(), r[i].y(), r[i].width(), r[i].height(),color);
+		painter.fillRect(r[i], color);
 	}
+	painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
+	painter.drawImage(0, 0, _copyImg);
+
+	painter.end();
+	this->setPixmap(QPixmap::fromImage(resultImage));
 }
 	
 void DisplayPage::fillRect( int x1, int y1, int x2, int y2, const QColor color)
 {
-	QPainter painter(&_copyImg); //mozno az na this?
+//	QPainter painter(&_copyImg); //mozno az na this?
 	y1 = size().height() - y1; //TODO pixmap size! for displaying
 	y2 = size().height() - y2;
 	int sx = (x1 > x2) ? x1 - x2:x2 - x1;
 	int sy = (y1 > y2) ? y1 - y2:y2 - y1;
 	QRect r(min(x1,x2),min(y1,y2),sx,sy);
-//	painter.setCompositionMode(QPainter::CompositionMode_Source);
-	painter.fillRect(r, color);
-	setImg();
-
-	//needrepaint?
+////	painter.setCompositionMode(QPainter::CompositionMode_Source);
+//	painter.fillRect(r, color);
+//	setImg();
+	fillRect(r,color);
+	//needrepaint? TODO
 }
 void DisplayPage::setImg() //again st from image, for removing highligh and so
 {

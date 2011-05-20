@@ -1,6 +1,7 @@
 #include "debug.h"
 #include "TabPage.h"
 #include "globalfunctions.h"
+#include "typedefs.h"
 
 //created files
 #include "insertpagerange.h"
@@ -88,6 +89,7 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	connect (labelPage,SIGNAL(DeleteImageSignal(QPoint)),this,SLOT(deleteImage(QPoint)));
 	connect (labelPage,SIGNAL(AnnotationSignal(QPoint)),this,SLOT(raiseAnnotation(QPoint)));
 	connect (labelPage,SIGNAL(DeleteAnnotationSignal(QPoint)),this,SLOT(deleteAnnotation(QPoint)));
+	connect (labelPage,SIGNAL(ChangeImageSignal(QPoint)),this,SLOT(raiseChangeSignal(QPoint)));
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	
 	connect(_image,SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
@@ -141,6 +143,22 @@ void TabPage::raiseSearch()
 	_search->show();
 }
 
+void TabPage::raiseChangeImage(QPoint point)
+{
+	double x,y;
+	toPdfPos(point.x(),point.y(),x,y);
+	Ops ops;
+	page->getObjectsAtPosition(ops,libs::Rectangle(0,0,1000,1000));
+	//hladame BI. Dictionary nevymazavame - bez operatora sa to stejne nezobrazi
+	int i =0;
+	InlineImageOperatorIterator it(ops.back(),false);
+
+	shared_ptr<CInlineImage> c = boost::dynamic_pointer_cast<CInlineImage>(it.getCurrent());
+	it.getCurrent()->getContentStream()->getPdfOperators(ops);
+	_workingOp = findCompositeOfPdfOperator(PdfOperator::getIterator(ops.front()),it.getCurrent());
+	_image->setImage(c);
+	_image->show();
+}
 void TabPage::deleteImage(QPoint point)
 {
 	//zistime, co mame pod pointom;
@@ -162,6 +180,7 @@ void TabPage::deleteImage(QPoint point)
 	}*/
 	if (!it.valid())
 		return;
+	op = it.getCurrent();
 	//mame iba obrazky
 	//zmaz len ten, ktore je 'navrchu' -> je v ops posledny?
 	//zisti, kde lezia nase pointy, pretoe BBox je zjavne debilne nastaveny
@@ -557,55 +576,39 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 {
 	if (!_dataReady) //prvykrat, co sme dotkli nejakeho operatora
 	{
+		_mousePos = QPoint(x,y);
 		labelPage->unsetImg();
-		highLightBegin(x,y);
+		highLightBegin(x,y); //oznaci zaciatok
 		return;
-	}
-	//highlightuj
-	//pohli sme sa na x, y
-	//ak sme sa pohli "dopredu" v zmysle dopredu textu, tal sme OK
-	//najdime operator
+	}//sTextIt
 	Ops ops;
-	getAtPosition(ops,x,y);//este stale sme nezmenili
-	//ak nie je ziadny textovy operator
-	while ( !ops.empty())
-	{
-		std::string n;
-		ops.back()->getOperatorName(n);
-		if(typeChecker.isType( OpTextName, n))
-			break;
-		ops.pop_back();
-	}
-	if (ops.empty()) // pridaj najblizsie text
+	getAtPosition(ops,x,y);
+	if (ops.empty())
 		return;
-	//ideme vysvietit posledne. Ak je na tom mieste viacero textov, vysvietia sa podla toho, kde su v nasom liste, ale stene to bude fuj
-	//najdime tento operator
-	//ak sme sa pohli dopredu, tak y je mensia ako posledne, popripade x vyssie
-	libs::Rectangle b = ops.back()->getBBox();
-	TextData::iterator first = sTextIt;
-	TextData::iterator last = sTextItEnd; 
-	bool forw = sTextItEnd->forward(b.xleft,b.yleft); //ajskor zisti, kde je koniec a kde zaciatok
-	
-	while (sTextItEnd->_op != ops.back())
+	TextOperatorIterator it(ops.back(),false);
+	PdfOp o = it.getCurrent();
+	if (it.valid())
+		o = it.getCurrent();
+	OperatorData s(o);
+	int xBegin = min(_mousePos.x(),x);
+	int xEnd = max(_mousePos.x(),x);
+	if (*sTextIt < s)
 	{
-		if (sTextItEnd == _textList.end())
-			throw "neni v tree"; //TODO potom toto tu vymazat
-		inDirection(sTextItEnd, forw);
-		sTextItEnd->restoreBegin();
-		sTextItEnd->restoreEnd();
-	}		
-	//nasli sme operator, na ktorom to zasekneme
-	//mame spravne range opratorov
-	{ 
-		double a1,a2;
-		toPdfPos(x,y,a1,a2);
-		sTextItEnd->setEnd(a1);
-		sTextItEnd->change(forw);
-		sTextIt->change(!forw);
+		sTextItEnd =sTextIt;
+		while (sTextItEnd->_op!=o)
+			sTextItEnd++;
 	}
+	else
+	{
+		sTextItEnd = sTextIt;
+		while (sTextIt->_op!=o)
+			sTextIt--;
+	}
+	sTextIt->setBegin(xBegin);
+	sTextItEnd->setEnd(xEnd);
+	_selected =  true;
 	highlight();
 	//_dataReady = false;
-	_selected =  true;
 }
 
 void TabPage::highlight()
@@ -615,18 +618,24 @@ void TabPage::highlight()
 	TextData::iterator last = sTextItEnd; 
 	bool forw = (*sTextIt) < (*sTextItEnd);
 	int x1,x2,y1,y2;
+	QVector<QRect> region;
+	assert(region.isEmpty());
 	while (true)
 	{
 		toPixmapPos(first->_begin, first->_ymin, x1,y1);
 		toPixmapPos(first->_end, first->_ymax, x2, y2);
-		labelPage->fillRect( x1, y1, x2, y2, color );
+		y1 = labelPage->size().height()-y1;
+		y2 = labelPage->size().height()-y2;
+		QRect r(min(x1,x2),min(y1,y2), first->GetNextStop()-first->_begin,abs(y1-y2));
+		region.append(r);
 		if (first == sTextItEnd)
 		{
-			this->ui.scrollArea->ensureVisible(x2,labelPage->size().height() - y2);
+			this->ui.scrollArea->ensureVisible(x2,y2);
 			break;
 		}
 		inDirection(first, forw);
 	}
+	labelPage->fillRect( region, color );
 }
 
 //zatial len v ramci jednej stranky
@@ -871,12 +880,12 @@ void TabPage::removeObjects() //vsetko, co je vo working
 	}
 	workingOpSet.clear();
 }
-void TabPage::changeImage(PdfOp qOp) //selected
+void TabPage::changeImage(PdfOp op)
 {
-	if (!selected)
+	if (!_selected)
 		return;
-	//dostan BI image, ktory mas
-	//zmen len CM
+	_workingOp->getContentStream()->replaceOperator(_workingOp,op);
+	_selected = false;
 }
 void TabPage::insertImage(PdfOp op) //positions
 {
@@ -1189,7 +1198,7 @@ void TabPage::showAnnotation()
 			_annots[i]->getDictionary()->getProperty(names[a])->getStringRepresentation(m);
 		}*/
 		_annots[i]->getDictionary()->getStringRepresentation(m);
-		fprintf(f,"%s\n", m.c_str());
+		fputs(m.c_str(),stderr);
 		if ( type != "Text")
 			continue;
 		//printf("%s\n",m.c_str());

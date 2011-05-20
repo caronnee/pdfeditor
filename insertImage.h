@@ -3,6 +3,7 @@
 #include <QWidget>
 #include "ui_insertImage.h"
 #include <kernel/pdfedit-core-dev.h>
+#include <kernel/cinlineimage.h>
 #include "typedefs.h"
 #include <png.h>
 
@@ -11,11 +12,11 @@ class InsertImage : public QWidget
 	Q_OBJECT
 
 	Ui::Image ui;
-	shared_ptr<CInlineImage> inline_image;
+	boost::shared_ptr<pdfobjects::CInlineImage> inline_image;
 	//to, kde sa pridava obrazok, je uz v matici
 public:
 	InsertImage(QWidget * parent);
-	void setImage(shared_ptr<CInlineImage> ii);
+	void setImage(boost::shared_ptr<pdfobjects::CInlineImage> ii);
 public slots:
 	void apply();
 	void rotationCm(int angle);

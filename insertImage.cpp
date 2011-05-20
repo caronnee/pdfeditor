@@ -53,7 +53,7 @@ void InsertImage::rotationCm(int angle)
 void InsertImage::apply()
 {
 	bool create = false;
-	if (inline_image == null)
+	if (inline_image == NULL)
 	{
 		create = true;
 		if (ui.lineEdit->text()==NULL)
@@ -86,9 +86,9 @@ void InsertImage::apply()
 		/*QImage im = image.alphaChannel();
 		im.save("aplhaChangge.png");*/ //alfa neskor
 
-		for(int h = 0; h< pixH; h++)
+		for(int h = 0; h< inline_image->height(); h++)
 		{
-			for ( int w = 0; w < pixW; w++)
+			for ( int w = 0; w < inline_image->width(); w++)
 			{
 				QRgb color = image.pixel(w,h);
 				int r = qRed(color);
@@ -99,7 +99,7 @@ void InsertImage::apply()
 				imageData.push_back(b);
 			}
 		}
-		inline_image = (new CInlineImage (image_dict,imageData));
+		inline_image = boost::shared_ptr<CInlineImage>(new CInlineImage (image_dict,imageData));
 	}
 	//add to buffer everything that is in image
 	shared_ptr<UnknownCompositePdfOperator> q(new UnknownCompositePdfOperator("q", "Q"));
