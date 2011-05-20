@@ -1,11 +1,10 @@
 //TODO on close close everythign else
 #include <QTableWidgetItem>
 #include "fontWidget.h"
+#include "typedefs.h"
 
 using namespace pdfobjects;
 using namespace boost;
-
-typedef shared_ptr< PdfOperator > PdfOp;
 
 //TODO doplnit a spravne vyrazy
 std::string fontShapes[] ={"Fill","Stroke","Fill&Stroke","Invisible"};
