@@ -8,9 +8,9 @@ TESTED	hladanie diakritiky
 FIXED	hadanie s medzerou alebo viacerymi
 TESTED     po kliknuti resetnut hladanie vzhladom mna to, kde bolo kliknute
 FIXED		niekedy sa necha vysvitit cely text
-FIXED			niekedy len cast, vysviecuju sa nespravne
+FIX	ED			niekedy len cast, vysviecuju sa nespravne
 FIXED			niekedy sa vyhodi assert na not-decrementable
-BUG		musi sa drzat myska, aby sa vysvietil text v textovom rezime
+FIXED	musi sa drzat myska, aby sa vysvietil text v textovom rezime
 FIXED	spravne vysvietenie hladaneho slova
 FIXED	v okamziku, ked je to dalej/predchadzajuce, zrusi sa vysvietenie prechodzieho testu
 FIXED	ak nie je vysvieteni viditelne, zaskroluj na miesto, aby viditelne bolo( set scroll)

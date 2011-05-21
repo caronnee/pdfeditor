@@ -60,6 +60,7 @@ void OperatorData::set(int x,double &place)
 int OperatorData::letters(double x)
 {
 	double t = _origX;
+	x = min(x,_origX2);
 	int i =0;
 	boost::shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(_op);
 	while (t<x)

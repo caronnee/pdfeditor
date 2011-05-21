@@ -147,8 +147,7 @@ private: //variables
 	boost::shared_ptr<pdfobjects::CPage> page;
 	TextData _textList;
 	//oterator	of selected
-	TextData::iterator sTextIt;
-	TextData::iterator sTextItEnd; //kde ten iterator konci
+	TextData::iterator sTextIt, sTextItEnd, sTextMarker; //kde ten iterator konci
 	bool _dataReady; //pouzivane vseobecne, kedy sa to hodi
 	bool _selected;
 
@@ -180,7 +179,6 @@ public:
 
 	void setTree(shared_ptr<CDict> d, QTreeWidgetItem * item);
 	void SetModeTextSelect();
-	void highlight(); //nesprav nic, pretoze to bude robit mouseMove
 	void highLightBegin(int x, int y); //nesprav nic, pretoze to bude robit mouseMove
 	void highlightText(int x, int y); //tu mame convertle  x,y
 
@@ -237,6 +235,7 @@ public slots:
 	void deleteAnnotation(QPoint);
 	void search(std::string text,bool forw);
 
+	void highlight(); //nesprav nic, pretoze to bude robit mouseMove
 	void handleBookMark(QTreeWidget * item);
 	void removeObjects();
 	void clicked(int x, int y);

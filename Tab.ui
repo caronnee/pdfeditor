@@ -84,6 +84,13 @@
         </property>
        </widget>
       </item>
+<item>
+       <widget class="QPushButton" name="repeter">
+        <property name="text">
+         <string>Repeter</string>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QPushButton" name="branchRevision">
         <property name="text">
@@ -208,6 +215,12 @@
 		 <signal>clicked()</signal>
 		 <receiver>TabUI</receiver>
 		 <slot>raiseSearch()</slot>
+  </connection>
+	 <connection>
+		 <sender>repeter</sender>
+		 <signal>clicked()</signal>
+		 <receiver>TabUI</receiver>
+		 <slot>highlight()</slot>
   </connection>
   <connection>
    <sender>commit</sender>

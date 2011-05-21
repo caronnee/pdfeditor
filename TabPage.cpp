@@ -560,7 +560,7 @@ void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit 
 	sTextIt = _textList.begin();
 	setTextData(sTextIt,_textList.end(),ops.back());
 	sTextIt->setBegin(x);//zarovnane na pismenko
-	sTextItEnd = sTextIt;
+	sTextMarker = sTextItEnd = sTextIt;
 }
 void TabPage::setTextData(TextData::iterator & it, TextData::iterator end,shared_ptr< PdfOperator > op)
 {
@@ -590,22 +590,41 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 	if (it.valid())
 		o = it.getCurrent();
 	OperatorData s(o);
-	int xBegin = min(_mousePos.x(),x);
-	int xEnd = max(_mousePos.x(),x);
-	if (*sTextIt < s)
+	double xBegin;
+	double xEnd;
+	TextData::iterator move = sTextMarker;
+	move->clear();
+	if ( *move < s)
 	{
-		sTextItEnd =sTextIt;
-		while (sTextItEnd->_op!=o)
-			sTextItEnd++;
+		while (move->_op!=s._op)
+		{
+			move++;
+			move->clear();
+		}
 	}
 	else
 	{
-		sTextItEnd = sTextIt;
-		while (sTextIt->_op!=o)
-			sTextIt--;
+		while (move->_op!=s._op)
+		{
+			move--;
+			move->clear();
+		}
 	}
-	sTextIt->setBegin(xBegin);
-	sTextItEnd->setEnd(xEnd);
+	if (*move < *sTextMarker)
+	{
+		sTextIt = move;
+		sTextIt->setBegin(x);
+		sTextItEnd = sTextMarker;
+		sTextItEnd->setEnd(_mousePos.x());
+	}
+	else
+	{
+		sTextIt = sTextMarker;
+		sTextIt->setBegin(_mousePos.x());
+		sTextItEnd = move;
+		sTextItEnd->setEnd(x);
+	}
+	
 	_selected =  true;
 	highlight();
 	//_dataReady = false;
@@ -1184,7 +1203,6 @@ void TabPage::showAnnotation()
 	//dostan oblasti anotacii z pdf
 	page->getAllAnnotations(_annots);
 	//v page nastav vsetky aktivne miesta - text only
-	FILE * f = fopen("brk","w");
 	for(size_t i =0; i< _annots.size(); i++)
 	{
 		std::vector<std::string> names; //subtype == text
@@ -1198,7 +1216,6 @@ void TabPage::showAnnotation()
 			_annots[i]->getDictionary()->getProperty(names[a])->getStringRepresentation(m);
 		}*/
 		_annots[i]->getDictionary()->getStringRepresentation(m);
-		fputs(m.c_str(),stderr);
 		if ( type != "Text")
 			continue;
 		//printf("%s\n",m.c_str());
@@ -1218,7 +1235,6 @@ void TabPage::showAnnotation()
 		QRect convertedRect = getRectangle(b);
 		labelPage->addPlace(convertedRect); //teraz vie o vsetkych miestach
 	}
-	fclose(f);
 }
 
 void TabPage::delAnnot(int i) //page to u seba upravi, aby ID zodpovedali
