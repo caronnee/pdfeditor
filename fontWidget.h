@@ -3,6 +3,7 @@
 
 #include "ui_properties.h"
 #include <QWidget>
+#include <QString>
 #include <vector>
 //PDF
 #include <kernel/pdfedit-core-dev.h>
@@ -53,9 +54,9 @@ class FontWidget : public QWidget
 	float _pdfPosX,_pdfPosY;
 	PdfOp createMatrix(std::string op);
 public:
-	std::string getText();
+	QString getText();
 	static PdfOp createTranslationTd(double x, double y);
-	void setText(std::string s);
+	void setText(QString s);
 	void reset();
 	FontWidget(QWidget * parent);
 	FontWidget(const FontWidget & font);

@@ -27,7 +27,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	GlobalParams::initGlobalParams(NULL)->setEnableFreeType("yes");
 	GlobalParams::initGlobalParams(NULL)->setErrQuiet(gFalse);
 	GlobalParams::initGlobalParams(NULL)->setAntialias("yes");
-	GlobalParams::initGlobalParams(NULL)->setupBaseFonts("D:\\Work\\winPdfEdit\\winPdfEdit\\pdfedit-0.4.5\\projects\\output"); //? Where are my fonts?
+	//GlobalParams::initGlobalParams(NULL)->setupBaseFonts("D:\\Work\\winPdfEdit\\winPdfEdit\\pdfedit-0.4.5\\projects\\output"); //? Where are my fonts?
 
 	ui.setupUi(this);
 	//pridame inicializocanie kniznice

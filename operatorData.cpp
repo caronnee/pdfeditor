@@ -8,8 +8,11 @@ using namespace pdfobjects;
 
 OperatorData::OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _op(op), _origX(0), _origX2(0), _text("")
 {
+	std::wstring test;
 	boost::shared_ptr<pdfobjects::TextSimpleOperator> txt = boost::dynamic_pointer_cast<TextSimpleOperator>(op);
-	txt->getFontText(_text);
+	txt->getFontText(test);
+	
+	_text.assign(test.begin(),test.end());
 	libs::Rectangle r = _op->getBBox();
 	_ymin = min<double>(r.yleft, r.yright);
 	_ymax = max<double>(r.yleft, r.yright);
@@ -116,22 +119,26 @@ bool OperatorData::forward(double x, double y)const
 	return maxy < x;
 }
 //split odla toho, ako sme to vysvietili
-void OperatorData::split(std::string & split1, std::string& split2, std::string& split3)
+void OperatorData::split(QString & split1, QString& split2, QString& split3)
 {
+	std::wstring w;
+	boost::shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(_op);
+	txt->getFontText(w);
+	QString s  = QString::fromStdWString(w);
 	BBox a = _op->getBBox();
 	int part1 = letters(_begin);
 	int part2 = letters(_end);
-	split1=_text.substr(0,part1);
-	split2=_text.substr(part1, part2-part1);
-	split3=_text.substr(part2);
+	split1= s.mid(0,part1);
+	split2= s.mid(part1, part2-part1);
+	split3= s.mid(part2);
 }
-void OperatorData::replaceAllText(std::string s)
+void OperatorData::replaceAllText(QString s)
 {
 	PdfOperator::Operands ops;
-	ops.push_back(boost::shared_ptr<IProperty>(new CString(s.c_str())));
+	ops.push_back(boost::shared_ptr<IProperty>(new CString(s.toStdString())));
 	PdfOp p = createOperator("Tj",ops);
 	_op->getContentStream()->replaceOperator(_op,p);
 	_op = p;
-	_text = s;
+	_text = s.toStdString();
 	clear();
 }

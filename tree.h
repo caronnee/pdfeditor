@@ -1,6 +1,9 @@
 #ifndef __TREE__
 #define __TREE__
 
+#include <QString>
+#include <QChar>
+
 //class pre strom rozhodujuci o tom, ci je dane slovo v PDF
 //toto by mohlo byt virtual
 ////TODO nejaka globalna funkcia typu preprocessing, ci to ma byt velke, male alebo jake, aby to vyhovovalo
@@ -8,14 +11,14 @@
 class Accept
 {
 protected:
-	char _ch;
+	QChar _ch;
 	Accept * _next;
 	Accept * _prev;
 public:
-	char getChar()const { return _ch; }
-	Accept(char ch, Accept * prev) : _ch(ch), _next(NULL), _prev(prev) { }
+	QChar getChar()const { return _ch; }
+	Accept(QChar ch, Accept * prev) : _ch(ch), _next(NULL), _prev(prev) { }
 
-	virtual Accept* accept(char ch)
+	virtual Accept* accept(QChar ch)
 	{
 		if (ch == _ch)
 			return _next;
@@ -40,7 +43,7 @@ public:
 			acc.push_back(new Accept(s[i], this));
 		_prev = p;
 	}
-	virtual Accept* accept(char ch)
+	virtual Accept* accept(QChar ch)
 	{
 		for(size_t i =0; i < acc.size(); i++)
 		{
@@ -55,8 +58,8 @@ class AcceptSpace : public Accept
 {
 	bool _accepted;
 public:
-	AcceptSpace(char ot, Accept * prev) : Accept(ot, prev), _accepted(false)	{	}
-	virtual Accept * accept(char c) 
+	AcceptSpace(QChar ot, Accept * prev) : Accept(ot, prev), _accepted(false)	{	}
+	virtual Accept * accept(QChar c) 
 	{
 		if ( c == ' ') //ak je to whitespace, TODO
 		{
@@ -77,11 +80,11 @@ class AcceptRange : public Accept
 {
 	int _beg, _end, _iter;
 public:
-	AcceptRange(char ot, int beg, int end, Accept * prev) : Accept(ot, prev)
+	AcceptRange(QChar ot, int beg, int end, Accept * prev) : Accept(ot, prev)
 	{
 		_beg = beg; _end = end; _iter = 0;
 	}
-	virtual Accept * accept(char c) 
+	virtual Accept * accept(QChar c) 
 	{
 		if (c != _ch)
 		{
@@ -103,7 +106,7 @@ class Tree
 {
 	Accept * _actual;
 	Accept * _root;
-	std::string _search;
+	QString _search;
 	size_t _position;
 public:
 	int _begin;
@@ -135,10 +138,10 @@ public:
 		_tokens = -1;
 	}
 	~Tree() { Clear(); }
-	void setPattern(std::string pattern)
+	void setPattern(QString pattern)
 	{
 		Clear(); //TODO checkovat, ci tam ten pattern uz nahodou nie je, takze netreba clear
-		if (pattern.empty()||(pattern[0] == '\\' && pattern.length() ==1))
+		if (pattern.isEmpty()||(pattern[0] == '\\' && pattern.length() ==1))
 			throw "Wrong pattern input";
 		Accept * prev = NULL;
 		size_t i = 0;
@@ -158,46 +161,39 @@ public:
 	bool checkPattern() { return true; } //TODO dorobit na checkovanie, ci je to v spravnom tvare, tabulka pre preddefinovanie, kam sa ma skocit
 
 private:
-	void setAccept(std::string pattern, size_t & i)
+	void setAccept(QString pattern, size_t & i)
 	{
-		switch (pattern[i])
+		if (pattern[i] == QChar('*'))
 		{
-			case '*':
-				{
-					_actual = new AcceptRange(pattern[0],0,~0,_root);
-					i+=2; //zobrali sme aj dalsie
-					break;
-				}
-			case '\\':
-				{
-					_actual = new Accept(pattern[1],_root);
-					i +=2;
-					break;
-				}
-			case '?':
-				{
-					_actual = new AcceptRange(pattern[i+1],0,1,_root);
-					i += 2;
-					break;
-				}
-			case ' ':
-				{
-					if (_actual && _actual->getChar()!= ' ')
-					{
-						_actual = new AcceptSpace(pattern[i],_root);
-					}
-					i++; //spracovane
-				}
-			default:
-				{ 
-					_actual = new Accept(pattern[i],_root);
-					i++;
-				}
-
+			_actual = new AcceptRange(pattern[0],0,~0,_root);
+			i+=2; //zobrali sme aj dalsie				
+		}
+		else if (pattern[i] == QChar('\\'))
+		{
+			_actual = new Accept(pattern[1],_root);
+			i +=2;
+		}
+		else if (pattern[i] == QChar('?'))
+		{
+			_actual = new AcceptRange(pattern[i+1],0,1,_root);
+			i += 2;
+		}
+		else if (pattern[i] == QChar(' '))
+		{
+			if (_actual && _actual->getChar()!= ' ')
+			{
+				_actual = new AcceptSpace(pattern[i],_root);
+			}
+			i++; //spracovane
+		}
+		else
+		{ 
+			_actual = new Accept(pattern[i],_root);
+			i++;
 		}
 	}
 public:
-	void setText(std::string text)
+	void setText(QString text)
 	{
 		_tokens++;
 		_search = text;

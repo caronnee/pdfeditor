@@ -160,8 +160,8 @@ private:
 	void SetNextPageRotate();
 	/* vytvorit textovy list */
 	void createList();
-	void searchPrev(std::string srch);
-	void searchForw(std::string srch);
+	void searchPrev(QString srch);
+	void searchForw(QString srch);
 	void getSelected(int x , int y, Ops ops);
 	void toPdfPos(int x, int y, double & x1, double &y1);
 	void toPixmapPos(double x1, double y1, int & x, int & y);
@@ -172,7 +172,7 @@ public:
 	void delAnnot(int i); //page to u seba upravi, aby ID zodpovedali
 	void SetTextSelect();
 	
-	void replaceText( std::string what, std::string by);
+	void replaceText( QString what, QString by);
 	void UnSetTextSelect();
 	TabPage(QString name);
 	~TabPage(void);
@@ -184,14 +184,14 @@ public:
 
 	void moveText(int difX, int difY);
 	void insertBefore(PdfOp op, PdfOp before);
-	void createAddMoveString(PdfOp bef, double x, double y, std::string name);
-	void insertTextAfter(PdfOp opBehind, double td, double ymax, std::string s);
+	void createAddMoveString(PdfOp bef, double x, double y, QString name);
+	void insertTextAfter(PdfOp opBehind, double td, double ymax, QString s);
 
 private:
 	void loadFonts(FontWidget * font);
 	void getAtPosition(Ops& ops, int x, int y );
 	void setTextData(TextData::iterator &begin, TextData::iterator end, shared_ptr<PdfOperator> op);
-	void deleteText( std::string text);
+	void deleteText( QString text);
 
 	//TODO zIstit rotaciu boxu. to je but tm alebo Qstate
 	QRect getRectangle( PdfOp ops );
@@ -226,14 +226,14 @@ public slots:
 	void changeSelectedText();
 	void deleteSelectedText();
 	void eraseSelectedText();
-	void replaceSelectedText(std::string by);
+	void replaceSelectedText(QString by);
 	void insertImage(PdfOp op);
 	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
 	void insertTextMarkup(Annot annot);
 	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
 	void insertAnnotation(Annot a);
 	void deleteAnnotation(QPoint);
-	void search(std::string text,bool forw);
+	void search(QString text,bool forw);
 
 	void highlight(); //nesprav nic, pretoze to bude robit mouseMove
 	void handleBookMark(QTreeWidget * item);

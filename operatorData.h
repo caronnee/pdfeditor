@@ -1,5 +1,6 @@
 #include <kernel/pdfoperators.h>
 #include "typedefs.h"
+#include <QString>
 
 //TODO pozor na rotaciu stranky, bude to fachat?
 //budeme predpokladat, ze vsetko toto je platne, ze sme to uz nastavili
@@ -28,6 +29,6 @@ public:
 	bool operator<(const OperatorData & oper); //zoradime podla y-osi
 	bool forward (double x, double y)const;
 	//split odla toho, ako sme to vysvietili
-	void split(std::string & split1, std::string& split2, std::string& split3);
-	void replaceAllText(std::string s);
+	void split(QString& split1, QString& split2, QString& split3);
+	void replaceAllText(QString s);
 };

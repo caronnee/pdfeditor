@@ -13,10 +13,9 @@ void FontWidget::setChange()
 	_change = true;
 	show();
 }
-std::string FontWidget::getText()
+QString FontWidget::getText()
 {
-	QString s = this->ui.text->toPlainText();
-	return s.toAscii().data(); //to sa uz samo konvertne
+	return this->ui.text->toPlainText();
 }
 void FontWidget::setInsert()
 {
@@ -106,10 +105,9 @@ PdfOp FontWidget::createMatrix(std::string op)
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(f)));
 	return createOperator(op, posOperands);
 }
-void FontWidget::setText(std::string s)
+void FontWidget::setText(QString s)
 {
-	QString str(s.c_str());
-	ui.text->setText(str);
+	ui.text->setText(s);
 }
 void FontWidget::addParameters() //TODO nie s jedine parametre
 {

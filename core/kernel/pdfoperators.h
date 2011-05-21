@@ -165,7 +165,7 @@ public:
 	 * according the font encoding.
 	 * @param str String to be set.
 	 */
-	virtual void getFontText(std::string& str)const;
+	virtual void getFontText(std::wstring& str)const;
 
 	/** Sets font specific stuff.
 	 * This method should be called from StateUpdater when we do know the 

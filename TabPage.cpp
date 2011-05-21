@@ -365,7 +365,7 @@ void TabPage::deleteAnnotation(QPoint point)
 }
 void TabPage::raiseChangeSelectedText()
 {
-	std::string s,s1,s2,s3;
+	QString s,s1,s2,s3;
 	TextData::iterator it = sTextIt;
 	while (it!=sTextItEnd)
 	{
@@ -672,7 +672,7 @@ void TabPage::moveText(int difX, int difY) //on mouse event, called on mouse rea
 		first = sTextItEnd;
 		last = sTextIt;
 	}
-	std::string s1,s2,s3,s4;
+	QString s1,s2,s3,s4;
 	//problem je, e to moze by tiez cast - jedna sa len o prve a posledne. To zmazeme, ponechame cast a insterime znova
 	_selected = false;
 	if (first==last)
@@ -709,10 +709,10 @@ void TabPage::insertBefore(PdfOp op, PdfOp before)
 	before->getContentStream()->replaceOperator(before,op);	
 	op->getContentStream()->insertOperator(op,clone);	
 }
-void TabPage::createAddMoveString(PdfOp bef, double x, double y, std::string name)
+void TabPage::createAddMoveString(PdfOp bef, double x, double y, QString name)
 {
 	PdfOperator::Operands ops;
-	ops.push_back(boost::shared_ptr<IProperty> (new CName(name)));
+	ops.push_back(boost::shared_ptr<IProperty> (new CString(name.toStdString())));
 	PdfOp p = createOperator("tj",ops);
 	bef->getContentStream()->insertOperator(bef,p);
 	OperatorData d(p);
@@ -1295,7 +1295,7 @@ void TabPage::changeSelectedText() //vsetko zosane na svojom mieste, akurat sa p
 	//proste sme to zarotovali:)
 	if ( sTextIt==sTextItEnd ) //TODO co ak je s3 prazdne? -> Compact?:)
 	{
-		std::string s[3];
+		QString s[3];
 		sTextIt->split(s[0],s[1],s[2]);
 		float pos = sTextIt->_origX;
 		int i =0;
@@ -1309,12 +1309,12 @@ void TabPage::changeSelectedText() //vsetko zosane na svojom mieste, akurat sa p
 		float y = displayparams.DEFAULT_PAGE_RY - (sTextIt->_ymin+txt->getFontHeight())*72/displayparams.vDpi-1;
 		_font->setPosition(pos*72/displayparams.hDpi,y); //pretoe toto je v default user space
 		//splitni opratory na dvaa pre jeden dat TD
-		if (s[2]!="")
+		if (!s[2].isEmpty())
 		{
 			PdfOperator::Operands operands;
-			operands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(s[2])));
+			operands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(s[2].toStdString())));
 			PdfOp op = createOperator("Tj",operands); //stejny operator, stejny fot
-			float dist = findDistance(_font->getText(),sTextIt);
+			float dist = findDistance(_font->getText().toStdString(),sTextIt);
 			PdfOp optd = FontWidget::createTranslationTd(dist,0);
 			sTextIt->_op->getContentStream()->insertOperator(PdfOperator::getIterator(sTextIt->_op),op);
 			sTextIt->_op->getContentStream()->insertOperator(PdfOperator::getIterator(sTextIt->_op),optd);
@@ -1325,17 +1325,17 @@ void TabPage::changeSelectedText() //vsetko zosane na svojom mieste, akurat sa p
 		_font->close(); //TODO zmazat
 		return;
 	}
-	std::string s2,s3;
+	QString s2,s3;
 	{
-		std::string s1;
+		QString s1;
 		sTextIt->split(s1,s2,s3); //splitneme
 		assert(s3=="");
-		sTextIt->replaceAllText(s1+_font->getText()); // povodny operator bude nezmeneny az na to , ze mu zmenime text
+		sTextIt->replaceAllText(s1 + _font->getText()); // povodny operator bude nezmeneny az na to , ze mu zmenime text
 	}
 	double beg = sTextIt->_begin;
 	double end = sTextIt->_end;
 	{
-		std::string a,b,c;
+		QString a,b,c;
 		sTextItEnd->split(a,b,c);
 		end= sTextItEnd->_end;
 		sTextItEnd->replaceAllText(c);
@@ -1345,7 +1345,10 @@ void TabPage::changeSelectedText() //vsetko zosane na svojom mieste, akurat sa p
 	TextData::iterator i = sTextIt;
 	while (sTextIt!=sTextItEnd)//iba pre TJ pridame operatory, vsetky, co boli zadane
 	{
-		insertTextAfter(sTextIt->_op,sTextIt->_begin, sTextIt->_ymax, sTextIt->_text);
+		std::wstring w;
+		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(sTextIt->_op);
+		txt->getFontText(w);
+		insertTextAfter(sTextIt->_op,sTextIt->_begin, sTextIt->_ymax, QString::fromStdWString(w));
 		sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op,true);
 		sTextIt++;
 	}
@@ -1362,7 +1365,7 @@ float TabPage::findDistance(std::string s,TextData::iterator textIter)
 	}
 	return res;
 }
-void TabPage::insertTextAfter(PdfOp opBehind, double td, double ymax, std::string s)
+void TabPage::insertTextAfter(PdfOp opBehind, double td, double ymax, QString s)
 {
 	std::list<PdfOp> ops;
 	opBehind->getContentStream()->getPdfOperators(ops);
@@ -1390,7 +1393,7 @@ void TabPage::insertTextAfter(PdfOp opBehind, double td, double ymax, std::strin
 	//daj tam text
 	{
 		PdfOperator::Operands ops;
-		ops.push_back(shared_ptr<IProperty>(new CName(s)));
+		ops.push_back(shared_ptr<IProperty>(new CString(s.toStdString())));
 		PdfOp tj = createOperator("Tj", ops);
 		_font->addToBT(tj);
 	}
@@ -1404,7 +1407,7 @@ void TabPage::showTextAnnot(std::string name)
 }
 */
 //TODO ask if there should be deletion after what it found
-void TabPage::replaceText( std::string what, std::string by)
+void TabPage::replaceText( QString what, QString by)
 {
 	while ( true )
 	{
@@ -1435,26 +1438,25 @@ void TabPage::setSelected(TextData::iterator& first, TextData::iterator& last)
 	}
 }
 //slot
-void TabPage::search(std::string srch, bool forw)
+void TabPage::search(QString srch, bool forw)
 {
 	if (forw)
 		searchForw(srch);
 	else
 		searchPrev(srch);
 }
-std::string revert(std::string s)
+QString revert(QString s)
 {
-	std::string rev;
+	QString rev;
 	for ( int i = s.size()-1; i>=0; i--)
 		rev += s[i];
 	return rev;
 }
-void TabPage::searchPrev(std::string srch)
+void TabPage::searchPrev(QString srch)
 {
 	_searchEngine.setPattern(revert(srch)); //vytvor strom, ktory bude hladat to slovo
 	for(int i = 0; i< pdf->getPageCount(); i++)
 	{
-		//TODO vlearn searchin machine (tokens )
 		//vysviet prve, ktore najdes
 		TextData::iterator iter = _textList.end();
 		iter--;
@@ -1464,7 +1466,10 @@ void TabPage::searchPrev(std::string srch)
 		}
 		else
 		{
-			_searchEngine.setText(iter->_text);
+			std::wstring w;
+			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
+			txt->getFontText(w);
+			_searchEngine.setText(QString::fromStdWString(w));
 		}
 		iter->clear();
 		float prev = iter->_begin;
@@ -1510,7 +1515,10 @@ void TabPage::searchPrev(std::string srch)
 					throw "Unexpected t->search() token";
 				}
 			}
-			_searchEngine.setText(revert(iter->_text));
+			std::wstring w;
+			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
+			txt->getFontText(w);
+			_searchEngine.setText(QString::fromStdWString(w));
 		}
 		//next page, etreba davat do splashu
 NextPage:
@@ -1526,7 +1534,7 @@ NextPage:
                                 QMessageBox::Ok);
 	//set from th beginning
 }
-void TabPage::searchForw(std::string srch)
+void TabPage::searchForw(QString srch)
 {
 	for(int i = 0; i< pdf->getPageCount(); i++)
 	{
@@ -1540,7 +1548,10 @@ void TabPage::searchForw(std::string srch)
 		}
 		else
 		{
-			_searchEngine.setText(iter->_text);
+			std::wstring w;
+			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
+			txt->getFontText(w);
+			_searchEngine.setText(QString::fromStdWString(w));
 		}
 		float prev = iter->_end;
 		while (iter != _textList.end())
@@ -1591,7 +1602,10 @@ void TabPage::searchForw(std::string srch)
 					throw "Unexpected t->search() token";
 				}
 			}
-			_searchEngine.setText(iter->_text);
+			std::wstring w;
+			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
+			txt->getFontText(w);
+			_searchEngine.setText(QString::fromStdWString(w));
 		}
 		//next page, etreba davat do splashu
 NextPage:
@@ -1612,16 +1626,16 @@ void TabPage::deleteSelectedText()
 	if (!_selected)
 		return;
 	//prvy  replasni, ostatne vymaz
-	std::string s[3];
+	QString s[3];
 	sTextIt->split(s[0],s[1],s[2]);
 	PdfOperator::Operands operand;
-	operand.push_back(shared_ptr<IProperty>(new CString(s[0].c_str())));;
+	operand.push_back(shared_ptr<IProperty>(new CString(s[0].toStdString())));;
 	PdfOp op = createOperator("Tj",operand);
 	_selected = false;
 	if (s[2]!="")
 	{
 		PdfOperator::Operands operand2;
-		operand2.push_back(shared_ptr<IProperty>(shared_ptr<IProperty>(new CString(s[2].c_str()))));
+		operand2.push_back(shared_ptr<IProperty>(shared_ptr<IProperty>(new CString(s[2].toStdString()))));
 		PdfOp op2 = createOperator("Tj",operand2);
 		sTextIt->_op->getContentStream()->insertOperator(sTextIt->_op,op2);
 	}
@@ -1646,7 +1660,7 @@ End:
 	createList();
 	setFromSplash();
 }
-void TabPage::replaceSelectedText(std::string by)
+void TabPage::replaceSelectedText(QString by)
 {
 	TextData::iterator first, last;
 	setSelected(first, last);
@@ -1654,7 +1668,7 @@ void TabPage::replaceSelectedText(std::string by)
 	if (first != last)
 	{
 		//ak nie su stejne, stejne to zopakuj len pre prve a zvysok zmaz
-		std::string s[3];
+		QString s[3];
 		TextData::iterator i1,i2;
 		setSelected(i1,i2);
 		i1->split(s[0],s[1],s[2]);
@@ -1669,7 +1683,7 @@ void TabPage::replaceSelectedText(std::string by)
 		return;
 	}
 	//zaciatok aj koniec je stejny
-	std::string s[3];//iba s1 mame vymazat
+	QString s[3];//iba s1 mame vymazat
 	first->split(s[0],s[1],s[2]);
 	first->replaceAllText(s[0]+by+s[2]);
 	//ostatne sa posunu, ak si v stejnom tj-> posunu sa s vlozenim. Ok nie su, maju maticu
@@ -1680,10 +1694,11 @@ void TabPage::eraseSelectedText()
 	if (!_selected)
 		return;
 	//prvy  replasni, ostatne vymaz
-	std::string s[3];
-	sTextIt->split(s[0],s[1],s[2]);
+	QString q[3];
+	sTextIt->split(q[0],q[1],q[2]);
+	std::string s[] = {q[0].toStdString(),q[1].toStdString(),q[2].toStdString()};
 	PdfOperator::Operands operand;
-	operand.push_back(shared_ptr<IProperty>(new CString(s[0].c_str())));;
+	operand.push_back(shared_ptr<IProperty>(new CString(q[0].toStdString())));
 	PdfOp op = createOperator("Tj",operand);
 	_selected = false;
 	float x = sTextIt->_charSpace;
@@ -1696,7 +1711,7 @@ void TabPage::eraseSelectedText()
 	if (s[2]!="")
 	{
 		PdfOperator::Operands operand2;
-		operand2.push_back(shared_ptr<IProperty>(shared_ptr<IProperty>(new CString(s[2].c_str()))));
+		operand2.push_back(shared_ptr<IProperty>(shared_ptr<IProperty>(new CString(q[2].toStdString()))));
 		PdfOp op2 = createOperator("Tj",operand2);
 		sTextIt->_op->getContentStream()->insertOperator(sTextIt->_op,op2);
 	}
@@ -1721,11 +1736,11 @@ void TabPage::eraseSelectedText()
 		sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op);
 		sTextIt++;
 	}
-	sTextIt->split(s[0],s[1],s[2]);
+	sTextIt->split(q[0],q[1],q[2]);
 	//td
-	if (s[1]!="")
+	if (!q[1].isEmpty())
 	{
-		sTextIt->replaceAllText(s[1]);
+		sTextIt->replaceAllText(q[1]);
 		//TODO nasadit spravny maticu - mozo cez _font? Neviem vsetky parametre
 		//insertBefore(
 	}
@@ -1736,7 +1751,7 @@ void TabPage::eraseSelectedText()
 	createList();
 	setFromSplash();
 }
-void TabPage::deleteText( std::string text)
+void TabPage::deleteText( QString text)
 {
 	replaceText(text,"");
 }
@@ -1752,13 +1767,18 @@ void TabPage::exportText(QTextEdit * edit)
 			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
 			if ( fabs(iter->_origX - prev) > iter->_charSpace )
 				text.append(" ");
-			text.append(QString::fromLocal8Bit(iter->_text.c_str()));
+			std::wstring test;
+			txt->getFontText(test);
+			text.append(QString::fromStdWString(test));
 			prev = iter->_origX2;
 		}
 		SetNextPageRotate();
 		createList();
 	}
+
 	edit->setText(text);
+	//text += QString::from
+	//edit->setText(text.latin());
 	edit->show();
 	//cakaj na e
 }

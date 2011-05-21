@@ -205,6 +205,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\operatorData.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\page.cpp"
 				>
 			</File>
@@ -423,6 +427,10 @@
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\operatorData.h"
+				>
 			</File>
 			<File
 				RelativePath="..\page.h"

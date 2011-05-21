@@ -374,7 +374,7 @@ float TextSimpleOperator::getWidth(char chr)
 	return dx*fs;
 }
 
-void TextSimpleOperator::getFontText(std::string& str)const
+void TextSimpleOperator::getFontText(std::wstring& str)const
 {
  	std::string rawStr;
 	getRawText(rawStr);

@@ -658,34 +658,34 @@ CContentStream::reparse (bool bboxOnly, boost::shared_ptr<GfxState> state, boost
 void 
 CContentStream::replaceText (const std::string& what, const std::string& with)
 {
-	bool dirty = false;
-		if (operators.empty())
-			return;
+	//bool dirty = false;
+	//	if (operators.empty())
+	//		return;
 
-	operandobserver->lock();
+	//operandobserver->lock();
 
-	TextOperatorIterator tit = PdfOperator::getIterator<TextOperatorIterator> (operators.front());
-	while (!tit.isEnd())
-	{
-		// uff
-		boost::shared_ptr<TextSimpleOperator> _cur 
-				= boost::dynamic_pointer_cast<TextSimpleOperator, PdfOperator> (tit.getCurrent());
-		std::string tmp;
-		_cur->getFontText (tmp);
-		string replaced = boost::replace_all_copy (tmp, what, with);
-		if (tmp != replaced)
-		{
-			dirty = true;
-			boost::shared_ptr<TextSimpleOperator> _cur 
-					= boost::dynamic_pointer_cast<TextSimpleOperator, PdfOperator> (tit.getCurrent());
-			_cur->setFontText (replaced);
-		}
-		tit.next();
-	}
+	//TextOperatorIterator tit = PdfOperator::getIterator<TextOperatorIterator> (operators.front());
+	//while (!tit.isEnd())
+	//{
+	//	// uff
+	//	boost::shared_ptr<TextSimpleOperator> _cur 
+	//			= boost::dynamic_pointer_cast<TextSimpleOperator, PdfOperator> (tit.getCurrent());
+	//	std::string tmp;
+	//	_cur->getFontText (tmp);
+	//	string replaced = boost::replace_all_copy (tmp, what, with);
+	//	if (tmp != replaced)
+	//	{
+	//		dirty = true;
+	//		boost::shared_ptr<TextSimpleOperator> _cur 
+	//				= boost::dynamic_pointer_cast<TextSimpleOperator, PdfOperator> (tit.getCurrent());
+	//		_cur->setFontText (replaced);
+	//	}
+	//	tit.next();
+	//}
 
-	operandobserver->unlock();
-	if (dirty)
-		_objectChanged();
+	//operandobserver->unlock();
+	//if (dirty)
+	//	_objectChanged();
 }
 
 
