@@ -3105,7 +3105,18 @@ using namespace utils;
 	// page dictionary is removed from the tree, consolidation is done also for
 	// pageList at this moment
 }
-
+void CPdf::saveDecoded(char * name)
+{
+	FILE * file = fopen(name,"wb"); //TODO remove from headet
+	if (!file)
+		return;
+	xref->saveDecoded(file);
+	fclose(file);
+}
+void CPdf::saveChangesToNew(char * name)
+{
+	xref->saveToNew(name);
+}
 void CPdf::save(bool newRevision)const
 {
 	kernelPrintDbg(DBG_DBG, "");

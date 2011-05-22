@@ -173,7 +173,7 @@ unsigned char * NullFilterStreamWriter::null_extractor(const Object&obj, size_t&
 	return buffer;
 }
 
-void NullFilterStreamWriter::compress(const Object& obj, Ref* ref, StreamWriter& outStream)const
+void NullFilterStreamWriter::compress(const Object& obj, Ref* ref, StreamWriter& outStream,bool use)const
 {
 	assert(obj.isStream());
 	CharBuffer charBuffer;
@@ -324,11 +324,15 @@ out:
 	return deflateBuff;
 }
 
-void ZlibFilterStreamWriter::compress(const Object& obj, Ref* ref, StreamWriter& outStream)const
-{
-	CharBuffer charBuffer;
+void ZlibFilterStreamWriter::compress(const Object& obj, Ref* ref, StreamWriter& outStream,bool decompress)const
+{	
 	assert(obj.isStream());
-	size_t size=streamToCharBuffer(obj, ref, charBuffer, deflate);
+	CharBuffer charBuffer;
+	size_t size;
+	if (decompress)
+		charBuffer = CharBuffer((char*)convertStreamToDecodedData(obj, size));
+	else
+		size = streamToCharBuffer(obj, ref, charBuffer, deflate);
 	if(!size)
 	{
 		utilsPrintDbg(debug::DBG_WARN, "zero size stream returned. Probably error in the the object");
@@ -418,18 +422,20 @@ boost::shared_ptr<FilterStreamWriter> FilterStreamWriter::getInstance(const Obje
  * Given xpdf object data (like stream or string) can contain unprintable or 
  * 0 bytes.
  */
-void writeObject(const ::Object & obj, StreamWriter & stream, ::Ref* ref, bool indirect)
+void writeObject(const ::Object & obj, StreamWriter & stream, ::Ref* ref, bool indirect,bool ignoreFilter)
 {
 using namespace boost;
 using namespace std;
 
 	// stream requires special handling, because it may
 	// contain binary data
-	if(obj.isStream())
+	if( obj.isStream())
 	{
-		shared_ptr<FilterStreamWriter> filter = FilterStreamWriter::getInstance(obj);
+		shared_ptr<FilterStreamWriter> filter; 
+	
+		filter = FilterStreamWriter::getInstance(obj);
 		assert(filter->supportObject(obj));
-		filter->compress(obj, ref, stream);
+		filter->compress(obj, ref, stream, ignoreFilter);
 	}else
 	{
 		// converts xpdf object to cobject and gets correct string
@@ -537,7 +543,7 @@ using namespace boost;
 		size_t objPos=stream.getPos();
 		offTable.insert(OffsetTab::value_type(ref, objPos));		
 		
-		writeObject(*obj, stream, &ref, true);	
+		writeObject(*obj, stream, &ref, true,ignoreStream);	
 		utilsPrintDbg(DBG_DBG, "Object with "<<ref<<" stored at offset="<<objPos);
 		
 		// calls observers
@@ -776,7 +782,7 @@ size_t OldStylePdfWriter::writeTrailer(const Object & trailer,const PrevSecInfo 
 
 	// stores changed trailer to the file
 	stream.putLine(TRAILER_KEYWORD, strlen(TRAILER_KEYWORD));
-	writeObject(trailer, stream, NULL, false);
+	writeObject(trailer, stream, NULL, false,ignoreStream);
 	kernelPrintDbg(DBG_DBG, "Trailer saved");
 
 	// stores offset of last (created one) xref table

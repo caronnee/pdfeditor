@@ -1203,6 +1203,8 @@ public:
 	 */
 	void changeIndirectProperty(const boost::shared_ptr<IProperty> &prop);
 	
+	void saveDecoded(char * name);
+	void saveChangesToNew(char * name);
 	/** Saves changes to pdf file.
 	 * @param newRevision Flag for new revision creation.
 	 *

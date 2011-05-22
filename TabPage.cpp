@@ -988,6 +988,7 @@ void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
 }
 void TabPage::savePdf(char * name)
 {
+	name = "copyPdf.pdf";
 	if (name == NULL)
 	{
 		pdf->save();
@@ -1003,9 +1004,10 @@ void TabPage::savePdf(char * name)
 	}
 	int i = pdf->getRevisionsCount();
 //	commitRevision(); //TODO plikovat na kopiu!
-//	pdf->SaveChangesToNew(name);
+	pdf->saveChangesToNew(name);
+	pdf->saveDecoded("decoded.pdf");
 //	revertRevision();
-	throw "Not implemented so far";
+//	throw "Not implemented so far";
 	fclose(f);
 }
 TabPage::~TabPage(void)	{}
