@@ -60,7 +60,7 @@ public:
   GBool isFixedWidth()const { return flags & fontFixedWidth; }
   GBool isSerif()const { return flags & fontSerif; }
   GBool isSymbolic()const { return flags & fontSymbolic; }
-  GBool isItalic()const { return flags & fontItalic; }
+  GBool isItalic()const { return flags & PDF_fontItalic; }
   GBool isBold()const { return flags & fontBold; }
 #endif
 

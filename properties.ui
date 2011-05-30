@@ -101,7 +101,7 @@
   <customwidget>
    <class>ColorPicker</class>
    <extends>QWidget</extends>
-   <header>colorpicker.h</header>
+   <header>colorPicker.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

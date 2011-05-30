@@ -144,7 +144,7 @@ public:
 		if (pattern.isEmpty()||(pattern[0] == '\\' && pattern.length() ==1))
 			throw "Wrong pattern input";
 		Accept * prev = NULL;
-		size_t i = 0;
+		int i = 0;
 		setAccept(pattern,i);
 		_actual->setPrev(_actual); //back to root
 		_root = _actual;
@@ -161,7 +161,7 @@ public:
 	bool checkPattern() { return true; } //TODO dorobit na checkovanie, ci je to v spravnom tvare, tabulka pre preddefinovanie, kam sa ma skocit
 
 private:
-	void setAccept(QString pattern, size_t & i)
+	void setAccept(QString pattern, int & i)
 	{
 		if (pattern[i] == QChar('*'))
 		{

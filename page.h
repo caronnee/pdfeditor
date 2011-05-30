@@ -36,6 +36,7 @@ public:
 		return _image;
 	}
 	void setImg();
+	QPoint convertCoord(QPoint point);
 private:
 	bool _mousePressed;
 	//annotations
@@ -49,6 +50,7 @@ private:
 	QSize _size;
 
 public slots:
+	void markPosition(QPoint point);
 	void changeImage();
 	void annotation();
 	void fillRect( QVector<QRect>& reg, const QColor color);
@@ -71,7 +73,7 @@ signals:
 	void EraseTextSignal();
 	void DeleteTextSignal();
 	void InsertTextSignal(QPoint point);
-	void MouseClicked(int, int); //bolo na mna kliknute, robte s tym nieco!
+	void MouseClicked(QPoint p); //bolo na mna kliknute, robte s tym nieco!
 	void highlightText(int, int);
 	void MouseReleased();
 public:

@@ -79,12 +79,11 @@ DONE BY DeFAULT -ignorovat ostatne
 ->prepinanie medzi moznostami( pracuj ako s textom, pracuj ako s obrazkom, ukaz mi operatory)
 
 ---------------TEXT-------
+- test so zoomom
 - spravot iba systemove fonty, aby sa zobrazilo spravne
 ----------------------SETTINGS--------------------------
 - defaultne, 1/2 stranok
 - farba vysvietenia, v zavisloti na tom, co vysviecuje
-- niektore pismea sa nevysvietia
-- undo & redo ( staci a jeden krat )
 - pri zatvarani okien zostovat, co sa vsetko ulozilo, poprpade sa spytat, ci to ulozit ( setting save on exit )
 - save -  savne sa posledna cast, aj ked nie je revizia->automaticky sa cmmitne revia, reverne sa spat
 - pri pridavani textu pridat len tie pramatre, ktore boli skutocne zadane
@@ -101,8 +100,9 @@ DONE BY DeFAULT -ignorovat ostatne
 - getfontwidth - pridava funkcia na sirku glyfu
 - mozne memor leak pri zistovani priameho textu (font text)
 - iterator debugging 
-- ulozit PDF v neecrptovanej podobe - 
+OK - ulozit PDF v neecrptovanej podobe - 
 ----------------------ADDITIONAL---------------------
+- undo & redo ( staci a jeden krat )
 - (vyhladavanie regexu)
 - (upravit text tak, aby bol zarovnany vzhladom na ine viditelne operatory)
 - attachments, zobrazit, stiahnut

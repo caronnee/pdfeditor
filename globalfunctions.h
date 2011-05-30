@@ -11,6 +11,8 @@
 float toRadians(int angle);
 int toDegree(float angle);
 
+void rotate(int angle, double& x, double& y);
+
 template<typename T>
 void rotatePosition( T xin, T yin, T& xout, T &yout, int angle )
 {

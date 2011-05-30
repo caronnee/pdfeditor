@@ -1,12 +1,12 @@
 #include "operatorData.h"
 #include "typedefs.h"
-#include "kernel\pdfoperators.h"
-#include "kernel\cobjectsimple.h"
-#include "kernel\ccontentstream.h"
+#include "kernel/pdfoperators.h"
+#include "kernel/cobjectsimple.h"
+#include "kernel/ccontentstream.h"
 
 using namespace pdfobjects;
 
-OperatorData::OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _op(op), _origX(0), _origX2(0), _text("")
+OperatorData::OperatorData(PdfOp op,int rot) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _op(op), _origX(0), _origX2(0), _text("")
 {
 	std::wstring test;
 	boost::shared_ptr<pdfobjects::TextSimpleOperator> txt = boost::dynamic_pointer_cast<TextSimpleOperator>(op);

@@ -18,8 +18,8 @@ public slots:
 	void prev();
 	void replace();
 signals:
-	void replaceTextSignal(std::string a1,std::string a2);
-	void search(std::string,bool);
+	void replaceTextSignal(QString a1,QString a2);
+	void search(QString,bool);
 };
 
 #endif

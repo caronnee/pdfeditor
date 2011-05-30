@@ -4,14 +4,7 @@
 #include <QKeyEvent>
 
 #include "pdfgui.h"
-
-void pdfGui::closeEvent(QCloseEvent *event)
-{
-//#ifdef _WIN32
-//	qApp->closeAllWindows();
-//#endif
-	event->accept();
-}
+#include "typedefs.h"
 
 pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags) 
 	: QMainWindow(parent, flags), init()
@@ -36,7 +29,6 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	//connections - no connections are made because i shoul connect and disconnect frequently to match actually choosed label
 	
 }
-
 pdfGui::~pdfGui()
 {
 	pdfedit_core_dev_destroy();

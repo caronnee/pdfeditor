@@ -48,7 +48,7 @@ Comments::Comments()
 }
 void Comments::setPoints(std::vector<float> flts)
 {
-	for ( int i = 0; i< flts.size(); i++)
+	for ( size_t i = 0; i< flts.size(); i++)
 		points->addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(flts[i])));
 }
 void Comments::onChange(int index)

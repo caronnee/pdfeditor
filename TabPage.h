@@ -38,18 +38,7 @@ using namespace boost;
 using namespace pdfobjects;
 
 //co spravit, ked prepnem na inu stranku
-enum Mode
-{
-	DefaultMode,
-	TextMode,
-	OperatorsMode, //moze byt uzitocne
-	ImageMode,
-	ImageModePart,
-	AnntotationMode,
-	DrawMode,
-	ModeEmitPosition,
-	NumberOfModes
-};
+
 
 #include "operatorData.h"
 
@@ -122,11 +111,15 @@ enum AnnotType
 	HighLighAnnot,
 	StrokeAnnot
 };
+class OpenPdf;
+
 class TabPage : public QWidget
 {
 	Q_OBJECT
 
 private: //variables
+	int _acceptedType;
+	OpenPdf * _parent;
 	Ui::TabUI ui; 
 	QWidget * widget;
 	Search * _search;
@@ -151,11 +144,10 @@ private: //variables
 	bool _dataReady; //pouzivane vseobecne, kedy sa to hodi
 	bool _selected;
 
-	//TODO mat este jeden iterator Actual, aby sa to stale neprekreslovalo cele
-	Ops workingOpSet;//zavisla na prave zobrazenej stranke
 	CPage::Annotations _annots;
-	DisplayPage * labelPage;
+	DisplayPage * _labelPage;
 private:
+	void rotatePdf(int angle, double& x,double& y,bool);
 	float findDistance(std::string s,TextData::iterator textIter);
 	void SetNextPageRotate();
 	/* vytvorit textovy list */
@@ -172,15 +164,13 @@ public:
 	void delAnnot(int i); //page to u seba upravi, aby ID zodpovedali
 	void SetTextSelect();
 	
-	void replaceText( QString what, QString by);
 	void UnSetTextSelect();
-	TabPage(QString name);
+	TabPage(OpenPdf *,QString name);
 	~TabPage(void);
 
 	void setTree(shared_ptr<CDict> d, QTreeWidgetItem * item);
-	void SetModeTextSelect();
 	void highLightBegin(int x, int y); //nesprav nic, pretoze to bude robit mouseMove
-	void highlightText(int x, int y); //tu mame convertle  x,y
+	void highlightText(QPoint point); //tu mame convertle  x,y
 
 	void moveText(int difX, int difY);
 	void insertBefore(PdfOp op, PdfOp before);
@@ -219,6 +209,14 @@ public:
 	//rotate page
 
 public slots:
+	void save();
+	void saveAs();
+	void saveEncoded();
+
+	void setTextOperator();
+	void setImageOperator();
+
+	void replaceText( QString what, QString by);
 	void changeImage(PdfOp op);
 	void raiseChangeImage(QPoint point);
 	void raiseSearch();
@@ -234,11 +232,10 @@ public slots:
 	void insertAnnotation(Annot a);
 	void deleteAnnotation(QPoint);
 	void search(QString text,bool forw);
-
+	void handleBookmark(QTreeWidget * item, int);
 	void highlight(); //nesprav nic, pretoze to bude robit mouseMove
-	void handleBookMark(QTreeWidget * item);
-	void removeObjects();
-	void clicked(int x, int y);
+//	void removeObjects();
+	void clicked(QPoint point);
 //	void updateSelectedRect( std::vector<shared_ptr<PdfOperator> > oops);
 //	void selectOperators(const QRect rect, std::vector<shared_ptr<PdfOperator> > & opers) ;
 	//void setSelectedOperators(QRect rect);
@@ -265,9 +262,9 @@ public slots:
 	void print();
 
 	/** exports text to the chosen file & opens that file ( txt ) in view */
-	void exportText(QTextEdit * e);
+	void exportText();
 
-	void rotate(int i, int begin, int end);
+	void rotate();
 
 private slots:
 
@@ -302,6 +299,7 @@ private slots:
 	void search(std::string text);
 	*/
 signals:
+	void markPosition(QPoint point); //reverted point
 	void parsed(std::vector<float>);
 	void pdfPosition(float a, float b, int w,int h);
 	void pdfText(std::string s);

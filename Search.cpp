@@ -7,18 +7,13 @@ Search::Search(QWidget * parent) : QWidget(parent)
 }
 void Search::next()
 {
-	std::string text(ui.text->toPlainText().toAscii().data());
-	emit search(text,true);
+	emit search(ui.text->toPlainText(),true);
 }
 void Search::prev()
 {
-	std::string text(ui.text->toPlainText().toAscii().data());
-	emit search(text,false);
+	emit search(ui.text->toPlainText(),false);
 }
 void Search::replace()
 {
-	std::string r,s;
-	r = this->ui.replacetext->toPlainText().toAscii().data();
-	s = this->ui.text->toPlainText().toAscii().data();
-	emit replaceTextSignal(s,r);
+	emit replaceTextSignal(this->ui.text->toPlainText(),this->ui.replacetext->toPlainText());
 }

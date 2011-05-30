@@ -5,7 +5,6 @@
 #include <kernel/pdfedit-core-dev.h>
 #include <kernel/cinlineimage.h>
 #include "typedefs.h"
-#include <png.h>
 
 class InsertImage : public QWidget
 {

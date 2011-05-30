@@ -21,6 +21,11 @@ DisplayPage::DisplayPage(QWidget *parent)
 	 menu->addAction("Delete Annotation",this,SLOT(deleteAnnotation()));
 	 menu->addAction("Change image",this,SLOT(changeImage()));
 }
+
+QPoint DisplayPage::convertCoord(QPoint point)
+{
+	return (QPoint(point.x(),this->size().height() - _point.y()));
+}
 void DisplayPage::changeImage()
 {
 	QPoint p(_point.x(), this->size().height() - _point.y());
@@ -66,6 +71,21 @@ void DisplayPage::setImage( const QImage & image )
 	_image = image.copy();
 	unsetImg();
 }
+void DisplayPage::markPosition(QPoint point)
+{
+	QImage resultImage(_copyImg.size(),QImage::Format_ARGB32_Premultiplied);
+	QImage image("images/spot.gif");
+
+	QPainter painter(&resultImage);
+	painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
+	painter.fillRect(resultImage.rect(), Qt::transparent);
+	painter.drawImage(0, 0, _copyImg);
+	painter.translate(point);
+	painter.setCompositionMode(QPainter::CompositionMode_Source);
+	painter.drawImage(0,0,image);
+	painter.end();
+	this->setPixmap(QPixmap::fromImage(resultImage));
+}
 void DisplayPage::fillRect(QRect rect,QColor color)
 {
 	QImage resultImage(_copyImg.size(),QImage::Format_ARGB32_Premultiplied);
@@ -100,8 +120,6 @@ void DisplayPage::fillRect( QVector<QRect>& r, const QColor color)
 void DisplayPage::fillRect( int x1, int y1, int x2, int y2, const QColor color)
 {
 //	QPainter painter(&_copyImg); //mozno az na this?
-	y1 = size().height() - y1; //TODO pixmap size! for displaying
-	y2 = size().height() - y2;
 	int sx = (x1 > x2) ? x1 - x2:x2 - x1;
 	int sy = (y1 > y2) ? y1 - y2:y2 - y1;
 	QRect r(min(x1,x2),min(y1,y2),sx,sy);
@@ -152,7 +170,7 @@ void DisplayPage::mousePressEvent(QMouseEvent * event)
 void DisplayPage::mouseMoveEvent(QMouseEvent * event)
 {
 	if (_mousePressed)
-		emit MouseClicked(event->x(), this->size().height() - event->y());
+		emit MouseClicked(event->pos());
 		//emit highlightText(event->x(), this->size().height() - event->y());
 }
 

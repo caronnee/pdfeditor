@@ -29,12 +29,10 @@ public:
 	~pdfGui();
 
 protected:
-	void closeEvent(QCloseEvent *event);
 	//void keyPressEvent(QKeyEvent *event);
 
 private:
 	Ui::pdfGuiClass ui;
-
 };
 
 #endif // PDFGUI_H

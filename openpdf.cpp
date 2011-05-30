@@ -5,28 +5,29 @@
 
 OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget)
 {
-	TabPage * page = new TabPage("./zadani.pdf");
+	TabPage * page = new TabPage(this,"./zadani.pdf");
 	this->addTab(page,"test");
 }
 
-OpenPdf::~OpenPdf(void)
+void OpenPdf::setModeInsertText()
 {
-	for ( size_t i =0; i < _widgets.size(); i++)
-		delete _widgets[i];
-	_widgets.clear();
+	setMode(ModeInsertText);
 }
+void OpenPdf::setModeSelectText()
+{
+	setMode(ModeSelectText);
+}
+OpenPdf::~OpenPdf(void){}
 
 void OpenPdf::getText()
 {
-	QTextEdit * e = new QTextEdit();
-	_widgets.push_back(e);
 	TabPage * page = (TabPage *)this->widget(currentIndex());
-	page->exportText(e);
+	page->exportText();
 }
-void OpenPdf::rotate(int i)
+void OpenPdf::rotate()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
-	page->rotate(i, -1,-1);
+	page->rotate();
 }
 void OpenPdf::closeAndRemoveTab(int i)
 {
@@ -36,6 +37,11 @@ void OpenPdf::closeAndRemoveTab(int i)
 	delete page;
 	///But ist should! be deleted
 }
+void OpenPdf::saveEncoded()
+{
+	TabPage * page = (TabPage *)this->widget(this->currentIndex());
+	page->saveEncoded();
+}
 void OpenPdf::saveAs()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),".", tr("PDF files (*.pdf)"));
@@ -43,6 +49,12 @@ void OpenPdf::saveAs()
 		return;
 	TabPage * page = (TabPage *)this->widget(this->currentIndex());
 	page->savePdf(fileName.toAscii().data());
+}
+
+void OpenPdf::open(QString name)
+{
+	TabPage * page = new TabPage(this, name);
+	this->addTab(page,name);
 }
 void OpenPdf::openAnotherPdf()
 {
@@ -52,21 +64,8 @@ void OpenPdf::openAnotherPdf()
 		return;
 	QStringList fileNames = d.selectedFiles();
 	for ( int i =0; i < fileNames.size(); i++)
-	{
-		TabPage * page = new TabPage(fileNames[i]);
-		this->addTab(page,fileNames[i]);
-	}
+		open(fileNames[i]);
 	setCurrentIndex(count() -1);
-
-	/*pdf = boost::shared_ptr<pdfobjects::CPdf> ( 
-		pdfobjects::CPdf::getInstance ("D:\\Work\\winPdfEdit\\winPdfEdit\\pdfedit-0.4.5\\projects\\output\\test.pdf", pdfobjects::CPdf::ReadWrite));
-
-	page = boost::shared_ptr<pdfobjects::CPage> (pdf->getPage(1));
-
-	//page->addText("myText...XXXX",libs::Point(1,1),"Helvetica");
-	//pdf->save();
-	// init splash bitmap
-	setFromSplash();*/
 }
 void OpenPdf::save()
 {

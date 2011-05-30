@@ -1,23 +1,33 @@
 #pragma once
 #include <QTabWidget>
+#include <QString>
+#include "typedefs.h"
 
 class OpenPdf :
 	public QTabWidget
 {
 	Q_OBJECT
 private:
-	std::vector<QWidget *> _widgets;
+	void open(QString s);
 public:
 	OpenPdf(QWidget * widget);
 	~OpenPdf(void);
 
-public slots:
+	Mode _mode;
+public:
+	void setMode(Mode mode) { _mode =  mode; }
+	Mode getMode() const { return _mode; }
 
+public slots:
+	void setModeInsertText();
+	void setModeSelectText();
+
+	void saveEncoded();
 	// extracts text
 	void getText();
 
 	//rotates active page
-	void rotate(int angle);
+	void rotate();
 
 	///Opens another pdf
 	void openAnotherPdf();

@@ -657,6 +657,7 @@ using namespace utils;
 	pdfWriter->writeTrailer(*getTrailerDict(), prevInfo, *outputStream);
 	outputStream->flush();
 	pdfWriter->ignoreStream = false;
+	return 0;
 }
 int XRefWriter::saveToNew(char * name)
 {
@@ -694,8 +695,7 @@ FILE * file = fopen(name,"wb");
 	// creates outputStream writer from given file
 
 	StreamWriter * streamWriter=dynamic_cast<StreamWriter *>(XRef::str);
-	//streamWriter->addFilters(
-	//outputStream->addFilters(
+
 	size_t pos=0;
 	size_t written;
 	do
@@ -704,33 +704,41 @@ FILE * file = fopen(name,"wb");
 		pos += written;
 	}
 	while ( written !=0);
+
+	//uloz tiez vsetky zmeny
+	Object nl;
+	nl.initNull();
+	StreamWriter * nStream=new FileStreamWriter(file, 0, gFalse, 0, &nl); //TODO zapamataj odznova
+using namespace utils;
+	// gets vector of all changed objects
+	IPdfWriter::ObjectList changed;
+	ChangedStorage::Iterator i;
+	for(i=changedStorage.begin(); i!=changedStorage.end(); ++i)
+	{
+		::Ref ref=i->first;
+		Object * obj=i->second->object;
+		// for sake of paranoia we should send clones and not the
+		// object itself to writer which is allowed to alter object
+		changed.push_back(IPdfWriter::ObjectElement(ref, obj->clone()));
+	}
+
+	// delegates writing to pdfWriter using streamWriter stream from storePos
+	// position and frees all clones from changed storage.
+	pdfWriter->writeContent(changed, *nStream, storePos);
+	//write new trailer
+
+	// Stores position of the cross reference section to xrefPos
+	size_t xrefPos=streamWriter->getPos();
+	IPdfWriter::PrevSecInfo secInfo={lastXRefPos, XRef::maxObj+1};
+	size_t newEofPos=pdfWriter->writeTrailer(*getTrailerDict(), secInfo, *nStream);
+
 	fclose(file);
 //	pdfWriter->writeContent
 	//// Writes header with the same PDF version
 	//pdfWriter->writeHeader(getPDFVersion(), *outputStream);
 
-	//IPdfWriter::ObjectList objectList;
-	//while (fillObjectList(objectList, writeBatchCount)>0)
-	//{
-	//	// writes collected objects and xref & trailer section
-	//	utilsPrintDbg(DBG_INFO, "Writing "<<objectList.size()
-	//		<<" objects to the output outputStream.");
-	//	pdfWriter->writeContent(objectList, *outputStream);
-	//	// clean up
-	//	utilsPrintDbg(DBG_DBG, "Cleaning up all writen objects("
-	//		<<objectList.size()<<").");
-	//	IPdfWriter::ObjectList::iterator i;
-	//	for(i=objectList.begin(); i!=objectList.end(); ++i)
-	//	{
-	//		xpdf::freeXpdfObject(i->second);
-	//		i->second=NULL;
-	//	}
-	//}
-	//utilsPrintDbg(DBG_INFO, "Writing xref and trailer section");
-	//// no previous section information and all objects are going to be written
-	//IPdfWriter::PrevSecInfo prevInfo={0, 0};
-	//pdfWriter->writeTrailer(*getTrailerDict(), prevInfo, *outputStream);
-	//outputStream->flush();
+	
+	return 0;
 }
 void XRefWriter::saveChanges(bool newRevision)
 {

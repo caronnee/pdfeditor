@@ -14,7 +14,7 @@ struct OperatorData
 	std::string _text; //jak bol text v tom, pripadne uprava o medzeru, prepisanie ma medzeru, ako konci -, odstranit
 
 public:
-	OperatorData(PdfOp op);
+	OperatorData(PdfOp op,int rot);
 	float GetNextStop();
 	void change(bool from_beg);
 	void clear();

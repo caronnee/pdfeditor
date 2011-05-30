@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>459</width>
-    <height>646</height>
+    <width>662</width>
+    <height>659</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -22,149 +22,467 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QGroupBox" name="FileManipulation">
-      <property name="toolTip">
-       <string>FileManupulation</string>
+     <widget class="QFrame" name="fileFrame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
       </property>
-      <property name="title">
-       <string>File Manipulation</string>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
       </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <property name="topMargin">
-        <number>9</number>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="margin">
+        <number>0</number>
        </property>
        <item>
         <widget class="QPushButton" name="openFile">
-         <property name="text">
-          <string>Open</string>
+         <property name="autoFillBackground">
+          <bool>false</bool>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="getText">
-         <property name="text">
-          <string>Convert To Text</string>
+         <property name="styleSheet">
+          <string notr="true">background-image: url(:/images/open.ico);</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="rise">
          <property name="text">
-          <string>Rise</string>
+          <string/>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="rotae">
-         <property name="text">
-          <string>Operator Rotate</string>
+         <property name="icon">
+          <iconset>
+           <normaloff>images/open.ico</normaloff>images/open.ico</iconset>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="SaveAs">
-         <property name="text">
-          <string>Save as</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="printButton">
-         <property name="text">
-          <string>Print</string>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="saveButton">
-         <property name="text">
-          <string>Save</string>
+         <property name="toolTip">
+          <string>Save as</string>
          </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="pageManipulation">
-      <property name="toolTip">
-       <string>manipulation with page</string>
-      </property>
-      <property name="title">
-       <string>Page manipulation</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QPushButton" name="pageUp">
          <property name="text">
-          <string>Up</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>images/save.ico</normaloff>images/save.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pageDown">
+        <widget class="QPushButton" name="saveAsButton">
+         <property name="toolTip">
+          <string>save copy</string>
+         </property>
          <property name="text">
-          <string>Down</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>images/savecopy.ico</normaloff>images/savecopy.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="insertEmpty">
+        <widget class="QPushButton" name="saveEncodedButton">
+         <property name="toolTip">
+          <string>save decoded</string>
+         </property>
          <property name="text">
-          <string>Insert Empty</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>images/decrypt_icon.jpg</normaloff>images/decrypt_icon.jpg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="insertRange">
-         <property name="text">
-          <string>Insert Range</string>
+        <widget class="QPushButton" name="contentButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>images/content.ico</normaloff>images/content.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string>buttonGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="deletePage">
-         <property name="text">
-          <string>DeletePage</string>
+        <widget class="QPushButton" name="textButton">
+         <property name="toolTip">
+          <string>Show panel witj text working</string>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>images/setText.ico</normaloff>images/setText.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string>buttonGroup</string>
+         </attribute>
         </widget>
        </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QGroupBox" name="modesgroup">
-      <property name="cursor">
-       <cursorShape>ArrowCursor</cursorShape>
-      </property>
-      <property name="title">
-       <string>GroupBox</string>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QPushButton" name="textWork">
+        <widget class="QPushButton" name="imageWork">
          <property name="text">
-          <string>Text Work</string>
+          <string/>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="text">
-          <string>Viewer</string>
+         <property name="icon">
+          <iconset>
+           <normaloff>images/images.ico</normaloff>images/images.ico</iconset>
          </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string>buttonGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="opSelect">
          <property name="text">
-          <string>OpSelect</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>images/operator.jpg</normaloff>images/operator.jpg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string>buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="fileProp" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QFrame" name="contentFrame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="margin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="derotate">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>images/derotate.ico</normaloff>images/derotate.ico</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="rotate">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>images/rotate.ico</normaloff>images/rotate.ico</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="insertEmpty">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>images/addpage.png</normaloff>images/addpage.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pageUp">
+            <property name="text">
+             <string>up</string>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>images/uppage.ico</normaloff>images/uppage.ico</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pageDown">
+            <property name="toolTip">
+             <string>page down</string>
+            </property>
+            <property name="text">
+             <string>down</string>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>images/downpage.ico</normaloff>images/downpage.ico</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="deletePage">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>images/deletepage.ico</normaloff>images/deletepage.ico</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="getText">
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>images/TextConvert.ico</normaloff>images/TextConvert.ico</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="textFrame">
+      <property name="contextMenuPolicy">
+       <enum>Qt::NoContextMenu</enum>
+      </property>
+      <property name="toolTip">
+       <string>Panel with text tools</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>300</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QPushButton" name="selectTextButton">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>images/hand.ico</normaloff>images/hand.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string>buttonGroup_2</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="insertTextButton">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>images/insert_text.ico</normaloff>images/insert_text.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string>buttonGroup_2</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>images/deleteText.ico</normaloff>images/deleteText.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="erase">
+         <property name="text">
+          <string>erase</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="highlightButton">
+         <property name="text">
+          <string>highlight</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="searcher">
+         <property name="text">
+          <string>search/replace</string>
          </property>
         </widget>
        </item>
@@ -194,24 +512,6 @@
      </widget>
     </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>459</width>
-     <height>20</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -246,22 +546,6 @@
   <include location="pdfgui.qrc"/>
  </resources>
  <connections>
-  <connection>
-   <sender>rise</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>riseSel()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>getText</sender>
    <signal>clicked()</signal>
@@ -311,10 +595,54 @@
    </hints>
   </connection>
   <connection>
-   <sender>SaveAs</sender>
+   <sender>saveButton</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>save()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>359</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+<connection>
+   <sender>insertTextButton</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>setModeInsertText()</slot>
+</connection>
+<connection>
+   <sender>selectTextButton</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>setModeSelectText()</slot>
+</connection>
+  <connection>
+   <sender>saveAsButton</sender>
    <signal>clicked()</signal>
    <receiver>openedPdfs</receiver>
    <slot>saveAs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>359</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>saveEncodedButton</sender>
+   <signal>clicked()</signal>
+   <receiver>openedPdfs</receiver>
+   <slot>saveEncoded()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>359</x>
@@ -359,52 +687,56 @@
    </hints>
   </connection>
   <connection>
-   <sender>insertRange</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>insertRange()</slot>
+   <sender>contentButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>contentFrame</receiver>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>304</x>
-     <y>199</y>
+     <x>412</x>
+     <y>21</y>
     </hint>
     <hint type="destinationlabel">
-     <x>221</x>
-     <y>300</y>
+     <x>228</x>
+     <y>53</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>saveButton</sender>
+   <sender>rotate</sender>
    <signal>clicked()</signal>
    <receiver>openedPdfs</receiver>
-   <slot>save()</slot>
+   <slot>rotate()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>170</x>
-     <y>75</y>
+     <x>412</x>
+     <y>21</y>
     </hint>
     <hint type="destinationlabel">
-     <x>221</x>
-     <y>300</y>
+     <x>228</x>
+     <y>53</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>printButton</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>print()</slot>
+   <sender>contentButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fileProp</receiver>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>376</x>
-     <y>75</y>
+     <x>354</x>
+     <y>29</y>
     </hint>
     <hint type="destinationlabel">
-     <x>221</x>
-     <y>300</y>
+     <x>228</x>
+     <y>77</y>
     </hint>
    </hints>
   </connection>
  </connections>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
+ </buttongroups>
 </ui>

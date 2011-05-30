@@ -25,10 +25,13 @@
 #include <QTreeWidgetItem>
 #include <QVariant>
 #include <QClipboard>
+#include "ui_convertpagerange.h"
 
 //PDF
 #include <kernel/pdfoperators.h>
 #include <kernel/cannotation.h>
+
+#include "openpdf.h"
 
 //#include <kernel/carray.h>
 
@@ -38,27 +41,34 @@ typedef boost::shared_ptr<pdfobjects::IProperty> PdfProperty;
 
 std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","cs", "SC","SCN", "sc","scn", "G","g","RG","rg","k","K","Tc","Tw", "Tz", "TL", "Tf","Tr","Ts","Td","TD","Tm","T*" };
 
-void TabPage::handleBookMark(QTreeWidget * item)
+void TabPage::handleBookmark(QTreeWidget * item, int)
 {
 	page = pdf->getPage(((Bookmark *)(item))->getDest());
 	setFromSplash();
 }
 
-TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
+TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMode),_parent(parent)
 {
+	pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
+
+	page = boost::shared_ptr<pdfobjects::CPage> (pdf->getPage(1)); //or set from last
+	displayparams.rotate = page->getRotation();
+	//displayparams.upsideDown = true;
+	// init splash bitmap
+	_acceptedType = OpTextName;
 	_selected = false;
 	_font = NULL;
 	_cmts = NULL;
 	ui.setupUi(this);
-	labelPage = new DisplayPage();
+	_labelPage = new DisplayPage();
 	_cmts = new Comments();
 	_search = new Search(NULL);//neptraia k tomuto mimiokienku
 	//_search->show();
 	_image = new InsertImage(NULL);
-	this->ui.scrollArea->setWidget(labelPage);	
+	this->ui.scrollArea->setWidget(_labelPage);	
 	//this->ui.displayManipulation->hide();
-	QObject::connect(_search, SIGNAL(search(std::string,bool)),this,SLOT(search(std::string,bool)));
-	QObject::connect(_search, SIGNAL(replaceTextSignal(std::string,std::string)),this,SLOT(replaceText(std::string,std::string)));
+	QObject::connect(_search, SIGNAL(search(QString,bool)),this,SLOT(search(QString,bool)));
+	QObject::connect(_search, SIGNAL(replaceTextSignal(QString,QString)),this,SLOT(replaceText(QString,QString)));
 	QObject::connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
 	{
 		std::string links[] = { ANNOTS(CREATE_ARRAY) };
@@ -67,29 +77,36 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 //			this->ui._annots-> (links[i]);
 		}
 	}
+	_font = new FontWidget(NULL);
+	loadFonts(_font);
+	//	_font->show();
+	connect(_font, SIGNAL(text(PdfOp)), this, SLOT(insertText(PdfOp)));
+	connect(_font, SIGNAL(changeTextSignal()), this, SLOT(changeSelectedText()));
+	//show text button, hide everything else
 
 	//connections
-	connect(_cmts,SIGNAL(close),this,SLOT(closeAnnotDiag));
+//	connect(_cmts,SIGNAL(close()),this,SLOT(closeAnnotDiag()));
 	//pridanie anotacie
 
 	connect(_cmts,SIGNAL(annotation(Annot)),this,SLOT(insertAnnotation(Annot)));
 	connect(this,SIGNAL(pdfPosition(float,float,int,int)),_cmts,SLOT(setRectangle(float,float,int,int)));
-	connect(_cmts,SIGNAL(annotationTextMarkup(Annot)),this,SLOT(setMarkupProperty()));
+//	connect(_cmts,SIGNAL(annotationTextMarkup(Annot)),this,SLOT(setMarkupProperty()));
 	connect(this,SIGNAL(parsed(std::vector<float>)),_cmts,SLOT(setPoints(std::vector<float>)));
 
 	connect (ui.previous,SIGNAL(clicked()),this,SLOT(previousPage()));
 	connect (ui.next,SIGNAL(clicked()),this,SLOT(nextPage()));
-	connect (labelPage,SIGNAL(MouseClicked(int, int)),this, SLOT(clicked(int, int))); //pri selecte sa to disconnectne a nahrasi inym modom
-	connect (labelPage,SIGNAL(MouseReleased()),this, SLOT(mouseReleased())); //pri selecte sa to disconnectne
-	connect (labelPage,SIGNAL(InsertTextSignal(QPoint)),this,SLOT(raiseInsertText(QPoint)));
-	connect (labelPage,SIGNAL(DeleteTextSignal()),this,SLOT(deleteSelectedText()));
-	connect (labelPage,SIGNAL(EraseTextSignal()),this,SLOT(eraseSelectedText()));
-	connect (labelPage,SIGNAL(ChangeTextSignal()),this,SLOT(raiseChangeSelectedText()));
-	connect (labelPage,SIGNAL(InsertImageSignal(QPoint)),this,SLOT(raiseInsertImage(QPoint)));
-	connect (labelPage,SIGNAL(DeleteImageSignal(QPoint)),this,SLOT(deleteImage(QPoint)));
-	connect (labelPage,SIGNAL(AnnotationSignal(QPoint)),this,SLOT(raiseAnnotation(QPoint)));
-	connect (labelPage,SIGNAL(DeleteAnnotationSignal(QPoint)),this,SLOT(deleteAnnotation(QPoint)));
-	connect (labelPage,SIGNAL(ChangeImageSignal(QPoint)),this,SLOT(raiseChangeSignal(QPoint)));
+	connect (_labelPage,SIGNAL(MouseClicked(QPoint)),this, SLOT(clicked(QPoint))); //pri selecte sa to disconnectne a nahrasi inym modom
+	connect (this,SIGNAL(markPosition(QPoint)),_labelPage, SLOT(markPosition(QPoint))); //pri selecte sa to disconnectne a nahrasi inym modom
+	connect (_labelPage,SIGNAL(MouseReleased()),this, SLOT(mouseReleased())); //pri selecte sa to disconnectne
+	connect (_labelPage,SIGNAL(InsertTextSignal(QPoint)),this,SLOT(raiseInsertText(QPoint)));
+	connect (_labelPage,SIGNAL(DeleteTextSignal()),this,SLOT(deleteSelectedText()));
+	connect (_labelPage,SIGNAL(EraseTextSignal()),this,SLOT(eraseSelectedText()));
+	connect (_labelPage,SIGNAL(ChangeTextSignal()),this,SLOT(raiseChangeSelectedText()));
+	connect (_labelPage,SIGNAL(InsertImageSignal(QPoint)),this,SLOT(raiseInsertImage(QPoint)));
+	connect (_labelPage,SIGNAL(DeleteImageSignal(QPoint)),this,SLOT(deleteImage(QPoint)));
+	connect (_labelPage,SIGNAL(AnnotationSignal(QPoint)),this,SLOT(raiseAnnotation(QPoint)));
+	connect (_labelPage,SIGNAL(DeleteAnnotationSignal(QPoint)),this,SLOT(deleteAnnotation(QPoint)));
+	connect (_labelPage,SIGNAL(ChangeImageSignal(QPoint)),this,SLOT(raiseChangeSignal(QPoint)));
 	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 	
 	connect(_image,SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
@@ -98,10 +115,7 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 	connect( _image, SIGNAL(changeImage(PdfOp)),this,SLOT(changeImage(PdfOp)));
 
 	connect( _cmts,SIGNAL(annotationTextMarkup(Annot)),this,SLOT(insertTextMarkup(Annot)));
-	pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
-
-	page = boost::shared_ptr<pdfobjects::CPage> (pdf->getPage(1)); //or set from last
-	// init splash bitmap
+	
 	QStringList list;
 
 	std::string s;
@@ -124,7 +138,6 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 		this->ui.zoom->addItem( s.toString()+" %",s);
 	}
 	this->ui.zoom->setCurrentIndex(1);
-	SetModeTextSelect();
 	{
 		//FILE * f = fopen("xxx","w");
 		//std::string m;
@@ -137,6 +150,8 @@ TabPage::TabPage(QString name) : _name(name), _mode(DefaultMode)
 		//fprintf(f,"%s\n",m.c_str());
 		//fclose(f);
 	}
+	getBookMarks();
+	createList();
 }
 void TabPage::raiseSearch()
 {
@@ -203,8 +218,8 @@ void TabPage::zoom(QString zoomscale)//later with how much pages, if all or not
 	zoomscale = zoomscale.remove("%");
 	zoomscale = zoomscale.remove(" ");
 	float scale = zoomscale.toFloat()/100;
-	float dpix=labelPage->logicalDpiX();
-	float dpiy =labelPage->logicalDpiY();
+	float dpix=_labelPage->logicalDpiX();
+	float dpiy =_labelPage->logicalDpiY();
 	displayparams.hDpi = dpix * scale;
 	displayparams.vDpi = dpiy * scale;
 	this->setFromSplash();
@@ -272,7 +287,7 @@ void TabPage::insertTextMarkup(Annot annot)
 		g0Dict->addProperty("BM",*PdfProperty(CNameFactory::getInstance("Multiply")));
 		g0Dict->addProperty("Type",*PdfProperty(CNameFactory::getInstance("ExtGState")));
 
-				grDict->addProperty("R0",*g0Dict);
+		grDict->addProperty("R0",*g0Dict);
 		resDict->addProperty("ExtGState",*grDict);
 
 		CArray arr2;
@@ -325,7 +340,7 @@ void TabPage::closeAnnotDiag()
 {
 	delete _cmts; //cleanup za anotacie
 	_cmts = NULL;
-	_mode = TextMode;
+	_mode = ModeSelectText;
 	//disconnect all?
 }
 void TabPage::insertAnnotation(Annot a)
@@ -391,18 +406,7 @@ void TabPage::raiseAnnotation(QPoint point)
 	_cmts->setRectangle(x/xdif,y/ydif,30,30);//pre zvysok sa to vyhodi a nahradi sadou anotacii	
 	_cmts->show();
 }
-void TabPage::SetModeTextSelect()
-{
-	//bind widget to the page show
-	_mode = TextMode;	
-	_font = new FontWidget(NULL);
-	loadFonts(_font);
-	//	_font->show();
-	connect(_font, SIGNAL(text(PdfOp)), this, SLOT(insertText(PdfOp)));
-	connect(_font, SIGNAL(changeTextSignal()), this, SLOT(changeSelectedText()));
-	//show text button, hide everything else
-	createList();
-}
+
 void TabPage::createList()
 {
 	_textList.clear();
@@ -431,7 +435,7 @@ void TabPage::createList()
 			it++;
 			continue;
 		}
-		OperatorData data(*it);
+		OperatorData data(*it,page->getRotation());
 		_textList.push_back(data);
 		it++;
 	}
@@ -456,26 +460,34 @@ void TabPage::UnSetTextSelect()
 		delete _font;
 	_font = NULL;
 }
-void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, ze sa vyberie prvy operator
+void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, ze sa vyberie prvy operator
 {
-	switch (_mode)
+	switch (_parent->getMode())
 	{
+		case ModeInsertText:
+		{
+			//show position
+			emit markPosition(point);
+			raiseInsertText(point); //TODO angle
+			break;
+		}
 		case ModeEmitPosition: //pre anotacie
 		{
 			if (_mousePos.x()<0)
-				_mousePos = QPoint(x,y);
+				_mousePos = _labelPage->convertCoord(point);
 			else
 			{
 				double a,b;
-				toPdfPos(min(_mousePos.x(),x),min(_mousePos.y(),y),a,b);
-				emit pdfPosition(a,b,abs(_mousePos.x()-x),abs(_mousePos.y()-y));
+				toPdfPos(min(_mousePos.x(),point.x()),min(_mousePos.y(),point.y()),a,b);
+				emit pdfPosition(a,b,abs(_mousePos.x()-point.x()),abs(_mousePos.y()-point.y()));
 				_mousePos = QPoint(-1,-1);
 			}
 			break;
 		}
-	case TextMode:
+	case ModeSelectText:
 		{
-			highlightText(x,y); //nesprav nic, pretoze to bude robit mouseMove
+
+			highlightText(point); //nesprav nic, pretoze to bude robit mouseMove
 			break;
 		}
 	case ImageModePart:
@@ -485,16 +497,16 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 			{
 				//copy to clipboard
 				QClipboard *clipBoard = QApplication::clipboard();
-				QRect rect(_mousePos, QPoint(x,y)); //to vyberie ale vsetko
+				QRect rect(_mousePos, point); //to vyberie ale vsetko
 				//TODO minimum from BOX selected & rect
-				clipBoard->setImage(labelPage->getImage().copy(rect));
+				clipBoard->setImage(_labelPage->getImage().copy(rect));
 				return;
 			}
 			else
 			{ //TODO painter showing it's way
-				_mousePos = QPoint(x,y);
+				_mousePos = point;
 				Ops ops;
-				getSelected( x, y, ops);
+				getSelected( point.x(), point.y(), ops);
 				for ( size_t i =0 ; i < ops.size(); i++)
 				{
 					std::string s;
@@ -513,7 +525,7 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 			//get only operator
 			double px, py;
 			//convert
-			toPdfPos(x,y, px, py);
+			toPdfPos(point.x(),point.y(), px, py);
 			//find operattdisplayparamsors
 			Ops ops;
 			page->getObjectsAtPosition(ops, libs::Point(px,py));
@@ -526,15 +538,15 @@ void TabPage::clicked(int x, int y) //resp. pressed, u select textu to znamena, 
 				if (!typeChecker.isType(OpImageName,s))
 				{
 					QClipboard *clipBoard = QApplication::clipboard();
-					clipBoard->setImage(labelPage->getImage().copy(getRectangle(ops[i])));
+					clipBoard->setImage(_labelPage->getImage().copy(getRectangle(ops[i])));
 					break;
 				}
 			}
 		}
 	default: //ukazuje celeho operatora
 		{
-			labelPage->unsetImg();
-			showClicked(x,y);//zmenit 
+			_labelPage->unsetImg();
+			showClicked(point.x(),point.y());//zmenit 
 		}
 	}
 }
@@ -545,20 +557,21 @@ void TabPage::mouseReleased() //nesprav nic, pretoze to bude robit mouseMove
 }
 void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit mouseMove
 {
+	double px=x,py=y;
 	//najdi prvy operator, na ktory bolo kliknute
 	Ops ops;
-	getAtPosition(ops,x,y); //zaplnili sme operator
+	getAtPosition(ops,px,py); //zaplnili sme operator
 	//zistime, ze je to text
 	std::string n;
 	if (ops.empty())
 		return;
-	ops.back()->getOperatorName(n);
-	if (!typeChecker.isType(OpTextName,n))
+	TextOperatorIterator it(ops.back(),false);
+	if (!it.valid())
 		return; //zoberieme iba posledny, viditelny, ak su na sebe
 	_dataReady = true;
 	DEBUGLINE("Operator found");
 	sTextIt = _textList.begin();
-	setTextData(sTextIt,_textList.end(),ops.back());
+	setTextData(sTextIt,_textList.end(),it.getCurrent());
 	sTextIt->setBegin(x);//zarovnane na pismenko
 	sTextMarker = sTextItEnd = sTextIt;
 }
@@ -572,24 +585,27 @@ void TabPage::setTextData(TextData::iterator & it, TextData::iterator end,shared
 	throw "Unexpected operator, text is not present in tree, why, why? ";
 }
 
-void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka ser space
+void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka ser space
 {
+	double px = point.x(), py = point.y();
+	rotatePdf(page->getRotation(),px,py,true);
+	point.setX(px); point.setY(py);
 	if (!_dataReady) //prvykrat, co sme dotkli nejakeho operatora
 	{
-		_mousePos = QPoint(x,y);
-		labelPage->unsetImg();
-		highLightBegin(x,y); //oznaci zaciatok
+		_mousePos = point;
+		_labelPage->unsetImg();
+		highLightBegin(point.x(),point.y()); //oznaci zaciatok
 		return;
 	}//sTextIt
 	Ops ops;
-	getAtPosition(ops,x,y);
+	getAtPosition(ops,point.x(),point.y());
 	if (ops.empty())
 		return;
 	TextOperatorIterator it(ops.back(),false);
 	PdfOp o = it.getCurrent();
 	if (it.valid())
 		o = it.getCurrent();
-	OperatorData s(o);
+	OperatorData s(o,page->getRotation());
 	double xBegin;
 	double xEnd;
 	TextData::iterator move = sTextMarker;
@@ -613,7 +629,7 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 	if (*move < *sTextMarker)
 	{
 		sTextIt = move;
-		sTextIt->setBegin(x);
+		sTextIt->setBegin(point.x());
 		sTextItEnd = sTextMarker;
 		sTextItEnd->setEnd(_mousePos.x());
 	}
@@ -622,7 +638,7 @@ void TabPage::highlightText(int x, int y) //tu mame convertle  x,y, co sa tyka s
 		sTextIt = sTextMarker;
 		sTextIt->setBegin(_mousePos.x());
 		sTextItEnd = move;
-		sTextItEnd->setEnd(x);
+		sTextItEnd->setEnd(point.x());
 	}
 	
 	_selected =  true;
@@ -636,15 +652,17 @@ void TabPage::highlight()
 	TextData::iterator first = sTextIt;
 	TextData::iterator last = sTextItEnd; 
 	bool forw = (*sTextIt) < (*sTextItEnd);
-	int x1,x2,y1,y2;
+	double x1,x2,y1,y2;
 	QVector<QRect> region;
 	assert(region.isEmpty());
 	while (true)
 	{
-		toPixmapPos(first->_begin, first->_ymin, x1,y1);
-		toPixmapPos(first->_end, first->_ymax, x2, y2);
-		y1 = labelPage->size().height()-y1;
-		y2 = labelPage->size().height()-y2;
+		x1 = first->_begin;
+		y1 = first->_ymin;
+		rotatePdf(page->getRotation(),x1,y1,false);
+		x2 = first->_end;
+		y2 = first->_ymax;
+		rotatePdf(page->getRotation(),x2,y2,false);
 		QRect r(min(x1,x2),min(y1,y2), first->GetNextStop()-first->_begin,abs(y1-y2));
 		region.append(r);
 		if (first == sTextItEnd)
@@ -654,7 +672,7 @@ void TabPage::highlight()
 		}
 		inDirection(first, forw);
 	}
-	labelPage->fillRect( region, color );
+	_labelPage->fillRect( region, color );
 }
 
 //zatial len v ramci jednej stranky
@@ -715,7 +733,7 @@ void TabPage::createAddMoveString(PdfOp bef, double x, double y, QString name)
 	ops.push_back(boost::shared_ptr<IProperty> (new CString(name.toStdString())));
 	PdfOp p = createOperator("tj",ops);
 	bef->getContentStream()->insertOperator(bef,p);
-	OperatorData d(p);
+	OperatorData d(p,page->getRotation());
 	_textList.push_back(d);
 	PdfOp op = FontWidget::createTranslationTd(x,y);
 	bef->getContentStream()->insertOperator(bef,p);	
@@ -729,55 +747,96 @@ void TabPage::inDirection(TextData::iterator& iter, bool forward)
 }
 void TabPage::getAtPosition(Ops& ops, int x, int y )
 {
-	double px, py;
-	toPdfPos(x, y, px, py);
+	double px=x, py=y;
+	rotatePdf(page->getRotation(),px,py,true);
 	//find operattors
 	page->getObjectsAtPosition(ops, libs::Point(px,py));
 }
 void TabPage::toPdfPos(int x, int y, double & x1, double &y1)
 {
 	displayparams.convertPixmapPosToPdfPos(x, y, x1, y1); //TODO upravit aby to neblblo
-	x1 *=displayparams.hDpi/72;
-	y1 *=displayparams.vDpi/72; //zakomentovane kvoli tome, ze to blblo pri pridavani textu.
+	//x1 = x1*displayparams.vDpi/72; //pretoze BBoxy su takto spravene
+	//y1 = y1*displayparams.hDpi/72;
+	//upside down
+	//y1 = DisplayParams::DEFAULT_PAGE_RY*displayparams.vDpi/72 -y1;
+	//bboxes su v pdf stejne podla pdicka
+	//x1*= displayparams.vDpi/72; //pretoze BBoxy su takto spravene
+	//y1*= displayparams.hDpi/72;
 }
 void TabPage::toPixmapPos(double x1, double y1, int & x, int &y)
 {
 	double x2, y2;
-	x1 /=displayparams.hDpi/72;
-	y1 /=displayparams.vDpi/72;
 	displayparams.convertPdfPosToPixmapPos(x1, y1, x2, y2);
+	x1 *= displayparams.hDpi/72;
+	y1 *= displayparams.vDpi/72;
 	x = x2;
 	y = y2;
 }
+
+void TabPage::rotatePdf(int angle, double& x,double& y, bool fromPixmap) //dostanem pozcie ake su v pdfku
+{
+	angle = (angle + 360)%360;
+	double par[] = { displayparams.vDpi/72.0f, displayparams.hDpi/72.0f};
+	double resx = DisplayParams::DEFAULT_PAGE_RX*par[0];
+	double resy = DisplayParams::DEFAULT_PAGE_RY*par[1];
+	
+	::rotate(angle,resx,resy);
+	if (!fromPixmap)
+		::rotate(angle,x,y);
+	switch (angle/90)
+	{
+	case 1: //musime menit X os
+		x = fabs(resx) - fabs(x);
+		break;
+	case 2:
+		x = fabs(resx) - fabs(x);
+		y = fabs(resy) - fabs(y);
+		break;
+	case 3:
+		y = fabs(resy) - fabs(y);
+		break;
+	default:
+		break;
+	}
+	if (fromPixmap)
+		::rotate(angle,x,y);
+	x = fabs(x);
+	y = fabs(y);
+}
 void TabPage::showClicked(int x, int y)
 {
-	double px, py;
+	double px=x, py=y;
 	//convert
-	toPdfPos(x,y, px, py);
+	//toPdfPos(x,y, px, py);
+	rotatePdf(page->getRotation(),px,py,true);
 	//find operattdisplayparamsors
 	Ops ops;
 	page->getObjectsAtPosition(ops, libs::Point(px,py));
-	workingOpSet.clear();	
+
 	//vsetky tieto objekty vymalujeme TODO zistit orientaciu
 	for ( size_t i =0; i < ops.size(); i++)
 	{
 		//ukaz len povolene typy
+#if _DEBUG
 		std::string s;
+#endif
 		ops[i]->getOperatorName(s); 
-		if (!typeChecker.acceptType(s))
+		if (!typeChecker.isType(_acceptedType,s))
 			continue;
+#if _DEBUG
 		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(ops[i]);
-		txt->getRawText(s);
+		if (txt)
+			txt->getRawText(s);
+#endif
 		libs::Rectangle b = ops[i]->getBBox();
-		int x1, y1;
-		int x2, y2;
 
-		toPixmapPos(b.xleft, b.yleft, x1,y1);
-		toPixmapPos(b.xright, b.yright, x2, y2);
+	//	toPixmapPos(b.xleft, b.yleft, x1,y1);
+	//	toPixmapPos(b.xright, b.yright, x2, y2);
 
-		QColor color(255, 255, 0, 50);
-		labelPage->fillRect( x1, y1, x2, y2, color );
-		workingOpSet.push_back(ops[i]);	
+		QColor color(55, 55, 200,100);
+		rotatePdf(page->getRotation(),b.xleft,b.yleft,false);
+		rotatePdf(page->getRotation(),b.xright,b.yright,false);
+		_labelPage->fillRect( b.xleft, b.yleft, b.xright, b.yright, color );
 	}
 }
 QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
@@ -837,6 +896,7 @@ bool TabPage::previousPage()
 	if (pdf->getPagePosition(page) == 1)
 		return false;
 	page = pdf->getPrevPage(page);
+	displayparams.rotate = page->getRotation();
 	this->setFromSplash();
 	return true;
 }
@@ -845,6 +905,7 @@ bool TabPage::nextPage()
 	if (pdf->getPagePosition(page) == pdf->getPageCount())
 		return false;
 	page = pdf->getNextPage(page);
+	displayparams.rotate = page->getRotation();
 	this->setFromSplash();
 	return true;
 }
@@ -852,12 +913,11 @@ void TabPage::getBookMarks()
 {
 	//LATER, TODO, zistit, na aku stranku sa odkazuju, potazne odsek
 	//ket from XREGWritel all GoLink
-	//get from dictionary outlines  and get everythong that has page reference
-	//asi to nebudeme hrotit
 	//na nejak on show()
 	std::vector<shared_ptr<CDict> > outline;
 	pdf->getOutlines(outline);
 	std::vector<shared_ptr<CDict> > dicts;
+	printf( " bookmarks %d\n",outline.size());
 	for (size_t i =0; i< outline.size(); i++)
 	{
 		QTreeWidgetItem * b = new QTreeWidgetItem; 
@@ -890,15 +950,15 @@ void TabPage::setTree(shared_ptr<CDict> d, QTreeWidgetItem * item)
 	}
 	catch(...) {}
 }
-void TabPage::removeObjects() //vsetko, co je vo working
-{
-	for (size_t i = 0; i < workingOpSet.size(); i++ )
-	{
-		PdfOperator::Iterator it = PdfOperator::getIterator(workingOpSet[i]);
-		workingOpSet[i]->getContentStream()->deleteOperator(it,true);
-	}
-	workingOpSet.clear();
-}
+//void TabPage::removeObjects() //vsetko, co je vo working
+//{
+//	for (size_t i = 0; i < workingOpSet.size(); i++ )
+//	{
+//		PdfOperator::Iterator it = PdfOperator::getIterator(workingOpSet[i]);
+//		workingOpSet[i]->getContentStream()->deleteOperator(it,true);
+//	}
+//	workingOpSet.clear();
+//}
 void TabPage::changeImage(PdfOp op)
 {
 	if (!_selected)
@@ -940,6 +1000,8 @@ void TabPage::setFromSplash()
 	paperColor[0] = paperColor[1] = paperColor[2] = 0xff;
 	SplashOutputDev splash (splashModeBGR8, 4, gFalse, paperColor);
 
+	Ops oTest;
+	page->getObjectsAtPosition(oTest,libs::Point(229,619));
 	// display it = create internal splash bitmap
 	page->displayPage(splash, displayparams);
 	splash.clearModRegion();
@@ -956,7 +1018,7 @@ void TabPage::setFromSplash()
 	}
 	delete[] p;
 	//image = image.scaled(QSize(max(x2,x1),max(y1,y2)));
-	labelPage->setImage(image);
+	_labelPage->setImage(image);
 	//image.save("mytest.bmp","BMP");
 	//this->ui.label->adjustSize();
 	updatePageInfoBar();
@@ -986,29 +1048,23 @@ void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
 	}
 	event->accept(); //TODO opravit
 }
+void TabPage::saveEncoded()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("PdfFile (*.pdf)"));
+	pdf->saveDecoded(fileName.toAscii().data());
+}
+void TabPage::save() //revisiion je inde
+{
+	pdf->save();
+}
+void TabPage::saveAs()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("PdfFile (*.pdf)"));
+	savePdf(fileName.toAscii().data());
+}
 void TabPage::savePdf(char * name)
 {
-	name = "copyPdf.pdf";
-	if (name == NULL)
-	{
-		pdf->save();
-		return;
-	}
-	FILE * f;
-	f = fopen(name,"wb");
-	if (!f)
-	{
-		QMessageBox::warning(this,tr("Cannot create file"),tr("Creation file failed"),
-			QMessageBox::Ok);
-		return;
-	}
-	int i = pdf->getRevisionsCount();
-//	commitRevision(); //TODO plikovat na kopiu!
 	pdf->saveChangesToNew(name);
-	pdf->saveDecoded("decoded.pdf");
-//	revertRevision();
-//	throw "Not implemented so far";
-	fclose(f);
 }
 TabPage::~TabPage(void)	{}
 
@@ -1042,21 +1098,14 @@ void TabPage::initRevision(int  revision) //snad su revizie od nuly:-/
 	setFromSplash();
 }
 
-void TabPage::rotate(int angle, int begin, int end) //rotovanie pages
+void TabPage::rotate() //rotovanie pages
 {
 	//std::cout << "Rotating" << angle << std::endl;
-	if (begin == -1)
-	{
-		page->setRotation(angle);
-	}
-	else
-	{
-		for (int i = begin; i< end; i++)
-		{
-			pdf->getPage(i)->setRotation(angle);
-		}
-	}
+	page->setRotation(page->getRotation()+90);
+	displayparams.rotate = page->getRotation();
+
 	setFromSplash();
+	createList();
 }
 void TabPage::commitRevision()
 {
@@ -1235,7 +1284,7 @@ void TabPage::showAnnotation()
 		//dostat annotecny rectangle
 		BBox b(x1,y1,x2,y2);
 		QRect convertedRect = getRectangle(b);
-		labelPage->addPlace(convertedRect); //teraz vie o vsetkych miestach
+		_labelPage->addPlace(convertedRect); //teraz vie o vsetkych miestach
 	}
 }
 
@@ -1494,7 +1543,7 @@ void TabPage::searchPrev(QString srch)
 			case Tree::Found:
 				{
 					prev = iter->_end; 
-					labelPage->unsetImg();
+					_labelPage->unsetImg();
 					double a, b;
 					//ak je 
 					iter->setBegin(iter->position(iter->_text.size() - _searchEngine._end-1));
@@ -1579,7 +1628,7 @@ void TabPage::searchForw(QString srch)
 				}
 			case Tree::Found:
 				{
-					labelPage->unsetImg();
+					_labelPage->unsetImg();
 					prev = iter->_end; 
 					double a, b;
 					//ak je 
@@ -1757,11 +1806,34 @@ void TabPage::deleteText( QString text)
 {
 	replaceText(text,"");
 }
-void TabPage::exportText(QTextEdit * edit)
+void TabPage::exportText()
 {
+	//dialog na pocet stranok
+	int beg = 1, end=2;
+	if (pdf->getPageCount() !=1)
+	{
+		QDialog * dialog = new QDialog(this);
+		Ui::PageDialog pdialog;
+		pdialog.begin->setMaximum(pdf->getPageCount());
+		pdialog.begin->setMinimum(1);
+		pdialog.end->setMinimum(1);
+		pdialog.end->setMaximum(pdf->getPageCount());
+		pdialog.setupUi(dialog);
+		dialog->setWindowTitle("Select page range");
+		dialog->show();
+		if (dialog->result() == QDialog::Rejected)
+			return;
+		beg = pdialog.begin->value();
+		end = pdialog.end->value();
+		dialog->close();
+		delete dialog;
+	}
+	int old = page->getPagePosition();
+	page=pdf->getPage(beg);
+	QTextEdit * edit = new QTextEdit(this);
 	//TODO nejaka inicializacia
 	QString text;//TODO check ci nie je text moc dlhy, odmedzenia?
-	for ( size_t i =0; i < pdf->getPageCount(); i++)
+	for ( size_t i = beg; i < end; i++)
 	{
 		float prev =_textList.size() > 0  ? _textList.begin()->_begin : 0;
 		for (TextData::iterator iter = _textList.begin(); iter != _textList.end(); iter++)
@@ -1777,11 +1849,14 @@ void TabPage::exportText(QTextEdit * edit)
 		SetNextPageRotate();
 		createList();
 	}
-
 	edit->setText(text);
+	edit->setReadOnly(true);
+	edit->setGeometry(QRect(0,0,150,150));
+	
 	//text += QString::from
 	//edit->setText(text.latin());
 	edit->show();
+	page=pdf->getPage(old);
 	//cakaj na e
 }
 void TabPage::SetNextPageRotate()
@@ -1911,7 +1986,14 @@ parent->push_back( createOperator("Tj", intop),it.getCurrent());//TODO must chec
 }
 
 */
-
+void TabPage::setImageOperator()
+{
+	_acceptedType = OpImageName;
+}
+void TabPage::setTextOperator()
+{
+	_acceptedType = OpTextName;
+}
 void TabPage::getSelected( int x, int y, Ops ops)
 {
 	//show only picture, all picture
