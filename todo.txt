@@ -110,3 +110,4 @@ OK - ulozit PDF v neecrptovanej podobe -
 - uprav tak, aby sa texty neprekryvali
 - file attachmenets
 - zadanie, aka farba v pozadi sa ma zobrazovat 
+- erase text zrusit TDcka alebo okecat preco to vyzera tak debulne ako to vyzera

@@ -6,40 +6,46 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>280</width>
+    <height>48</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>searchAndReplace</string>
   </property>
-  <layout class="QGridLayout" name="fLayout">
-   <item row="0" column="1">
-    <widget class="QTextEdit" name="text"/>
-   </item>
-   <item row="3" column="1">
-    <widget class="QPushButton" name="next">
-     <property name="text">
-      <string>Next</string>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QTextEdit" name="text">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>100</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item>
     <widget class="QPushButton" name="prev">
      <property name="text">
       <string>Previous</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
-    <widget class="QPushButton" name="replacebutton">
+   <item>
+    <widget class="QPushButton" name="next">
      <property name="text">
-      <string>PushButton</string>
+      <string>Next</string>
      </property>
     </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QTextEdit" name="replacetext"/>
    </item>
   </layout>
  </widget>

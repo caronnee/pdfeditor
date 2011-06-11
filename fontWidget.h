@@ -91,7 +91,7 @@ public slots:
 	void setGray() { set[OptionGray] = true; } //TODO macro
 
 	void apply(); //on clicked
-	void setAngle(int angle);
+	//void setAngle(int angle);
 };
 
 #endif

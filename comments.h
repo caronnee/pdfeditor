@@ -39,6 +39,7 @@ public slots:
 	void setDestination(pdfobjects::IndiRef ref);
 	void onChange(int index);
 	void apply();
+	void insertMarkup();
 };
 
 #endif

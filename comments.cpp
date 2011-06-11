@@ -59,6 +59,12 @@ void Comments::onChange(int index)
 	_an = pdfobjects::CAnnotation::createAnnotation(rect, strong.toAscii().data());
 	//cela annotacia sa bude diat v page
 }
+void Comments::insertMarkup()
+{
+	pdfobjects::CAnnotation::setAnnotInitializator(_inits[2]);
+	_an = pdfobjects::CAnnotation::createAnnotation(rect, "Highlight");
+	apply();
+}
 void Comments::apply()
 {
 	//ak je to highlight, potom parsni

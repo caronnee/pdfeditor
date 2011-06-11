@@ -19,6 +19,7 @@ public:
 	DisplayPage(QWidget *parent = 0);
 	~DisplayPage();
 
+	void drawRectangle( QRect rect);
 	void setImage( const QImage & image);
 
 	void fillRect(QRect rect,QColor color);
@@ -75,7 +76,7 @@ signals:
 	void InsertTextSignal(QPoint point);
 	void MouseClicked(QPoint p); //bolo na mna kliknute, robte s tym nieco!
 	void highlightText(int, int);
-	void MouseReleased();
+	void MouseReleased(QPoint);
 public:
 	void unsetImg();
 	void mouseMoveEvent(QMouseEvent *);

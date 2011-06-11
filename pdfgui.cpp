@@ -23,11 +23,20 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	//GlobalParams::initGlobalParams(NULL)->setupBaseFonts("D:\\Work\\winPdfEdit\\winPdfEdit\\pdfedit-0.4.5\\projects\\output"); //? Where are my fonts?
 
 	ui.setupUi(this);
-	//pridame inicializocanie kniznice
-	// pdf lib init & work
+	ui.contentFrame->hide();
+	ui.textFrame->hide();
+	ui.annotationFrame->hide();
+	ui.imageFrame->hide();
 
-	//connections - no connections are made because i shoul connect and disconnect frequently to match actually choosed label
-	
+	connect( this->ui.deleteButton,SIGNAL(clicked()),this->ui.openedPdfs,SLOT(deleteSelectedText()));
+	connect( this->ui.changeButton,SIGNAL(clicked()),this->ui.openedPdfs,SLOT(changeSelectedText()));
+	connect( this->ui.eraseButton,SIGNAL(clicked()),this->ui.openedPdfs,SLOT(eraseSelectedText()));
+	connect( this->ui.insertImageButton,SIGNAL(clicked()),this->ui.openedPdfs,SLOT(insertImage()));
+	connect( this->ui.highlightButton, SIGNAL(clicked()), this->ui.openedPdfs, SLOT(highlightSelected()));
+	connect( this->ui.search, SIGNAL(search(QString,bool)),this->ui.openedPdfs, SLOT(search(QString, bool)));
+	connect( this->ui.selectImageButton,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(setModeSelectImage()));
+	connect( this->ui.deleteImageButton,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(deleteSelectedImage()));
+	connect( this->ui.changeImageButton,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(changeSelectedImage()));
 }
 pdfGui::~pdfGui()
 {

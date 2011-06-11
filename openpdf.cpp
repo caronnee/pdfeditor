@@ -8,7 +8,51 @@ OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget)
 	TabPage * page = new TabPage(this,"./zadani.pdf");
 	this->addTab(page,"test");
 }
+void OpenPdf::search(QString s, bool v)
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->search(s,v);
+}
+void OpenPdf::changeSelectedImage()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->raiseChangeSelectedImage();
+}
+void OpenPdf::eraseSelectedText()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->eraseSelectedText();
+	page->createList();
+}
+void OpenPdf::highlightSelected()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->highLightAnnSelected();
+}
 
+void OpenPdf::changeSelectedText()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->raiseChangeSelectedText();
+}
+void OpenPdf::deleteSelectedImage()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->deleteSelectedImage();
+}
+void OpenPdf::deleteSelectedText()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->deleteSelectedText();
+}
+void OpenPdf::setModeInsertImage()
+{
+	setMode(ModeInsertImage);
+}
+void OpenPdf::setModeSelectImage()
+{
+	setMode(ModeSelectImage);
+}
 void OpenPdf::setModeInsertText()
 {
 	setMode(ModeInsertText);

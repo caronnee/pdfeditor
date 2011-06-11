@@ -103,7 +103,6 @@ struct AcceptingPdfOperatorIterator: public PdfOperator::Iterator
 		return false;
 	}
 
-private:
 	static const std::string accepted_opers [namecount];
 };
 

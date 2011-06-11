@@ -2,6 +2,7 @@
 #include <QTableWidgetItem>
 #include "fontWidget.h"
 #include "typedefs.h"
+#include "globalfunctions.h"
 
 using namespace pdfobjects;
 using namespace boost;
@@ -68,8 +69,6 @@ void FontWidget::createBT()
 {
 	_q = PdfComp(new pdfobjects::UnknownCompositePdfOperator( "q", "Q"));
 	//ak chcemem vytvarat cm, tu je na to vhodna doba
-	if (this->ui.generateCm->isChecked())
-		_q->push_back( createMatrix("cm"), getLastOperator(_q));
 	//TODO farba  podobne prkotiny
 	_BT = PdfComp(new pdfobjects::UnknownCompositePdfOperator( "BT", "ET"));
 }
@@ -85,22 +84,25 @@ PdfOp FontWidget::createMatrix(std::string op)
 {
 	//text matrix 
 	PdfOperator::Operands posOperands;
-	QVariant var = ui.tm->item(0,0)->data(0);
+	int angle = ui.rotation->value();
+	double cs1 = cos(toRadians(angle));
+	double sn1 = sin(toRadians(angle));
+	QVariant var = QVariant(cs1);
 	float f = var.value<float>();
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(f)));
-	var = ui.tm->item(0,1)->data(0);
+	var = QVariant(sn1);
 	f = var.value<float>();
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
-	var = ui.tm->item(1,0)->data(0);
+	var = QVariant(sn1*-1);
 	f = var.value<float>();
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
-	var = ui.tm->item(1,1)->data(0);
+	var = QVariant(cs1);
 	f = var.value<float>();
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
-	var = ui.tm->item(2,0)->data(0);
+	var = QVariant(_pdfPosX);
 	f = var.value<float>();
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(var.value<float>())));
-	var = ui.tm->item(2,1)->data(0);
+	var = QVariant(_pdfPosY);
 	f = var.value<float>();
 	posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(f)));
 	return createOperator(op, posOperands);
@@ -139,12 +141,6 @@ void FontWidget::addParameters() //TODO nie s jedine parametre
 
 	QVariant v = this->ui.fontsize->itemData(this->ui.fontsize->currentIndex());
 	_BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(_BT));
-
-	if (this->ui.generateCm->isChecked())
-	{
-		_BT->push_back(createTranslationTd(30,30));
-		return;
-	}
 	_BT->push_back( createMatrix("Tm"), getLastOperator(_BT));
 }
 PdfOp FontWidget::createTranslationTd(double x, double y)
@@ -184,23 +180,23 @@ void FontWidget::setPosition(float pdfx, float pdfy)
 {
 	_pdfPosX = pdfx; 
 	_pdfPosY = pdfy;
-	setAngle(0);
+	ui.rotation->setValue(0);
 }
-void FontWidget::setAngle(int angle)
-{
-	//set cosie, sine
-	double cs = cos(static_cast<double>(angle));
-	QVariant cs1(cs);
-	double sn = sin(static_cast<double>(angle));
-	QVariant sn1(sn);
-	QVariant sn2(sn*-1);
-	ui.tm->setItem(0,0,new QTableWidgetItem(cs1.toString()));
-	ui.tm->setItem(0,1,new QTableWidgetItem(sn1.toString()));
-	ui.tm->setItem(1,0,new QTableWidgetItem(sn2.toString()));
-	ui.tm->setItem(1,1,new QTableWidgetItem(cs1.toString()));
+//void FontWidget::setAngle(int angle)
+//{
+	////set cosie, sine
+	//double cs = cos(toRadians(angle));
+	//QVariant cs1(cs);
+	//double sn = sin(toRadians(angle));
+	//QVariant sn1(sn);
+	//QVariant sn2(sn*-1);
+	//ui.tm->setItem(0,0,new QTableWidgetItem(cs1.toString()));
+	//ui.tm->setItem(0,1,new QTableWidgetItem(sn1.toString()));
+	//ui.tm->setItem(1,0,new QTableWidgetItem(sn2.toString()));
+	//ui.tm->setItem(1,1,new QTableWidgetItem(cs1.toString()));
 
-	QVariant x(_pdfPosX);
-	QVariant y(_pdfPosY);
-	ui.tm->setItem(2,0,new QTableWidgetItem(x.toString()));
-	ui.tm->setItem(2,1,new QTableWidgetItem(y.toString()));
-}
+	//QVariant x(_pdfPosX);
+	//QVariant y(_pdfPosY);
+	//ui.tm->setItem(2,0,new QTableWidgetItem(x.toString()));
+	//ui.tm->setItem(2,1,new QTableWidgetItem(y.toString()));
+//}

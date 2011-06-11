@@ -19,9 +19,19 @@ public:
 	Mode getMode() const { return _mode; }
 
 public slots:
+	void search(QString s, bool v);
+	void deleteSelectedText();
+	void eraseSelectedText();
+	void changeSelectedText();
+	void highlightSelected();
+
 	void setModeInsertText();
 	void setModeSelectText();
+	void setModeInsertImage();
+	void setModeSelectImage();
 
+	void changeSelectedImage();
+	void deleteSelectedImage();
 	void saveEncoded();
 	// extracts text
 	void getText();

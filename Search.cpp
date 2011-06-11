@@ -15,5 +15,5 @@ void Search::prev()
 }
 void Search::replace()
 {
-	emit replaceTextSignal(this->ui.text->toPlainText(),this->ui.replacetext->toPlainText());
+//	emit replaceTextSignal(this->ui.text->toPlainText(),this->ui.replacetext->toPlainText());
 }

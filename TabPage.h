@@ -32,6 +32,7 @@
 #include <xpdf/SplashOutputDev.h>
 #include <kernel/factories.h>
 #include <kernel/displayparams.h>
+#include <kernel\pdfoperatorsbase.h>
 
 //END of PDF
 using namespace boost;
@@ -84,8 +85,9 @@ public:
 		names[OpTextName].add("'");
 		names[OpTextName].add("\"");
 
-		names[OpImageName].add("ID");
-		names[OpImageName].add("Id");
+		names[OpImageName].add("BI");
+		/*names[OpImageName].add("ID");
+		names[OpImageName].add("Id");*/
 
 		names[OpGraphicName].add("DO");
 		names[OpGraphicName].add("Do");
@@ -133,7 +135,7 @@ private: //variables
 	QString _name; //name of the file to be opened
 	FontWidget * _font;	
 	Mode _mode;
-	PdfOp _workingOp;
+	//PdfOp _workingOp;
 	IsType typeChecker;
 	pdfobjects::DisplayParams displayparams;	
 	boost::shared_ptr<pdfobjects::CPdf> pdf;
@@ -143,15 +145,16 @@ private: //variables
 	TextData::iterator sTextIt, sTextItEnd, sTextMarker; //kde ten iterator konci
 	bool _dataReady; //pouzivane vseobecne, kedy sa to hodi
 	bool _selected;
+	PdfOp _selectedImage;
 
 	CPage::Annotations _annots;
 	DisplayPage * _labelPage;
 private:
-	void rotatePdf(int angle, double& x,double& y,bool);
+	PdfOperator::Iterator TabPage::findTdAssOp(PdfOperator::Iterator iter);
+	void rotatePdf(int angle, double& x,double& y,bool fromPixMap);
 	float findDistance(std::string s,TextData::iterator textIter);
 	void SetNextPageRotate();
 	/* vytvorit textovy list */
-	void createList();
 	void searchPrev(QString srch);
 	void searchForw(QString srch);
 	void getSelected(int x , int y, Ops ops);
@@ -161,6 +164,10 @@ private:
 	void setSelected(TextData::iterator& first, TextData::iterator& last);
 	void showAnnotation();
 public:
+	void deleteSelectedImage();
+	void raiseChangeSelectedImage();
+	void createList();
+	void highLightAnnSelected();
 	void delAnnot(int i); //page to u seba upravi, aby ID zodpovedali
 	void SetTextSelect();
 	
@@ -217,8 +224,7 @@ public slots:
 	void setImageOperator();
 
 	void replaceText( QString what, QString by);
-	void changeImage(PdfOp op);
-	void raiseChangeImage(QPoint point);
+	void changeSelectedImage(PdfOp op);
 	void raiseSearch();
 	void closeAnnotDiag();
 	void changeSelectedText();
@@ -226,7 +232,7 @@ public slots:
 	void eraseSelectedText();
 	void replaceSelectedText(QString by);
 	void insertImage(PdfOp op);
-	void mouseReleased(); //nesprav nic, pretoze to bude robit mouseMove
+	void mouseReleased(QPoint); //nesprav nic, pretoze to bude robit mouseMove
 	void insertTextMarkup(Annot annot);
 	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
 	void insertAnnotation(Annot a);
@@ -243,7 +249,7 @@ public slots:
 	void insertText( PdfOp op );
 	void raiseInsertText(QPoint);
 	void raiseChangeSelectedText();
-	void raiseInsertImage(QPoint);
+	void raiseInsertImage(QRect);
 	void raiseAnnotation(QPoint point);
 
 	void deleteImage(QPoint point);

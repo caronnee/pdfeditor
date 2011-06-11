@@ -552,6 +552,7 @@ InlineImageCompositePdfOperator::clone ()
 {
 	// Clone operands
 	shared_ptr<CInlineImage> imgclone = IProperty::getSmartCObjectPtr<CInlineImage> (_inlineimage->clone());
+	assert(imgclone->width() == _inlineimage->width());
 	// Create clone
 	return shared_ptr<PdfOperator> (new InlineImageCompositePdfOperator (imgclone, _opBegin, _opEnd));
 }
@@ -629,7 +630,19 @@ boost::shared_ptr<PdfOperator> createOperatorScale (double width, double height)
 	ops.push_back (boost::shared_ptr<IProperty>(new CReal (0)));
 	return createOperator("cm", ops);
 }
-
+boost::shared_ptr<PdfOperator> createOperatorScale (double radians) 
+{
+	double cs = cos(radians);
+	double sn = sin(radians);
+	PdfOperator::Operands ops;
+	ops.push_back (boost::shared_ptr<IProperty>(new CReal (cs)));
+	ops.push_back (boost::shared_ptr<IProperty>(new CReal (sn)));
+	ops.push_back (boost::shared_ptr<IProperty>(new CReal (-1*sn)));
+	ops.push_back (boost::shared_ptr<IProperty>(new CReal (cs)));
+	ops.push_back (boost::shared_ptr<IProperty>(new CReal (0)));
+	ops.push_back (boost::shared_ptr<IProperty>(new CReal (0)));
+	return createOperator("cm", ops);
+}
 boost::shared_ptr<PdfOperator> createOperatorText (boost::shared_ptr<CContentStream> &cc,
 		const std::string &fontName, const std::string &op, const std::string &text)
 {

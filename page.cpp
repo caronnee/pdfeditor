@@ -3,6 +3,10 @@
 #include "debug.h"
 #include <QPainter>
 
+void DisplayPage::drawRectangle(QRect rect)
+{
+//TODO
+}
 DisplayPage::DisplayPage(QWidget *parent)
 	: QLabel(parent), _mousePressed(false)
 {
@@ -178,5 +182,5 @@ void DisplayPage::mouseReleaseEvent(QMouseEvent * event)
 {
 	_mousePressed = false;
 //	event->ignore(); //posun to parentovi
-	emit MouseReleased(); //:)
+	emit MouseReleased(event->pos()); //:)
 }

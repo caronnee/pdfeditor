@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>516</width>
-    <height>300</height>
+    <width>489</width>
+    <height>252</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,83 +15,137 @@
   </property>
   <layout class="QGridLayout" name="fLayout">
    <item row="0" column="0">
-    <widget class="QTableWidget" name="tm">
-     <property name="rowCount">
-      <number>3</number>
+    <widget class="QFrame" name="frame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
      </property>
-     <property name="columnCount">
-      <number>2</number>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
      </property>
-     <row/>
-     <row/>
-     <row/>
-     <column/>
-     <column/>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="insertTextLabel">
+        <property name="text">
+         <string>Text to insert</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="text"/>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="9" column="6">
+   <item row="0" column="3">
+    <widget class="QFrame" name="frame_3">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="2" column="0">
+       <widget class="QLabel" name="shapeLabel">
+        <property name="text">
+         <string>Shape</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="shape"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Font size</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="fontsize"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Font</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="fonts"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="rotateLabel">
+        <property name="text">
+         <string>Rotation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QDial" name="rotation">
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>359</number>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>stroking color</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>border color</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="Props">
+        <property name="text">
+         <string>Properties</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="ColorPicker" name="colorS" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>30</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="ColorPicker" name="colorN" native="true">
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>30</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="3">
     <widget class="QPushButton" name="apply">
      <property name="text">
       <string>Apply</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="2">
-    <widget class="QCheckBox" name="generateCm">
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QTextEdit" name="text"/>
-   </item>
-   <item row="0" column="3">
-    <widget class="QDial" name="rotation">
-     <property name="maximum">
-      <number>359</number>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="ColorPicker" name="colorS" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>50</width>
-       <height>30</height>
-      </size>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="ColorPicker" name="colorN" native="true">
-     <property name="maximumSize">
-      <size>
-       <width>50</width>
-       <height>30</height>
-      </size>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QComboBox" name="fontsize"/>
-   </item>
-   <item row="3" column="1">
-    <widget class="QComboBox" name="fonts"/>
-   </item>
-   <item row="3" column="3">
-    <widget class="QComboBox" name="shape">
-     <property name="maximumSize">
-      <size>
-       <width>50</width>
-       <height>20</height>
-      </size>
      </property>
     </widget>
    </item>
