@@ -45,6 +45,14 @@ void OpenPdf::deleteSelectedText()
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->deleteSelectedText();
 }
+void OpenPdf::setModeExtractImage()
+{
+	setMode(ModeExtractImage);
+}
+void OpenPdf::setModeImagePart()
+{
+	setMode(ModeImagePart);
+}
 void OpenPdf::setModeInsertImage()
 {
 	setMode(ModeInsertImage);

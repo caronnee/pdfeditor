@@ -25,6 +25,8 @@ public slots:
 	void changeSelectedText();
 	void highlightSelected();
 
+	void setModeExtractImage();
+	void setModeImagePart();
 	void setModeInsertText();
 	void setModeSelectText();
 	void setModeInsertImage();

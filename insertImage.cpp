@@ -6,6 +6,7 @@
 #include <kernel/pdfoperators.h>
 #include <kernel/factories.h>
 #include <kernel/cinlineimage.h>
+#include <kernel/displayparams.h>
 
 using namespace boost;
 using namespace pdfobjects;
@@ -24,11 +25,12 @@ void InsertImage::setPosition(float pdfX,float pdfY, float scale)
 	_scale = scale;
 	ui.positionX->setValue(pdfX);
 	ui.positionY->setValue(pdfY);
+	init();
 }
 void InsertImage::setImagePath()
 {
 	//open dialogand get file
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("Images (*.png *.xpm *.jpg)"));
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("Images (*.png *.jpg *.bmp)"));
 	if (!fileName.size() == 0)
 		this->ui.lineEdit->setText(fileName);
 }
@@ -83,6 +85,16 @@ void InsertImage::createInlineImage()
 	PdfInlineImage im = boost::shared_ptr<CInlineImage>(new CInlineImage (image_dict,imageData));
 	biOp = boost::shared_ptr<pdfobjects::InlineImageCompositePdfOperator>(new InlineImageCompositePdfOperator (im));
 }
+void InsertImage::init()
+{	
+	ui.positionX->setMaximum(DisplayParams::DEFAULT_PAGE_RX*_scale);//o kolko a poze posunut doprava
+	ui.positionX->setMinimum(0);//o kolko a poze posunut doprava
+	ui.positionX->setValue(0);
+
+	ui.positionY->setMaximum(DisplayParams::DEFAULT_PAGE_RY*_scale);//o kolko a poze posunut doprava
+	ui.positionY->setMinimum(0);//o kolko a poze posunut doprava
+	ui.positionY->setValue(0);
+}
 void InsertImage::apply()
 {
 	bool create = false;
@@ -105,26 +117,18 @@ void InsertImage::apply()
 	if (create)
 	{//translation rotation scale
 		q->push_back(createOperatorTranslation(ui.positionX->value(),ui.positionY->value()-pixH ),getLastOperator(q));
-		q->push_back(createOperatorRotation(toRadians(ui.rotation->value() ),getLastOperator(q));
+		q->push_back(createOperatorRotation(toRadians(ui.rotation->value() )),getLastOperator(q));
 		q->push_back(createOperatorScale(pixW,pixH ),getLastOperator(q));
 	}
 	else
 	{
-		posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cs*pixW)));
-		posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(sn))); //zosikmenie?
-		posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(-1*sn)));
-		posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(cs*pixH)));
-		posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(ui.positionX->value())));
-		//y-ova suradnica sa pozunie vzhladom na obrazok
-		float y = ui.positionY->value();
-		y -= pixH; //mimo oblast -OK
-		posOperands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(y)));
+		q->push_back(_invertCm,getLastOperator(q));
+		q->push_back(createOperatorTranslation(ui.positionX->value(),ui.positionY->value()),getLastOperator(q));
+		q->push_back(createOperatorRotation(toRadians(ui.rotation->value())),getLastOperator(q));
+		q->push_back(createOperatorScale(pixW,pixH ),getLastOperator(q));
 	}
-	q->push_back(createOperator("cm",posOperands),getLastOperator(q));
-
 	//image.save("outputSave.png");
-	//vyhod alpha channel
-	
+	//vyhod alpha channel	
 	q->push_back(biOp,getLastOperator(q));
 	PdfOperator::Operands o;
 	q->push_back(createOperator("Q", o), getLastOperator(q));
@@ -135,9 +139,89 @@ void InsertImage::apply()
 	biOp = boost::shared_ptr<InlineImageCompositePdfOperator>();
 	this->hide();
 }
-void InsertImage::setImage(PdfOp ii)
+struct Cm
 {
+	double matrix[6];
+	Cm (double a=1.0f, double b=0.0f, double c=0.0f, double d=1.0f, double e=0.0f, double f=0.0f)
+	{
+		matrix[0] = a;matrix[1] = b;matrix[2] = c;
+		matrix[3] = d;matrix[4] = e;matrix[5] = f;
+	}
+};
+void InsertImage::setImage(PdfOp ii, double scale)
+{
+	_scale = scale;
+	DisplayParams params;
+	GfxState state = params.getCleanState();
 	biOp = boost::dynamic_pointer_cast<InlineImageCompositePdfOperator>(ii->clone());
 	ui.sizeX->setValue(biOp->getWidth());
 	ui.sizeY->setValue(biOp->getHeight());
+	//najdeme incerzu maticu
+	PdfOperator::Iterator iter = PdfOperator::getIterator(ii);
+	iter = iter.next();
+	bool addCm = false;
+	std::vector<Cm> cms;
+	int ballance =0; //kolko Q sme nasli ( neamju am byt )
+	while (true)
+	{
+		iter = iter.prev();
+		if (!iter.valid())
+			break;
+		std::string name;
+		iter.getCurrent()->getOperatorName(name);
+		if (name=="Q") //koniec nasho hladania
+		{//zmaz poslednych 6
+			ballance++;
+			continue;
+		}
+		if (name == "q" && ballance>0)
+		{
+			ballance--;//uzatvara nejake Q
+			continue;
+		}
+		if (name== "cm" && !ballance)
+		{
+			Cm cm;
+			PdfOperator::Operands opers;
+			iter.getCurrent()->getParameters(opers);
+			assert(opers.size()==6);
+			shared_ptr<CArray> rect;
+			for ( int i = 0; i<6;i++)
+			{
+				cm.matrix[i] = utils::getDoubleFromIProperty(opers[i]);
+			}
+			cms.push_back(cm);
+		}
+	}
+	while (cms.size())
+	{
+		Cm cm = cms.back();
+		state.concatCTM(cm.matrix[0],cm.matrix[1],cm.matrix[2],cm.matrix[3],cm.matrix[4],cm.matrix[5]);
+		cms.pop_back();
+	}
+	const double * d = state.getCTM();
+	double s = d[3]*d[0] - d[1]*d[2];
+	Cm c(d[3]/s,d[1]/s,d[2]/s,d[0]/s,0,0);
+#if _DEBUG
+	state.concatCTM(c.matrix[0],c.matrix[1],c.matrix[2],c.matrix[3],c.matrix[4],c.matrix[5]);
+	d = state.getCTM();
+	assert(fabs(d[0] - 1)<1e-4);
+	assert(fabs(d[1])<1e-4);
+	assert(fabs(d[2])<1e-4);
+	assert(fabs(d[3]-1)<1e-4);
+#endif
+	//c.matrix[0]=1;
+	//c.matrix[3]=1;
+	PdfOperator::Operands operands;
+	for ( int i =0; i<6; i++)
+		operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(c.matrix[i])));
+	_invertCm = createOperator("cm",operands);
+	BBox b = ii->getBBox();
+	ui.positionX->setMaximum(DisplayParams::DEFAULT_PAGE_RX*_scale-min(b.xleft,b.xleft));//o kolko a poze posunut doprava
+	ui.positionX->setMinimum(-min(b.xleft,b.xleft));//o kolko a poze posunut doprava
+	ui.positionX->setValue(0);
+
+	ui.positionY->setMaximum(DisplayParams::DEFAULT_PAGE_RY*_scale-min(b.yleft,b.yleft));//o kolko a poze posunut doprava
+	ui.positionY->setMinimum(-min(b.yleft,b.yleft));//o kolko a poze posunut doprava
+	ui.positionY->setValue(0);
 }

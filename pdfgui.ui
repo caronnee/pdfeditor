@@ -33,16 +33,10 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <property name="leftMargin">
+       <property name="spacing">
         <number>0</number>
        </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>200</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -249,6 +243,19 @@
          </attribute>
         </widget>
        </item>
+       <item>
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </widget>
     </item>
@@ -258,16 +265,7 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>300</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -410,6 +408,19 @@
             </property>
            </widget>
           </item>
+          <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
        </item>
@@ -428,16 +439,7 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>300</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -537,6 +539,19 @@
          </property>
         </widget>
        </item>
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </widget>
     </item>
@@ -552,22 +567,26 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>300</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
         <widget class="QPushButton" name="insertImageButton">
+         <property name="toolTip">
+          <string>Insert inline image</string>
+         </property>
          <property name="text">
-          <string>insertImage</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="pdfgui.qrc">
+           <normaloff>:/images/addpage.png</normaloff>:/images/addpage.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -579,8 +598,21 @@
        </item>
        <item>
         <widget class="QPushButton" name="selectImageButton">
+         <property name="toolTip">
+          <string>select inline image</string>
+         </property>
          <property name="text">
-          <string>select</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="pdfgui.qrc">
+           <normaloff>:/images/hand.ico</normaloff>:/images/hand.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -592,22 +624,61 @@
        </item>
        <item>
         <widget class="QPushButton" name="deleteImageButton">
+         <property name="toolTip">
+          <string>delete inline image</string>
+         </property>
          <property name="text">
-          <string>deleteImage</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="pdfgui.qrc">
+           <normaloff>:/images/DeleteText.ico</normaloff>:/images/DeleteText.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="changeImageButton">
+         <property name="toolTip">
+          <string>change inline image</string>
+         </property>
          <property name="text">
-          <string>change</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="pdfgui.qrc">
+           <normaloff>:/images/operator.jpg</normaloff>:/images/operator.jpg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="imagePartButton">
+         <property name="toolTip">
+          <string>extract part of pdf as image</string>
+         </property>
          <property name="text">
-          <string>extractPart</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="pdfgui.qrc">
+           <normaloff>:/images/operator.jpg</normaloff>:/images/operator.jpg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -616,8 +687,21 @@
        </item>
        <item>
         <widget class="QPushButton" name="extractButton">
+         <property name="toolTip">
+          <string>extract inline image</string>
+         </property>
          <property name="text">
-          <string>extractImage</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="pdfgui.qrc">
+           <normaloff>:/images/TextConvert.ico</normaloff>:/images/TextConvert.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -626,6 +710,19 @@
           <string>subGroup</string>
          </attribute>
         </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -642,22 +739,19 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>400</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
         <widget class="QPushButton" name="insertAnotation">
          <property name="text">
-          <string>insert Annotation</string>
+          <string>insert comment</string>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -690,6 +784,19 @@
           <string>delete Annotation</string>
          </property>
         </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>

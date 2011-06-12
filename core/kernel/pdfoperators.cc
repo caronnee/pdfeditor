@@ -630,7 +630,7 @@ boost::shared_ptr<PdfOperator> createOperatorScale (double width, double height)
 	ops.push_back (boost::shared_ptr<IProperty>(new CReal (0)));
 	return createOperator("cm", ops);
 }
-boost::shared_ptr<PdfOperator> createOperatorScale (double radians) 
+boost::shared_ptr<PdfOperator> createOperatorRotation (double radians) 
 {
 	double cs = cos(radians);
 	double sn = sin(radians);

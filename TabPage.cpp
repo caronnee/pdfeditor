@@ -12,6 +12,7 @@
 #include "utils/types/coordinates.h"
 #include <float.h>
 #include <vector>
+#include <QRgb>
 //QT$
 #include <QMessageBox>
 #include <QRect>
@@ -31,6 +32,7 @@
 //PDF
 #include <kernel/pdfoperators.h>
 #include <kernel/cannotation.h>
+#include <typedefs.h>
 
 #include "openpdf.h"
 
@@ -165,10 +167,9 @@ void TabPage::raiseSearch()
 {
 	_search->show();
 }
-
 void TabPage::raiseChangeSelectedImage()
 {
-	_image->setImage( _selectedImage );
+	_image->setImage( _selectedImage, 72.0f/displayparams.vDpi); //TODO x,y
 	BBox b = _selectedImage->getBBox();
 	double scaleX = 72.0f/displayparams.vDpi;
 	double scaleY = 72.0f/displayparams.hDpi;
@@ -519,6 +520,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			highlightText(point); //nesprav nic, pretoze to bude robit mouseMove
 			break;
 		}
+	case ModeImagePart:
 	case ModeInsertImage:
 		{
 			if (!_dataReady)
@@ -529,33 +531,54 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			}
 			break;
 		}
-	case ImageModePart:
+	case ModeExtractImage:
 		{
-			//zadaj init poziciue ->mouse Release
-			if ( _dataReady )
+			Ops ops;
+			page->getObjectsAtPosition(ops,libs::Point(point.x(),point.y()));
+			while (!ops.empty())
 			{
-				//copy to clipboard
-				QClipboard *clipBoard = QApplication::clipboard();
-				QRect rect(_mousePos, point); //to vyberie ale vsetko
-				//TODO minimum from BOX selected & rect
-				clipBoard->setImage(_labelPage->getImage().copy(rect));
+				std::string name;
+				ops.back()->getOperatorName(name);
+				if (typeChecker.isType(OpImageName,name))
+					break;
+				ops.pop_back();
+			}
+			if (ops.empty())
+				return;
+			PdfOperator::Operands op;
+			ops.back()->getParameters(op);
+	//		image_dict.addProperty ("CS", CName ("RGB"));
+	//image_dict.addProperty ("BPC", CInt (8)); //
+			shared_ptr<pdfobjects::CInlineImage> inIm =  boost::dynamic_pointer_cast<pdfobjects::CInlineImage>(op.back());
+			boost::shared_ptr<IProperty> prop = inIm->getProperty("CS");
+			std::string cs = utils::getNameFromIProperty(prop);
+			if (cs!="RGB")
+			{
+				QMessageBox::warning(this, "Unable to export inline image","Unimplented color space", QMessageBox::Ok,QMessageBox::Ok);
+				return; 
+			}
+			int bpp = utils::getIntFromIProperty(inIm->getProperty("BPC"));
+			if(bpp!=8)
+			{
+				QMessageBox::warning(this, "Unable to export inline image","Wrong depth", QMessageBox::Ok,QMessageBox::Ok);
 				return;
 			}
-			else
-			{ //TODO painter showing it's way
-				_mousePos = point;
-				Ops ops;
-				getSelected( point.x(), point.y(), ops);
-				for ( size_t i =0 ; i < ops.size(); i++)
-				{
-					std::string s;
-					ops[i]->getOperatorName(s);
-					if (!typeChecker.isType(OpImageName,s))
-						continue;
-					_dataReady = true; //TODO vyznacenie
-					break;
+			QImage image(QSize(inIm->width(),inIm->height()),QImage::Format_ARGB32);
+			CStream::Buffer buffer = inIm->getBuffer();
+			int index = 0;
+
+			for ( int h=0; h<inIm->height();h++)
+				for ( int w=0; w<inIm->width();w++)
+				{ 
+					QColor c((unsigned char)buffer[index],(unsigned char)buffer[index+1],(unsigned char)buffer[index+2],0);
+					image.setPixel(w,h,c.rgb());
+					index+=3;
 				}
-			}
+
+			QString fileName = QFileDialog::getSaveFileName(this, tr("Save image"), "", tr("Images (*.png *.jpg *.bmp))"));
+			if (fileName.isEmpty())
+				return;
+			image.save(fileName);
 			break;
 		}
 	case ImageMode:
@@ -614,10 +637,18 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			_dataReady=false;
 			break;
 		}
+	case ModeImagePart: //data ready
+		{
+			//copy to clipboard
+			QClipboard *clipBoard = QApplication::clipboard();
+			QRect rect(min(point.x(),_mousePos.x()), min(point.y(),_mousePos.y()), abs(point.x()-_mousePos.x()),abs(point.y()-_mousePos.y()));
+			clipBoard->setImage(_labelPage->getImage().copy(rect));
+			return;
+		}
 	default:
 		break;
 	}
-	DEBUGLINE("Data released");
+	_selected = false;
 }
 void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit mouseMove
 {

@@ -334,6 +334,11 @@ boost::shared_ptr<PdfOperator> createOperatorTranslation (double x, double y);
  */
 boost::shared_ptr<PdfOperator> createOperatorScale (double width, double height);
 
+/**
+ * Create rotation operator
+ */
+boost::shared_ptr<PdfOperator> createOperatorRotation (double radians);
+
 /** Create a text operator with the font encoding translation.
  * @param cc Content stream wehere the operator will be added (this is not done by this 
  *           function - we just reuse resources from it).

@@ -99,6 +99,11 @@ typedef struct DisplayParams
 		toY = (ctm[0]*fromY + ctm[1]*ctm[4] - ctm[0]*ctm[5] - ctm[1]*fromX) / h;
 	}
 
+	GfxState getCleanState()
+	{
+		PDFRectangle pdfRect ( pageRect.xleft, pageRect.yleft, pageRect.xright, pageRect.yright );
+		return GfxState(hDpi, vDpi, &pdfRect, rotate, upsideDown );
+	}
 	/** Converting pdf position to position on pixmap of viewed page.
 	 * @param fromX	X position in pdf page.
 	 * @param fromY	Y position in pdf page.
