@@ -30,6 +30,7 @@ public slots:
 	void setModeInsertText();
 	void setModeSelectText();
 	void setModeInsertImage();
+	void setModeDefault();
 	void setModeSelectImage();
 
 	void changeSelectedImage();
@@ -37,7 +38,7 @@ public slots:
 	void saveEncoded();
 	// extracts text
 	void getText();
-
+	void derotate();
 	//rotates active page
 	void rotate();
 

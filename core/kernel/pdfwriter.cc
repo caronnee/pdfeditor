@@ -506,13 +506,6 @@ using namespace boost;
 
 	ObjectList::const_iterator i;
 	size_t index=0;
-	
-	// creates context for observers
-	shared_ptr<OperationScope> scope(new OperationScope());
-	scope->total=objectList.size();
-	scope->task=CONTENT;
-	shared_ptr<ChangeContext> context(new ChangeContext(scope));
-	shared_ptr<OperationStep> newValue(new OperationStep());
 
 	// prepares offTable and writes objects
 	for(i=objectList.begin(); i!=objectList.end(); ++i, index++)
@@ -531,7 +524,10 @@ using namespace boost;
 		// available
 		if(offTable.find(ref)!=offTable.end())
 		{
-			utilsPrintDbg(DBG_WARN, "Object with "<<ref<<" is already stored. Skipping.");
+			scoped_ptr<IProperty> cobj_ptr(createObjFromXpdfObj(*obj));
+			std::string objPdfFormat;
+			cobj_ptr->getStringRepresentation(objPdfFormat);
+			utilsPrintDbg(DBG_WARN, "Object with "<<ref<<" is already stored. Skipping." << objPdfFormat);
 			continue;
 		}
 
@@ -545,10 +541,6 @@ using namespace boost;
 		
 		writeObject(*obj, stream, &ref, true,ignoreStream);	
 		utilsPrintDbg(DBG_DBG, "Object with "<<ref<<" stored at offset="<<objPos);
-		
-		// calls observers
-		newValue->currStep=index;
-		notifyObservers(newValue, context);
 	}
 	
 	utilsPrintDbg(DBG_DBG, "All objects (number="<<objectList.size()<<") stored.");

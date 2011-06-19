@@ -15,17 +15,21 @@ typedef boost::shared_ptr<pdfobjects::UnknownCompositePdfOperator> PdfComp;
 
 class TextFont
 {
-	std::string fontId;
+	std::string _name;
+	std::string _fontId;
 public:
-	TextFont(std::string id) : fontId(id) {}
+	TextFont(std::string name) : _name(_name),_fontId("") {}
 	//vrati pdfoperator TF, s nastavenim fontu a velkosti
 	boost::shared_ptr<pdfobjects::PdfOperator> getFontOper(int size)
-	{	
+	{
+		assert(!_fontId.empty());
 		pdfobjects::PdfOperator::Operands fontOperands;//TODO check poradie
-		fontOperands.push_back(boost::shared_ptr<pdfobjects::IProperty>(new pdfobjects::CName (fontId)) );
+		fontOperands.push_back(boost::shared_ptr<pdfobjects::IProperty>(new pdfobjects::CName (_fontId)) );
 		fontOperands.push_back(boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(size)));//velkost pismeno
 		return createOperator("Tf", fontOperands);
 	}
+	std::string getName() const{ return _name; }
+	void setId(std::string id) { _fontId = id; } 
 };
 
 class FontWidget : public QWidget
@@ -80,6 +84,7 @@ signals:
 	void changeTextSignal();
 	void text(PdfOp op);
 	void changeSelected();
+	std::string fontInPage(std::string id);
 
 public slots:
 	void setInsert();

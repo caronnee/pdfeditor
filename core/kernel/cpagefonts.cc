@@ -46,28 +46,20 @@ using namespace utils;
 // Static initialization
 const char* CPageFonts::PDFEDIT_FONTID = "PDFEDIT_F";
 
-// =====================================================================================
-namespace {
-// =====================================================================================
-
-	/** 
-	 * Looks for a font with the given name.
-	 * @param container Container of fonts (filled with getFontIdsAndNames).
-	 * @param name Name of the font.
-	 * @return iterator to the container (container.end() if not found).
-	 */
-	CPageFonts::FontList::const_iterator 
-	findFont (const CPageFonts::FontList& containter, const std::string& name)
-	{
-		for (CPageFonts::FontList::const_iterator i=containter.begin(); i!=containter.end(); ++i)
-			if(i->first == name)
-				return i;
-		return containter.end();
-	}
-
-// =====================================================================================
-} // namespace 
-// =====================================================================================
+/** 
+* Looks for a font with the given name.
+* @param container Container of fonts (filled with getFontIdsAndNames).
+* @param name Name of the font.
+* @return iterator to the container (container.end() if not found).
+*/
+CPageFonts::FontList::const_iterator 
+findFont (const CPageFonts::FontList& containter, const std::string& name)
+{
+	for (CPageFonts::FontList::const_iterator i=containter.begin(); i!=containter.end(); ++i)
+		if(i->first == name)
+			return i;
+	return containter.end();
+}
 
 
 //

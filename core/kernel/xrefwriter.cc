@@ -571,6 +571,14 @@ int XRefWriter::fillObjectList(pdfobjects::utils::IPdfWriter::ObjectList &object
 
 		::Object * obj=XPdfObjectFactory::getInstance();
 		XRef::fetch(num, gen, obj);
+		if (obj->isNull())
+		{
+			//try to look in the changed things
+			ChangedStorage::Iterator i;
+			for(i=changedStorage.begin(); i!=changedStorage.end(); ++i)
+				if (i->first == ref)
+					obj = i->second->object->clone();
+		}
 		if(!isOk())
 		{
 			kernelPrintDbg(debug::DBG_ERR, ref<<" object fetching failed with code="
@@ -651,6 +659,23 @@ using namespace utils;
 			i->second=NULL;
 		}
 	}
+	////save outputStream
+	//{
+	//	IPdfWriter::ObjectList changed;
+	//	ChangedStorage::Iterator i;
+	//	for(i=changedStorage.begin(); i!=changedStorage.end(); ++i)
+	//	{
+	//		::Ref ref=i->first;
+	//		Object * obj=i->second->object;
+	//		// for sake of paranoia we should send clones and not the
+	//		// object itself to writer which is allowed to alter object
+	//		changed.push_back(IPdfWriter::ObjectElement(ref, obj->clone()));
+	//	}
+
+	//	// delegates writing to pdfWriter using streamWriter stream from storePos
+	//	// position and frees all clones from changed storage.
+	//	pdfWriter->writeContent(changed, *outputStream);
+	//}
 	utilsPrintDbg(DBG_INFO, "Writing xref and trailer section");
 	// no previous section information and all objects are going to be written
 	IPdfWriter::PrevSecInfo prevInfo={0, 0}; //TODO other trailers?

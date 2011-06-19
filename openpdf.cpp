@@ -57,6 +57,10 @@ void OpenPdf::setModeInsertImage()
 {
 	setMode(ModeInsertImage);
 }
+void OpenPdf::setModeDefault()
+{
+	setMode(ModeOperatorSelect);
+}
 void OpenPdf::setModeSelectImage()
 {
 	setMode(ModeSelectImage);
@@ -76,10 +80,15 @@ void OpenPdf::getText()
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->exportText();
 }
+void OpenPdf::derotate()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->rotate(-90);
+}
 void OpenPdf::rotate()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
-	page->rotate();
+	page->rotate(90);
 }
 void OpenPdf::closeAndRemoveTab(int i)
 {

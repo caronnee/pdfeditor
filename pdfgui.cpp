@@ -27,7 +27,9 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	ui.textFrame->hide();
 	ui.annotationFrame->hide();
 	ui.imageFrame->hide();
-
+//TODO dat do uicka
+	connect( this->ui.opSelect, SIGNAL(clicked()), this->ui.openedPdfs,SLOT(setModeDefault()));
+	connect( this->ui.derotateButton, SIGNAL(clicked()), this->ui.openedPdfs,SLOT(derotate()));
 	connect( this->ui.deleteButton,SIGNAL(clicked()),this->ui.openedPdfs,SLOT(deleteSelectedText()));
 	connect( this->ui.changeButton,SIGNAL(clicked()),this->ui.openedPdfs,SLOT(changeSelectedText()));
 	connect( this->ui.eraseButton,SIGNAL(clicked()),this->ui.openedPdfs,SLOT(eraseSelectedText()));
@@ -39,6 +41,8 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.changeImageButton,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(changeSelectedImage()));
 	connect( this->ui.imagePartButton,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(setModeImagePart()));
 	connect( this->ui.extractButton,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(setModeExtractImage()));
+	//connect( this->ui.highlightButton,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(highlightSelected()));
+	//connect( this->ui.insertAnotation,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(setModeInsertComment()));
 }
 pdfGui::~pdfGui()
 {

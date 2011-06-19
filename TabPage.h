@@ -138,8 +138,8 @@ private: //variables
 	//PdfOp _workingOp;
 	IsType typeChecker;
 	pdfobjects::DisplayParams displayparams;	
-	boost::shared_ptr<pdfobjects::CPdf> pdf;
-	boost::shared_ptr<pdfobjects::CPage> page;
+	boost::shared_ptr<pdfobjects::CPdf> _pdf;
+	boost::shared_ptr<pdfobjects::CPage> _page;
 	TextData _textList;
 	//oterator	of selected
 	TextData::iterator sTextIt, sTextItEnd, sTextMarker; //kde ten iterator konci
@@ -150,6 +150,7 @@ private: //variables
 	CPage::Annotations _annots;
 	DisplayPage * _labelPage;
 private:
+	void initRevisions();
 	PdfOperator::Iterator TabPage::findTdAssOp(PdfOperator::Iterator iter);
 	void rotatePdf(int angle, double& x,double& y,bool fromPixMap);
 	float findDistance(std::string s,TextData::iterator textIter);
@@ -223,6 +224,7 @@ public slots:
 	void setTextOperator();
 	void setImageOperator();
 
+	std::string addFontToPage(std::string id);
 	void replaceText( QString what, QString by);
 	void changeSelectedImage(PdfOp op);
 	void raiseSearch();
@@ -270,7 +272,7 @@ public slots:
 	/** exports text to the chosen file & opens that file ( txt ) in view */
 	void exportText();
 
-	void rotate();
+	void rotate(int angle);
 
 private slots:
 

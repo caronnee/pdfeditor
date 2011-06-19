@@ -58,9 +58,9 @@ FontWidget::FontWidget(const FontWidget & font) : QWidget(font.parentWidget())
 	//copy TODO
 	throw "Not now";
 }
-void FontWidget::addFont(std::string name, std::string val)//TODO
+void FontWidget::addFont(std::string name, std::string val)
 {
-	QVariant q(val.c_str()); //TODO convert to more understable font name
+	QVariant q(val.c_str()); 
 	ui.fonts->insertItem(ui.fonts->count(),q.toString(),q); //Qvariant?
 	_fonts.push_back(name);
 }
@@ -124,22 +124,25 @@ void FontWidget::addParameters() //TODO nie s jedine parametre
 	{
 		//stroking operands
 		PdfOperator::Operands operands;
-		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getR())) );
-		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getG())) );
-		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorS->getB())) );
+		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorS->getR()/255)) );
+		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorS->getG()/255)) );
+		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorS->getB()/255)) );
 		_BT->push_back( createOperator("RG", operands ), getLastOperator(_BT));
 	}
 	{
 		PdfOperator::Operands operands;
-		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getR())) );
-		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getG())) );
-		operands.push_back(shared_ptr<IProperty>(new CReal(this->ui.colorN->getB())) );
+		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorN->getR()/255)) );
+		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorN->getG()/255)) );
+		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorN->getB()/255)) );
 
 		//non-stroking operands
 		_BT->push_back( createOperator("rg", operands ), getLastOperator(_BT));
 	}
 
 	QVariant v = this->ui.fontsize->itemData(this->ui.fontsize->currentIndex());
+	std::string id = emit fontInPage(_fonts[this->ui.fonts->currentIndex()].getName());
+	assert(!id.empty());
+	_fonts[this->ui.fonts->currentIndex()].setId(id);
 	_BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(_BT));
 	_BT->push_back( createMatrix("Tm"), getLastOperator(_BT));
 }
@@ -175,6 +178,7 @@ void FontWidget::apply()
 	QString s = this->ui.text->toPlainText();
 	std::string txt(s.toAscii().data());
 	emit text(addText(txt));
+	this->close();
 }
 void FontWidget::setPosition(float pdfx, float pdfy)
 {

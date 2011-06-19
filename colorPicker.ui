@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>260</width>
+    <width>182</width>
     <height>38</height>
    </rect>
   </property>
@@ -43,6 +43,15 @@
    </item>
    <item>
     <widget class="QLabel" name="preview">
+     <property name="minimumSize">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -51,5 +60,54 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>b</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>colorPick</receiver>
+   <slot>update()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>113</x>
+     <y>18</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>83</x>
+     <y>18</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>r</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>colorPick</receiver>
+   <slot>update()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>27</x>
+     <y>18</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>83</x>
+     <y>18</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>g</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>colorPick</receiver>
+   <slot>update()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>70</x>
+     <y>18</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>83</x>
+     <y>18</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

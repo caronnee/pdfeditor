@@ -59,10 +59,11 @@ void Comments::onChange(int index)
 	_an = pdfobjects::CAnnotation::createAnnotation(rect, strong.toAscii().data());
 	//cela annotacia sa bude diat v page
 }
-void Comments::insertMarkup()
+void Comments::insertMarkup()//TODO hihligh s  textom
 {
 	pdfobjects::CAnnotation::setAnnotInitializator(_inits[2]);
 	_an = pdfobjects::CAnnotation::createAnnotation(rect, "Highlight");
+	ui.annotType->setCurrentIndex(2);
 	apply();
 }
 void Comments::apply()
@@ -71,7 +72,7 @@ void Comments::apply()
 	//zisti, ci je to text
 	ADictionary d = _an->getDictionary();
 	//d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string(ui.text->toPlainText().toAscii().data()))));
-	d->addProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance("Muf!")));
+	d->addProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance("mruf?")));//autor
 	switch (ui.annotType->currentIndex())
 	{
 	case AText: //text, obycajny
@@ -97,6 +98,7 @@ void Comments::apply()
 	case AUnderline:
 	case AStrike:
 		{
+			//d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance("Content of Highligh")));
 			d->addProperty("Subtype", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CNameFactory::getInstance(std::string(ui.annotType->currentText().toAscii().data()))));
 			//farba
 			pdfobjects::CArray arr;

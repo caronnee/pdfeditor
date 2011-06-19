@@ -118,7 +118,8 @@ public:
 
 }; // class CPage
 
-
+CPageFonts::FontList::const_iterator 
+findFont (const CPageFonts::FontList& containter, const std::string& name);
 //=====================================================================================
 } // namespace pdfobjects
 //=====================================================================================

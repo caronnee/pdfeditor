@@ -48,7 +48,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="pdfgui.qrc">
+          <iconset resource="pdf.qrc">
            <normaloff>:/images/open.ico</normaloff>:/images/open.ico</iconset>
          </property>
          <property name="iconSize">
@@ -68,8 +68,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>images/save.ico</normaloff>images/save.ico</iconset>
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/save.ico</normaloff>:/images/save.ico</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -88,8 +88,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>images/savecopy.ico</normaloff>images/savecopy.ico</iconset>
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/savecopy.ico</normaloff>:/images/savecopy.ico</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -108,8 +108,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>images/decrypt_icon.jpg</normaloff>images/decrypt_icon.jpg</iconset>
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/decrypt_icon.jpg</normaloff>:/images/decrypt_icon.jpg</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -131,8 +131,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>images/content.ico</normaloff>images/content.ico</iconset>
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/content.ico</normaloff>:/images/content.ico</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -157,8 +157,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>images/setText.ico</normaloff>images/setText.ico</iconset>
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/insertTextMarker.ico</normaloff>:/images/insertTextMarker.ico</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -180,8 +180,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>images/images.ico</normaloff>images/images.ico</iconset>
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/images.ico</normaloff>:/images/images.ico</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -203,8 +203,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>images/comment.ico</normaloff>images/comment.ico</iconset>
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/comment.ico</normaloff>:/images/comment.ico</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -226,8 +226,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>images/operator.jpg</normaloff>images/operator.jpg</iconset>
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/operator.jpg</normaloff>:/images/operator.jpg</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -236,6 +236,9 @@
           </size>
          </property>
          <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
           <bool>true</bool>
          </property>
          <attribute name="buttonGroup">
@@ -284,13 +287,13 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPushButton" name="derotate">
+           <widget class="QPushButton" name="derotateButton">
             <property name="text">
              <string/>
             </property>
             <property name="icon">
-             <iconset>
-              <normaloff>images/derotate.ico</normaloff>images/derotate.ico</iconset>
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/derotate.ico</normaloff>:/images/derotate.ico</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -301,13 +304,13 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="rotate">
+           <widget class="QPushButton" name="rotateButton">
             <property name="text">
              <string/>
             </property>
             <property name="icon">
-             <iconset>
-              <normaloff>images/rotate.ico</normaloff>images/rotate.ico</iconset>
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/rotate.ico</normaloff>:/images/rotate.ico</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -323,8 +326,8 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset>
-              <normaloff>images/addpage.png</normaloff>images/addpage.png</iconset>
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/addpage.png</normaloff>:/images/addpage.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -340,8 +343,8 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset>
-              <normaloff>images/uppage.ico</normaloff>images/uppage.ico</iconset>
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/uppage.ico</normaloff>:/images/uppage.ico</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -360,8 +363,8 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset>
-              <normaloff>images/downpage.ico</normaloff>images/downpage.ico</iconset>
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/downpage.ico</normaloff>:/images/downpage.ico</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -377,8 +380,8 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset>
-              <normaloff>images/deletepage.ico</normaloff>images/deletepage.ico</iconset>
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/deletepage.ico</normaloff>:/images/deletepage.ico</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -397,8 +400,8 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset>
-              <normaloff>images/TextConvert.ico</normaloff>images/TextConvert.ico</iconset>
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/TextConvert.ico</normaloff>:/images/TextConvert.ico</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -448,8 +451,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>images/hand.ico</normaloff>images/hand.ico</iconset>
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/hand.ico</normaloff>:/images/hand.ico</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -461,7 +464,7 @@
           <bool>true</bool>
          </property>
          <property name="checked">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <attribute name="buttonGroup">
           <string>subGroup</string>
@@ -474,8 +477,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>images/insert_text.ico</normaloff>images/insert_text.ico</iconset>
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/insert_text.ico</normaloff>:/images/insert_text.ico</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -497,8 +500,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>images/deleteText.ico</normaloff>images/deleteText.ico</iconset>
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/DeleteText.ico</normaloff>:/images/DeleteText.ico</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -579,7 +582,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="pdfgui.qrc">
+          <iconset resource="pdf.qrc">
            <normaloff>:/images/addpage.png</normaloff>:/images/addpage.png</iconset>
          </property>
          <property name="iconSize">
@@ -605,7 +608,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="pdfgui.qrc">
+          <iconset resource="pdf.qrc">
            <normaloff>:/images/hand.ico</normaloff>:/images/hand.ico</iconset>
          </property>
          <property name="iconSize">
@@ -631,7 +634,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="pdfgui.qrc">
+          <iconset resource="pdf.qrc">
            <normaloff>:/images/DeleteText.ico</normaloff>:/images/DeleteText.ico</iconset>
          </property>
          <property name="iconSize">
@@ -651,7 +654,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="pdfgui.qrc">
+          <iconset resource="pdf.qrc">
            <normaloff>:/images/operator.jpg</normaloff>:/images/operator.jpg</iconset>
          </property>
          <property name="iconSize">
@@ -671,7 +674,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="pdfgui.qrc">
+          <iconset resource="pdf.qrc">
            <normaloff>:/images/operator.jpg</normaloff>:/images/operator.jpg</iconset>
          </property>
          <property name="iconSize">
@@ -694,7 +697,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="pdfgui.qrc">
+          <iconset resource="pdf.qrc">
            <normaloff>:/images/TextConvert.ico</normaloff>:/images/TextConvert.ico</iconset>
          </property>
          <property name="iconSize">
@@ -861,7 +864,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="pdfgui.qrc"/>
+  <include location="pdf.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -1057,7 +1060,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>rotate</sender>
+   <sender>rotateButton</sender>
    <signal>clicked()</signal>
    <receiver>openedPdfs</receiver>
    <slot>rotate()</slot>

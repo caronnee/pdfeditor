@@ -121,23 +121,10 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>50</width>
-          <height>30</height>
-         </size>
-        </property>
        </widget>
       </item>
       <item row="7" column="1">
-       <widget class="ColorPicker" name="colorN" native="true">
-        <property name="maximumSize">
-         <size>
-          <width>50</width>
-          <height>30</height>
-         </size>
-        </property>
-       </widget>
+       <widget class="ColorPicker" name="colorN" native="true"/>
       </item>
      </layout>
     </widget>
