@@ -317,7 +317,7 @@ void TabPage::insertTextMarkup(Annot annot)
 	std::string m;
 	apDict->getStringRepresentation(m);
 	annot->getDictionary()->getStringRepresentation(m);
-	fprintf(stderr,"$s\n",m.c_str());
+	//fprintf(stderr,"$s\n",m.c_str());
 	insertAnnotation(annot);
 	//najsi mi vsetky textove oeratory a z nich vycuvam svojich 8 cisel, pravepodobne z gxfconfu a pozicie offset operatorov ( vektory )
 	//TODO treba osetrit na to, ak chceme zvyraznit len jednu cast textoveho operatora
@@ -624,9 +624,13 @@ void TabPage::deleteSelectedImage()
 }
 void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit mouseMove
 {
-	_dataReady = false;
 	switch (_parent->getMode())
 	{
+	case ModeSelectText:
+		{
+			highlightText(point);
+			break;
+		}
 	case ModeInsertImage:
 		{
 			QRect r(min(_mousePos.x(),point.x()),min(_mousePos.y(),point.y()), 
@@ -644,8 +648,10 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			return;
 		}
 	default:
+	//	highlight();//TODO ZMAZST
 		break;
 	}
+	_dataReady = false;
 }
 void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit mouseMove
 {
@@ -664,6 +670,7 @@ void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit 
 	DEBUGLINE("Operator found");
 	sTextIt = _textList.begin();
 	setTextData(sTextIt,_textList.end(),it.getCurrent());
+	sTextIt->clear();
 	sTextIt->setBegin(x);//zarovnane na pismenko
 	sTextMarker = sTextItEnd = sTextIt;
 }
@@ -725,6 +732,12 @@ void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka s
 		sTextItEnd = sTextMarker;
 		sTextItEnd->setEnd(_mousePos.x());
 	}
+	else if (move == sTextMarker)
+	{
+		sTextIt = sTextItEnd = sTextMarker;
+		sTextIt->setBegin(min(point.x(),_mousePos.x()));
+		sTextIt->setEnd(max(point.x(),_mousePos.x()));
+	}
 	else
 	{
 		sTextIt = sTextMarker;
@@ -740,14 +753,6 @@ void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka s
 
 void TabPage::highlight()
 {
-	{
-		::Ref ref;
-		ref.gen=0;
-		ref.num=26;
-		PdfProperty p = _pdf->getIndirectProperty(ref);
-		std::string s;
-		p->getStringRepresentation(s);
-	}
 	if (!_selected)
 		return;
 	QColor color(255,36,255,50);
@@ -759,14 +764,15 @@ void TabPage::highlight()
 	assert(region.isEmpty());
 	while (true)
 	{
-		x1 = first->_begin;
+		x1= first->GetPreviousStop();
 		y1 = first->_ymin;
 		rotatePdf(_page->getRotation(),x1,y1,false);
-		x2 = first->_end;
+		x2 = first->GetNextStop();
 		y2 = first->_ymax;
 		rotatePdf(_page->getRotation(),x2,y2,false);
-		QRect r(min(x1,x2),min(y1,y2), first->GetNextStop()-first->_begin,abs(y1-y2));
-		region.append(r);
+		QRect r(min(x1,x2),min(y1,y2), fabs(x2-x1),fabs(y1-y2));
+		if (r.width() > first->_charSpace)
+			region.append(r);
 		if (first == sTextItEnd)
 		{
 			this->ui.scrollArea->ensureVisible(x2,y2);
@@ -1151,10 +1157,34 @@ void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
 }
 void TabPage::saveEncoded()
 {
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("PdfFile (*.pdf)"));
+#ifdef _DEBUG
+	_pdf->saveDecoded("decoded");
+	return;
+#endif
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("PdfFile Decoded (*.decoded)"));
+	//ulozi nejaku indirect property
+	//_pdf->saveDecoded("predtym.decoded");
+	//try
+	//{
+	//	std::string test;
+	//	boost::shared_ptr<pdfobjects::CStream> dct = utils::getCStreamFromDict(_page->getDictionary(),"indirect");
+	//	dct->getStringRepresentation(test);
+	//	printf(test.data());
+	//}
+	//catch (...)
+	//{
+	//	boost::shared_ptr<pdfobjects::CStream> dct(new CStream());
+	//	dct->addProperty("abcd",*PdfProperty( CIntFactory::getInstance(925)));
+	//	std::string test;
+	//	dct->getStringRepresentation(test);
+	//	IndiRef ref = _pdf->addIndirectProperty(dct);
+	//	_page->getDictionary()->addProperty("indirect",*PdfProperty(CRefFactory::getInstance(ref)));
+	//}
+	///*boost::shared_ptr<pdfobjects::CDict> dct(CDictFactory::getInstance());*/
+	//_pdf->saveDecoded("potom.decoded");
 	_pdf->saveDecoded(fileName.toAscii().data());
 }
-void TabPage::save() //revisiion je inde
+void TabPage::save() //revision je inde
 {
 	_pdf->save(false);
 	initRevisions();
@@ -1629,7 +1659,7 @@ void TabPage::searchPrev(QString srch)
 			std::wstring w;
 			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
 			txt->getFontText(w);
-			_searchEngine.setText(QString::fromStdWString(w));
+			_searchEngine.setText(revert(QString::fromStdWString(w)));
 		}
 		iter->clear();
 		float prev = iter->_begin;
@@ -1655,7 +1685,7 @@ void TabPage::searchPrev(QString srch)
 					_labelPage->unsetImg();
 					double a, b;
 					//ak je 
-					iter->setBegin(iter->position(iter->_text.size() - _searchEngine._end-1));
+					iter->setBegin(iter->position(iter->_text.size() - _searchEngine._end));
 					sTextItEnd = iter;
 					for ( int i = 0; i < _searchEngine._tokens; i++)
 					{
@@ -1678,9 +1708,9 @@ void TabPage::searchPrev(QString srch)
 			std::wstring w;
 			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
 			txt->getFontText(w);
-			_searchEngine.setText(QString::fromStdWString(w));
+			_searchEngine.setText(revert(QString::fromStdWString(w)));
 		}
-		//next page, etreba davat do splashu
+		//next page, netreba davat do splashu
 NextPage:
 		if (_pdf->getPagePosition(_page) == 1)
 			_pdf->getPage(_pdf->getPageCount());
@@ -1698,13 +1728,15 @@ void TabPage::searchForw(QString srch)
 {
 	for(int i = 0; i< _pdf->getPageCount(); i++)
 	{
-		_searchEngine.setPattern(srch); //vytvor strom, ktory bude hladat to slovo
+		_searchEngine.setPattern(srch); //vytvor strom, ktory bude hladat to slovo, pre kazdu stranku znova
 		//vysviet prve, ktore najdes
 		TextData::iterator iter = _textList.begin();
 		iter->clear();
 		if (_selected)
 		{
 			iter = sTextIt;//nic nemen v hladacom engine
+			_searchEngine.setText(QString::fromStdString(iter->_text));
+			_searchEngine._begin=sTextIt->letters(sTextIt->_begin);
 		}
 		else
 		{
@@ -1747,10 +1779,9 @@ void TabPage::searchForw(QString srch)
 					{
 						iter--;
 						iter->clear();
-						//a = iter->_;
 					}
 					sTextIt = iter;
-					b = iter->position(_searchEngine._begin); 
+					b = iter->position(_searchEngine._begin+1); 
 					//iter->setEnd(a);
 					iter->setBegin(b);
 					_selected = true; 

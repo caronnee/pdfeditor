@@ -80,8 +80,10 @@ DONE BY DeFAULT -ignorovat ostatne
 
 ---------------TEXT-------
 - test so zoomom
+- previous nefunguje dobre
 - spravot iba systemove fonty, aby sa zobrazilo spravne
 ----------------------SETTINGS--------------------------
+- undo,redo akcie
 - defaultne, 1/2 stranok
 - farba vysvietenia, v zavisloti na tom, co vysviecuje
 - pri zatvarani okien zostovat, co sa vsetko ulozilo, poprpade sa spytat, ci to ulozit ( setting save on exit )

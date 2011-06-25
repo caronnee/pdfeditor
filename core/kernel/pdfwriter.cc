@@ -330,7 +330,7 @@ void ZlibFilterStreamWriter::compress(const Object& obj, Ref* ref, StreamWriter&
 	CharBuffer charBuffer;
 	size_t size;
 	if (decompress)
-		charBuffer = CharBuffer((char*)convertStreamToDecodedData(obj, size));
+		size = streamToCharBuffer(obj,ref, charBuffer, convertStreamToDecodedData);
 	else
 		size = streamToCharBuffer(obj, ref, charBuffer, deflate);
 	if(!size)

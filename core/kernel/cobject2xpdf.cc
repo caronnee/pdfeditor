@@ -874,7 +874,7 @@ xpdfStreamObjFromBuffer (const CStream::Buffer& buffer, const CDict& dict)
 	
 	// Create stream
 	::Object* objDict = dict._makeXpdfObject ();
-	// Only undelying dictionary is used from objDict, so we can free objDict normally (this is 
+	// Only underlying dictionary is used from objDict, so we can free objDict normally (this is 
 	// due to the strange implementation of xpdf streams, no dict reference counting is used there
 	::Stream* stream = new ::MemStream (tmpbuf, 
 										static_cast<Guint>(0), 
@@ -933,6 +933,7 @@ unsigned char* bufferFromStream(Stream& str, size_t dictLength, size_t& size)
 
 unsigned char* convertStreamToDecodedData(const Object& obj, size_t& size)
 {
+	assert(obj.isStream());
 	Object lenObj;
 	obj.streamGetDict()->lookup("Length", &lenObj);
 	assert(lenObj.isInt());

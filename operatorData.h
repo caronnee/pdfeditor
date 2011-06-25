@@ -15,17 +15,18 @@ struct OperatorData
 
 public:
 	OperatorData(PdfOp op);
+	float GetPreviousStop();
 	float GetNextStop();
 	void change(bool from_beg);
 	void clear();
 	void restoreBegin();
 	void restoreEnd();
-	void set(int x,double &place);
+	void set(float x,double &place);
 	int letters(double x);
 	double position(int letters);
-	void setMark(int x, bool beg);
-	void setBegin(int x);
-	void setEnd(int x);
+	void setMark(float x, bool beg);
+	void setBegin(float x);
+	void setEnd(float x);
 	bool operator<(const OperatorData & oper); //zoradime podla y-osi
 	bool forward (double x, double y)const;
 	//split odla toho, ako sme to vysvietili

@@ -186,21 +186,3 @@ void FontWidget::setPosition(float pdfx, float pdfy)
 	_pdfPosY = pdfy;
 	ui.rotation->setValue(0);
 }
-//void FontWidget::setAngle(int angle)
-//{
-	////set cosie, sine
-	//double cs = cos(toRadians(angle));
-	//QVariant cs1(cs);
-	//double sn = sin(toRadians(angle));
-	//QVariant sn1(sn);
-	//QVariant sn2(sn*-1);
-	//ui.tm->setItem(0,0,new QTableWidgetItem(cs1.toString()));
-	//ui.tm->setItem(0,1,new QTableWidgetItem(sn1.toString()));
-	//ui.tm->setItem(1,0,new QTableWidgetItem(sn2.toString()));
-	//ui.tm->setItem(1,1,new QTableWidgetItem(cs1.toString()));
-
-	//QVariant x(_pdfPosX);
-	//QVariant y(_pdfPosY);
-	//ui.tm->setItem(2,0,new QTableWidgetItem(x.toString()));
-	//ui.tm->setItem(2,1,new QTableWidgetItem(y.toString()));
-//}

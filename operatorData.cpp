@@ -23,7 +23,18 @@ OperatorData::OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _
 	_charSpace = _end - _begin;
 	for ( size_t i =0; i< _text.size(); i++)
 		_charSpace -= txt->getWidth(_text[i]);
-	_charSpace/=_text.size();
+	if (_text.size()<=1)
+		_charSpace =0;
+	else
+		_charSpace/=_text.size()-1;
+}
+float OperatorData::GetPreviousStop()
+{
+	int l = letters(_begin);//pretoze to nemuzi byt nastavene presne na begin a letter vypluje najblizsiu DALSIU zastavku
+	l--;
+	if (l < 0)
+		return this->_origX;
+	return position(l);
 }
 float OperatorData::GetNextStop()
 {
@@ -56,7 +67,7 @@ void OperatorData::restoreEnd()
 {
 	_end = _origX2;
 }
-void OperatorData::set(int x,double &place)
+void OperatorData::set(float x,double &place)
 {
 	place = x;
 }
@@ -66,7 +77,7 @@ int OperatorData::letters(double x)
 	x = min(x,_origX2);
 	int i =0;
 	boost::shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(_op);
-	while (t<x)
+	while ( x - t >1e-2) //-1 je tolerancia
 	{
 		t+= txt->getWidth(_text[i]);
 		t+= this->_charSpace;
@@ -80,10 +91,10 @@ double OperatorData::position(int letters)
 	boost::shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(_op);
 	for(int i = 0; i< letters; i++)
 		place += txt->getWidth(_text[i]) + _charSpace;
-	assert(place < _origX2+0.5f);
+	assert(place < _origX2+_charSpace+1e-2);
 	return place;
 }
-void OperatorData::setMark(int x, bool beg)
+void OperatorData::setMark(float x, bool beg)
 {
 	if (beg)
 		setBegin(x);
@@ -91,11 +102,11 @@ void OperatorData::setMark(int x, bool beg)
 		setEnd(x);
 }
 
-void OperatorData::setBegin(int x)
+void OperatorData::setBegin(float x)
 {
 	set(x,_begin);
 }
-void OperatorData::setEnd(int x)
+void OperatorData::setEnd(float x)
 {
 	set(x,_end);
 }

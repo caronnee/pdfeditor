@@ -571,7 +571,7 @@ int XRefWriter::fillObjectList(pdfobjects::utils::IPdfWriter::ObjectList &object
 
 		::Object * obj=XPdfObjectFactory::getInstance();
 		XRef::fetch(num, gen, obj);
-		if (obj->isNull())
+		//if (obj->isNull())
 		{
 			//try to look in the changed things
 			ChangedStorage::Iterator i;
