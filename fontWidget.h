@@ -58,6 +58,11 @@ class FontWidget : public QWidget
 	float _pdfPosX,_pdfPosY;
 	PdfOp createMatrix(std::string op);
 public:
+	void setHeight(int h)
+	{
+		QVariant data(h);
+		this->ui.fontsize->setCurrentIndex(this->ui.fontsize->findData(data));
+	}
 	QString getText();
 	static PdfOp createTranslationTd(double x, double y);
 	void setText(QString s);

@@ -22,6 +22,7 @@ enum Mode
 	NModes
 };
 
+typedef boost::shared_ptr<pdfobjects::IProperty> PdfProperty;
 typedef std::vector<boost::shared_ptr<pdfobjects::PdfOperator> > Ops;
 typedef std::list<boost::shared_ptr<pdfobjects::PdfOperator> > OpsList;
 typedef boost::shared_ptr<pdfobjects::PdfOperator> PdfOp;

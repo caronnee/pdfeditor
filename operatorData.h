@@ -2,6 +2,7 @@
 #include "typedefs.h"
 #include <QString>
 
+typedef boost::shared_ptr<pdfobjects::TextSimpleOperator> PdfTextOperator;
 //TODO pozor na rotaciu stranky, bude to fachat?
 //budeme predpokladat, ze vsetko toto je platne, ze sme to uz nastavili
 struct OperatorData
@@ -9,9 +10,9 @@ struct OperatorData
 	double _begin, _end;
 	double _ymin, _ymax; 
 	double _charSpace;
-	PdfOp _op;
+	PdfTextOperator _op;
 	double _origX, _origX2;
-	std::string _text; //jak bol text v tom, pripadne uprava o medzeru, prepisanie ma medzeru, ako konci -, odstranit
+	QString _text; //jak bol text v tom, pripadne uprava o medzeru, prepisanie ma medzeru, ako konci -, odstranit
 
 public:
 	OperatorData(PdfOp op);

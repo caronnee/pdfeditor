@@ -222,6 +222,8 @@ template<typename Iter>
 std::string makeHexString(Iter it, Iter end)
 {
 	std::string tmp;
+	if (*it == '\\')
+		it++;
 	for (; it != end; ++it)
 	{
 		char hexstr[4];

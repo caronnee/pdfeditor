@@ -150,6 +150,8 @@ private: //variables
 	CPage::Annotations _annots;
 	DisplayPage * _labelPage;
 private:
+	pdfobjects::IndiRef createAppearanceDict(float *dim);
+	void fillCoordinates(std::vector<float>& coordinates, float * dim);
 	void initRevisions();
 	PdfOperator::Iterator TabPage::findTdAssOp(PdfOperator::Iterator iter);
 	void rotatePdf(int angle, double& x,double& y,bool fromPixMap);
@@ -186,6 +188,7 @@ public:
 	void insertTextAfter(PdfOp opBehind, double td, double ymax, QString s);
 
 private:
+	void insertAnnotation(Annot a);
 	void loadFonts(FontWidget * font);
 	void getAtPosition(Ops& ops, int x, int y );
 	void setTextData(TextData::iterator &begin, TextData::iterator end, shared_ptr<PdfOperator> op);
@@ -198,7 +201,7 @@ private:
 	//private methods
 	void addRevision( int i = -1);
 
-	void setFromSplash();
+	void redraw();
 
 	void updatePageInfoBar();
 	// gets file, name is name of dialog
@@ -237,7 +240,7 @@ public slots:
 	void mouseReleased(QPoint); //nesprav nic, pretoze to bude robit mouseMove
 	void insertTextMarkup(Annot annot);
 	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
-	void insertAnnotation(Annot a);
+	
 	void deleteAnnotation(QPoint);
 	void search(QString text,bool forw);
 	void handleBookmark(QTreeWidget * item, int);

@@ -6,13 +6,13 @@
 
 using namespace pdfobjects;
 
-OperatorData::OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _op(op), _origX(0), _origX2(0), _text("")
+OperatorData::OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _origX(0), _origX2(0), _text("")
 {
+	std::string tmp;
 	std::wstring test;
-	boost::shared_ptr<pdfobjects::TextSimpleOperator> txt = boost::dynamic_pointer_cast<TextSimpleOperator>(op);
-	txt->getFontText(test);
-	
-	_text.assign(test.begin(),test.end());
+	_op = boost::dynamic_pointer_cast<TextSimpleOperator>(op);
+	_op->getFontText(test);
+	_text = QString::fromStdWString(test);
 	libs::Rectangle r = _op->getBBox();
 	_ymin = min<double>(r.yleft, r.yright);
 	_ymax = max<double>(r.yleft, r.yright);
@@ -21,8 +21,8 @@ OperatorData::OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _
 	_origX = _begin;
 	_origX2 = _end; 
 	_charSpace = _end - _begin;
-	for ( size_t i =0; i< _text.size(); i++)
-		_charSpace -= txt->getWidth(_text[i]);
+	for ( size_t i =0; i< test.size(); i++)
+		_charSpace -= _op->getWidth(test[i]);
 	if (_text.size()<=1)
 		_charSpace =0;
 	else
@@ -76,10 +76,9 @@ int OperatorData::letters(double x)
 	double t = _origX;
 	x = min(x,_origX2);
 	int i =0;
-	boost::shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(_op);
 	while ( x - t >1e-2) //-1 je tolerancia
 	{
-		t+= txt->getWidth(_text[i]);
+		t+= _op->getWidth(_text[i].unicode());
 		t+= this->_charSpace;
 		i++;
 	}
@@ -88,9 +87,8 @@ int OperatorData::letters(double x)
 double OperatorData::position(int letters)
 {
 	double place = _origX;
-	boost::shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(_op);
 	for(int i = 0; i< letters; i++)
-		place += txt->getWidth(_text[i]) + _charSpace;
+		place +=_op->getWidth(_text[i].unicode()) + _charSpace;
 	assert(place < _origX2+_charSpace+1e-2);
 	return place;
 }
@@ -132,13 +130,12 @@ bool OperatorData::forward(double x, double y)const
 //split odla toho, ako sme to vysvietili
 void OperatorData::split(QString & split1, QString& split2, QString& split3)
 {
-	std::wstring w;
-	boost::shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(_op);
-	txt->getFontText(w);
-	QString s  = QString::fromStdWString(w);
+	QString s  = _text;
 	BBox a = _op->getBBox();
-	int part1 = letters(_begin);
-	int part2 = letters(_end);
+	int part1 = letters(GetPreviousStop());
+	assert(part1>=0);
+	int part2 = letters(GetNextStop());
+	assert(part2<= s.size());
 	split1= s.mid(0,part1);
 	split2= s.mid(part1, part2-part1);
 	split3= s.mid(part2);
@@ -147,9 +144,9 @@ void OperatorData::replaceAllText(QString s)
 {
 	PdfOperator::Operands ops;
 	ops.push_back(boost::shared_ptr<IProperty>(new CString(s.toStdString())));
-	PdfOp p = createOperator("Tj",ops);
+	PdfTextOperator p = boost::dynamic_pointer_cast<TextSimpleOperator>(createOperator("Tj",ops));
 	_op->getContentStream()->replaceOperator(_op,p);
 	_op = p;
-	_text = s.toStdString();
+	_text = s; //TODO assert
 	clear();
 }

@@ -36,7 +36,7 @@ FontWidget::FontWidget(QWidget *parent) : QWidget(parent)
 	ui.setupUi(this);
 	reset();
 	//set 10-40 fontsize
-	for ( int i = 10; i<=40; i+=2)
+	for ( int i = 10; i<=20; i++)
 	{
 		QVariant v(i);
 		ui.fontsize->addItem(v.toString(),v);
@@ -144,7 +144,6 @@ void FontWidget::addParameters() //TODO nie s jedine parametre
 	assert(!id.empty());
 	_fonts[this->ui.fonts->currentIndex()].setId(id);
 	_BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(_BT));
-	_BT->push_back( createMatrix("Tm"), getLastOperator(_BT));
 }
 PdfOp FontWidget::createTranslationTd(double x, double y)
 {
@@ -162,6 +161,7 @@ PdfOp FontWidget::addText(std::string txt)
 {
 	createBT();
 	addParameters();
+	_BT->push_back( createMatrix("Tm"), getLastOperator(_BT));
 	PdfOperator::Operands textOperands;
 	textOperands.push_back(shared_ptr<IProperty>(new CString(txt.c_str())));
 	addToBT(createOperator("Tj", textOperands));

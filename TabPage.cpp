@@ -38,8 +38,6 @@
 
 //#include <kernel/carray.h>
 
-typedef boost::shared_ptr<pdfobjects::IProperty> PdfProperty;
-
 //operatory, ktore musim zaklonovat, ked chcem pohnut textom
 
 std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","cs", "SC","SCN", "sc","scn", "G","g","RG","rg","k","K","Tc","Tw", "Tz", "TL", "Tf","Tr","Ts","Td","TD","Tm","T*" };
@@ -47,7 +45,7 @@ std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","c
 void TabPage::handleBookmark(QTreeWidget * item, int)
 {
 	_page = _pdf->getPage(((Bookmark *)(item))->getDest());
-	setFromSplash();
+	redraw();
 }
 
 TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMode),_parent(parent)
@@ -92,7 +90,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMod
 	//	connect(_cmts,SIGNAL(close()),this,SLOT(closeAnnotDiag()));
 	//pridanie anotacie
 
-	connect(_cmts,SIGNAL(annotation(Annot)),this,SLOT(insertAnnotation(Annot)));
+	//connect(_cmts,SIGNAL(annotation(Annot)),this,SLOT(insertAnnotation(Annot)));
 	connect(this,SIGNAL(pdfPosition(float,float,int,int)),_cmts,SLOT(setRectangle(float,float,int,int)));
 	//	connect(_cmts,SIGNAL(annotationTextMarkup(Annot)),this,SLOT(setMarkupProperty()));
 	connect(this,SIGNAL(parsed(std::vector<float>)),_cmts,SLOT(setPoints(std::vector<float>)));
@@ -124,7 +122,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMod
 
 	initRevisions();
 	
-	setFromSplash();
+	redraw();
 	_dataReady = false;
 	//setZoom();
 	for ( int i =50; i< 500; i+=50)
@@ -136,6 +134,8 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMod
 	_dataReady = false;
 	getBookMarks();
 	createList();
+	search("oftwar",true);
+	//changeSelectedText();
 }
 void TabPage::initRevisions()
 {
@@ -203,7 +203,7 @@ void TabPage::deleteImage(QPoint point)
 	//mame iba obrazky
 	//zmaz len ten, ktore je 'navrchu' -> je v ops posledny?
 	op->getContentStream()->deleteOperator(op);
-	setFromSplash();
+	redraw();
 }
 void TabPage::raiseInsertImage(QRect rect)
 {
@@ -224,122 +224,171 @@ void TabPage::zoom(QString zoomscale)//later with how much pages, if all or not
 	float dpiy =_labelPage->logicalDpiY();
 	displayparams.hDpi = dpix * scale;
 	displayparams.vDpi = dpiy * scale;
-	this->setFromSplash();
+	this->redraw();
 }
-void TabPage::insertTextMarkup(Annot annot)
+void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 {
-	//for all selected text
-	if (!_selected)
-		return;
 	TextData::iterator iter = sTextIt;
-	std::vector<float> coordinates;
-	float dpix = displayparams.vDpi/72;
-	float dpiy = displayparams.hDpi/72;
-	float dim[4] = {FLT_MAX,FLT_MAX,0,0};
+	float dpix = displayparams.vDpi/72.f;
+	float dpiy = displayparams.hDpi/72.f;
 	while (true)
 	{
+		coordinates.push_back(iter->GetPreviousStop()/dpix);
+		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymax/dpiy);
+		coordinates.push_back(iter->_end/dpix);
+		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymax/dpiy); //minima
 		coordinates.push_back(iter->_begin/dpix);
 		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymin/dpiy);
 		coordinates.push_back(iter->_end/dpix);
 		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymin/dpiy);
-		coordinates.push_back(iter->_begin/dpix);
-		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymax/dpiy);
-		coordinates.push_back(iter->_end/dpix);
-		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymax/dpiy);
-		dim[0] = min(dim[0],iter->_begin/dpix);
-		dim[1] = min(dim[1],displayparams.DEFAULT_PAGE_RY - iter->_ymin/dpiy);
+		dim[0] = min(dim[0],iter->GetPreviousStop()/dpix);
+		dim[1] = min(dim[1],displayparams.DEFAULT_PAGE_RY - iter->_ymax/dpiy);
 		dim[2] = max(dim[2],iter->_end/dpix);
-		dim[3] = max(dim[3],displayparams.DEFAULT_PAGE_RY -iter->_ymax/dpiy);
+		dim[3] = max(dim[3],displayparams.DEFAULT_PAGE_RY - iter->_ymin/dpiy);
 		if ( iter == sTextItEnd )
 			break;
 		iter++;
 	}
-
-	//vytvor ApearanceStream
-	boost::shared_ptr<pdfobjects::CStream> apDict(new CStream());
-	//boost::shared_ptr<pdfobjects::CDict> apDict(pdfobjects::CDictFactory::getInstance());
-	CArray rect;
-	for ( int i = 0; i < 4;i++)
-		rect.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[i]))));
-
-	apDict->addProperty("Type",*PdfProperty(CNameFactory::getInstance("XObject")));
-	apDict->addProperty("SubType",*PdfProperty(CNameFactory::getInstance("Form")));
+}
+pdfobjects::IndiRef TabPage::createAppearanceDict(float*dim)
+{
+	boost::shared_ptr<pdfobjects::CStream> apStream(new CStream());
+	apStream->addProperty("Type",*PdfProperty(CNameFactory::getInstance("XObject")));
+	apStream->addProperty("SubType",*PdfProperty(CNameFactory::getInstance("Form")));
+	apStream->addProperty("FormType",*boost::shared_ptr<CInt>(CIntFactory::getInstance(1)));
 	{
 		CArray rct;
-		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(0))));
-		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(0))));
-		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(fabs(dim[0] - dim[2])))));
-		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(fabs(dim[1] - dim[3])))));
-		apDict->addProperty("BBox",rct);
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[0]))));
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[1]))));
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[2]))));
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[3]))));
+		apStream->addProperty("BBox",rct);
 	}
-	apDict->addProperty("FormType",*boost::shared_ptr<CInt>(CIntFactory::getInstance(1)));
 	{
 		CArray arr;
 		arr.addProperty(*PdfProperty(CRealFactory::getInstance(1)));
 		arr.addProperty(*PdfProperty(CRealFactory::getInstance(0)));
 		arr.addProperty(*PdfProperty(CRealFactory::getInstance(0)));
 		arr.addProperty(*PdfProperty(CRealFactory::getInstance(1)));
-		arr.addProperty(*PdfProperty(CRealFactory::getInstance(0)));
-		arr.addProperty(*PdfProperty(CRealFactory::getInstance(0)));
-		apDict->addProperty("Matrix",arr);
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(-dim[0])));
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(-dim[1])));
+		apStream->addProperty("Matrix",arr);
+	}
+	{
+		//group pre transparency
+		boost::shared_ptr<pdfobjects::CDict> group(CDictFactory::getInstance());
+		group->addProperty("S",*PdfProperty(CNameFactory::getInstance("Transparency")));
+		group->addProperty("Type",*PdfProperty(CNameFactory::getInstance("Group")));
+		apStream->addProperty("Group",*group);
+	}
+	{
 		//resource
 		boost::shared_ptr<pdfobjects::CDict> resDict(CDictFactory::getInstance());
 		boost::shared_ptr<pdfobjects::CDict> grDict(CDictFactory::getInstance());
 		boost::shared_ptr<pdfobjects::CDict> g0Dict(CDictFactory::getInstance());
 
-		g0Dict->addProperty("BM",*PdfProperty(CNameFactory::getInstance("Multiply")));
-		g0Dict->addProperty("Type",*PdfProperty(CNameFactory::getInstance("ExtGState")));
-
-		grDict->addProperty("R0",*g0Dict);
-		resDict->addProperty("ExtGState",*grDict);
-
 		CArray arr2;
 		arr2.addProperty(*PdfProperty(CNameFactory::getInstance("PDF")));
 		resDict->addProperty("ProcSet",arr2);
 
-		apDict->addProperty("Resources",*resDict);
+		
+		g0Dict->addProperty("Type",*PdfProperty(CNameFactory::getInstance("ExtGState")));
+
+		g0Dict->addProperty("AIS",*PdfProperty(CBoolFactory::getInstance(false)));
+		g0Dict->addProperty("BM",*PdfProperty(CNameFactory::getInstance("Multiply")));
+		grDict->addProperty("TransGs",*g0Dict);
+		resDict->addProperty("ExtGState",*grDict);
+		apStream->addProperty("Resources",*resDict);
 	}
+	{
+		CArray rct;
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(0))));
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(0))));
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(1))));
+		apStream->addProperty("Border",rct);
+	}
+	PdfOperator::Operands operands;
+	operands.push_back((PdfProperty(CNameFactory::getInstance("TransGs"))));
+	PdfOp op = createOperator("gs",operands);
+	apStream->addToBuffer(op);
+	operands.clear();
+
+	operands.push_back((PdfProperty(CRealFactory::getInstance(1.0f))));
+	operands.push_back((PdfProperty(CRealFactory::getInstance(1.0f))));
+	operands.push_back((PdfProperty(CRealFactory::getInstance(0.0f))));
+	op = createOperator("rg",operands);
+	apStream->addToBuffer(op);
+
+	operands.clear();
+	operands.push_back((PdfProperty(CRealFactory::getInstance(dim[0]))));
+	operands.push_back((PdfProperty(CRealFactory::getInstance(dim[1]))));
+	op = createOperator("m",operands);
+	apStream->addToBuffer(op);
+
+	operands.clear();
+	operands.push_back((PdfProperty(CRealFactory::getInstance(dim[2]))));
+	operands.push_back((PdfProperty(CRealFactory::getInstance(dim[1]))));
+	op = createOperator("l",operands);
+	apStream->addToBuffer(op);
+
+	operands.clear();
+	operands.push_back((PdfProperty(CRealFactory::getInstance(dim[1]))));
+	operands.push_back((PdfProperty(CRealFactory::getInstance(dim[3]))));
+	op = createOperator("l",operands);
+	apStream->addToBuffer(op);
+
+	operands.clear();
+	operands.push_back((PdfProperty(CRealFactory::getInstance(dim[0]))));
+	operands.push_back((PdfProperty(CRealFactory::getInstance(dim[3]))));
+	op=createOperator("l",operands);
+	apStream->addToBuffer(op);
+
+	operands.clear();
+	apStream->addToBuffer(createOperator("h",operands));
+	apStream->addToBuffer(createOperator("f",operands));
+
+	//std::string text("173.11566 660.86603 m 181.534 660.86603 l 181.534 639.63373 l 164.869 639.63373 l h f");
+	apStream->validate();
+	return _pdf->addIndirectProperty(apStream);//hack
+}
+void TabPage::insertTextMarkup(Annot annot)
+{
+	//for all selected text
+	if (!_selected)
+		return;
+	insertAnnotation(annot);
+	_page->getAllAnnotations(_annots);
+	annot = _annots.back();//posledny pridany, na nom budeme pachat zmeny
+	std::vector<float> coordinates;
+	float dim[4] = {FLT_MAX,FLT_MAX,0,0};
+	fillCoordinates(coordinates, dim);
+	IndiRef indi = createAppearanceDict(dim);
+	{
+		CArray rect;
+		for ( int i = 0; i < 4;i++)
+			rect.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[i]))));
+		annot->getDictionary()->setProperty("Rect",rect); 
+	}
+	//vytvor ApearanceStream
+	//boost::shared_ptr<pdfobjects::CDict> apDict(pdfobjects::CDictFactory::getInstance());
 
 	CArray points;
 	for ( int i = 0; i < coordinates.size();i++)
 		points.addProperty(*(PdfProperty(CRealFactory::getInstance(coordinates[i]))));
-
-	//annot->getDictionary
 	annot->getDictionary()->addProperty("QuadPoints",points);
-	//uprav rectangle
-	annot->getDictionary()->setProperty("Rect",rect); 
-	IndiRef indi = _pdf->addIndirectProperty(apDict);
-	PdfProperty prop(pdfobjects::CRefFactory::getInstance(indi));
 	boost::shared_ptr<pdfobjects::CDict> nDict(CDictFactory::getInstance());
+	
+	PdfProperty prop(pdfobjects::CRefFactory::getInstance(indi));
 	nDict->addProperty("N",*prop);
-	annot->getDictionary()->setProperty("AP",*nDict);
-	annot->getDictionary()->setProperty("R0",*PdfProperty(CNameFactory::getInstance("gs")));
+	annot->getDictionary()->addProperty("AP",*nDict);
 	std::string m;
-	apDict->getStringRepresentation(m);
-	annot->getDictionary()->getStringRepresentation(m);
+	//apDict->getStringRepresentation(m);
+	//annot->getDictionary()->getProperty("AP")->getStringRepresentation(m);
 	//fprintf(stderr,"$s\n",m.c_str());
-	insertAnnotation(annot);
-	//najsi mi vsetky textove oeratory a z nich vycuvam svojich 8 cisel, pravepodobne z gxfconfu a pozicie offset operatorov ( vektory )
-	//TODO treba osetrit na to, ak chceme zvyraznit len jednu cast textoveho operatora
-	/*Ops ops;
-	page->getObjectsAtPosition(ops,r);
-	TextOperatorIterator it = PdfOperator::getIterator<TextOperatorIterator> (ops.front());
-	std::vector<float> flts;
-	while (!it.isEnd())
-	{
-	libs::Rectangle r2 = it.getCurrent()->getBBox();
-	flts.push_back(r2.xleft);
-	flts.push_back(r2.yleft);
-	flts.push_back(r2.xleft);
-	flts.push_back(r2.yright);
-	flts.push_back(r2.xright);
-	flts.push_back(r2.yleft);
-	flts.push_back(r2.xright);
-	flts.push_back(r2.yright);
-	it.next();
-	}
-	emit parsed(flts);*/
 
+	//najsi mi vsetky textove operatory a z nich vycuvam svojich 8 cisel, pravepodobne z gxfconfu a pozicie offset operatorov ( vektory )
+	//TODO treba osetrit na to, ak chceme zvyraznit len jednu cast textoveho operatora
+	redraw();
 }
 void TabPage::closeAnnotDiag()
 {
@@ -350,13 +399,16 @@ void TabPage::closeAnnotDiag()
 }
 void TabPage::insertAnnotation(Annot a)
 {
-	//vlozeime do aktualnej stranky
-	//pre kazdu vysvieten
-	//boundigbox pre vysvitey text - ak ziady nie je, tak bod
+	//vlozime do aktualnej stranky
+	//pre kazdu vysvietenu
+	//boundigbox pre vysvieteny text - ak ziady nie je, tak bod
 	_page->addAnnotation(a);
-	///updatneme annots:)
-	_page->getAllAnnotations(_annots);
-	setFromSplash();
+
+//	std::string m;
+	//_pdf->addIndirectProperty(a->getDictionary())
+//	_annots[0]->getDictionary()->setProperty("AP",a->getDictionary()->getpo);
+//	_pdf->getIndirectProperty(i)->getStringRepresentation(m);
+	//setFromSplash();
 }
 void TabPage::deleteAnnotation(QPoint point)
 {
@@ -377,7 +429,7 @@ void TabPage::deleteAnnotation(QPoint point)
 		if (convertedRect.contains(point))
 		{
 			_page->delAnnotation(_annots[i]);
-			setFromSplash();
+			redraw();
 			return;
 		}
 	}
@@ -387,13 +439,20 @@ void TabPage::raiseChangeSelectedText()
 {
 	QString s,s1,s2,s3;
 	TextData::iterator it = sTextIt;
-	while (it!=sTextItEnd)
-	{
-		it->split(s1,s2,s3);
-		s+=s2;
-		//TODO medzera
+	sTextIt->split(s1,s,s3);
+	while (it != sTextItEnd)
+	{//TODO medzera
 		it++;
-	}
+		//musime vratane posledneho
+		if (it != sTextItEnd)
+			s+=it->_text;
+		else
+		{
+			it->split(s1,s2,s3);
+			s+=s2;
+		}
+	}//TODO set font heigth
+	_font->setHeight(sTextIt->_op->getFontHeight());
 	_font->setText(s);
 	_font->setChange();
 }
@@ -415,28 +474,19 @@ void TabPage::raiseAnnotation(QPoint point)
 void TabPage::createList()
 {
 	_textList.clear();
-	//get all pdf text operats in list
+	//get all pdf text operators in list
 	Ops ops;
 	libs::Rectangle rect(0,0,FLT_MAX,FLT_MAX);
 	_page->getObjectsAtPosition( ops, rect);
-	//choose just testiterator
+	//choose just test iterator
 	Ops::iterator it = ops.begin();
 	//float fontSize = 0;
 	while ( it != ops.end())
 	{
-		std::string n; 
+		std::string n;
 		(*it)->getOperatorName(n);
-		//if (!typeChecker.isType(OpFontName,n))
-		//{
-		//	pdfobjects::PdfOperator::Operands ops;
-		//	(*it)->getParameters(ops);
-		//	if (ops.size() <2) //nemalo by nikdy nastat! chyba v strukture
-		//		continue;
-		//	fontSize = utils::getValueFromSimple<float>(ops[1]);
-		//}
 		if (!typeChecker.isType(OpTextName,n))
 		{
-			//	DEBUGLINE(n);
 			it++;
 			continue;
 		}
@@ -446,6 +496,8 @@ void TabPage::createList()
 	}
 	//sort list
 	_textList.sort();
+	_selected = false;
+	sTextIt = sTextItEnd = sTextMarker = _textList.begin();
 }
 void TabPage::raiseInsertText(QPoint point)
 {
@@ -620,7 +672,7 @@ void TabPage::deleteSelectedImage()
 	_selectedImage->getContentStream()->deleteOperator(_selectedImage);
 	_selectedImage = PdfOp(); //empty
 	_selected = false;
-	setFromSplash();
+	redraw();
 }
 void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit mouseMove
 {
@@ -833,7 +885,7 @@ void TabPage::insertBefore(PdfOp op, PdfOp before)
 {
 	PdfOp clone = before->clone();
 	before->getContentStream()->replaceOperator(before,op);	
-	op->getContentStream()->insertOperator(op,clone);	
+	op->getContentStream()->insertOperator(op,clone);
 }
 void TabPage::createAddMoveString(PdfOp bef, double x, double y, QString name)
 {
@@ -917,26 +969,23 @@ void TabPage::showClicked(int x, int y)
 	//convert
 	//toPdfPos(x,y, px, py);
 	rotatePdf(_page->getRotation(),px,py,true);
-	//find operattdisplayparamsors
+
 	Ops ops;
 	_page->getObjectsAtPosition(ops, libs::Point(px,py));
 
 	for ( size_t i =0; i < ops.size(); i++)
 	{
 		//ukaz len povolene typy
-#if _DEBUG & TEXT_ONLY
+#if _DEBUG 
 		std::string s;
-		ops[i]->getOperatorName(s); 
-		if (!typeChecker.isType(_acceptedType,s))
+		ops[i]->getOperatorName(s);
+		if (!typeChecker.isType(OpTextName,s))
 			continue;
+		std::wstring w;
 		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(ops[i]);
-		if (txt)
-			txt->getRawText(s);
+		txt->getFontText(w);
 #endif
 		libs::Rectangle b = ops[i]->getBBox();
-
-		//	toPixmapPos(b.xleft, b.yleft, x1,y1);
-		//	toPixmapPos(b.xright, b.yright, x2, y2);
 
 		QColor color(55, 55, 200,100);
 		rotatePdf(_page->getRotation(),b.xleft,b.yleft,false);
@@ -1002,7 +1051,7 @@ bool TabPage::previousPage()
 		return false;
 	_page = _pdf->getPrevPage(_page);
 	displayparams.rotate = _page->getRotation();
-	this->setFromSplash();
+	this->redraw();
 	return true;
 }
 bool TabPage::nextPage()
@@ -1011,7 +1060,7 @@ bool TabPage::nextPage()
 		return false;
 	_page = _pdf->getNextPage(_page);
 	displayparams.rotate = _page->getRotation();
-	this->setFromSplash();
+	this->redraw();
 	return true;
 }
 void TabPage::getBookMarks()
@@ -1071,14 +1120,14 @@ void TabPage::changeSelectedImage(PdfOp op)
 		return;
 	_selectedImage->getContentStream()->replaceOperator(_selectedImage,op);
 	_selected = false;
-	setFromSplash();
+	redraw();
 }
 void TabPage::insertImage(PdfOp op) //positions
 {
 	Ops ops;
 	ops.push_back(op);
 	_page->addContentStreamToBack(ops);
-	setFromSplash();
+	redraw();
 }
 void TabPage::insertPageRangeFromExisting()
 { 
@@ -1099,9 +1148,9 @@ void TabPage::deletePage()
 	if ( i > _pdf->getPageCount() ) //if removing last page..
 		i =_pdf->getPageCount() ;
 	_page = _pdf->getPage(i);
-	setFromSplash();
+	redraw();
 }
-void TabPage::setFromSplash()
+void TabPage::redraw()
 {
 	SplashColor paperColor;
 	paperColor[0] = paperColor[1] = paperColor[2] = 0xff;
@@ -1135,7 +1184,7 @@ void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
 {
 	if (event->delta() > 0 )
 	{
-		//wheeleing forward
+		//wheeling forward
 		QScrollBar * bar = this->ui.scrollArea->horizontalScrollBar();
 		if (( bar->value() > event->delta()) && 
 			(this->previousPage()))
@@ -1158,30 +1207,13 @@ void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
 void TabPage::saveEncoded()
 {
 #ifdef _DEBUG
+	float dim[4] = {FLT_MAX,FLT_MAX,0,0};
+	std::string out;
+	//prop->getStringRepresentation(out);
 	_pdf->saveDecoded("decoded");
 	return;
 #endif
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("PdfFile Decoded (*.decoded)"));
-	//ulozi nejaku indirect property
-	//_pdf->saveDecoded("predtym.decoded");
-	//try
-	//{
-	//	std::string test;
-	//	boost::shared_ptr<pdfobjects::CStream> dct = utils::getCStreamFromDict(_page->getDictionary(),"indirect");
-	//	dct->getStringRepresentation(test);
-	//	printf(test.data());
-	//}
-	//catch (...)
-	//{
-	//	boost::shared_ptr<pdfobjects::CStream> dct(new CStream());
-	//	dct->addProperty("abcd",*PdfProperty( CIntFactory::getInstance(925)));
-	//	std::string test;
-	//	dct->getStringRepresentation(test);
-	//	IndiRef ref = _pdf->addIndirectProperty(dct);
-	//	_page->getDictionary()->addProperty("indirect",*PdfProperty(CRefFactory::getInstance(ref)));
-	//}
-	///*boost::shared_ptr<pdfobjects::CDict> dct(CDictFactory::getInstance());*/
-	//_pdf->saveDecoded("potom.decoded");
 	_pdf->saveDecoded(fileName.toAscii().data());
 }
 void TabPage::save() //revision je inde
@@ -1235,7 +1267,7 @@ void TabPage::initRevision(int  revision) //snad su revizie od nuly:-/
 	_pdf->changeRevision(revision);
 	if (pos > _pdf->getPageCount())
 		pos = _pdf->getPageCount();
-	setFromSplash();
+	redraw();
 }
 
 void TabPage::rotate(int angle) //rotovanie pages
@@ -1244,7 +1276,7 @@ void TabPage::rotate(int angle) //rotovanie pages
 	_page->setRotation(_page->getRotation()+angle);
 	displayparams.rotate = _page->getRotation();
 
-	setFromSplash();
+	redraw();
 	createList();
 }
 void TabPage::commitRevision()
@@ -1400,7 +1432,12 @@ void TabPage::showAnnotation()
 		_annots[i]->getDictionary()->getAllPropertyNames(names);
 		PdfProperty p = _annots[i]->getDictionary()->getProperty("Subtype");
 		std::string type = utils::getNameFromIProperty(p);
-
+		if (type == "Popup")
+		{
+			_page->delAnnotation(_annots[i]);
+			redraw();
+			return;
+		}
 		std::string m;
 		/*for (int a = 0; a< names.size();a++)
 		{
@@ -1471,77 +1508,63 @@ void TabPage::insertText( PdfOp op )
 	_page->addContentStreamToBack(ops);
 	TextOperatorIterator iter(op);assert(iter.valid());
 	createList();//TODO zoptimalizovat, nsert ba jedneho prvku
-	setFromSplash();
+	redraw();
 }
 
 //slot
 void TabPage::changeSelectedText() //vsetko zosane na svojom mieste, akurat sa pridaju 
 {
-	//hodnoty mame v show
-	//vymaz vsetko a zadaj to znovu, pozor na to, kde sa co nachadza
-	//mame vyznaceny begin iter a end string
-	//vyberieme, vytvorime nove BT, nastavime nove atributy a nebudeme sa s tym hrajkat
-	// v s3 je to, co ma vo sTextIte zostat, s2 je to, co menime, s1 je to, co menime v sTextItEnde. ak je
-	//proste sme to zarotovali:)
+	assert(_selected);
+	float h = sTextIt->_op->getFontHeight();
+	_font->setHeight(h);
+	float corr = displayparams.vDpi/72;
+	float y = displayparams.DEFAULT_PAGE_RY - (sTextIt->_ymin+h)/corr; //TODO toto nemusi byt vyska BBoxu
+	float pos = sTextIt->GetPreviousStop();
+	_font->setPosition(pos/corr,y); //pretoze toto je v default user space
+	eraseSelectedText();
+	//rozdelime na dva pripady - pokial je to roznake a pokial je zaciatok erozny od konca
 	if ( sTextIt==sTextItEnd ) //TODO co ak je s3 prazdne? -> Compact?:)
 	{
-		QString s[3];
-		sTextIt->split(s[0],s[1],s[2]);
-		float pos = sTextIt->_origX;
-		int i =0;
-		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(sTextIt->_op);
-		while ( pos < sTextIt->_begin)
-		{
-			pos+= txt->getWidth(sTextIt->_text[i]);
-			pos+=sTextIt->_charSpace;
-			i++;
-		}
-		float y = displayparams.DEFAULT_PAGE_RY - (sTextIt->_ymin+txt->getFontHeight())*72/displayparams.vDpi-1;
-		_font->setPosition(pos*72/displayparams.hDpi,y); //pretoe toto je v default user space
-		//splitni opratory na dvaa pre jeden dat TD
-		if (!s[2].isEmpty())
-		{
-			PdfOperator::Operands operands;
-			operands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(s[2].toStdString())));
-			PdfOp op = createOperator("Tj",operands); //stejny operator, stejny fot
-			float dist = findDistance(_font->getText().toStdString(),sTextIt);
-			PdfOp optd = FontWidget::createTranslationTd(dist,0);
-			sTextIt->_op->getContentStream()->insertOperator(PdfOperator::getIterator(sTextIt->_op),op);
-			sTextIt->_op->getContentStream()->insertOperator(PdfOperator::getIterator(sTextIt->_op),optd);
-			//TODO ostatne posunut
-		}
+		
 		_font->setInsert();
-		_font->apply();
+		_font->apply(); //musi tu byt apply, pretoze sa moze zmenit farba - potrebujeme Q operator
 		_font->close(); //TODO zmazat
+		redraw();
+		createList();
 		return;
 	}
-	QString s2,s3;
-	{
-		QString s1;
-		sTextIt->split(s1,s2,s3); //splitneme
-		assert(s3=="");
-		sTextIt->replaceAllText(s1 + _font->getText()); // povodny operator bude nezmeneny az na to , ze mu zmenime text
-	}
-	double beg = sTextIt->_begin;
-	double end = sTextIt->_end;
-	{
-		QString a,b,c;
-		sTextItEnd->split(a,b,c);
-		end= sTextItEnd->_end;
-		sTextItEnd->replaceAllText(c);
-	}
-	insertTextAfter(sTextItEnd->_op,end,sTextItEnd->_ymax,s3);
-	sTextIt ++; //prvy sme us presli
-	TextData::iterator i = sTextIt;
-	while (sTextIt!=sTextItEnd)//iba pre TJ pridame operatory, vsetky, co boli zadane
-	{
-		std::wstring w;
-		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(sTextIt->_op);
-		txt->getFontText(w);
-		insertTextAfter(sTextIt->_op,sTextIt->_begin, sTextIt->_ymax, QString::fromStdWString(w));
-		sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op,true);
-		sTextIt++;
-	}
+	//tuto zacina oblastm, ekd ratame s tym, ze zmeneneny text sa rozteka cez viacero operatorov
+	//zistime aku vzdialenost (x,y) musime preskocit. Y tu nemusi byt nulove akoto mu bolo v predchadzajucom pripade, distX moze byt dokonca zaporne
+	//bohuzial vieme insertovat len na jeden riadok (tj nepripusta zalamovanie riadku ktore sa moze vyskytnut) a mu chcemel, aby vsetko zostalo na povodnom mieste - musime insertovat cely blok BT->operatory, operatory->ET
+	//POSTUP : vyhradime si miesto, kde sa  tieto operatory potom znova insertnu
+	// - vsetky ostatne vlastnosti budu stratene
+	// - pridaju sa dva td operatory o velkosti toho, co sme zmazali v prvom a v poslednom operatore. Vsetky ostatne Td sa budu riadi podla tohoto
+	// Td operator sa prida na sTextIt a pre sTextItEnd
+	//y bude predsa len nula vzdy
+	eraseSelectedText();
+	
+	//vsetky ostatne Tj uchovame + musime zachovat ich rozostupenie - vytvorizme im nove Td na zaklade vzdialenost medzi nimi
+	//double beg = sTextIt->_begin;
+	//double end = sTextIt->_end;
+	//{
+	//	QString a,b,c;
+	//	sTextItEnd->split(a,b,c);
+	//	end= sTextItEnd->_end;
+	//	sTextItEnd->replaceAllText(c);
+	//}
+	//insertTextAfter(sTextItEnd->_op,end,sTextItEnd->_ymax,s3);
+	//sTextIt ++; //prvy sme us presli
+	//TextData::iterator i = sTextIt;
+	//while (sTextIt!=sTextItEnd)//iba pre TJ pridame operatory, vsetky, co boli zadane
+	//{
+	//	std::wstring w;
+	//	shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(sTextIt->_op);
+	//	txt->getFontText(w);
+	//	insertTextAfter(sTextIt->_op,sTextIt->_begin, sTextIt->_ymax, QString::fromStdWString(w));
+	//	sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op,true);
+	//	sTextIt++;
+	//}
+	redraw();
 	createList();
 }
 float TabPage::findDistance(std::string s,TextData::iterator textIter)
@@ -1735,7 +1758,7 @@ void TabPage::searchForw(QString srch)
 		if (_selected)
 		{
 			iter = sTextIt;//nic nemen v hladacom engine
-			_searchEngine.setText(QString::fromStdString(iter->_text));
+			_searchEngine.setText(iter->_text);
 			_searchEngine._begin=sTextIt->letters(sTextIt->_begin);
 		}
 		else
@@ -1878,7 +1901,7 @@ void TabPage::deleteSelectedText() //sucasne zarovna
 End:
 	_selected = false;
 	createList();
-	setFromSplash();
+	redraw();
 }
 void TabPage::replaceSelectedText(QString by)
 {
@@ -1912,64 +1935,72 @@ void TabPage::replaceSelectedText(QString by)
 void TabPage::eraseSelectedText()
 {
 	if (!_selected)
-		return;
-	//prvy  replasni, ostatne vymaz
-	QString q[3];
-	sTextIt->split(q[0],q[1],q[2]);
-	std::string s[] = {q[0].toStdString(),q[1].toStdString(),q[2].toStdString()};
-	PdfOperator::Operands operand;
-	operand.push_back(shared_ptr<IProperty>(new CString(q[0].toStdString())));
-	PdfOp op = createOperator("Tj",operand);
-	_selected = false;
-	float x = sTextIt->_charSpace;
-	shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(sTextIt->_op);
-	for ( int i =0; i< s[1].size();i++)
-	{
-		x+=txt->getWidth(s[1][i]); //s1 je to, co mazeme:)
-		x+=sTextIt->_charSpace;
-	}
-	if (s[2]!="")
-	{
-		PdfOperator::Operands operand2;
-		operand2.push_back(shared_ptr<IProperty>(shared_ptr<IProperty>(new CString(q[2].toStdString()))));
-		PdfOp op2 = createOperator("Tj",operand2);
-		sTextIt->_op->getContentStream()->insertOperator(sTextIt->_op,op2);
-	}
-	if (s[0]!="")
-		sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op->getIterator(sTextIt->_op));
-	else
-		sTextIt->_op->getContentStream()->replaceOperator(sTextIt->_op->getIterator(sTextIt->_op),op);
+		return; //staci iba vymazat a vhodne pridat operator \Td
+	float corr = 72.0f/displayparams.vDpi;
 	if (sTextIt == sTextItEnd)
 	{
-		sTextIt->_op = op; //novy operatoer
-		//toto sa nemeni, toto su este stare hodnoty. Potrebuejueme sa posunut o to, co sme zmazali
-		//ak to bolo viacej operatrov, posunieme sa o vsetky. Ak sme mazali cez via roadkov, bude to novy ET a nove TM, takze nase TD to vobec nebude tankovat
-		PdfOperator::Operands tdOp;
-		PdfOp td = FontWidget::createTranslationTd(x,0);
-		sTextItEnd->_op->getContentStream()->insertOperator(sTextItEnd->_op->getIterator(sTextItEnd->_op),td);
+		QString s[3];
+		sTextIt->split(s[0],s[1],s[2]);
+		//obkolesime vkladany operator s TD s prislusnou velkostou 
+		if (!s[2].isEmpty())
+		{
+			PdfOperator::Operands operands;
+			operands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(s[2].toStdString())));
+			PdfOp op = createOperator("Tj",operands); //stejny operator, stejny fot
+//PODIVNE
+			float dist = sTextIt->GetNextStop() - sTextIt->_origX;
+			dist*=corr;
+			PdfOp optd = FontWidget::createTranslationTd(-dist,0);
+			//dist *= 72.0f/displayparams.hDpi;
+			sTextIt->_op->getContentStream()->insertOperator(PdfOperator::getIterator(sTextIt->_op),optd);
+			sTextIt->_op->getContentStream()->insertOperator(PdfOperator::getIterator(sTextIt->_op),op);
+			optd = FontWidget::createTranslationTd(dist,0);
+			sTextIt->replaceAllText(s[0]);
+			sTextIt->_op->getContentStream()->insertOperator(PdfOperator::getIterator(sTextIt->_op),optd);
+		}
+		//vlozime to, ze sme menili
+		redraw();
+		createList();
 		return;
 	}
-	sTextIt++;
-	while(sTextIt!=sTextItEnd)
+//	float distX1 =0;// -sTextIt->GetPreviousStop() + sTextIt->_origX2;//kolko sme zmazali
+	float distX2 = sTextItEnd->GetNextStop() - sTextItEnd->GetPreviousStop()-sTextItEnd->_charSpace;
+	distX2 *=corr;
+    //najskor musim deletnut tie, ktore urcite nechceme, v dalsom kuse kodu robim replace a nema sa to rado
+	TextData::iterator it = sTextIt;
+	it++;
+	while (true)
 	{
-		x+= sTextIt->_end - sTextIt->_begin;
-		sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op);
-		sTextIt++;
+		if(it==sTextItEnd)
+			break;
+		//delete operator
+		it->_op->getContentStream()->deleteOperator(it->_op);
+		it++;
 	}
-	sTextIt->split(q[0],q[1],q[2]);
-	//td
-	if (!q[1].isEmpty())
+
+	QString s1,s2,s3;
 	{
-		sTextIt->replaceAllText(q[1]);
-		//TODO nasadit spravny maticu - mozo cez _font? Neviem vsetky parametre
-		//insertBefore(
+		//uchovame to, co z praveho operatoru zostalo
+		sTextIt->split(s1,s2,s3); //splitneme
+		assert(s3=="");
+//		PdfOp td = FontWidget::createTranslationTd(distX1,0);
+//		sTextIt->_op->getContentStream()->insertOperator( sTextIt->_op,td);
+		sTextIt->replaceAllText(s1); // povodny operator bude nezmeneny az na to , ze mu
+		//td = FontWidget::createTranslationTd(-distX1,0);
+		//insertBefore( td, sTextIt->_op);
 	}
-	else
-		sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op);
-	//nevalidne sTextItend
+	{
+		sTextItEnd->split(s1,s2,s3);
+		assert(s1 == "");
+		PdfOp op = FontWidget::createTranslationTd(-distX2,0);
+		sTextItEnd->_op->getContentStream()->insertOperator(sTextItEnd->_op,op);
+		op = FontWidget::createTranslationTd(distX2,0);
+		sTextItEnd->replaceAllText(s3);
+		insertBefore(op, sTextItEnd->_op);
+	}
 	_selected = false;
+	redraw();
 	createList();
-	setFromSplash();
 }
 void TabPage::deleteText( QString text)
 {

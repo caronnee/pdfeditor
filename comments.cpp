@@ -1,6 +1,7 @@
 #include "comments.h"
 #include "kernel/factories.h"
 #include "globalfunctions.h"
+#include "typedefs.h"
 
 void Comments::setRectangle(float x, float y, int width, int height)
 {
@@ -107,6 +108,13 @@ void Comments::apply()
 			arr.addProperty(*boost::shared_ptr< pdfobjects::CReal>(pdfobjects::CRealFactory::getInstance(0))); //add color
 			d->addProperty("C",arr);
 			d->addProperty("F", *boost::shared_ptr<pdfobjects::CInt>(pdfobjects::CIntFactory::getInstance(4)));
+			{
+				pdfobjects::CArray rect;
+				rect.addProperty(*(PdfProperty(pdfobjects::CIntFactory::getInstance(0))));
+				rect.addProperty(*(PdfProperty(pdfobjects::CIntFactory::getInstance(0))));
+				rect.addProperty(*(PdfProperty(pdfobjects::CIntFactory::getInstance(1))));
+				d->addProperty("Border",rect); 
+			}
 			emit (annotationTextMarkup (_an)); //jedine, co chyba doplnit, je quadpoint -> doplni sa v taboage
 			return;
 		}

@@ -113,3 +113,4 @@ OK - ulozit PDF v neecrptovanej podobe -
 - file attachmenets
 - zadanie, aka farba v pozadi sa ma zobrazovat 
 - erase text zrusit TDcka alebo okecat preco to vyzera tak debulne ako to vyzera
+- pri insertovani testovat ci tam uzivatel nezadal novy riadok a osetrit to
