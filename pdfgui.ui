@@ -447,6 +447,9 @@
        </property>
        <item>
         <widget class="QPushButton" name="selectTextButton">
+         <property name="toolTip">
+          <string>choose text</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -473,6 +476,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="insertTextButton">
+         <property name="toolTip">
+          <string>insert text</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -496,6 +502,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="deleteButton">
+         <property name="toolTip">
+          <string>delete test ( can cause structure change)</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -513,22 +522,61 @@
        </item>
        <item>
         <widget class="QPushButton" name="changeButton">
+         <property name="toolTip">
+          <string>Change text</string>
+         </property>
          <property name="text">
           <string>change</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="eraseButton">
+         <property name="toolTip">
+          <string>cover text witl white line</string>
+         </property>
          <property name="text">
           <string>erase</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="highlightButton">
+         <property name="toolTip">
+          <string>highlight text</string>
+         </property>
          <property name="text">
           <string>highlight</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>

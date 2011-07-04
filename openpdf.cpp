@@ -22,6 +22,7 @@ void OpenPdf::eraseSelectedText()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->eraseSelectedText();
+	page->redraw();
 	page->createList();
 }
 void OpenPdf::highlightSelected()

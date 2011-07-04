@@ -38,6 +38,10 @@
      <property name="text">
       <string>Previous</string>
      </property>
+     <property name="icon">
+      <iconset resource="pdf.qrc">
+       <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
+     </property>
     </widget>
    </item>
    <item>
@@ -45,11 +49,17 @@
      <property name="text">
       <string>Next</string>
      </property>
+     <property name="icon">
+      <iconset resource="pdf.qrc">
+       <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
+     </property>
     </widget>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="pdf.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>next</sender>

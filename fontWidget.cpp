@@ -3,6 +3,8 @@
 #include "fontWidget.h"
 #include "typedefs.h"
 #include "globalfunctions.h"
+#include <QEvent>
+#include <QToolTip>
 
 using namespace pdfobjects;
 using namespace boost;
@@ -13,6 +15,14 @@ void FontWidget::setChange()
 {
 	_change = true;
 	show();
+}
+void FontWidget::sliderChanged(int value)
+{
+	QVariant v(value);
+	QString message = "Value:";
+	message.append(v.toString());
+	QToolTip::showText(QCursor::pos(), message);
+	//this->ui.rotation->setToolTip(message);
 }
 QString FontWidget::getText()
 {
@@ -46,6 +56,7 @@ FontWidget::FontWidget(QWidget *parent) : QWidget(parent)
 		QVariant v(i);
 		ui.shape->addItem(QString(fontShapes[i].c_str()),v);
 	}
+	connect(ui.rotation, SIGNAL(valueChanged(int)),this,SLOT(sliderChanged(int)));
 }
 
 FontWidget::FontWidget(const FontWidget & font) : QWidget(font.parentWidget())
@@ -144,6 +155,7 @@ void FontWidget::addParameters() //TODO nie s jedine parametre
 	assert(!id.empty());
 	_fonts[this->ui.fonts->currentIndex()].setId(id);
 	_BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(_BT));
+	_BT->push_back( createMatrix("Tm"), getLastOperator(_BT));
 }
 PdfOp FontWidget::createTranslationTd(double x, double y)
 {
@@ -161,7 +173,6 @@ PdfOp FontWidget::addText(std::string txt)
 {
 	createBT();
 	addParameters();
-	_BT->push_back( createMatrix("Tm"), getLastOperator(_BT));
 	PdfOperator::Operands textOperands;
 	textOperands.push_back(shared_ptr<IProperty>(new CString(txt.c_str())));
 	addToBT(createOperator("Tj", textOperands));
@@ -185,4 +196,14 @@ void FontWidget::setPosition(float pdfx, float pdfy)
 	_pdfPosX = pdfx; 
 	_pdfPosY = pdfy;
 	ui.rotation->setValue(0);
+}
+
+void FontWidget::createFromMulti( std::vector<PdfOp>& operators )
+{
+	createBT();
+	addParameters();
+	for (int i =0; i< operators.size(); i++)
+		_BT->push_back(operators[i],getLastOperator(_BT));
+	createET();
+	emit text(_q);
 }

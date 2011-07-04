@@ -18,18 +18,18 @@ FIXED	hladat aj predchadzajuce vyskyty
 OK 	-	extrahovanie textu
 DENIED				-export do textoveho suboru
 FIXED		- pri zamietnuti  vytvorenia suboru sa vytvori hlaska, ze cration failed -> nezodpoveda
-			- nazvy fontov budu unikatne (set?) - iba z windowsu
+FIXED		- nazvy fontov budu unikatne (set?) - iba z windowsu
 FIXED	- scasti -insert text ( context menu )
 FIXED	- vyhladava sa insertneny text?	
 		- vysvietenie zvrhlosti ( operatory inych fontov, otocenie )
 REMOVED - scale matrix for scaling text
 FIXED	- delete selected text
-        - delete cez viac operatorov, s roznymi fontami a p, rozne vzdialeneod
+FIXED   - delete cez viac operatorov, s roznymi fontami a p, rozne vzdialeneod
 FIXED	- context menu on selected ( delete )
 FIXED	- erase selected text ( zamplnenie nicim ), context menu
 FIXED   - erase cez viac operatorov
-				-zostavaju specialne pripacy - co ak je to otocene, viac riadkov a pod.
-		- convertovat text do povodnej podoby vzhladom na locale
+		- zostavaju specialne pripacy - co ak je to otocene, viac riadkov a pod.
+FIXED	- convertovat text do povodnej podoby vzhladom na locale
 FIXED	-zmenit vysvieteny text
 CCA_OK	-zmenit velkost (ak sa zmeni velksot, treba posunut ostatne operatory
 FIXED	-zmenit farbu
@@ -43,7 +43,7 @@ MERGED	-okienko na replace
 FIXED - vyhladavanie otoceneho textu, vysvoeteie otoceneho textu,...
 FIXED - pridat do odtien farby, tvar	(cs non-stroking)	(CS stroking) .//set operation
 FIXED	- vyhladanie cez QString
-		-premenovat vsetko na factory, aby nevznikali bmemory skarede veci
+		-premenovat vsetko na factory, aby nevznikali memory skarede veci
 ----IMAGE-----
 FIXED - dialog pre pridanie obrazka (context doteraz)
 FIXED - v zavislosti na rotacii v dialogu spravit to, jak sa vypocitava cm
@@ -55,16 +55,16 @@ IMPLEMENTED -nasetovat scale v zavislosi na obrazku(4-stvrtina)
 NICE-TO-HAVE - pridat len cast obrazka - to si staci orezat v nejakom editore
 FIXED -zmazat obrazok
 WONTFIX - spytat sa, ktory obrazok zmazat - zmaze ten horny, ktory iny by asi uzivatel chcel?
-- zmena atributov obrazka(on click show window, set selected)(pozicia, scale, otocenie
-- extrakcia casti obrazka (click- vyber vsetko, click&drag->painter, transform to bmp position a extract)
-- extrakcia celeho obrazka
-- do objekty?
+FIXED - zmena atributov obrazka(on click show window, set selected)(pozicia, scale, otocenie
+FIXED - extrakcia casti obrazka (click- vyber vsetko, click&drag->painter, transform to bmp position a extract)
+FIXED - extrakcia celeho obrazka
+FIXED - do objekty?
 --------------------COMMENTY---------------
 FIXED - dialog pre pridanie comments, dialog pre pridanie roznych typov commentu
 FIXED - pridat comment
 -po klikuti na link vybehnut na danu poziciu pre link annotation
 -po kliknuti na textovu anotaciu zobrazit textu ( v textboxe alebo tak nejak )
--zobrazit strikeout
+FIXED  -zobrazit strikeout
 FIXED - zobrazit highlight
 MERGED - zmenit farbu highlighty (spolu so settings)
 MERGED - zmenit farbu strokeout ( settings )
@@ -76,14 +76,15 @@ DONE BY DeFAULT -ignorovat ostatne
 -zobrazenie, ze existuje anotacia
 -zmazanie commentu
 -----------------------VIZAZ-------------------------
-->prepinanie medzi moznostami( pracuj ako s textom, pracuj ako s obrazkom, ukaz mi operatory)
+FIXED ->prepinanie medzi moznostami( pracuj ako s textom, pracuj ako s obrazkom, ukaz mi operatory)
 
 ---------------TEXT-------
 - test so zoomom
-- previous nefunguje dobre
-- spravot iba systemove fonty, aby sa zobrazilo spravne
+FIXED - previous nefunguje dobre
+FIXED - spravot iba systemove fonty, aby sa zobrazilo spravne
+- test s viacerymi strankami
+- progress okno
 ----------------------SETTINGS--------------------------
-- undo,redo akcie
 - defaultne, 1/2 stranok
 - farba vysvietenia, v zavisloti na tom, co vysviecuje
 - pri zatvarani okien zostovat, co sa vsetko ulozilo, poprpade sa spytat, ci to ulozit ( setting save on exit )
@@ -99,12 +100,12 @@ DONE BY DeFAULT -ignorovat ostatne
 - ukazovat nejakym tentintkom, kde sa pohybuje pridanie textu, obrazky
 - vytvorit instalator
 ---------------------------------------PATCHES------
-- getfontwidth - pridava funkcia na sirku glyfu
-- mozne memor leak pri zistovani priameho textu (font text)
-- iterator debugging 
+OK - getfontwidth - pridava funkcia na sirku glyfu
+OK - mozne memor leak pri zistovani priameho textu (font text)
+OK - iterator debugging 
 OK - ulozit PDF v neecrptovanej podobe - 
 ----------------------ADDITIONAL---------------------
-- undo & redo ( staci a jeden krat )
+- undo & redo ( staci a jeden krat mozno?)
 - (vyhladavanie regexu)
 - (upravit text tak, aby bol zarovnany vzhladom na ine viditelne operatory)
 - attachments, zobrazit, stiahnut
@@ -114,3 +115,8 @@ OK - ulozit PDF v neecrptovanej podobe -
 - zadanie, aka farba v pozadi sa ma zobrazovat 
 - erase text zrusit TDcka alebo okecat preco to vyzera tak debulne ako to vyzera
 - pri insertovani testovat ci tam uzivatel nezadal novy riadok a osetrit to
+- BUG in STD stringu konverzii na Qstring -> exception
+- zmenit vsetko na wstring aby sa tam dala vlozit aj diakritika
+- dalsi parameter-> charakter spacing
+- moznost pridat uzivatelom definovany font(config)
+- crtlF - hladat

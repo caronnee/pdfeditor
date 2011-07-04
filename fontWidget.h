@@ -58,10 +58,11 @@ class FontWidget : public QWidget
 	float _pdfPosX,_pdfPosY;
 	PdfOp createMatrix(std::string op);
 public:
-	void setHeight(int h)
+	void setHeight(float h)
 	{
 		QVariant data(h);
-		this->ui.fontsize->setCurrentIndex(this->ui.fontsize->findData(data));
+		data=data.toInt();
+		this->ui.fontsize->setCurrentIndex(this->ui.fontsize->findData(data.toInt()));
 	}
 	QString getText();
 	static PdfOp createTranslationTd(double x, double y);
@@ -101,6 +102,8 @@ public slots:
 	void setGray() { set[OptionGray] = true; } //TODO macro
 
 	void apply(); //on clicked
+	void createFromMulti( std::vector<PdfOp>& operators );
+	void sliderChanged(int value);
 	//void setAngle(int angle);
 };
 

@@ -113,7 +113,7 @@ bool OperatorData::operator<(const OperatorData & oper) //zoradime podla y-osi
 	BBox b = oper._op->getBBox();
 	//cim vyssie je y, tym vyssie je na obrazovke, t.j. ty to bude prvsie
 	//ak je rozdiel moc maly v y osi, si na jednej lajne
-	return forward( b.xleft, b.yleft);
+	return forward( min(b.xleft,b.xright), max(b.yleft,b.yright));
 }
 bool OperatorData::forward(double x, double y)const
 {
@@ -135,7 +135,7 @@ void OperatorData::split(QString & split1, QString& split2, QString& split3)
 	int part1 = letters(GetPreviousStop());
 	assert(part1>=0);
 	int part2 = letters(GetNextStop());
-	assert(part2<= s.size());
+	assert(part2<= s.size()+1);
 	split1= s.mid(0,part1);
 	split2= s.mid(part1, part2-part1);
 	split3= s.mid(part2);
@@ -143,10 +143,10 @@ void OperatorData::split(QString & split1, QString& split2, QString& split3)
 void OperatorData::replaceAllText(QString s)
 {
 	PdfOperator::Operands ops;
-	ops.push_back(boost::shared_ptr<IProperty>(new CString(s.toStdString())));
+	ops.push_back(boost::shared_ptr<IProperty>(new CString(s.toAscii().data())));
 	PdfTextOperator p = boost::dynamic_pointer_cast<TextSimpleOperator>(createOperator("Tj",ops));
 	_op->getContentStream()->replaceOperator(_op,p);
 	_op = p;
-	_text = s; //TODO assert
+	_text = s; //TODO make visible that now this is invalid
 	clear();
 }

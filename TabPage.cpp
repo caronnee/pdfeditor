@@ -780,9 +780,9 @@ void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka s
 	if (*move < *sTextMarker)
 	{
 		sTextIt = move;
-		sTextIt->setBegin(point.x());
+		sTextIt->setBegin(min(point.x(),_mousePos.x()));
 		sTextItEnd = sTextMarker;
-		sTextItEnd->setEnd(_mousePos.x());
+		sTextItEnd->setEnd(max(_mousePos.x(),point.x()));
 	}
 	else if (move == sTextMarker)
 	{
@@ -807,7 +807,7 @@ void TabPage::highlight()
 {
 	if (!_selected)
 		return;
-	QColor color(255,36,255,50);
+	QColor color(255,0,255,50);
 	TextData::iterator first = sTextIt;
 	TextData::iterator last = sTextItEnd; 
 	bool forw = (*sTextIt) < (*sTextItEnd);
@@ -890,7 +890,7 @@ void TabPage::insertBefore(PdfOp op, PdfOp before)
 void TabPage::createAddMoveString(PdfOp bef, double x, double y, QString name)
 {
 	PdfOperator::Operands ops;
-	ops.push_back(boost::shared_ptr<IProperty> (new CString(name.toStdString())));
+	ops.push_back(boost::shared_ptr<IProperty> (new CString(name.toAscii().data())));
 	PdfOp p = createOperator("tj",ops);
 	bef->getContentStream()->insertOperator(bef,p);
 	OperatorData d(p);
@@ -1179,6 +1179,7 @@ void TabPage::redraw()
 	//this->ui.label->adjustSize();
 	updatePageInfoBar();
 	showAnnotation();
+	createList();//TODO only in right mode
 }
 void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
 {
@@ -1485,16 +1486,7 @@ void TabPage::loadFonts(FontWidget* fontWidget)
 {
 	//dostanme vsetky fontu, ktore su priamov pdf. bohuzial musime cez vsetky pages
 	CPage::FontList fontList;
-	//for ( size_t i = 1; i <= pdf->getPageCount(); i++ )
-	//{
-	//	pdf->getPage(i)->getFontIdsAndNames(fontList);
-	//	//fontList.insert(fontList.end(), fontList2.begin(), fontList2.end());
-	//	for( CPage::FontList::iterator it = fontList.begin(); it!=fontList.end(); it++)
-	//	{
-	//		fontWidget->addFont(it->first, it->second);
-	//	}
 
-	//}
 	CPageFonts::SystemFontList flist = CPageFonts::getSystemFonts();
 	for ( CPageFonts::SystemFontList::iterator i = flist.begin(); i != flist.end(); i++ )
 	{
@@ -1515,55 +1507,79 @@ void TabPage::insertText( PdfOp op )
 void TabPage::changeSelectedText() //vsetko zosane na svojom mieste, akurat sa pridaju 
 {
 	assert(_selected);
-	float h = sTextIt->_op->getFontHeight();
-	_font->setHeight(h);
 	float corr = displayparams.vDpi/72;
+	float h = sTextIt->_op->getFontHeight();
 	float y = displayparams.DEFAULT_PAGE_RY - (sTextIt->_ymin+h)/corr; //TODO toto nemusi byt vyska BBoxu
 	float pos = sTextIt->GetPreviousStop();
 	_font->setPosition(pos/corr,y); //pretoze toto je v default user space
-	eraseSelectedText();
 	//rozdelime na dva pripady - pokial je to roznake a pokial je zaciatok erozny od konca
 	if ( sTextIt==sTextItEnd ) //TODO co ak je s3 prazdne? -> Compact?:)
 	{
-		
+		eraseSelectedText();
 		_font->setInsert();
 		_font->apply(); //musi tu byt apply, pretoze sa moze zmenit farba - potrebujeme Q operator
-		_font->close(); //TODO zmazat
+		_font->close();
 		redraw();
 		createList();
 		return;
 	}
-	//tuto zacina oblastm, ekd ratame s tym, ze zmeneneny text sa rozteka cez viacero operatorov
-	//zistime aku vzdialenost (x,y) musime preskocit. Y tu nemusi byt nulove akoto mu bolo v predchadzajucom pripade, distX moze byt dokonca zaporne
-	//bohuzial vieme insertovat len na jeden riadok (tj nepripusta zalamovanie riadku ktore sa moze vyskytnut) a mu chcemel, aby vsetko zostalo na povodnom mieste - musime insertovat cely blok BT->operatory, operatory->ET
-	//POSTUP : vyhradime si miesto, kde sa  tieto operatory potom znova insertnu
-	// - vsetky ostatne vlastnosti budu stratene
-	// - pridaju sa dva td operatory o velkosti toho, co sme zmazali v prvom a v poslednom operatore. Vsetky ostatne Td sa budu riadi podla tohoto
-	// Td operator sa prida na sTextIt a pre sTextItEnd
-	//y bude predsa len nula vzdy
+	//stale ame v operatoroch ulozene suradnice
+	std::vector<PdfOp> operators;
+	//prvy je vzdy stejny,ziadne Td
+	PdfOperator::Operands operands;
+	QString s1,s2,s3;
+	operands.clear();
+	TextData::iterator it = sTextIt;
+	it->split(s1,s2,s3);
+	float dist = it->GetPreviousStop() - it->_origX - sTextItEnd->_charSpace;
+	dist*= corr;
+	float dx=sTextIt->GetPreviousStop() - sTextIt->_origX;
+	float dy=0;
+	dx*=corr;
+	assert(s3==""); //namiesto prveho TD bude 
+	{
+		operands.clear();
+		operands.push_back(PdfProperty(CStringFactory::getInstance(s2.toAscii().data())));
+		operators.push_back(createOperator("Tj",operands));
+	}//spracovane prve
+	float lastX = pos;
+	float lastY = it->_ymin;
+	while(it!=sTextItEnd) //spravi vratane poslendeho
+	{
+		it++;
+		//td
+		operands.clear();
+		dist = it->_origX - lastX;
+		dist /= corr;
+		operands.push_back(PdfProperty(CRealFactory::getInstance(dist)));
+		dist = it->_ymin - lastY;
+		dist /= corr;
+		operands.push_back(PdfProperty(CRealFactory::getInstance(dist)));
+		operators.push_back(createOperator("Td",operands));
+		//tj
+		operands.clear();
+		QString dummy1,dummy2, s = it->_text;
+		if ( it == sTextItEnd )
+			it->split(dummy1,s,dummy2);
+		operands.push_back(PdfProperty(CStringFactory::getInstance(s.toAscii().data())));
+		operators.push_back(createOperator("Tj",operands));
+		lastX = it->_origX;
+		lastY = it->_ymin;
+	}
+	//posledne zaverecne TD kvoli moznemu poslednemu rozbitiu polsendeho operatora
+	{
+		sTextItEnd->split(s1,s2,s3);
+		assert(s1=="");
+		operands.clear();
+		dist = lastX - sTextItEnd->GetPreviousStop()-sTextItEnd->_charSpace;
+		dist /= corr;
+		operands.push_back(PdfProperty(CRealFactory::getInstance(dist)));
+		operands.push_back(PdfProperty(CRealFactory::getInstance(0)));
+		operators.push_back(createOperator("Td",operands));
+	}
 	eraseSelectedText();
-	
+	_font->createFromMulti(operators);
 	//vsetky ostatne Tj uchovame + musime zachovat ich rozostupenie - vytvorizme im nove Td na zaklade vzdialenost medzi nimi
-	//double beg = sTextIt->_begin;
-	//double end = sTextIt->_end;
-	//{
-	//	QString a,b,c;
-	//	sTextItEnd->split(a,b,c);
-	//	end= sTextItEnd->_end;
-	//	sTextItEnd->replaceAllText(c);
-	//}
-	//insertTextAfter(sTextItEnd->_op,end,sTextItEnd->_ymax,s3);
-	//sTextIt ++; //prvy sme us presli
-	//TextData::iterator i = sTextIt;
-	//while (sTextIt!=sTextItEnd)//iba pre TJ pridame operatory, vsetky, co boli zadane
-	//{
-	//	std::wstring w;
-	//	shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(sTextIt->_op);
-	//	txt->getFontText(w);
-	//	insertTextAfter(sTextIt->_op,sTextIt->_begin, sTextIt->_ymax, QString::fromStdWString(w));
-	//	sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op,true);
-	//	sTextIt++;
-	//}
 	redraw();
 	createList();
 }
@@ -1606,7 +1622,7 @@ void TabPage::insertTextAfter(PdfOp opBehind, double td, double ymax, QString s)
 	//daj tam text
 	{
 		PdfOperator::Operands ops;
-		ops.push_back(shared_ptr<IProperty>(new CString(s.toStdString())));
+		ops.push_back(shared_ptr<IProperty>(new CString(s.toAscii().data())));
 		PdfOp tj = createOperator("Tj", ops);
 		_font->addToBT(tj);
 	}
@@ -1863,7 +1879,7 @@ void TabPage::deleteSelectedText() //sucasne zarovna
 	QString s[3];
 	sTextIt->split(s[0],s[1],s[2]);
 	PdfOperator::Operands operand;
-	operand.push_back(shared_ptr<IProperty>(new CString(s[0].toStdString())));;
+	operand.push_back(shared_ptr<IProperty>(new CString(s[0].toAscii().data())));;
 	PdfOp op = createOperator("Tj",operand);
 	_selected = false;
 	double diffX =0.0; //y bude vzdy nulove
@@ -1873,7 +1889,7 @@ void TabPage::deleteSelectedText() //sucasne zarovna
 		diffX = fabs(sTextIt->_end -sTextIt->_begin);
 		{
 			PdfOperator::Operands operand2;
-			operand2.push_back(shared_ptr<IProperty>(shared_ptr<IProperty>(new CString(s[2].toStdString()))));
+			operand2.push_back(shared_ptr<IProperty>(shared_ptr<IProperty>(new CString(s[2].toAscii().data()))));
 			PdfOp op2 = createOperator("Tj",operand2);
 			sTextIt->_op->getContentStream()->insertOperator(sTextIt->_op,op2);
 		}
@@ -1930,7 +1946,6 @@ void TabPage::replaceSelectedText(QString by)
 	first->split(s[0],s[1],s[2]);
 	first->replaceAllText(s[0]+by+s[2]);
 	//ostatne sa posunu, ak si v stejnom tj-> posunu sa s vlozenim. Ok nie su, maju maticu
-	createList();
 }
 void TabPage::eraseSelectedText()
 {
@@ -1942,13 +1957,15 @@ void TabPage::eraseSelectedText()
 		QString s[3];
 		sTextIt->split(s[0],s[1],s[2]);
 		//obkolesime vkladany operator s TD s prislusnou velkostou 
-		if (!s[2].isEmpty())
+		float dist;
+		if (!s[2].isEmpty()) //s2 not empty-> nejaky operator zostava potom 
 		{
 			PdfOperator::Operands operands;
-			operands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(s[2].toStdString())));
+			std::string e(s[2].toAscii().constData());
+			//s[2].toStdString()
+			operands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(e)));
 			PdfOp op = createOperator("Tj",operands); //stejny operator, stejny fot
-//PODIVNE
-			float dist = sTextIt->GetNextStop() - sTextIt->_origX;
+			dist = sTextIt->GetNextStop() - sTextIt->_origX;
 			dist*=corr;
 			PdfOp optd = FontWidget::createTranslationTd(-dist,0);
 			//dist *= 72.0f/displayparams.hDpi;
@@ -1958,9 +1975,9 @@ void TabPage::eraseSelectedText()
 			sTextIt->replaceAllText(s[0]);
 			sTextIt->_op->getContentStream()->insertOperator(PdfOperator::getIterator(sTextIt->_op),optd);
 		}
+		else
+			sTextIt->replaceAllText(s[0]);
 		//vlozime to, ze sme menili
-		redraw();
-		createList();
 		return;
 	}
 //	float distX1 =0;// -sTextIt->GetPreviousStop() + sTextIt->_origX2;//kolko sme zmazali
@@ -1999,8 +2016,6 @@ void TabPage::eraseSelectedText()
 		insertBefore(op, sTextItEnd->_op);
 	}
 	_selected = false;
-	redraw();
-	createList();
 }
 void TabPage::deleteText( QString text)
 {

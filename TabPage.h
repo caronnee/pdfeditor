@@ -201,13 +201,13 @@ private:
 	//private methods
 	void addRevision( int i = -1);
 
-	void redraw();
-
+	
 	void updatePageInfoBar();
 	// gets file, name is name of dialog
 	QString getFile(QFileDialog::FileMode flags = QFileDialog::AnyFile);
 	void showClicked(int x, int y);
 public:	
+	void redraw();
 	void getBookMarks(); //LATER, treba actions zisti, ako sa vykoavaju
 //	void changeImageProp(); // v selected mame images//LATER
 	//nastavi u page cakanie na skoncenie kreslenie ( nieco emitne:)
