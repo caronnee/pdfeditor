@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\core\xpdf\xpdf;&quot;D:\Program Files\GnuWin32\include\freetype2&quot;;..\core\xpdf;&quot;D:\Program Files\GnuWin32\include&quot;;..\core"
+				AdditionalIncludeDirectories="..\core\xpdf\xpdf;&quot;$(FREETYPE_DIR)&quot;;&quot;$(FREETYPE_DIR)\freetype2&quot;;..\core\xpdf;..\core;$(NOINHERIT)"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;HAVE_SPLASH;HAVE_FREETYPE_FREETYPE_H;HAVE_FREETYPE_H"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)\LIBS\$(ProjectName).lib"
+				OutputFile="$(OutDir)\$(ProjectName)d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -82,8 +82,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)releaseLibs"
+			IntermediateDirectory="$(SolutionDir)r_xpdf"
 			ConfigurationType="4"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -105,8 +105,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;D:\Program Files\GnuWin32\include\freetype2&quot;;&quot;D:\Program Files\GnuWin32\include&quot;;..\core"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;HAVE_SPLASH;HAVE_FREETYPE_FREETYPE_H;HAVE_FREETYPE_H"
+				AdditionalIncludeDirectories="..\core\xpdf\xpdf;..\core\xpdf;&quot;$(FREETYPE_DIR)&quot;;&quot;$(FREETYPE_DIR)\freetype2&quot;;..\core"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;HAVE_SPLASH;HAVE_FREETYPE_FREETYPE_H;HAVE_FREETYPE_H;_HAS_ITERATOR_DEBUGGING=0"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -124,6 +124,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)\$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

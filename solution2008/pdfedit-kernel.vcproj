@@ -18,7 +18,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)\lib"
+			OutputDirectory="$(SolutionDir)\lib\"
 			IntermediateDirectory="$(SolutionDir)I_kernel"
 			ConfigurationType="4"
 			CharacterSet="1"
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;D:\Program Files\GnuWin32\include&quot;;..\core;..\core\utils;..\\core\kernel;..\core\xpdf\xpdf;..\core\xpdf"
+				AdditionalIncludeDirectories="$(BOOST_DIR);..\core;..\core\utils;..\extern;..\core\kernel;..\core\xpdf\xpdf;..\core\xpdf"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,6 +63,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)\$(ProjectName)d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -82,8 +83,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)releaseLibs"
+			IntermediateDirectory="$(SolutionDir)r_kernel"
 			ConfigurationType="4"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -105,8 +106,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;D:\Program Files\GnuWin32\include&quot;;..\core"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				AdditionalIncludeDirectories="$(BOOST_DIR);..\core;..\extern;&quot;$(FREETYPE_DIR)&quot;;&quot;$(FREETYPE_DIR)\freetype2&quot;;..\core\xpdf\xpdf;..\core\xpdf"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_HAS_ITERATOR_DEBUGGING=0"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="kernel/static.h"
@@ -125,6 +126,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
