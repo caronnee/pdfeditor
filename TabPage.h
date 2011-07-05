@@ -17,6 +17,7 @@
 #include "comments.h"
 #include "tree.h"
 #include "insertImage.h"
+#include "bookmark.h"
 
 
 //xpdf, pdfedit -> ktovie ci to nema ist do cppka
@@ -178,7 +179,7 @@ public:
 	TabPage(OpenPdf *,QString name);
 	~TabPage(void);
 
-	void setTree(shared_ptr<CDict> d, QTreeWidgetItem * item);
+	void setTree(shared_ptr<CDict> d, Bookmark * b );
 	void highLightBegin(int x, int y); //nesprav nic, pretoze to bude robit mouseMove
 	void highlightText(QPoint point); //tu mame convertle  x,y
 
@@ -243,7 +244,7 @@ public slots:
 	
 	void deleteAnnotation(QPoint);
 	void search(QString text,bool forw);
-	void handleBookmark(QTreeWidget * item, int);
+	void handleBookmark(QTreeWidgetItem* item, int);
 	void highlight(); //nesprav nic, pretoze to bude robit mouseMove
 //	void removeObjects();
 	void clicked(QPoint point);
@@ -296,24 +297,23 @@ private slots:
 
 	/// Revert revision
 	void revertRevision();
+
+	void loadBookmark( QTreeWidgetItem * item );
 //----------------------------------------------------------------------------------------------------	
 	/* To implement
 	void showTextAnnot(std::string name);
 	void copyToClipBoard(); //from selected/ highlighted
-	void rotateObjects(int angle);
 	void handleAnnotation(int i);
-	void rotateText( int angle );
-	boost::shared_ptr<PdfOperator> findNearestFont(int x, int y);
 	void move(int difx, int dify); //on mouse event, called on mouse realease
-	void riseSel();
-	void changeText(std::string name, int size);//tazkopadne?
-	void search(std::string text);
 	*/
 signals:
 	void markPosition(QPoint point); //reverted point
 	void parsed(std::vector<float>);
 	void pdfPosition(float a, float b, int w,int h);
 	void pdfText(std::string s);
+private:
+	void getDest( const char * nameToResolve, Bookmark *b ) ;
+	void getDestFromArray( PdfProperty pgl, Bookmark * b );;
 };
 
 #endif

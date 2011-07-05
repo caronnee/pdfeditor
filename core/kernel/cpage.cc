@@ -308,7 +308,7 @@ isPage (boost::shared_ptr<IProperty> ip)
 
 	boost::shared_ptr<CDict> dict = IProperty::getSmartCObjectPtr<CDict> (ip);
 
-	if (Specification::Page::TYPE != getStringFromDict (dict, Specification::Dict::TYPE))
+	if (Specification::Page::TYPE != getNameFromDict (dict, Specification::Dict::TYPE))
 		throw CObjInvalidObject ();
 
 	return true;

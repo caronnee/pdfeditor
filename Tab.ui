@@ -84,7 +84,7 @@
         </property>
        </widget>
       </item>
-<item>
+      <item>
        <widget class="QPushButton" name="repeter">
         <property name="text">
          <string>Repeter</string>
@@ -103,17 +103,8 @@
    </item>
    <item row="2" column="1">
     <widget class="QTreeWidget" name="tree">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="MinimumExpanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>70</width>
-       <height>16777215</height>
-      </size>
+     <property name="tabKeyNavigation">
+      <bool>true</bool>
      </property>
      <column>
       <property name="text">
@@ -157,6 +148,9 @@
           <width>30</width>
           <height>30</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Rotate Page</string>
         </property>
         <property name="minimum">
          <number>0</number>
@@ -206,21 +200,57 @@
      </widget>
     </widget>
    </item>
+   <item row="6" column="0">
+    <widget class="QProgressBar" name="progressBar">
+     <property name="value">
+      <number>0</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="textDirection">
+      <enum>QProgressBar::TopToBottom</enum>
+     </property>
+     <property name="format">
+      <string>Loading : %p%</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>
  <connections>
-	 <connection>
-		 <sender>search</sender>
-		 <signal>clicked()</signal>
-		 <receiver>TabUI</receiver>
-		 <slot>raiseSearch()</slot>
+  <connection>
+   <sender>search</sender>
+   <signal>clicked()</signal>
+   <receiver>TabUI</receiver>
+   <slot>raiseSearch()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
-	 <connection>
-		 <sender>repeter</sender>
-		 <signal>clicked()</signal>
-		 <receiver>TabUI</receiver>
-		 <slot>highlight()</slot>
+  <connection>
+   <sender>repeter</sender>
+   <signal>clicked()</signal>
+   <receiver>TabUI</receiver>
+   <slot>highlight()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
   <connection>
    <sender>commit</sender>

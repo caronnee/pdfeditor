@@ -14,9 +14,9 @@ enum Mode
 	ModeImagePart,
 	ModeExtractImage,
 	ModeOperatorSelect, //moze byt uzitocne
+	ModeInsertAnntotation,
 	DefaultMode,
 	ImageMode,
-	AnntotationMode,
 	DrawMode,
 	ModeEmitPosition,
 	NModes

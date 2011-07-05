@@ -16,12 +16,12 @@ FIXED	v okamziku, ked je to dalej/predchadzajuce, zrusi sa vysvietenie prechodzi
 FIXED	ak nie je vysvieteni viditelne, zaskroluj na miesto, aby viditelne bolo( set scroll)
 FIXED	hladat aj predchadzajuce vyskyty
 OK 	-	extrahovanie textu
-DENIED				-export do textoveho suboru
-FIXED		- pri zamietnuti  vytvorenia suboru sa vytvori hlaska, ze cration failed -> nezodpoveda
-FIXED		- nazvy fontov budu unikatne (set?) - iba z windowsu
+DENIED	-export do textoveho suboru
+FIXED	- pri zamietnuti  vytvorenia suboru sa vytvori hlaska, ze cration failed -> nezodpoveda
+FIXED	- nazvy fontov budu unikatne (set?) - iba z windowsu
 FIXED	- scasti -insert text ( context menu )
 FIXED	- vyhladava sa insertneny text?	
-		- vysvietenie zvrhlosti ( operatory inych fontov, otocenie )
+FIXED	- vysvietenie zvrhlosti ( operatory inych fontov, otocenie )
 REMOVED - scale matrix for scaling text
 FIXED	- delete selected text
 FIXED   - delete cez viac operatorov, s roznymi fontami a p, rozne vzdialeneod
@@ -43,7 +43,7 @@ MERGED	-okienko na replace
 FIXED - vyhladavanie otoceneho textu, vysvoeteie otoceneho textu,...
 FIXED - pridat do odtien farby, tvar	(cs non-stroking)	(CS stroking) .//set operation
 FIXED	- vyhladanie cez QString
-		-premenovat vsetko na factory, aby nevznikali memory skarede veci
+!! co vsetko?		-premenovat vsetko na factory, aby nevznikali memory skarede veci
 ----IMAGE-----
 FIXED - dialog pre pridanie obrazka (context doteraz)
 FIXED - v zavislosti na rotacii v dialogu spravit to, jak sa vypocitava cm
@@ -62,15 +62,19 @@ FIXED - do objekty?
 --------------------COMMENTY---------------
 FIXED - dialog pre pridanie comments, dialog pre pridanie roznych typov commentu
 FIXED - pridat comment
--po klikuti na link vybehnut na danu poziciu pre link annotation
--po kliknuti na textovu anotaciu zobrazit textu ( v textboxe alebo tak nejak )
+- vytvorit bookmarky
+- vytvorit loader pre bookmarky a pre loadovanie a pre savovanie
+- loadnut z revizie
+- savnut ako novu reviziu
+- po klikuti na link vybehnut na danu poziciu pre link annotation
+- po kliknuti na textovu anotaciu zobrazit textu ( v textboxe alebo tak nejak )
 FIXED  -zobrazit strikeout
 FIXED - zobrazit highlight
 MERGED - zmenit farbu highlighty (spolu so settings)
 MERGED - zmenit farbu strokeout ( settings )
 DONE BY DeFAULT -ignorovat ostatne 
 ---------------------HIGHLIGHT----------------------
--pridanie commentu ( context menu - > add comennt, emit point, od, okaa, emit  refresh(rectangle to refresh
+FIXED - pridanie commentu ( context menu - > add comennt, emit point, od, okaa, emit  refresh(rectangle to refresh
 	( podporovane text, link, highlight, strikeout )
 -zmena commentu ( zmena textu farby, atd)
 -zobrazenie, ze existuje anotacia
@@ -84,8 +88,11 @@ FIXED - previous nefunguje dobre
 FIXED - spravot iba systemove fonty, aby sa zobrazilo spravne
 - test s viacerymi strankami
 - progress okno
+- click revision - load from revision
+- save this revision as new revision - NEPODPORUJE KNIZNICE -> ADDITIONAL
 ----------------------SETTINGS--------------------------
-- defaultne, 1/2 stranok
+- defaultne, 1-2 stranok(ADITIONAL 4)
+- continueous/ per stranka
 - farba vysvietenia, v zavisloti na tom, co vysviecuje
 - pri zatvarani okien zostovat, co sa vsetko ulozilo, poprpade sa spytat, ci to ulozit ( setting save on exit )
 - save -  savne sa posledna cast, aj ked nie je revizia->automaticky sa cmmitne revia, reverne sa spat
@@ -118,5 +125,12 @@ OK - ulozit PDF v neecrptovanej podobe -
 - BUG in STD stringu konverzii na Qstring -> exception
 - zmenit vsetko na wstring aby sa tam dala vlozit aj diakritika
 - dalsi parameter-> charakter spacing
-- moznost pridat uzivatelom definovany font(config)
-- crtlF - hladat
+- moznost pridat uzivatelom definovany font(configs cestou kde ho hladat)
+- crt-F - hladat automaticky
+- pri hladani pridat progress bar
+- pri loadovani pridat progress bar
+- uvodna obrazovka
+- about
+- zalozky ( aby uzivatel vedel, kam sa vratit - a program tiez
+- ked mazem zranky, zmazat aj prislusne bookmarky
+-osertit ked sa nieco nepodari - zrusit alokaciu vsetkych poloziek

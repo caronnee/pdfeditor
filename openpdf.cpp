@@ -2,6 +2,8 @@
 #include "TabPage.h"
 #include <QFileDialog>
 #include "insertpagerange.h"
+#include "kernel\exceptions.h"
+#include <QMessageBox>
 
 OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget)
 {
@@ -45,6 +47,10 @@ void OpenPdf::deleteSelectedText()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->deleteSelectedText();
+}
+void OpenPdf::setModeInsertAnotation()
+{
+	setMode(ModeInsertAnntotation);
 }
 void OpenPdf::setModeExtractImage()
 {
@@ -101,22 +107,54 @@ void OpenPdf::closeAndRemoveTab(int i)
 }
 void OpenPdf::saveEncoded()
 {
-	TabPage * page = (TabPage *)this->widget(this->currentIndex());
-	page->saveEncoded();
+	try
+	{
+		TabPage * page = (TabPage *)this->widget(this->currentIndex());
+		page->saveEncoded();
+	}
+	catch (...)
+	{
+		QMessageBox::warning(this, "Unable to save",QString("Unable to save to decoded file"), QMessageBox::Ok, QMessageBox::Ok);
+	}
 }
 void OpenPdf::saveAs()
 {
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),".", tr("PDF files (*.pdf)"));
-	if (fileName == "")
-		return;
-	TabPage * page = (TabPage *)this->widget(this->currentIndex());
-	page->savePdf(fileName.toAscii().data());
+	try
+	{
+		QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),".", tr("PDF files (*.pdf)"));
+		if (fileName == "")
+			return;
+		TabPage * page = (TabPage *)this->widget(this->currentIndex());
+		page->savePdf(fileName.toAscii().data());
+	}
+	catch (...)
+	{
+		QMessageBox::warning(this, "Error occured",QString("Unable to save file"), QMessageBox::Ok, QMessageBox::Ok);
+	}
 }
 
 void OpenPdf::open(QString name)
 {
-	TabPage * page = new TabPage(this, name);
-	this->addTab(page,name);
+	try
+	{
+		TabPage * page = new TabPage(this, name);
+		this->addTab(page,name);
+	}
+
+	catch (PdfOpenException e)
+	{
+		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
+
+	}
+	catch (PdfException e)
+	{
+		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
+	//	return;
+	}
+	catch (std::exception e)
+	{
+		QMessageBox::warning(this, "Unexpected exception",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
+	}
 }
 void OpenPdf::openAnotherPdf()
 {

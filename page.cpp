@@ -41,7 +41,7 @@ void DisplayPage::deleteAnnotation()
 }
 void DisplayPage::annotation()
 {
-	emit AnnotationSignal(_point);
+	emit AnnotationSignal(_point); //TODO emit also rectangle
 }
 void DisplayPage::deleteImage()
 {

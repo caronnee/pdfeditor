@@ -27,6 +27,7 @@
 #include <QTreeWidgetItem>
 #include <QVariant>
 #include <QClipboard>
+#include <QTreeWidgetItem>
 #include "ui_convertpagerange.h"
 
 //PDF
@@ -42,10 +43,11 @@
 
 std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","cs", "SC","SCN", "sc","scn", "G","g","RG","rg","k","K","Tc","Tw", "Tz", "TL", "Tf","Tr","Ts","Td","TD","Tm","T*" };
 
-void TabPage::handleBookmark(QTreeWidget * item, int)
+void TabPage::handleBookmark(QTreeWidgetItem* item, int) //nezaujima nas stlpec
 {
 	_page = _pdf->getPage(((Bookmark *)(item))->getDest());
 	redraw();
+	createList();
 }
 
 TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMode),_parent(parent)
@@ -105,14 +107,11 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMod
 	connect (_labelPage,SIGNAL(EraseTextSignal()),this,SLOT(eraseSelectedText()));
 	connect (_labelPage,SIGNAL(ChangeTextSignal()),this,SLOT(raiseChangeSelectedText()));
 
-	connect (_labelPage,SIGNAL(InsertImageSignal(QPoint)),this,SLOT(raiseInsertImage(QPoint)));
-
 	connect (_labelPage,SIGNAL(DeleteImageSignal(QPoint)),this,SLOT(deleteImage(QPoint)));
 
 	connect (_labelPage,SIGNAL(AnnotationSignal(QPoint)),this,SLOT(raiseAnnotation(QPoint)));
 	connect (_labelPage,SIGNAL(DeleteAnnotationSignal(QPoint)),this,SLOT(deleteAnnotation(QPoint)));
 	//connect (_labelPage,SIGNAL(ChangeImageSignal(QPoint)),this,SLOT(raiseChangeImage(QPoint)));
-	connect(ui.tree,SIGNAL(itemClicked(QTreeWidgetItem *,int)),this,SLOT(handleBookmark((QTreeWidgetItem *,int))));
 
 	//end of connections
 	connect( _image, SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
@@ -120,6 +119,12 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMod
 
 	connect( _cmts,SIGNAL(annotationTextMarkup(Annot)),this,SLOT(insertTextMarkup(Annot)));
 
+	///////////////////////////BOOKMARKS///////////////////////////////////////////////
+
+	connect(ui.tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(handleBookmark(QTreeWidgetItem*,int)));
+	connect(ui.tree, SIGNAL(itemExpanded( QTreeWidgetItem*)), this, SLOT(loadBookmark(QTreeWidgetItem *)));
+	
+	//////////////////////////////////////////////////////////////////////////
 	initRevisions();
 	
 	redraw();
@@ -134,7 +139,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMod
 	_dataReady = false;
 	getBookMarks();
 	createList();
-	search("oftwar",true);
+	//search("oftwar",true);
 	//changeSelectedText();
 }
 void TabPage::initRevisions()
@@ -521,6 +526,11 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 {
 	switch (_parent->getMode())
 	{
+	case ModeInsertAnntotation:
+		{
+			_labelPage->annotation();
+			break;
+		}
 	case ModeInsertText:
 		{
 			//show position
@@ -1065,45 +1075,68 @@ bool TabPage::nextPage()
 }
 void TabPage::getBookMarks()
 {
-	//LATER, TODO, zistit, na aku stranku sa odkazuju, potazne odsek
-	//ket from XREGWritel all GoLink
-	//na nejak on show()
 	std::vector<shared_ptr<CDict> > outline;
-	_pdf->getOutlines(outline);
-	std::vector<shared_ptr<CDict> > dicts;
-	printf( " bookmarks %d\n",outline.size());
+	if (!_pdf->getDictionary()->containsProperty("Outlines"))
+		return;
+	shared_ptr<CDict> ol = _pdf->getDictionary()->getProperty<CDict>("Outlines");
+	ol = ol->getProperty<CDict>("First");
+	//FILE * f = fopen("x","w");
+	while(ol->containsProperty("Next"))
+	{
+		//std::string name = utils::getStringFromDict("Title",ol);
+		outline.push_back(ol);
+		PdfProperty p = utils::getReferencedObject(ol->getProperty("Next"));
+		ol = p->getSmartCObjectPtr<CDict>(p);
+	}
+	outline.push_back(ol);
+	this->ui.tree->setColumnCount(1); //only one columne
 	for (size_t i =0; i< outline.size(); i++)
 	{
-		QTreeWidgetItem * b = new QTreeWidgetItem(); 
-		setTree(outline[i],b);
+		Bookmark * b = new Bookmark(ui.tree);
+		setTree(outline[i],b); //TODO if "first" -> bude dam dalsia sekcia,add "dummy child"
 		this->ui.tree->addTopLevelItem(b);
+		std::string name = utils::getStringFromDict(outline[i],"Title");
+		//outline[i]->getProperty("Title")->getStringRepresentation(name);
+		QVariant v(name.c_str());
+		b->setText(0,v.toString());
+	//	fprintf(f,"%s\n",name.c_str());
 	}
-	//skrtni kazde, ktore nema page ako dest
-
+	//fclose(f);
+	//skrtni kazde, ktore nema page ako dest?
 }
-void TabPage::setTree(shared_ptr<CDict> d, QTreeWidgetItem * item)
+void TabPage::setTree(shared_ptr<CDict> d, Bookmark * b)
 {
-	std::vector<shared_ptr<CDict> > dict;
-	try{
-		QTreeWidgetItem * b;
-		utils::getAllChildrenOfPdfObject(d,dict);
-		if (d->containsProperty("Dest"))
-		{
-			int page;
-			shared_ptr<CArray> ar = IProperty::getSmartCObjectPtr<CArray>(d->getProperty("Dest"));
-			shared_ptr<IProperty> ip = ar->getProperty(0);
-			page = utils::getValueFromSimple<CInt>(ip);
-			b = new Bookmark(page);
-		}
-		else
-			b = new Bookmark(-1);
-		for(size_t i =0; i < dict.size(); i++)
-		{
-			setTree(dict[i],b);
-			item->addChild(b);
-		}
+	PdfProperty prop;
+	if (!d->containsProperty("Dest"))
+	{
+		assert(d->containsProperty("A"));
+		prop = utils::getReferencedObject(d->getProperty("A"));
+#ifdef _DEBUG
+		std::string m;
+		prop->getStringRepresentation(m);
+#endif // _DEBUG
+		d = prop->getSmartCObjectPtr<CDict>(prop);
+		prop = d->getProperty("S");
+#ifdef _DEBUG
+		d->getStringRepresentation(m);
+#endif // _DEBUG
+		if (utils::getNameFromDict("S",d) != "GoTo")
+			return; //budeme mat invalid bookmark ze takuto akciu nevedieme
+		prop = utils::getReferencedObject(d->getProperty("D"));//Toto by malo byt nase Dest ( Array)
 	}
-	catch(...) {}
+	else
+	{
+		prop = d->getProperty("Dest");
+	}
+	PropertyType type = prop->getType();
+	if (type == pString)
+		getDest(utils::getValueFromSimple<CString>(prop).c_str(),b);
+	else if (type == pArray)
+		getDestFromArray(prop,b);
+	else
+		throw "not implemented";
+	if (d->containsProperty("First"))
+		b->setSubsection(utils::getRefFromDict("First",d));
 }
 //void TabPage::removeObjects() //vsetko, co je vo working
 //{
@@ -2230,4 +2263,124 @@ std::string TabPage::addFontToPage( std::string name )
 		return it->second;
 	std::string ret = _page->addSystemType1Font(name);
 	return ret;
+}
+
+void TabPage::getDest( const char * nameToResolve, Bookmark *b )
+{
+#ifdef _DEBUG
+	std::string m;
+#endif
+	PdfProperty pgl = _pdf->getDictionary()->getProperty("Names"); //MUST BE HERE - alebo dests
+#ifdef _DEBUG
+	pgl->getStringRepresentation(m);
+#endif
+	IndiRef ref = utils::getValueFromSimple<CRef>(pgl);
+	pgl = _pdf->getIndirectProperty(ref);
+#ifdef _DEBUG
+	pgl->getStringRepresentation(m);
+#endif
+	shared_ptr<CDict> names = IProperty::getSmartCObjectPtr<CDict>(pgl);
+	pgl = names->getProperty("Dests");
+#ifdef _DEBUG
+	pgl->getStringRepresentation(m);
+#endif
+	std::vector<IndiRef> refs;
+	refs.push_back(utils::getValueFromSimple<CRef>(pgl));
+	while (!refs.empty())
+	{
+		pgl = _pdf->getIndirectProperty(refs.back());
+		names = IProperty::getSmartCObjectPtr<CDict>(pgl);
+		refs.pop_back();
+		if (names->containsProperty("Kids"))
+		{
+			pgl = names->getProperty("Kids");
+#ifdef _DEBUG
+			pgl->getStringRepresentation(m);
+#endif
+			shared_ptr<CArray> arr = IProperty::getSmartCObjectPtr<CArray>(pgl);
+			for (int i =0; i< arr->getPropertyCount(); i++)
+			{
+				refs.push_back(utils::getRefFromArray(arr,i));
+			}
+		}
+		else
+		{
+			assert(names->containsProperty("Names"));
+			pgl = names->getProperty("Names");
+#ifdef _DEBUG
+			pgl->getStringRepresentation(m);
+#endif
+			//bohuzila je toto pole ktore ma X*2 hodnot key/value
+			PropertyType t = pgl->getType();
+			shared_ptr<CArray> arr = pgl->getSmartCObjectPtr<CArray>(pgl);
+			for ( int keyId = 0; keyId < arr->getPropertyCount(); keyId+=2)
+			{
+				std::string name = utils::getSimpleValueFromArray<CString>(arr,keyId);
+				if (strcmp(name.c_str(),nameToResolve))
+					continue;
+				pgl = utils::getReferencedObject(arr->getProperty(keyId+1));
+				if ( pgl->getType() == pDict)
+				{
+					names = pgl->getSmartCObjectPtr<CDict>(pgl);
+					pgl = names->getProperty("D"); 
+				}
+				assert(pgl->getType() == pArray);
+#ifdef _DEBUG
+				pgl->getStringRepresentation(m);
+#endif // _DEBUG
+				return getDestFromArray(pgl,b);
+				
+			}
+		}
+	}
+	assert(refs.empty());
+	throw "Not in the page!";
+	//TODO null would be better
+}
+
+void TabPage::getDestFromArray( PdfProperty pgl, Bookmark * ret )
+{
+	shared_ptr<CArray> destination = pgl->getSmartCObjectPtr<CArray>(pgl);
+	pgl = utils::getReferencedObject(destination->getProperty(0));
+#ifdef _DEBUG
+	std::string m;
+	pgl->getStringRepresentation(m);
+#endif // _DEBUG
+	assert(isPage(pgl));
+	shared_ptr<CDict> names = pgl->getSmartCObjectPtr<CDict>(pgl); //TODO boost rozoznava iva pointery, toto tu asi nebude byt
+	for ( int i = 1; i<= _pdf->getPageCount(); i++)
+	{
+		shared_ptr<CDict> d = _pdf->getPage(i)->getDictionary(); //TODO mozy pages spravovat rovnaku dicionary?
+		if (d == names)
+		{
+			ret->setPage(i);
+			return;
+		}
+	}
+	throw "Should not happen";
+}
+
+void TabPage::loadBookmark( QTreeWidgetItem * item )
+{
+	Bookmark * b = (Bookmark *) item;
+	if (b->loaded())
+		return;
+	IndiRef r = b->getIndiRef();
+	PdfProperty p = _pdf->getIndirectProperty(r);
+	assert(isDict(p));
+	shared_ptr<CDict> dict = p->getSmartCObjectPtr<CDict>(p);
+	Bookmark * n = NULL;
+	while(dict->containsProperty("Next"))
+	{
+		n = new Bookmark(b);
+		setTree(dict,n); //b ako parent
+		b->addSubsection(n);
+		n->setText(0,utils::getStringFromDict("Title",dict).c_str());
+		p = utils::getReferencedObject( dict->getProperty("Next"));
+		dict = p->getSmartCObjectPtr<CDict>(p);
+	}
+	n = new Bookmark(b);
+	setTree(dict,n); //b ako parent
+	b->addSubsection(n);
+	n->setText(0,utils::getStringFromDict("Title",dict).c_str());
 }

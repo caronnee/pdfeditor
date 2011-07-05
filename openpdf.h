@@ -32,6 +32,7 @@ public slots:
 	void setModeInsertImage();
 	void setModeDefault();
 	void setModeSelectImage();
+	void setModeInsertAnotation();
 
 	void changeSelectedImage();
 	void deleteSelectedImage();
