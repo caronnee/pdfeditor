@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\core\xpdf\xpdf;&quot;$(FREETYPE_DIR)&quot;;&quot;$(FREETYPE_DIR)\freetype2&quot;;..\core\xpdf;..\core;$(NOINHERIT)"
+				AdditionalIncludeDirectories="..\core\xpdf\xpdf;&quot;$(FREETYPE_DIR)&quot;;..\core\xpdf;..\core;$(NOINHERIT)"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;HAVE_SPLASH;HAVE_FREETYPE_FREETYPE_H;HAVE_FREETYPE_H"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
@@ -836,10 +836,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\ReadMe.txt"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

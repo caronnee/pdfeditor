@@ -162,10 +162,6 @@ void DisplayPage::mousePressEvent(QMouseEvent * event)
 	//ak to bol lavy button, nerob nic)
 	switch(event->button())
 	{
-	case Qt::MiddleButton:
-		{
-			return;
-		}
 	case Qt::RightButton:
 		{
 			menu->exec(event->globalPos());
@@ -209,7 +205,7 @@ void DisplayPage::mouseReleaseEvent(QMouseEvent * event)
 //	event->ignore(); //posun to parentovi
 	if (event->button() == Qt::LeftButton)
 		emit MouseReleased(event->pos()); //:)
-	if (event->button() == Qt::MiddleButton)
+	if (event->button() == Qt::MidButton)
 	{
 		QPoint p = event->pos();
 		for ( int i =0; i< _interactive.size();i++)

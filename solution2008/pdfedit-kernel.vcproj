@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(BOOST_DIR);..\core;..\core\utils;..\extern;..\core\kernel;..\core\xpdf\xpdf;..\core\xpdf"
+				AdditionalIncludeDirectories="..\core;..\extern;..\core\xpdf;&quot;$(BOOST_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
