@@ -22,10 +22,10 @@ void InsertImage::setSize(float w,float h)
 }
 void InsertImage::setPosition(float pdfX,float pdfY, float scale)
 {
-	_scale = scale;
+	_scale = scale;	
+	init();
 	ui.positionX->setValue(pdfX);
 	ui.positionY->setValue(pdfY);
-	init();
 }
 void InsertImage::setImagePath()
 {
@@ -87,11 +87,11 @@ void InsertImage::createInlineImage()
 }
 void InsertImage::init()
 {	
-	ui.positionX->setMaximum(DisplayParams::DEFAULT_PAGE_RX*_scale);//o kolko a poze posunut doprava
+	ui.positionX->setMaximum(DisplayParams::DEFAULT_PAGE_RX);//o kolko a poze posunut doprava
 	ui.positionX->setMinimum(0);//o kolko a poze posunut doprava
 	ui.positionX->setValue(0);
 
-	ui.positionY->setMaximum(DisplayParams::DEFAULT_PAGE_RY*_scale);//o kolko a poze posunut doprava
+	ui.positionY->setMaximum(DisplayParams::DEFAULT_PAGE_RY);//o kolko a poze posunut doprava
 	ui.positionY->setMinimum(0);//o kolko a poze posunut doprava
 	ui.positionY->setValue(0);
 }

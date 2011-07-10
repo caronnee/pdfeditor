@@ -27,7 +27,11 @@
     <widget class="QTextEdit" name="text"/>
    </item>
    <item>
-    <widget class="QTextEdit" name="link"/>
+    <widget class="QTextEdit" name="link">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QPushButton" name="apply">
@@ -44,7 +48,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QComboBox" name="annotLinkStyle"/>
+    <widget class="QComboBox" name="annotLinkStyle">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
@@ -55,6 +63,16 @@
    <signal>currentIndexChanged(int)</signal>
    <receiver>Comments</receiver>
    <slot>onChange(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
   <connection>
    <sender>apply</sender>

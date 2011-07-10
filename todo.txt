@@ -62,12 +62,13 @@ FIXED - do objekty?
 --------------------COMMENTY---------------
 FIXED - dialog pre pridanie comments, dialog pre pridanie roznych typov commentu
 FIXED - pridat comment
-- vytvorit bookmarky
-- vytvorit loader pre bookmarky a pre loadovanie a pre savovanie
-- loadnut z revizie
-- savnut ako novu reviziu
+FIXED - spravne ulozenie
+FIXED - vytvorit bookmarky
+FIXED - na zaciatku commenty zavrete
+FIXED - loadnut z revizie
+FIXED - vytvorit link annotation
 - po klikuti na link vybehnut na danu poziciu pre link annotation
-- po kliknuti na textovu anotaciu zobrazit textu ( v textboxe alebo tak nejak )
+- po kliknuti na textovu anotaciu zobrazit textu ( v textboxe alebo tak nejak ) -popup
 FIXED  -zobrazit strikeout
 FIXED - zobrazit highlight
 MERGED - zmenit farbu highlighty (spolu so settings)
@@ -76,12 +77,12 @@ DONE BY DeFAULT -ignorovat ostatne
 ---------------------HIGHLIGHT----------------------
 FIXED - pridanie commentu ( context menu - > add comennt, emit point, od, okaa, emit  refresh(rectangle to refresh
 	( podporovane text, link, highlight, strikeout )
--zmena commentu ( zmena textu farby, atd)
--zobrazenie, ze existuje anotacia
+WINT FIX (uzivatel moze vymazat a zadat znova) -zmena commentu ( zmena textu farby, atd)
+FIXED - zobrazenie, ze existuje textova anotacia
 -zmazanie commentu
 -----------------------VIZAZ-------------------------
 FIXED ->prepinanie medzi moznostami( pracuj ako s textom, pracuj ako s obrazkom, ukaz mi operatory)
-
+- oznacenie, ze sa subor smenil a este nebol savnuty
 ---------------TEXT-------
 - test so zoomom
 FIXED - previous nefunguje dobre
@@ -95,17 +96,17 @@ FIXED - spravot iba systemove fonty, aby sa zobrazilo spravne
 - continueous/ per stranka
 - farba vysvietenia, v zavisloti na tom, co vysviecuje
 - pri zatvarani okien zostovat, co sa vsetko ulozilo, poprpade sa spytat, ci to ulozit ( setting save on exit )
-- save -  savne sa posledna cast, aj ked nie je revizia->automaticky sa cmmitne revia, reverne sa spat
+FIXED - save -  savne sa posledna cast, aj ked nie je revizia->automaticky sa cmmitne revia, reverne sa spat
 - pri pridavani textu pridat len tie pramatre, ktore boli skutocne zadane
-- set from splast iba raz a na cast, vzdy ina na konecnej
-- zmenit pismo(typ pisma)( tlste, kurziva )
+- set from splast iba raz a na cast, vzdy ina na konecnej, podla aktualne situacie
+- zmenit pismo(typ pisma)( tlste, kurziva ) -> set line width
 - preview textu v pridavani textu
 - vyhladaj cele slovo, vyhladaj ignore-case
-- context menu - move
-- pohnut vysvietenym textom
+- context menu - move, pohnut vysvietenym textom
 - ako pozadie dat obrazok, na ktorom sa vsetko bude vykreslovat
 - ukazovat nejakym tentintkom, kde sa pohybuje pridanie textu, obrazky
 - vytvorit instalator
+- zmenit na viewPort
 ---------------------------------------PATCHES------
 OK - getfontwidth - pridava funkcia na sirku glyfu
 OK - mozne memor leak pri zistovani priameho textu (font text)
@@ -133,4 +134,18 @@ OK - ulozit PDF v neecrptovanej podobe -
 - about
 - zalozky ( aby uzivatel vedel, kam sa vratit - a program tiez
 - ked mazem zranky, zmazat aj prislusne bookmarky
--osertit ked sa nieco nepodari - zrusit alokaciu vsetkych poloziek
+- osertit ked sa nieco nepodari - zrusit alokaciu vsetkych poloziek
+- vytvorit loader pre bookmarky a pre loadovanie a pre savovanie
+- vo foxite v v pdf sa inde zobrazuju anotacie
+- odstranit stream a prepisat to na nas obrazok ( anotacie ) - potom aktivne pluchy pridavat len z Rect, o zobrazenie sa postara kernel
+- to same pre linky
+- dat bookmark do samostatnej propertyv pdf, aby sa to neskor dalo pre kazdeho loadovat - ostatne readery to budu ignorovat
+- veci, ktore sa daju len odklikat, po sekunde zmiznut ( odpocitavanie ) - nastavitelne v settingoch
+- zdisablnut vsetky buttony ak je pdf v read-only mode
+- clone nefunguje
+- parameter , aby sa sobory otvorili z commandline
+- savovanie revizie robi problemy
+- finisnut progressbar pre istotu po kazdom save
+- premenovat vsetky signaly na prefix so signalom
+- image potition emitovat
+- vysvietenie zrusi anotacie

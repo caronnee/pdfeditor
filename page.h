@@ -22,16 +22,8 @@ public:
 	void drawRectangle( QRect rect);
 	void setImage( const QImage & image);
 
-	void fillRect(QRect rect,QColor color);
-	//adds interactive rectagle (annotation)
-	void addPlace(QRect r)
-	{
-		_interactive.push_back(r);
-		//FIXME zotriedit pre lepsi pristup
-		//ukaz
-		QColor col(0,255,0);
-		fillRect(r,col);
-	}
+	void fillRect(QList<QRect> rects,QColor color);
+
 	const QImage & getImage()const
 	{
 		return _image;
@@ -41,7 +33,7 @@ public:
 private:
 	bool _mousePressed;
 	//annotations
-	std::vector<QRect> _interactive;
+	QList<QRect> _interactive;
 
 	//change handling
 	QImage _image;
@@ -54,17 +46,19 @@ public slots:
 	void markPosition(QPoint point);
 	void changeImage();
 	void annotation();
-	void fillRect( QVector<QRect>& reg, const QColor color);
+	//void fillRect( QVector<QRect>& reg, const QColor color);
 	void mousePressEvent(QMouseEvent * event);
 	void fillRect(int x, int y, int x2, int y2, const QColor color);
 	void insertText();
 	void deleteText();
 	void eraseText();
 	void changeText();
+	void addPlace(QRect r);
 	void insertImage();
 	void deleteImage();
-	void deleteAnnotation();
 signals:
+	void HandleLink(int i);
+	void ShowAnnotation(int i);
 	void ChangeImageSignal(QPoint p);
 	void DeleteAnnotationSignal(QPoint);
 	void AnnotationSignal(QPoint);
@@ -78,6 +72,7 @@ signals:
 	void highlightText(int, int);
 	void MouseReleased(QPoint);
 public:
+	int deleteAnnotation(QPoint p);
 	void unsetImg();
 	void mouseMoveEvent(QMouseEvent *);
 	void mouseReleaseEvent(QMouseEvent * event);

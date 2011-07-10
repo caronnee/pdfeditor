@@ -16,6 +16,9 @@
     <height>30</height>
    </size>
   </property>
+  <property name="mouseTracking">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>pdfGui</string>
   </property>
@@ -807,6 +810,9 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -814,6 +820,9 @@
          <property name="text">
           <string>selectAnnotation</string>
          </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -830,10 +839,16 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="delAnnotion">
+        <widget class="QPushButton" name="delAnnotation">
          <property name="text">
           <string>delete Annotation</string>
          </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>

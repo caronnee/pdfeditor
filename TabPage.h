@@ -33,7 +33,7 @@
 #include <xpdf/SplashOutputDev.h>
 #include <kernel/factories.h>
 #include <kernel/displayparams.h>
-#include <kernel\pdfoperatorsbase.h>
+#include <kernel/pdfoperatorsbase.h>
 
 //END of PDF
 using namespace boost;
@@ -150,7 +150,6 @@ private: //variables
 
 	CPage::Annotations _annots;
 	DisplayPage * _labelPage;
-private:
 	pdfobjects::IndiRef createAppearanceDict(float *dim);
 	void fillCoordinates(std::vector<float>& coordinates, float * dim);
 	void initRevisions();
@@ -168,6 +167,8 @@ private:
 	void setSelected(TextData::iterator& first, TextData::iterator& last);
 	void showAnnotation();
 public:
+	//static std::string SupportedAnnotations[] = { ANNOTS(CREATE_ARRAY) };
+
 	void deleteSelectedImage();
 	void raiseChangeSelectedImage();
 	void createList();
@@ -189,7 +190,7 @@ public:
 	void insertTextAfter(PdfOp opBehind, double td, double ymax, QString s);
 
 private:
-	void insertAnnotation(Annot a);
+
 	void loadFonts(FontWidget * font);
 	void getAtPosition(Ops& ops, int x, int y );
 	void setTextData(TextData::iterator &begin, TextData::iterator end, shared_ptr<PdfOperator> op);
@@ -208,6 +209,8 @@ private:
 	QString getFile(QFileDialog::FileMode flags = QFileDialog::AnyFile);
 	void showClicked(int x, int y);
 public:	
+	bool CanBeSaved();
+	bool CanBeSavedChanges();
 	void redraw();
 	void getBookMarks(); //LATER, treba actions zisti, ako sa vykoavaju
 //	void changeImageProp(); // v selected mame images//LATER
@@ -221,6 +224,8 @@ public:
 	//rotate page
 
 public slots:
+	void SetModePosition();
+	void showAnnotation(int i);
 	void save();
 	void saveAs();
 	void saveEncoded();
@@ -242,7 +247,8 @@ public slots:
 	void insertTextMarkup(Annot annot);
 	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
 	
-	void deleteAnnotation(QPoint);
+	void insertAnnotation(Annot a);
+	//void deleteAnnotation(QPoint);
 	void search(QString text,bool forw);
 	void handleBookmark(QTreeWidgetItem* item, int);
 	void highlight(); //nesprav nic, pretoze to bude robit mouseMove
@@ -279,7 +285,7 @@ public slots:
 	void rotate(int angle);
 
 private slots:
-
+	void handleLink( int annot );
 	void zoom(QString zoomscale);
 	/// init pdf-reader to have this revision
 	void initRevision(int revision);
@@ -309,11 +315,12 @@ private slots:
 signals:
 	void markPosition(QPoint point); //reverted point
 	void parsed(std::vector<float>);
-	void pdfPosition(float a, float b, int w,int h);
+//	void pdfPosition(float a, float b, int w,int h);
 	void pdfText(std::string s);
 private:
 	void getDest( const char * nameToResolve, Bookmark *b ) ;
 	void getDestFromArray( PdfProperty pgl, Bookmark * b );;
+
 };
 
 #endif

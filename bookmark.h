@@ -2,7 +2,8 @@
 #define __BOOKMARK__
 
 #include <QTreeWidgetItem>
-#include "kernel/indiref.h"
+#include <kernel/static.h>
+#include <kernel/indiref.h>
 
 class Bookmark : public QTreeWidgetItem
 {
@@ -10,39 +11,24 @@ class Bookmark : public QTreeWidgetItem
 	bool _hasNext;
 	bool _loaded;
 	pdfobjects::IndiRef _ref;
+	double _y;
+	double _x;
+	int _zoom;
 public:
-	Bookmark(QTreeWidgetItem * parent): QTreeWidgetItem(parent), _page(0),_loaded(true) {} //0 je invalid v tomto pripade
-	Bookmark(QTreeWidget * parent): QTreeWidgetItem(parent), _page(0),_loaded(true) {} //0 je invalid v tomto
-
-	int getDest()const
-	{
-		return _page;
-	}
-
-	void setSubsection( pdfobjects::IndiRef ref ) 
-	{
-		_ref = ref;
-		_loaded = false;
-		setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-	}
-	void addSubsection(QTreeWidgetItem * item)
-	{
-		this->addChild(item);
-		_loaded = true;
-	}
-	pdfobjects::IndiRef getIndiRef()const
-	{
-		return _ref; //TODO co ak tam nebude REG ale priamo dict? Mozne!
-	}
-	void setPage( int i ) 
-	{
-		_page = i;
-	}
-
-	bool loaded() 
-	{
-		return _loaded;
-	}
+	Bookmark(QTreeWidgetItem * parent): QTreeWidgetItem(parent),_page(0),_loaded(true),_x(0),_y(0),_zoom(1) {} //0 je invalid v tomto pripade
+	Bookmark(QTreeWidget * parent): QTreeWidgetItem(parent),_page(0),_loaded(true),_x(0),_y(0),_zoom(1) {} //0 je invalid v tomto
+	int getDest()const;
+	void setSubsection( pdfobjects::IndiRef ref );
+	void addSubsection(QTreeWidgetItem * item);
+	pdfobjects::IndiRef getIndiRef()const;
+	void setPage( int i );
+	bool loaded();
+	void setX( double t );
+	void setY( double t );
+	void setZoom( double t );
+	double getX();
+	double getY();
+	double getZoom();
 };
 
 #endif //__BOOKMARK__

@@ -22,8 +22,9 @@ DisplayPage::DisplayPage(QWidget *parent)
 	 menu->addAction("InsertImage",this,SLOT(insertImage()));
 	 menu->addAction("DeleteImage",this,SLOT(deleteImage()));
 	 menu->addAction("Annotate",this,SLOT(annotation()));
-	 menu->addAction("Delete Annotation",this,SLOT(deleteAnnotation()));
+	// menu->addAction("Delete Annotation",this,SLOT(deleteAnnotation()));
 	 menu->addAction("Change image",this,SLOT(changeImage()));
+	 setMouseTracking(true);
 }
 
 QPoint DisplayPage::convertCoord(QPoint point)
@@ -35,9 +36,18 @@ void DisplayPage::changeImage()
 	QPoint p(_point.x(), this->size().height() - _point.y());
 	emit ChangeImageSignal(p);//vieme o ktory obrazok ide
 }
-void DisplayPage::deleteAnnotation()
+int DisplayPage::deleteAnnotation(QPoint point)
 {
-	emit DeleteAnnotationSignal(_point);
+	//emit DeleteAnnotationSignal(_point);
+	for (int i=0; i<_interactive.size(); i++ )
+	{
+		if (_interactive[i].contains(point))
+		{
+			_interactive.removeAt(i);
+			return i;
+		}
+	}
+	return -1;
 }
 void DisplayPage::annotation()
 {
@@ -81,7 +91,7 @@ void DisplayPage::markPosition(QPoint point)
 	QImage image("images/spot.gif");
 
 	QPainter painter(&resultImage);
-	painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
+	painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
 	painter.fillRect(resultImage.rect(), Qt::transparent);
 	painter.drawImage(0, 0, _copyImg);
 	painter.translate(point);
@@ -90,36 +100,36 @@ void DisplayPage::markPosition(QPoint point)
 	painter.end();
 	this->setPixmap(QPixmap::fromImage(resultImage));
 }
-void DisplayPage::fillRect(QRect rect,QColor color)
+void DisplayPage::fillRect(QList<QRect> rects,QColor color)
 {
 	QImage resultImage(_copyImg.size(),QImage::Format_ARGB32_Premultiplied);
 
 	QPainter painter(&resultImage);
 	painter.setCompositionMode(QPainter::CompositionMode_Source);
 	painter.fillRect(resultImage.rect(), Qt::transparent);
-	painter.fillRect(rect, color);
+	for ( int i =0; i < rects.size(); i++)
+		painter.fillRect(rects[i], color);
 	painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
 	painter.drawImage(0, 0, _copyImg);
 	painter.end();
-
 	this->setPixmap(QPixmap::fromImage(resultImage));
 }
-void DisplayPage::fillRect( QVector<QRect>& r, const QColor color)
-{
-	QImage resultImage(_copyImg.size(),QImage::Format_ARGB32_Premultiplied);
-	QPainter painter(&resultImage);
-	painter.setCompositionMode(QPainter::CompositionMode_Source);
-	painter.fillRect(resultImage.rect(), Qt::transparent);
-	for ( int i= 0; i < r.size(); i++)
-	{
-		painter.fillRect(r[i], color);
-	}
-	painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
-	painter.drawImage(0, 0, _copyImg);
-
-	painter.end();
-	this->setPixmap(QPixmap::fromImage(resultImage));
-}
+//void DisplayPage::fillRect( QVector<QRect>& r, const QColor color)
+//{
+//	QImage resultImage(_copyImg.size(),QImage::Format_ARGB32_Premultiplied);
+//	QPainter painter(&resultImage);
+//	painter.setCompositionMode(QPainter::CompositionMode_Source);
+//	painter.fillRect(resultImage.rect(), Qt::transparent);
+//	for ( int i= 0; i < r.size(); i++)
+//	{
+//		painter.fillRect(r[i], color);
+//	}
+//	painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
+//	painter.drawImage(0, 0, _copyImg);
+//
+//	painter.end();
+//	this->setPixmap(QPixmap::fromImage(resultImage));
+//}
 	
 void DisplayPage::fillRect( int x1, int y1, int x2, int y2, const QColor color)
 {
@@ -130,12 +140,14 @@ void DisplayPage::fillRect( int x1, int y1, int x2, int y2, const QColor color)
 ////	painter.setCompositionMode(QPainter::CompositionMode_Source);
 //	painter.fillRect(r, color);
 //	setImg();
-	fillRect(r,color);
+	QList<QRect> rr;
+	rr.append(r);
+	fillRect(rr,color);
 	//needrepaint? TODO
 }
 void DisplayPage::setImg() //again st from image, for removing highligh and so
 {
-	this->setPixmap(QPixmap::fromImage(_copyImg));
+	fillRect(_interactive,QColor(0,255, 0, 50));
 	this->adjustSize();
 	_size = this->pixmap()->size();
 }
@@ -150,6 +162,10 @@ void DisplayPage::mousePressEvent(QMouseEvent * event)
 	//ak to bol lavy button, nerob nic)
 	switch(event->button())
 	{
+	case Qt::MiddleButton:
+		{
+			return;
+		}
 	case Qt::RightButton:
 		{
 			menu->exec(event->globalPos());
@@ -174,13 +190,39 @@ void DisplayPage::mousePressEvent(QMouseEvent * event)
 void DisplayPage::mouseMoveEvent(QMouseEvent * event)
 {
 	if (_mousePressed)
-		emit MouseClicked(event->pos());
-		//emit highlightText(event->x(), this->size().height() - event->y());
+	{
+		if (event->button() == Qt::LeftButton)
+			emit MouseClicked(event->pos());
+		return;
+	}
+	QPoint p = event->pos();
+	for ( int i =0; i< _interactive.size();i++)
+	{
+		if (_interactive[i].contains(p))
+			emit ShowAnnotation(i); //pre anotacie -> popup
+	}
 }
 
 void DisplayPage::mouseReleaseEvent(QMouseEvent * event)
 {
 	_mousePressed = false;
 //	event->ignore(); //posun to parentovi
-	emit MouseReleased(event->pos()); //:)
+	if (event->button() == Qt::LeftButton)
+		emit MouseReleased(event->pos()); //:)
+	if (event->button() == Qt::MiddleButton)
+	{
+		QPoint p = event->pos();
+		for ( int i =0; i< _interactive.size();i++)
+		{
+			if (_interactive[i].contains(p))
+				emit HandleLink(i); //pre anotacie -> popup
+		}
+	}
+}
+
+void DisplayPage::addPlace( QRect r )
+{
+	_interactive.push_back(r);
+	//FIXME zotriedit pre lepsi pristup
+	//ukaz
 }

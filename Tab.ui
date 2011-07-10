@@ -167,7 +167,7 @@
        <widget class="QComboBox" name="zoom"/>
       </item>
       <item>
-       <widget class="QComboBox" name="Revision">
+       <widget class="QComboBox" name="revision">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -188,6 +188,9 @@
    </item>
    <item row="2" column="0">
     <widget class="QScrollArea" name="scrollArea">
+     <property name="mouseTracking">
+      <bool>true</bool>
+     </property>
      <widget class="QWidget" name="content">
       <property name="geometry">
        <rect>
@@ -196,6 +199,9 @@
         <width>429</width>
         <height>177</height>
        </rect>
+      </property>
+      <property name="mouseTracking">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>

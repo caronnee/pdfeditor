@@ -5,7 +5,11 @@
 #include "kernel\exceptions.h"
 #include <QMessageBox>
 
-OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget)
+void OpenPdf::setModeDeleteAnnotation()
+{
+	setMode(ModeDeleteAnnotation);
+}
+OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeOperatorSelect)
 {
 	TabPage * page = new TabPage(this,"./zadani.pdf");
 	this->addTab(page,"test");
@@ -146,15 +150,15 @@ void OpenPdf::open(QString name)
 		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
 
 	}
-	catch (PdfException e)
-	{
-		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
-	//	return;
-	}
-	catch (std::exception e)
-	{
-		QMessageBox::warning(this, "Unexpected exception",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
-	}
+	//catch (PdfException e)
+	//{
+	//	QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
+	////	return;
+	//}
+	//catch (std::exception e)
+	//{
+	//	QMessageBox::warning(this, "Unexpected exception",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
+	//}
 }
 void OpenPdf::openAnotherPdf()
 {
@@ -170,6 +174,8 @@ void OpenPdf::openAnotherPdf()
 void OpenPdf::save()
 {
 	TabPage * t = (TabPage *)this->widget(this->currentIndex());
+	if (!t->CanBeSavedChanges())
+		return;
 	t->savePdf(NULL);
 }
 

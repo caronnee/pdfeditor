@@ -20,12 +20,11 @@ void rotatePosition( T xin, T yin, T& xout, T &yout, int angle )
 	xout = s*cos(toRadians(angle));
 	yout = s*sin(toRadians(angle));
 };
+//TODO highlight m underline, strikeout - ukazat len komentare
 #define ANNOTS(XX) \
 	XX("Text", Text) \
 	XX("Link", Link) \
 	XX("Highlight", Highlight) \
-	XX("Underline", Underline) \
-	XX("Strikeout", Strike) \
 	XX("", Supported) \
 
 #define ENUMS(a,b) A##b,
