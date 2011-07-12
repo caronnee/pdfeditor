@@ -211,7 +211,10 @@ void DisplayPage::mouseReleaseEvent(QMouseEvent * event)
 		for ( int i =0; i< _interactive.size();i++)
 		{
 			if (_interactive[i].contains(p))
+			{
 				emit HandleLink(i); //pre anotacie -> popup
+				return;
+			}
 		}
 	}
 }
@@ -221,4 +224,9 @@ void DisplayPage::addPlace( QRect r )
 	_interactive.push_back(r);
 	//FIXME zotriedit pre lepsi pristup
 	//ukaz
+}
+
+void DisplayPage::clearLabels()
+{
+	_interactive.clear();
 }

@@ -352,7 +352,7 @@ GfxFont* TextSimpleOperator::getCurrentFont()const
 }
 float TextSimpleOperator::getFontHeight()const
 {
-	shared_ptr<PdfOperator> shr = this->_next().lock();
+	shared_ptr<PdfOperator> shr = this->_next().lock(); //looking for "Tc"
 	FontOperatorIterator it = this->getIterator<FontOperatorIterator>(shr,false);
 	boost::shared_ptr<PdfOperator> op = it.getCurrent();
 	Operands operands;
@@ -360,18 +360,47 @@ float TextSimpleOperator::getFontHeight()const
 	float fs = utils::getValueFromSimple<CReal>(operands[1]);
 	return fs;
 }
+float TextSimpleOperator::getSpace()
+{
+	/*shared_ptr<PdfOperator> shr = this->_next().lock();
+	FontOperatorIterator it = this->getIterator<FontOperatorIterator>(shr,false);
+	boost::shared_ptr<*/
+	return 0;
+}
+void TextSimpleOperator::getMatrix(float * values, boost::shared_ptr< PdfOperator>  beginOp)
+{
+	//memset(values,0, sizeof(float)*6);
+	////find actual matrix
+	//bool btProcessed = false;
+	//PdfOperator::Iterator it = PdfOperator::getIterator(beginOp);
+	//it.prev();
+	//std::vector<float> vals;
+	//std::string name;
+	//while(it.valid())
+	//{
+	//	it.getCurrent()->getOperatorName(name);
+	//	if (name == "Tm" && !btProcessed)
+	//	{
+	//		//apevt to Values
+	//		for ( int i =0; i<6;i++);
+	//	}
+	//}
+	//GfxState state;//reconstruct matrix
+}
 float TextSimpleOperator::getWidth(char chr)
 {
-	CharCode c;Unicode u;int a; double b,cc,d,dx;
-	getCurrentFont()->getNextChar(&chr,1,&c,&u,(int)(sizeof(u) / sizeof(Unicode)),&a,&dx,&b,&cc,&d);
+	CharCode c;Unicode u;int a; double dy,cc,d,dx;
+	getCurrentFont()->getNextChar(&chr,1,&c,&u,(int)(sizeof(u) / sizeof(Unicode)),&a,&dx,&dy,&cc,&d);
 	//najdi predosly operator s velkostou font
-	shared_ptr<PdfOperator> shr = this->_next().lock();
+	shared_ptr<PdfOperator> shr = this->_prev().lock();
+	//we need also all TM operator that operated with the width of glyph and also CM operators befor that
+	//first -> fin
 	FontOperatorIterator it = this->getIterator<FontOperatorIterator>(shr,false);
 	boost::shared_ptr<PdfOperator> op = it.getCurrent();
 	Operands operands;
 	op->getParameters(operands);
 	float fs = utils::getValueFromSimple<CReal>(operands[1]);
-	return dx*fs;
+	return dx*fs*actualTransform[0] + dy*fs*actualTransform[1]; //* displayparameter issue in x value
 }
 
 void TextSimpleOperator::getFontText(std::wstring& str)const
@@ -424,6 +453,36 @@ void TextSimpleOperator::setFontData(GfxFont* gfxFont)
 	if(fontData)
 		delete fontData;
 	fontData = new FontData(gfxFont);
+}
+
+void TextSimpleOperator::setTransformationMatrix( const double * param1 )
+{
+	memcpy(actualTransform,param1,sizeof(double)*6);
+}
+
+void TextSimpleOperator::concatTransformationMatrix( const double * param1 )
+{
+	double a1 = actualTransform[0];
+	double b1 = actualTransform[1];
+	double c1 = actualTransform[2];
+	double d1 = actualTransform[3];
+	int i;
+
+	actualTransform[0] = param1[0] * a1 + param1[1] * c1;
+	actualTransform[1] = param1[0] * b1 + param1[1] * d1;
+	actualTransform[2] = param1[2] * a1 + param1[3] * c1;
+	actualTransform[3] = param1[2] * b1 + param1[3] * d1;
+	actualTransform[4] = param1[4] * a1 + param1[5] * c1 + actualTransform[4];
+	actualTransform[5] = param1[4] * b1 + param1[5] * d1 + actualTransform[5];
+
+	// avoid FP exceptions on badly messed up PDF files
+	for (i = 0; i < 6; ++i) {
+		if (actualTransform[i] > 1e10) {
+			actualTransform[i] = 1e10;
+		} else if (actualTransform[i] < -1e10) {
+			actualTransform[i] = -1e10;
+		}
+	}
 }
 
 //==========================================================

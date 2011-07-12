@@ -41,7 +41,7 @@ public slots:
 	void onChange(int index);
 	void apply();
 	void insertMarkup();
-	void addLink( Annot an, pdfobjects::IndiRef ref, int x, int y );
+	void addLink( Annot an, pdfobjects::IndiRef ref, float x, float y );
 	void fromDict( boost::shared_ptr<pdfobjects::CDict> annDict );
 };
 

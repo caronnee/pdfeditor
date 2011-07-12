@@ -155,7 +155,7 @@ private: //variables
 	void initRevisions();
 	PdfOperator::Iterator TabPage::findTdAssOp(PdfOperator::Iterator iter);
 	void rotatePdf(int angle, double& x,double& y,bool fromPixMap);
-	float findDistance(std::string s,TextData::iterator textIter);
+	//float findDistance(std::string s,TextData::iterator textIter);
 	void SetNextPageRotate();
 	/* vytvorit textovy list */
 	void searchPrev(QString srch);
@@ -167,6 +167,7 @@ private: //variables
 	void setSelected(TextData::iterator& first, TextData::iterator& last);
 	void showAnnotation();
 public:
+	bool _changed;
 	//static std::string SupportedAnnotations[] = { ANNOTS(CREATE_ARRAY) };
 
 	void deleteSelectedImage();
@@ -224,6 +225,7 @@ public:
 	//rotate page
 
 public slots:
+	PdfOp getPreviousFontInPosition(libs::Point pdfPos);
 	void SetModePosition();
 	void showAnnotation(int i);
 	void save();
@@ -320,7 +322,6 @@ signals:
 private:
 	void getDest( const char * nameToResolve, Bookmark *b ) ;
 	void getDestFromArray( PdfProperty pgl, Bookmark * b );;
-
 };
 
 #endif

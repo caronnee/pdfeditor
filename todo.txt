@@ -67,8 +67,8 @@ FIXED - vytvorit bookmarky
 FIXED - na zaciatku commenty zavrete
 FIXED - loadnut z revizie
 FIXED - vytvorit link annotation
-- po klikuti na link vybehnut na danu poziciu pre link annotation
-- po kliknuti na textovu anotaciu zobrazit textu ( v textboxe alebo tak nejak ) -popup
+FIXED - po klikuti na link vybehnut na danu poziciu pre link annotation
+FIXED - po kliknuti na textovu anotaciu zobrazit textu ( v textboxe alebo tak nejak ) -popup
 FIXED  -zobrazit strikeout
 FIXED - zobrazit highlight
 MERGED - zmenit farbu highlighty (spolu so settings)
@@ -77,20 +77,22 @@ DONE BY DeFAULT -ignorovat ostatne
 ---------------------HIGHLIGHT----------------------
 FIXED - pridanie commentu ( context menu - > add comennt, emit point, od, okaa, emit  refresh(rectangle to refresh
 	( podporovane text, link, highlight, strikeout )
-WINT FIX (uzivatel moze vymazat a zadat znova) -zmena commentu ( zmena textu farby, atd)
+WONT FIX (uzivatel moze vymazat a zadat znova) -zmena commentu ( zmena textu farby, atd)
 FIXED - zobrazenie, ze existuje textova anotacia
--zmazanie commentu
+FIXED -zmazanie commentu
 -----------------------VIZAZ-------------------------
-FIXED ->prepinanie medzi moznostami( pracuj ako s textom, pracuj ako s obrazkom, ukaz mi operatory)
-- oznacenie, ze sa subor smenil a este nebol savnuty
+FIXED - prepinanie medzi moznostami( pracuj ako s textom, pracuj ako s obrazkom, ukaz mi operatory)
+FIXED - oznacenie, ze sa subor smenil a este nebol savnuty
 ---------------TEXT-------
-- test so zoomom
+FIXED - test so zoomom
 FIXED - previous nefunguje dobre
-FIXED - spravot iba systemove fonty, aby sa zobrazilo spravne
+FIXED - spravit iba systemove fonty, aby sa zobrazilo spravne
+FIXED - je mozne zadat text v predchadzajucom fonte 
 - test s viacerymi strankami
 - progress okno
-- click revision - load from revision
-- save this revision as new revision - NEPODPORUJE KNIZNICE -> ADDITIONAL
+FIXED - click revision - load from revision
+- pohyb textiom -> (move)->splitnut a pohybovat aj anotaciami
+- pohyb  anotaciou
 ----------------------SETTINGS--------------------------
 - defaultne, 1-2 stranok(ADITIONAL 4)
 - continueous/ per stranka
@@ -98,7 +100,7 @@ FIXED - spravot iba systemove fonty, aby sa zobrazilo spravne
 - pri zatvarani okien zostovat, co sa vsetko ulozilo, poprpade sa spytat, ci to ulozit ( setting save on exit )
 FIXED - save -  savne sa posledna cast, aj ked nie je revizia->automaticky sa cmmitne revia, reverne sa spat
 - pri pridavani textu pridat len tie pramatre, ktore boli skutocne zadane
-- set from splast iba raz a na cast, vzdy ina na konecnej, podla aktualne situacie
+WONT FIX - set from splast iba raz a na cast, vzdy ina na konecnej, podla aktualne situacie
 - zmenit pismo(typ pisma)( tlste, kurziva ) -> set line width
 - preview textu v pridavani textu
 - vyhladaj cele slovo, vyhladaj ignore-case
@@ -130,22 +132,26 @@ OK - ulozit PDF v neecrptovanej podobe -
 - crt-F - hladat automaticky
 - pri hladani pridat progress bar
 - pri loadovani pridat progress bar
-- uvodna obrazovka
-- about
 - zalozky ( aby uzivatel vedel, kam sa vratit - a program tiez
 - ked mazem zranky, zmazat aj prislusne bookmarky
 - osertit ked sa nieco nepodari - zrusit alokaciu vsetkych poloziek
 - vytvorit loader pre bookmarky a pre loadovanie a pre savovanie
-- vo foxite v v pdf sa inde zobrazuju anotacie
+- vo foxite a v pdf sa inde zobrazuju anotacie
 - odstranit stream a prepisat to na nas obrazok ( anotacie ) - potom aktivne pluchy pridavat len z Rect, o zobrazenie sa postara kernel
 - to same pre linky
 - dat bookmark do samostatnej propertyv pdf, aby sa to neskor dalo pre kazdeho loadovat - ostatne readery to budu ignorovat
 - veci, ktore sa daju len odklikat, po sekunde zmiznut ( odpocitavanie ) - nastavitelne v settingoch
 - zdisablnut vsetky buttony ak je pdf v read-only mode
-- clone nefunguje
+- save this revision as new revision - NEPODPORUJE KNIZNICE -> ADDITIONAL
+MERGED ^^ clone nefunguje 
 - parameter , aby sa sobory otvorili z commandline
 - savovanie revizie robi problemy
 - finisnut progressbar pre istotu po kazdom save
 - premenovat vsetky signaly na prefix so signalom
 - image potition emitovat
-- vysvietenie zrusi anotacie
+- vysvietenie zrusi anotacie - to sa spravi streamom
+- namiesto _text mat iba zalozky kde to konci a kde zacina - text potrebujeme iba pri dele a replacovani - pri vysvieteni nemusime potomstale chodis a zistovat velkost fontu
+- uvodna obrazovka
+- about
+- pri rotovani priznak, ze sme zarotovali a maju sa zmenit boomarky
+- check pre ktore veci nemame font

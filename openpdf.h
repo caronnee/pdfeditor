@@ -73,4 +73,5 @@ public slots:
 	//Deletes actual page, if theree is more that one page
 	void deletePage();
 	void setModeDeleteAnnotation();
+	void pdfChanged();
 };

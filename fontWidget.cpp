@@ -149,12 +149,21 @@ void FontWidget::addParameters() //TODO nie s jedine parametre
 		//non-stroking operands
 		_BT->push_back( createOperator("rg", operands ), getLastOperator(_BT));
 	}
-
-	QVariant v = this->ui.fontsize->itemData(this->ui.fontsize->currentIndex());
-	std::string id = emit fontInPage(_fonts[this->ui.fonts->currentIndex()].getName());
-	assert(!id.empty());
-	_fonts[this->ui.fonts->currentIndex()].setId(id);
-	_BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(_BT));
+	if (ui.lastFont->checkState()==Qt::Checked)
+	{
+		PdfOp p = emit(getLastFontSignal(libs::Point(_pdfPosX, _pdfPosY)));
+		if (p==NULL)//TODO warning
+			assert(false);
+		_BT->push_back( p, getLastOperator(_BT));
+	}
+	else
+	{
+		QVariant v = this->ui.fontsize->itemData(this->ui.fontsize->currentIndex());
+		std::string id = emit fontInPage(_fonts[this->ui.fonts->currentIndex()].getName());
+		assert(!id.empty());
+		_fonts[this->ui.fonts->currentIndex()].setId(id);
+		_BT->push_back( _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt()), getLastOperator(_BT));
+	}
 	_BT->push_back( createMatrix("Tm"), getLastOperator(_BT));
 }
 PdfOp FontWidget::createTranslationTd(double x, double y)

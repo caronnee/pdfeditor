@@ -50,7 +50,7 @@ namespace pdfobjects {
 typedef enum
 {
 	// General iterators
-		itTextIterator, itFontIterator, itInlineImageIterator, itNonStrokingIterator, itStrokingIterator, 
+		itTextIterator, itTextChangeIterator, itFontIterator, itInlineImageIterator, itNonStrokingIterator, itStrokingIterator, 
 		itChangeableIterator, itGraphicalIterator
 } IteratorType;
 
@@ -179,6 +179,10 @@ typedef AcceptingPdfOperatorIterator<4, itTextIterator> TextOperatorIterator;
  */
 typedef struct AcceptingPdfOperatorIterator<4, itFontIterator> FontOperatorIterator;
 
+/**
+/* //TODO
+ */
+typedef struct AcceptingPdfOperatorIterator<4, itTextChangeIterator> TextChangeOperatorIterator;
 
 /**
  * Inline image iterator.

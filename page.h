@@ -76,7 +76,8 @@ public:
 	void unsetImg();
 	void mouseMoveEvent(QMouseEvent *);
 	void mouseReleaseEvent(QMouseEvent * event);
-	
+	void clearLabels();
+
 };
 
 #endif // PAGE_H

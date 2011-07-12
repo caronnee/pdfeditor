@@ -28,6 +28,7 @@
 
 // static includes
 #include "kernel/pdfoperatorsbase.h"
+#include "kernel/pdfoperatorsiter.h"
 
 //==========================================================
 namespace pdfobjects {
@@ -126,6 +127,8 @@ public:
  */
 class TextSimpleOperator: public SimpleGenericOperator
 {
+	double actualTransform[6];
+
 	// forward declaration
 	class FontData;
 
@@ -184,7 +187,10 @@ public:
 	/** returns width of the text */
 	float getWidth(char c);
 	float getFontHeight()const;
-
+	float getSpace();
+	void getMatrix(float * values, boost::shared_ptr< PdfOperator>  beginOp);
+	void setTransformationMatrix( const double * param1 );
+	void concatTransformationMatrix( const double * param1 );
 }; // class TextSimpleOperator
 
 //==========================================================

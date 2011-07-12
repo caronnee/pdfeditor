@@ -6,7 +6,7 @@
 
 using namespace pdfobjects;
 
-OperatorData::OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _origX(0), _origX2(0), _text("")
+OperatorData::OperatorData(PdfOp op,float scale) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _origX(0), _origX2(0), _text(""), _scale(scale)
 {
 	std::string tmp;
 	std::wstring test;
@@ -20,13 +20,14 @@ OperatorData::OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _
 	_end = max<float>(r.xleft, r.xright);
 	_origX = _begin;
 	_origX2 = _end; 
-	_charSpace = _end - _begin;
+	_charSpace = _op->getSpace();
+	/*_charSpace = _end - _begin;
 	for ( size_t i =0; i< test.size(); i++)
-		_charSpace -= _op->getWidth(test[i]);
+		_charSpace -= _op->getWidth(test[i])*1.33f;
 	if (_text.size()<=1)
 		_charSpace =0;
 	else
-		_charSpace/=_text.size()-1;
+		_charSpace/=_text.size()-1;*/
 }
 float OperatorData::GetPreviousStop()
 {
@@ -81,6 +82,7 @@ int OperatorData::letters(double x)
 		t+= _op->getWidth(_text[i].unicode());
 		t+= this->_charSpace;
 		i++;
+		assert(i<=_text.size());
 	}
 	return i;
 }

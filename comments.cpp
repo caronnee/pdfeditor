@@ -144,14 +144,14 @@ void Comments::setDestination(pdfobjects::IndiRef ref)
 	arr->addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CIntFactory::getInstance(0)));
 }//TODO pre zaciatok, potom bude aj na konkretnu cast dokumentu
 
-void Comments::addLink(Annot an, pdfobjects::IndiRef i, int x, int y )
+void Comments::addLink( Annot an, pdfobjects::IndiRef ref, float x, float y )
 {
 	pdfobjects::CArray arr;
-	arr.addProperty(*PdfProperty(pdfobjects::CRefFactory::getInstance(i)));
+	arr.addProperty(*PdfProperty(pdfobjects::CRefFactory::getInstance(ref)));
 	arr.addProperty(*PdfProperty(pdfobjects::CNameFactory::getInstance("XYZ")));
-	arr.addProperty(*PdfProperty(pdfobjects::CRealFactory::getInstance(x)));
-	arr.addProperty(*PdfProperty(pdfobjects::CRealFactory::getInstance(y)));
-	arr.addProperty(*PdfProperty(pdfobjects::CRealFactory::getInstance(1.0)));
+	arr.addProperty(*PdfProperty(pdfobjects::CIntFactory::getInstance(x)));
+	arr.addProperty(*PdfProperty(pdfobjects::CIntFactory::getInstance(y)));
+	arr.addProperty(*PdfProperty(pdfobjects::CIntFactory::getInstance(1)));
 	//page, fitR, fitH..., 3 cisla. Cislo stranky dostane z PDF dokumentu
 	an->getDictionary()->setProperty("Dest",arr); //array bude teraz platne, bolo nastavene pocas dialogu
 #ifdef _DEBUG

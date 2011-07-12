@@ -445,6 +445,8 @@ namespace {
 			assert(txtOp);
 			// TODO - can we use const GfxFont *?
 			txtOp->setFontData((GfxFont *)state->getFont());
+			txtOp->setTransformationMatrix(state->getCTM());
+			txtOp->concatTransformationMatrix(state->getTextMat());
 			std::string rawStr;
 			txtOp->getRawText(rawStr);
 			StateUpdater::printTextUpdate (state, rawStr, rc);

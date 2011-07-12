@@ -1,10 +1,17 @@
 #include "openpdf.h"
 #include "TabPage.h"
 #include <QFileDialog>
+#include <QTabWidget>
 #include "insertpagerange.h"
 #include "kernel\exceptions.h"
 #include <QMessageBox>
 
+void OpenPdf::pdfChanged()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->_changed = true;
+	this->setTabText( currentIndex(), QString("*") + this->tabText(currentIndex() )); //TODO zmenit na coot?
+}
 void OpenPdf::setModeDeleteAnnotation()
 {
 	setMode(ModeDeleteAnnotation);
@@ -177,6 +184,7 @@ void OpenPdf::save()
 	if (!t->CanBeSavedChanges())
 		return;
 	t->savePdf(NULL);
+	this->setTabText(currentIndex(), this->tabText(currentIndex()).mid(1));
 }
 
 void OpenPdf::pageUp()

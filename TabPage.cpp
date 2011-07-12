@@ -86,7 +86,7 @@ public:
 	};
 };
 
-TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMode),_parent(parent)
+TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMode),_parent(parent),_changed(false)
 {
 	_pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 	debug::changeDebugLevel(10000);
@@ -123,6 +123,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMod
 	connect(_font, SIGNAL(fontInPage(std::string)), this, SLOT(addFontToPage(std::string)));
 	connect(_font, SIGNAL(text(PdfOp)), this, SLOT(insertText(PdfOp)));
 	connect(_font, SIGNAL(changeTextSignal()), this, SLOT(changeSelectedText()));
+	connect(_font, SIGNAL(getLastFontSignal(libs::Point)), this, SLOT(getPreviousFontInPosition(libs::Point)));
 	//show text button, hide everything else
 
 	//connections
@@ -172,7 +173,6 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMod
 	this->ui.zoom->setCurrentIndex(1);
 	_dataReady = false;
 	getBookMarks();
-	createList();
 	//search("oftwar",true);
 	//changeSelectedText();
 }
@@ -278,22 +278,39 @@ void TabPage::zoom(QString zoomscale)//later with how much pages, if all or not
 void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 {
 	TextData::iterator iter = sTextIt;
-	float dpix = displayparams.vDpi/72.f;
-	float dpiy = displayparams.hDpi/72.f;
 	while (true)
 	{
-		coordinates.push_back(iter->GetPreviousStop()/dpix);
-		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymax/dpiy);
-		coordinates.push_back(iter->_end/dpix);
-		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymax/dpiy); //minima
-		coordinates.push_back(iter->_begin/dpix);
-		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymin/dpiy);
-		coordinates.push_back(iter->_end/dpix);
-		coordinates.push_back(displayparams.DEFAULT_PAGE_RY - iter->_ymin/dpiy);
-		dim[0] = min(dim[0],iter->GetPreviousStop()/dpix);
-		dim[1] = min(dim[1],displayparams.DEFAULT_PAGE_RY - iter->_ymax/dpiy);
-		dim[2] = max(dim[2],iter->_end/dpix);
-		dim[3] = max(dim[3],displayparams.DEFAULT_PAGE_RY - iter->_ymin/dpiy);
+		double x = iter->GetPreviousStop();
+		double y = iter->_ymax;
+		rotatePdf(_page->getRotation(),x,y,true);
+		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
+		coordinates.push_back(x);
+		coordinates.push_back(y);
+
+		x = iter->GetNextStop();
+		y = iter->_ymax;
+		rotatePdf(_page->getRotation(),x,y,true);
+		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
+		coordinates.push_back(x);
+		coordinates.push_back(y);
+		dim[1] = min(dim[1],y);
+
+		x = iter->GetPreviousStop();
+		y = iter->_ymin;
+		rotatePdf(_page->getRotation(),x,y,true);
+		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
+		coordinates.push_back(x);
+		coordinates.push_back(y); 
+		dim[0] = min(dim[0],x);
+
+		x = iter->GetNextStop();
+		y = iter->_ymin;
+		rotatePdf(_page->getRotation(),x,y,true);
+		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
+		coordinates.push_back(x);
+		coordinates.push_back(y); 
+		dim[2] = max(dim[2],x);
+		dim[3] = max(dim[3],y);
 		if ( iter == sTextItEnd )
 			break;
 		iter++;
@@ -405,7 +422,7 @@ void TabPage::insertTextMarkup(Annot annot)
 	//for all selected text
 	if (!_selected)
 		return;
-	insertAnnotation(annot);
+	_page->addAnnotation(annot);
 	_page->getAllAnnotations(_annots);
 	annot = _annots.back();//posledny pridany, na nom budeme pachat zmeny
 	std::vector<float> coordinates;
@@ -533,21 +550,44 @@ void TabPage::createList()
 	_textList.clear();
 	//get all pdf text operators in list
 	Ops ops;
-	libs::Rectangle rect(0,0,FLT_MAX,FLT_MAX);
+	libs::Rectangle rect(0,0,FLT_MAX,FLT_MAX); //dostaneme vsetky operatory
 	_page->getObjectsAtPosition( ops, rect);
 	//choose just test iterator
 	Ops::iterator it = ops.begin();
-	//float fontSize = 0;
+	std::vector<GfxState *> states;
+	{
+		DisplayParams p;
+		PDFRectangle pdfRect ( p.pageRect.xleft, p.pageRect.yleft, p.pageRect.xright, p.pageRect.yright );
+		states.push_back(new GfxState(p.hDpi, p.vDpi, &pdfRect, p.rotate, p.upsideDown ));
+	};
 	while ( it != ops.end())
 	{
 		std::string n;
 		(*it)->getOperatorName(n);
+		if (n == "q")
+		{
+			states.push_back(states.back()->copy());
+		}
+		if(n == "Q")
+		{
+			states.pop_back();
+		}
+		if (n == "cm")
+		{
+			float cm[6];
+			PdfOperator::Operands pars;
+			(*it)->getParameters(pars);
+			assert(pars.size()==6);
+			for(int i =0;i <6; i++)
+				cm[i] = utils::getValueFromSimple<CReal>(pars[i]);
+			states.back()->concatCTM(cm[0],cm[1],cm[2],cm[3],cm[4],cm[5]);
+		}
 		if (!typeChecker.isType(OpTextName,n))
 		{
 			it++;
 			continue;
 		}
-		OperatorData data(*it);
+		OperatorData data(*it, displayparams.vDpi/72.0f);
 		_textList.push_back(data);
 		it++;
 	}
@@ -596,7 +636,11 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			std::string m;
 			_annots.back()->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
-			_cmts->addLink(_annots.back(), _page->getDictionary()->getIndiRef(),point.x(),point.y());
+			double x = point.x();
+			double y = point.y();//jelikoz to ide priamo do dictionary, musim prejst cez params.frompdf :-/
+			displayparams.convertPixmapPosToPdfPos(x,y,x,y);
+			rotatePdf(_page->getRotation(),x,y,true);
+			_cmts->addLink(_annots.back(), _page->getDictionary()->getIndiRef(),x,y);
 			_mode = ModeInsertAnntotation;//boli sme v tomto mode
 #ifdef _DEBUG
 			_annots.back()->getDictionary()->getStringRepresentation(m);
@@ -828,7 +872,7 @@ void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka s
 	PdfOp o = it.getCurrent();
 	if (it.valid())
 		o = it.getCurrent();
-	OperatorData s(o);
+	OperatorData s(o, displayparams.vDpi/72.0f);
 	double xBegin;
 	double xEnd;
 	TextData::iterator move = sTextMarker;
@@ -959,13 +1003,46 @@ void TabPage::insertBefore(PdfOp op, PdfOp before)
 	before->getContentStream()->replaceOperator(before,op);	
 	op->getContentStream()->insertOperator(op,clone);
 }
+PdfOp TabPage::getPreviousFontInPosition(libs::Point pdfPos)//iba pre textove veci, bez upravy displayparam
+{
+	double x = pdfPos.x;
+	double y = pdfPos.y;
+	rotatePdf(_page->getRotation(),x,y,false);
+	TextData::iterator iter = _textList.begin();
+	TextData::iterator last = iter;
+	float dist = 10e38;
+	while (iter!= _textList.end())
+	{
+		float xdist = iter->_origX2 - pdfPos.x;//vzdialenesie
+		float ydist = iter->_ymin - pdfPos.y;
+		float distTest = xdist*xdist + ydist*ydist;
+		if (dist<distTest)//nasli sme
+			break;
+		else
+			dist = distTest;
+		iter++;
+	}
+	if (iter == _textList.end())
+		return shared_ptr<PdfOperator>((PdfOperator *)NULL);
+	//najdi posledny TF
+	FontOperatorIterator it = PdfOperator::getIterator<FontOperatorIterator>(iter->_op,false);
+
+	if (!it.valid())
+		return shared_ptr<PdfOperator>((PdfOperator*)NULL);
+	PdfOp op = it.getCurrent()->clone();
+#if _DEBUG
+	std::string m;
+	op->getStringRepresentation(m);
+#endif
+	return op;
+}
 void TabPage::createAddMoveString(PdfOp bef, double x, double y, QString name)
 {
 	PdfOperator::Operands ops;
 	ops.push_back(boost::shared_ptr<IProperty> (new CString(name.toAscii().data())));
 	PdfOp p = createOperator("tj",ops);
 	bef->getContentStream()->insertOperator(bef,p);
-	OperatorData d(p);
+	OperatorData d(p, displayparams.vDpi/72.0f);
 	_textList.push_back(d);
 	PdfOp op = FontWidget::createTranslationTd(x,y);
 	bef->getContentStream()->insertOperator(bef,p);	
@@ -1262,10 +1339,7 @@ void TabPage::redraw()
 	showAnnotation();
 	//image = image.scaled(QSize(max(x2,x1),max(y1,y2)));
 	_labelPage->setImage(image);
-	//image.save("mytest.bmp","BMP");
-	//this->ui.label->adjustSize();
 	updatePageInfoBar();
-
 	createList();//TODO only in right mode
 }
 void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
@@ -1317,7 +1391,7 @@ void TabPage::saveAs()
 }
 bool TabPage::CanBeSavedChanges()
 {
-	if(_pdf->getMode()!=CPdf::ReadOnly)
+	if(_pdf->getMode()==CPdf::ReadOnly)
 	{
 		QMessageBox::warning(this, "ReadOnly pdf","Pdf cannot be changed", QMessageBox::Ok,QMessageBox::Ok); 
 		return false;
@@ -1523,6 +1597,7 @@ void TabPage::draw() //change mode to drawing
 //page bude vediet o interaktovnyh miestach -> kvoli mouseMove
 void TabPage::showAnnotation()
 {
+	_labelPage->clearLabels();
 	std::string SupportedAnnotationNames[] = { ANNOTS(CREATE_ARRAY) };
 	//akonahle sa zmeni stranka, upozornim page na to ze tam moze mat anotacie
 	//dostan oblasti anotacii z pdf
@@ -1629,7 +1704,6 @@ void TabPage::insertText( PdfOp op )
 	ops.push_back(op);
 	_page->addContentStreamToBack(ops);
 	TextOperatorIterator iter(op);assert(iter.valid());
-	createList();//TODO zoptimalizovat, nsert ba jedneho prvku
 	redraw();
 }
 
@@ -1639,9 +1713,10 @@ void TabPage::changeSelectedText() //vsetko zosane na svojom mieste, akurat sa p
 	assert(_selected);
 	float corr = displayparams.vDpi/72;
 	float h = sTextIt->_op->getFontHeight();
-	float y = displayparams.DEFAULT_PAGE_RY - (sTextIt->_ymin+h)/corr; //TODO toto nemusi byt vyska BBoxu
-	float pos = sTextIt->GetPreviousStop();
-	_font->setPosition(pos/corr,y); //pretoze toto je v default user space
+	double y = displayparams.DEFAULT_PAGE_RY - (sTextIt->_ymin+h)/corr; //TODO toto nemusi byt vyska BBoxu
+	double pos = sTextIt->GetPreviousStop();
+	rotatePdf(_page->getRotation(),pos,y,true);
+	_font->setPosition(pos,y); //pretoze toto je v default user space
 	//rozdelime na dva pripady - pokial je to roznake a pokial je zaciatok erozny od konca
 	if ( sTextIt==sTextItEnd ) //TODO co ak je s3 prazdne? -> Compact?:)
 	{
@@ -1713,17 +1788,17 @@ void TabPage::changeSelectedText() //vsetko zosane na svojom mieste, akurat sa p
 	redraw();
 	createList();
 }
-float TabPage::findDistance(std::string s,TextData::iterator textIter)
-{
-	float res = 0;
-	shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(textIter->_op);
-	for (int i=0; i< s.size(); i++)
-	{
-		res+=txt->getWidth(s[i]);
-		res+=textIter->_charSpace;
-	}
-	return res;
-}
+//float TabPage::findDistance(std::string s,TextData::iterator textIter)
+//{
+//	float res = 0;
+//	shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(textIter->_op);
+//	for (int i=0; i< s.size(); i++)
+//	{
+//		res+=txt->getWidth(s[i], textIter->_scale );
+//		res+=textIter->_charSpace;
+//	}
+//	return res;
+//}
 void TabPage::insertTextAfter(PdfOp opBehind, double td, double ymax, QString s)
 {
 	std::list<PdfOp> ops;
@@ -1929,7 +2004,7 @@ void TabPage::searchForw(QString srch)
 					//float sizeOfSpace = iter->_op->
 					//aprozumijeme medzeru
 					shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
-					float dx = txt->getWidth(' ');
+					float dx = txt->getWidth(' ');//TODO zmenit na word
 					if (fabs(prev - iter->_begin) > dx ) //from which space?
 						_searchEngine.acceptSpace();
 					prev = iter->_end;
@@ -2159,13 +2234,13 @@ void TabPage::exportText()
 	{
 		QDialog * dialog = new QDialog(this);
 		Ui::PageDialog pdialog;
+		pdialog.setupUi(dialog);
 		pdialog.begin->setMaximum(_pdf->getPageCount());
 		pdialog.begin->setMinimum(1);
 		pdialog.end->setMinimum(1);
 		pdialog.end->setMaximum(_pdf->getPageCount());
-		pdialog.setupUi(dialog);
 		dialog->setWindowTitle("Select page range");
-		dialog->show();
+		dialog->exec();
 		if (dialog->result() == QDialog::Rejected)
 			return;
 		beg = pdialog.begin->value();
@@ -2178,7 +2253,7 @@ void TabPage::exportText()
 	QTextEdit * edit = new QTextEdit(this);
 	//TODO nejaka inicializacia
 	QString text;//TODO check ci nie je text moc dlhy, odmedzenia?
-	for ( size_t i = beg; i < end; i++)
+	for ( size_t i = beg; i <= end; i++)
 	{
 		float prev =_textList.size() > 0  ? _textList.begin()->_begin : 0;
 		for (TextData::iterator iter = _textList.begin(); iter != _textList.end(); iter++)
@@ -2441,7 +2516,7 @@ void TabPage::getDestFromArray( PdfProperty pgl, Bookmark * ret )
 	pgl = utils::getReferencedObject(destination->getProperty(0));
 #ifdef _DEBUG
 	std::string m;
-	pgl->getStringRepresentation(m);
+	destination->getStringRepresentation(m);
 #endif // _DEBUG
 	assert(isPage(pgl));
 	shared_ptr<CDict> names = pgl->getSmartCObjectPtr<CDict>(pgl); //TODO boost rozoznava iva pointery, toto tu asi nebude byt
@@ -2453,25 +2528,39 @@ void TabPage::getDestFromArray( PdfProperty pgl, Bookmark * ret )
 			ret->setPage(i);
 			std::string type = destination->getProperty<CName>(1)->getValue();
 			double t;
+			double x(0),y(0);
 			if (type == "XYZ")
 			{
-				t = destination->getProperty<CReal>(2)->getValue();
-				ret->setX(t);
-				t = destination->getProperty<CReal>(3)->getValue();
-				ret->setY(t);
-				t = destination->getProperty<CReal>(4)->getValue();
+				if (destination->getProperty(2)->getType() == pInt)
+					x = destination->getProperty<CInt>(2)->getValue();
+				else
+					x = destination->getProperty<CReal>(2)->getValue();
+				if (destination->getProperty(3)->getType() == pInt)
+					y = destination->getProperty<CInt>(3)->getValue();
+				else
+					y = destination->getProperty<CReal>(3)->getValue();
+				t = 1;
+				if (destination->getProperty(4)->getType() != pNull)
+					t = destination->getProperty<CInt>(4)->getValue(); //TODO ho to get 0.5?
 				ret->setZoom(t);
 			}
 			if (type == "FitH" || type == "FitBH")
 			{
-				t = destination->getProperty<CReal>(2)->getValue();
-				ret->setY(t);
+				if (destination->getProperty(2)->getType() == pInt)
+					y = destination->getProperty<CInt>(2)->getValue();
+				else
+					y = destination->getProperty<CReal>(2)->getValue();
 			}
 			if (type == "FitV" || type == "FitBV")
 			{
-				t = destination->getProperty<CReal>(2)->getValue();
-				ret->setX(t);
+				if (destination->getProperty(2)->getType() == pInt)
+					x = destination->getProperty<CInt>(2)->getValue();
+				else
+					x = destination->getProperty<CReal>(2)->getValue();
 			}
+			displayparams.convertPdfPosToPixmapPos(x,y,x,y);
+			ret->setX(x);
+			ret->setY(y);
 			return;
 		}
 	}
@@ -2511,27 +2600,25 @@ void TabPage::SetModePosition()
 void TabPage::handleLink( int level )
 {
 	std::string typ = _annots[level]->getDictionary()->getProperty<CName>("Subtype")->getValue();
-	if (typ == "Link")
-	{
-		Bookmark * b1 = new Bookmark((QTreeWidgetItem *)0);
-#ifdef _DEBUG
-		std::string m;
-		_annots[level]->getDictionary()->getStringRepresentation(m);
-#endif // _DEBUG
-		setTree(_annots[level]->getDictionary(),b1);
-		//Bookmark * b2 = (Bookmark*)b1->child(1);
-		_page = _pdf->getPage(b1->getDest());
-		double x = b1->getX();
-		double y = b1->getY();
-		int index=  b1->getZoom()*100/ZOOM_STEP -1;
-		if (index < 0)
-			index = 0;
-		if(index >= ui.zoom->count())
-			index = ui.zoom->count()-1;
-		ui.zoom->setCurrentIndex(index);
-		rotatePdf(_page->getRotation(),x,y,false);
-		this->ui.scrollArea->ensureVisible(x,y);
-		redraw();
+	if (typ != "Link")
 		return;
-	}
+	Bookmark * b1 = new Bookmark((QTreeWidgetItem *)0);
+#ifdef _DEBUG
+	std::string m;
+	_annots[level]->getDictionary()->getStringRepresentation(m);
+#endif // _DEBUG
+	setTree(_annots[level]->getDictionary(),b1);
+	//Bookmark * b2 = (Bookmark*)b1->child(1);
+	_page = _pdf->getPage(b1->getDest());
+	double x = b1->getX();
+	double y = b1->getY();
+	int index=  b1->getZoom()*100/ZOOM_STEP -1;
+	if (index < 0)
+		index = 0;
+	if(index >= ui.zoom->count())
+		index = ui.zoom->count()-1;
+	ui.zoom->setCurrentIndex(index);
+	rotatePdf(_page->getRotation(),x,y,false);
+	this->ui.scrollArea->ensureVisible(x,y);
+	return;
 }

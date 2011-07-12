@@ -152,7 +152,8 @@ void InsertImage::setImage(PdfOp ii, double scale)
 {
 	_scale = scale;
 	DisplayParams params;
-	GfxState state = params.getCleanState();
+	PDFRectangle pdfRect ( params.pageRect.xleft, params.pageRect.yleft, params.pageRect.xright, params.pageRect.yright );
+	GfxState state(params.hDpi, params.vDpi, &pdfRect, params.rotate, params.upsideDown );
 	biOp = boost::dynamic_pointer_cast<InlineImageCompositePdfOperator>(ii->clone());
 	ui.sizeX->setValue(biOp->getWidth());
 	ui.sizeY->setValue(biOp->getHeight());

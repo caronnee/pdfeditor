@@ -90,6 +90,7 @@ signals:
 	void changeTextSignal();
 	void text(PdfOp op);
 	void changeSelected();
+	PdfOp getLastFontSignal(libs::Point);
 	std::string fontInPage(std::string id);
 
 public slots:

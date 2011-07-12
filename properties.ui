@@ -45,44 +45,44 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="2" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="shapeLabel">
         <property name="text">
          <string>Shape</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="3" column="2">
        <widget class="QComboBox" name="shape"/>
       </item>
-      <item row="4" column="0">
+      <item row="5" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Font size</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
+      <item row="5" column="2">
        <widget class="QComboBox" name="fontsize"/>
       </item>
-      <item row="3" column="0">
+      <item row="4" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
          <string>Font</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="4" column="2">
        <widget class="QComboBox" name="fonts"/>
       </item>
-      <item row="5" column="0">
+      <item row="6" column="0">
        <widget class="QLabel" name="rotateLabel">
         <property name="text">
          <string>Rotation</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
+      <item row="6" column="2">
        <widget class="QDial" name="rotation">
         <property name="maximumSize">
          <size>
@@ -95,14 +95,14 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item row="7" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>stroking color</string>
         </property>
        </widget>
       </item>
-      <item row="7" column="0">
+      <item row="8" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>border color</string>
@@ -116,15 +116,22 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
+      <item row="7" column="2">
        <widget class="ColorPicker" name="colorS" native="true">
         <property name="enabled">
          <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="7" column="1">
+      <item row="8" column="2">
        <widget class="ColorPicker" name="colorN" native="true"/>
+      </item>
+      <item row="4" column="3">
+       <widget class="QCheckBox" name="lastFont">
+        <property name="text">
+         <string>last font</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

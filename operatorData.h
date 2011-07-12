@@ -13,9 +13,9 @@ struct OperatorData
 	PdfTextOperator _op;
 	double _origX, _origX2;
 	QString _text; //jak bol text v tom, pripadne uprava o medzeru, prepisanie ma medzeru, ako konci -, odstranit
-
+	float _scale;
 public:
-	OperatorData(PdfOp op);
+	OperatorData(PdfOp op, float scale);
 	float GetPreviousStop();
 	float GetNextStop();
 	void change(bool from_beg);
