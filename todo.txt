@@ -88,7 +88,7 @@ FIXED - test so zoomom
 FIXED - previous nefunguje dobre
 FIXED - spravit iba systemove fonty, aby sa zobrazilo spravne
 FIXED - je mozne zadat text v predchadzajucom fonte 
-- test s viacerymi strankami
+FIXED - test s viacerymi strankami
 - progress okno
 FIXED - click revision - load from revision
 - pohyb textiom -> (move)->splitnut a pohybovat aj anotaciami
@@ -96,8 +96,8 @@ FIXED - click revision - load from revision
 ----------------------SETTINGS--------------------------
 - defaultne, 1-2 stranok(ADITIONAL 4)
 - continueous/ per stranka
-- farba vysvietenia, v zavisloti na tom, co vysviecuje
-- pri zatvarani okien zostovat, co sa vsetko ulozilo, poprpade sa spytat, ci to ulozit ( setting save on exit )
+WINT FIX (nezrozumitelne)- farba vysvietenia, v zavisloti na tom, co vysviecuje
+- pri zatvarani okien zistovat, co sa vsetko ulozilo, poprpade sa spytat, ci to ulozit ( setting save on exit )
 FIXED - save -  savne sa posledna cast, aj ked nie je revizia->automaticky sa cmmitne revia, reverne sa spat
 - pri pridavani textu pridat len tie pramatre, ktore boli skutocne zadane
 WONT FIX - set from splast iba raz a na cast, vzdy ina na konecnej, podla aktualne situacie
@@ -106,7 +106,7 @@ WONT FIX - set from splast iba raz a na cast, vzdy ina na konecnej, podla aktual
 - vyhladaj cele slovo, vyhladaj ignore-case
 - context menu - move, pohnut vysvietenym textom
 - ako pozadie dat obrazok, na ktorom sa vsetko bude vykreslovat
-- ukazovat nejakym tentintkom, kde sa pohybuje pridanie textu, obrazky
+- ukazovat nejakym tentintkom, kde sa pohybuje pridanie textu, obrazku
 - vytvorit instalator
 - zmenit na viewPort
 ---------------------------------------PATCHES------

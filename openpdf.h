@@ -15,9 +15,10 @@ public:
 
 	Mode _mode;
 public:
-	void setMode(Mode mode) { _mode =  mode; }
+	void setMode(Mode mode);
 	Mode getMode() const { return _mode; }
-
+signals:
+	void ModeChangedSignal(QString);
 public slots:
 	void search(QString s, bool v);
 	void deleteSelectedText();
@@ -74,4 +75,5 @@ public slots:
 	void deletePage();
 	void setModeDeleteAnnotation();
 	void pdfChanged();
+	void redraw();
 };

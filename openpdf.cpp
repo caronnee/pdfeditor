@@ -61,7 +61,7 @@ void OpenPdf::deleteSelectedText()
 }
 void OpenPdf::setModeInsertAnotation()
 {
-	setMode(ModeInsertAnntotation);
+	setMode(ModeInsertAnnotation);
 }
 void OpenPdf::setModeExtractImage()
 {
@@ -197,6 +197,11 @@ void OpenPdf::pageDown()
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->pageDown();
 }
+void OpenPdf::redraw()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->redraw();
+}
 void OpenPdf::insertRange()
 {
 	//calls insert range specific to active tab
@@ -219,4 +224,11 @@ void OpenPdf::deletePage()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->deletePage();
+}
+static const char * helper[] = { MODES(EARRAY) };
+
+void OpenPdf::setMode( Mode mode )
+{
+	_mode =  mode;
+	emit ModeChangedSignal(helper[mode]);
 }

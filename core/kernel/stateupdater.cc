@@ -591,6 +591,8 @@ namespace {
 		assert(txtOp);
 		// TODO can we use const GfxFont *?
 		txtOp->setFontData((GfxFont *)state->getFont());
+		txtOp->setTransformationMatrix(state->getCTM());
+		txtOp->concatTransformationMatrix(state->getTextMat());
 		// return changed state
 		return state;
 	}

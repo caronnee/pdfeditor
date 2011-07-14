@@ -29,9 +29,10 @@ class Comments : public  QWidget
 public:
 	Comments();
 signals:
+	void textAnnotation (Annot);
 	void annotationTextMarkup(Annot);
 	void annotation(Annot);
-	void WaitForPosition();
+	void WaitForPosition(Annot);
 
 public slots:
 	void setRectangle(libs::Rectangle rectangle);

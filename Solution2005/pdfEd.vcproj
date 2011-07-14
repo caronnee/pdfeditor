@@ -178,10 +178,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\colorpicker.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\comments.cpp"
 				>
 			</File>

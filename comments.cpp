@@ -87,12 +87,13 @@ void Comments::apply()
 	case AText: //text, obycajny
 		{//mame spravne KDE ma byt, zostava zistit obsah
 			d->setProperty("Open", *PdfProperty(pdfobjects::CBoolFactory::getInstance(0)));
-			d->addProperty("Subj", *PdfProperty(pdfobjects::CStringFactory::getInstance("pdftest")));
+			d->addProperty("Subj", *PdfProperty(pdfobjects::CStringFactory::getInstance("Created by pdf Editor")));
+			//shared_ptr<CDict> ap = createApp
 #ifdef _DEBUG
 			std::string m;
 			_an->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
-			emit (annotation (_an));
+			emit (textAnnotation (_an));
 			return;
 		} 
 	case ALink: //co ked je to URL? - linkova anotacia, vyriesit v texte. Tot sa odkazuje oba ramci textu
@@ -102,8 +103,8 @@ void Comments::apply()
 			d->setProperty("H",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CNameFactory::getInstance(std::string(ui.annotLinkStyle->currentText().toAscii().data()))));
 			//optional -> border
 			//kam to ma skocit, toto bude iba destination
-			emit (annotation (_an));
-			emit WaitForPosition();
+			//emit (annotation (_an));
+			emit WaitForPosition(_an);
 			return;
 		}
 	case AHighlight:

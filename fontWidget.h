@@ -11,7 +11,6 @@
 #include <kernel/pdfoperators.h>
 #include "typedefs.h"
 //misc
-typedef boost::shared_ptr<pdfobjects::UnknownCompositePdfOperator> PdfComp;
 
 class TextFont
 {

@@ -28,6 +28,7 @@
 #include <QVariant>
 #include <QClipboard>
 #include <QTreeWidgetItem>
+#include <QToolTip>
 #include "ui_convertpagerange.h"
 
 //PDF
@@ -86,7 +87,7 @@ public:
 	};
 };
 
-TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMode),_parent(parent),_changed(false)
+TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false)
 {
 	_pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 	debug::changeDebugLevel(10000);
@@ -129,11 +130,12 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMod
 	//connections
 	//pridanie anotacie
 
+	connect(_cmts,SIGNAL(textAnnotation(Annot)),this,SLOT(insertTextAnnot(Annot)));
 	connect(_cmts,SIGNAL(annotation(Annot)),this,SLOT(insertAnnotation(Annot)));
-	connect(_cmts,SIGNAL(WaitForPosition()),this,SLOT(SetModePosition()));
+	connect(_cmts,SIGNAL(WaitForPosition(Annot)),this,SLOT(SetModePosition(Annot)));
 	connect(_labelPage,SIGNAL(ShowAnnotation(int)),this,SLOT(showAnnotation(int)));
 
-//	connect(this,SIGNAL(pdfPosition(float,float,int,int)),_cmts,SLOT(setRectangle(float,float,int,int)));
+	//	connect(this,SIGNAL(pdfPosition(float,float,int,int)),_cmts,SLOT(setRectangle(float,float,int,int)));
 	connect(this,SIGNAL(parsed(std::vector<float>)),_cmts,SLOT(setPoints(std::vector<float>)));
 
 	connect (ui.previous,SIGNAL(clicked()),this,SLOT(previousPage()));
@@ -169,7 +171,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMod
 	//redraw();
 	_dataReady = false;
 	//setZoom();
-	
+
 	this->ui.zoom->setCurrentIndex(1);
 	_dataReady = false;
 	getBookMarks();
@@ -179,14 +181,19 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name), _mode(DefaultMod
 void TabPage::showAnnotation(int level)
 {
 	std::string typ = utils::getNameFromDict("Subtype",_annots[level]->getDictionary());
-	if (typ == "Text")
+	if (typ == "Text" || typ == "Highlight")
 	{
-		//nastav vsetky property z dictionary
-		_cmts->fromDict(_annots[level]->getDictionary());
-		_cmts->setWindowFlags(Qt::Popup);
-		_cmts->show();
+		//show tooltip
+		QString message;
+		shared_ptr<CDict> dict = _annots[level]->getDictionary();
+		if (dict->containsProperty("T"))
+			message += QString::fromStdString(utils::getStringFromDict(dict,"T"));
+		message += ":\n";
+		if (dict->containsProperty("Contents"))
+			message += QString::fromStdString(utils::getStringFromDict(dict,"Contents"));
+		QToolTip::showText(QCursor::pos(), message);
 	}
-	//to iste pre
+	//TODO pre link trosku inak - URI
 }
 void TabPage::initRevisions()
 {
@@ -256,7 +263,7 @@ void TabPage::raiseInsertImage(QRect rect)
 {
 	double x = rect.x(), y=rect.y();
 	/*double x = rect.x()*72.0f/displayparams.vDpi,
-		y = (float)displayparams.DEFAULT_PAGE_RY-rect.y()*72.0f/displayparams.vDpi;*/
+	y = (float)displayparams.DEFAULT_PAGE_RY-rect.y()*72.0f/displayparams.vDpi;*/
 	rotatePdf(_page->getRotation(), x, y, true);
 	y = displayparams.DEFAULT_PAGE_RY - y;
 	_image->setPosition(x,y,72.0f/displayparams.vDpi);
@@ -316,63 +323,9 @@ void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 		iter++;
 	}
 }
-pdfobjects::IndiRef TabPage::createAppearanceDict(float*dim)
+pdfobjects::IndiRef TabPage::createAppearanceHighlight( float * dim )
 {
-	boost::shared_ptr<pdfobjects::CStream> apStream(new CStream());
-	apStream->addProperty("Type",*PdfProperty(CNameFactory::getInstance("XObject")));
-	apStream->addProperty("SubType",*PdfProperty(CNameFactory::getInstance("Form")));
-	apStream->addProperty("FormType",*boost::shared_ptr<CInt>(CIntFactory::getInstance(1)));
-	{
-		CArray rct;
-		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[0]))));
-		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[1]))));
-		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[2]))));
-		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[3]))));
-		apStream->addProperty("BBox",rct);
-	}
-	{
-		CArray arr;
-		arr.addProperty(*PdfProperty(CRealFactory::getInstance(1)));
-		arr.addProperty(*PdfProperty(CRealFactory::getInstance(0)));
-		arr.addProperty(*PdfProperty(CRealFactory::getInstance(0)));
-		arr.addProperty(*PdfProperty(CRealFactory::getInstance(1)));
-		arr.addProperty(*PdfProperty(CRealFactory::getInstance(-dim[0])));
-		arr.addProperty(*PdfProperty(CRealFactory::getInstance(-dim[1])));
-		apStream->addProperty("Matrix",arr);
-	}
-	{
-		//group pre transparency
-		boost::shared_ptr<pdfobjects::CDict> group(CDictFactory::getInstance());
-		group->addProperty("S",*PdfProperty(CNameFactory::getInstance("Transparency")));
-		group->addProperty("Type",*PdfProperty(CNameFactory::getInstance("Group")));
-		apStream->addProperty("Group",*group);
-	}
-	{
-		//resource
-		boost::shared_ptr<pdfobjects::CDict> resDict(CDictFactory::getInstance());
-		boost::shared_ptr<pdfobjects::CDict> grDict(CDictFactory::getInstance());
-		boost::shared_ptr<pdfobjects::CDict> g0Dict(CDictFactory::getInstance());
-
-		CArray arr2;
-		arr2.addProperty(*PdfProperty(CNameFactory::getInstance("PDF")));
-		resDict->addProperty("ProcSet",arr2);
-
-		
-		g0Dict->addProperty("Type",*PdfProperty(CNameFactory::getInstance("ExtGState")));
-
-		g0Dict->addProperty("AIS",*PdfProperty(CBoolFactory::getInstance(false)));
-		g0Dict->addProperty("BM",*PdfProperty(CNameFactory::getInstance("Multiply")));
-		grDict->addProperty("TransGs",*g0Dict);
-		resDict->addProperty("ExtGState",*grDict);
-		apStream->addProperty("Resources",*resDict);
-	}
-	{
-		CArray rct;
-		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(0))));
-		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(0))));
-		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(1))));
-		apStream->addProperty("Border",rct);
-	}
+	shared_ptr<CStream> apStream = createAPStream(dim);
 	PdfOperator::Operands operands;
 	operands.push_back((PdfProperty(CNameFactory::getInstance("TransGs"))));
 	PdfOp op = createOperator("gs",operands);
@@ -417,6 +370,404 @@ pdfobjects::IndiRef TabPage::createAppearanceDict(float*dim)
 	apStream->validate();
 	return _pdf->addIndirectProperty(apStream);//hack
 }
+boost::shared_ptr<pdfobjects::CStream> TabPage::createAPStream(float * dim)
+{
+	boost::shared_ptr<pdfobjects::CStream> apStream(new CStream());
+	apStream->addProperty("Type",*PdfProperty(CNameFactory::getInstance("XObject")));
+	apStream->addProperty("SubType",*PdfProperty(CNameFactory::getInstance("Form")));
+	apStream->addProperty("FormType",*boost::shared_ptr<CInt>(CIntFactory::getInstance(1)));
+	{
+		CArray rct;
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[0]))));
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[1]))));
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[2]))));
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(dim[3]))));
+		apStream->addProperty("BBox",rct);
+	}
+	{
+		CArray arr;
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(1)));
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(0)));
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(0)));
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(1)));
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(-dim[0])));
+		arr.addProperty(*PdfProperty(CRealFactory::getInstance(-dim[1])));
+		apStream->addProperty("Matrix",arr);
+	}
+	{
+		//group pre transparency
+		boost::shared_ptr<pdfobjects::CDict> group(CDictFactory::getInstance());
+		group->addProperty("S",*PdfProperty(CNameFactory::getInstance("Transparency")));
+		group->addProperty("Type",*PdfProperty(CNameFactory::getInstance("Group")));
+		apStream->addProperty("Group",*group);
+	}
+	{
+		//resource
+		boost::shared_ptr<pdfobjects::CDict> resDict(CDictFactory::getInstance());
+		boost::shared_ptr<pdfobjects::CDict> grDict(CDictFactory::getInstance());
+		boost::shared_ptr<pdfobjects::CDict> g0Dict(CDictFactory::getInstance());
+
+		CArray arr2;
+		arr2.addProperty(*PdfProperty(CNameFactory::getInstance("PDF")));
+		resDict->addProperty("ProcSet",arr2);
+
+
+		g0Dict->addProperty("Type",*PdfProperty(CNameFactory::getInstance("ExtGState")));
+
+		g0Dict->addProperty("AIS",*PdfProperty(CBoolFactory::getInstance(false)));
+		g0Dict->addProperty("BM",*PdfProperty(CNameFactory::getInstance("Multiply")));
+		grDict->addProperty("TransGs",*g0Dict);
+		resDict->addProperty("ExtGState",*grDict);
+		apStream->addProperty("Resources",*resDict);
+	}
+	{
+		CArray rct;
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(0))));
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(0))));
+		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(1))));
+		apStream->addProperty("Border",rct);
+	}
+	return apStream;
+}
+#define ADD(q,op) q->push_back(op, getLastOperator(q))
+
+pdfobjects::IndiRef TabPage::createAppearanceComment(float *dim)
+{
+	shared_ptr<CStream> apStream = createAPStream(dim);
+	//pdfoperatory
+	std::string b("q 1 1 1 rg 0 i 1 w 4 M 1 j 0 J []0 d /GS0 gs 1 0 0 1 9 5.0908 cm 7.74 12.616 m -7.74 12.616 l -8.274 12.616 -8.707 12.184 -8.707 11.649 c -8.707 -3.831 l -8.707 -4.365 -8.274 -4.798 -7.74 -4.798 c 7.74 -4.798 l 8.274 -4.798 8.707 -4.365 8.707 -3.831 c 8.707 11.649 l 8.707 12.184 8.274 12.616 7.74 12.616 c h f Q 0 G 1 1 0 rg 0 i 0.60 w 4 M 1 j 0 J []0 d  1 1 0 rg 0 G 0 i 0.59 w 4 M 1 j 0 J []0 d  1 0 0 1 9 5.0908 cm 0 0 m -0.142 0 -0.28 0.008 -0.418 0.015 c -2.199 -1.969 -5.555 -2.242 -4.642 -1.42 c -4.024 -0.862 -3.916 0.111 -3.954 0.916 c -5.658 1.795 -6.772 3.222 -6.772 4.839 c -6.772 7.509 -3.74 9.674 0 9.674 c 3.74 9.674 6.772 7.509 6.772 4.839 c 6.772 2.167 3.74 0 0 0 c 7.74 12.616 m -7.74 12.616 l -8.274 12.616 -8.707 12.184 -8.707 11.649 c -8.707 -3.831 l -8.707 -4.365 -8.274 -4.798 -7.74 -4.798 c 7.74 -4.798 l 8.274 -4.798 8.707 -4.365 8.707 -3.831 c 8.707 11.649 l 8.707 12.184 8.274 12.616 7.74 12.616 c b");
+	apStream->setBuffer(b);
+	
+	PdfComp q = PdfComp(new pdfobjects::UnknownCompositePdfOperator( "q", "Q"));
+	PdfOperator::Operands ops;
+goto END;
+	ops.push_back(PdfProperty(CIntFactory::getInstance(1)));
+	ops.push_back(PdfProperty(CIntFactory::getInstance(1)));
+	ops.push_back(PdfProperty(CIntFactory::getInstance(1)));
+
+	ADD(q,createOperator("rg",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(0)));
+	ADD(q,createOperator("i",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(1)));
+	ADD(q,createOperator("w",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(4)));
+	ADD(q,createOperator("M",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(1)));
+	ADD(q,createOperator("j",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(0)));
+	ADD(q,createOperator("J",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CArrayFactory::getInstance()));
+	ops.push_back(PdfProperty(CIntFactory::getInstance(0)));
+	ADD(q,createOperator("d",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CNameFactory::getInstance("GS0")));
+	ADD(q,createOperator("gs",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(1)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(1)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(9)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(5.0908)));
+	ADD(q,createOperator("cm",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(7.74)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(12.616)));
+	ADD(q,createOperator("m",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-7.74)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-12.616)));
+	ADD(q,createOperator("l",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-8.274)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(12.616)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-8.707)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(12.184)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-8.707)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(11.649)));
+	ADD(q,createOperator("c",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-8.707)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-3.831)));
+	ADD(q,createOperator("l",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-8.707)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-4.365)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-8.274)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-4.798)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-7.74)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-4.798)));
+	ADD(q,createOperator("c",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(7.74)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-4.798)));
+	ADD(q,createOperator("l",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance( 8.274)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-4.798)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance( 8.707)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-4.365)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(8.707)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-3.831)));
+	ADD(q,createOperator("c",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(8.707)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(11.649)));
+	ADD(q,createOperator("l",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(8.707)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(12.184)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(8.274)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance( 12.616)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(7.74)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(12.616)));
+	ADD(q,createOperator("c",ops));
+	ops.clear();
+
+	ADD(q,createOperator("h",ops));
+	ADD(q,createOperator("f",ops));
+	ADD(q,createOperator("Q",ops));
+
+	apStream->addToBuffer(q);
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(0)));
+	apStream->addToBuffer(createOperator("G",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(1)));
+	ops.push_back(PdfProperty(CIntFactory::getInstance(1)));
+	ops.push_back(PdfProperty(CIntFactory::getInstance(0)));
+	apStream->addToBuffer(createOperator("rg",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(0)));
+	apStream->addToBuffer(createOperator("i",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0.60)));
+	apStream->addToBuffer(createOperator("w",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(4)));
+	apStream->addToBuffer(createOperator("M",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(1)));
+	apStream->addToBuffer(createOperator("j",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(0)));
+	apStream->addToBuffer(createOperator("J",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CArrayFactory::getInstance()));
+	ops.push_back(PdfProperty(CIntFactory::getInstance(0)));
+	apStream->addToBuffer(createOperator("d",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(1)));
+	ops.push_back(PdfProperty(CIntFactory::getInstance(1)));
+	ops.push_back(PdfProperty(CIntFactory::getInstance(0)));
+	apStream->addToBuffer(createOperator("rg",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(0)));
+	apStream->addToBuffer(createOperator("G",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(0)));
+	apStream->addToBuffer(createOperator("i",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0.59)));
+	apStream->addToBuffer(createOperator("w",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(4)));
+	apStream->addToBuffer(createOperator("M",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(1)));
+	apStream->addToBuffer(createOperator("j",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CIntFactory::getInstance(0)));
+	apStream->addToBuffer(createOperator("J",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CArrayFactory::getInstance()));
+	ops.push_back(PdfProperty(CIntFactory::getInstance(0)));
+	apStream->addToBuffer(createOperator("d",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(1)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(1)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(5.0908)));
+	apStream->addToBuffer(createOperator("cm",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0)));
+	apStream->addToBuffer(createOperator("m",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-0.142 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-0.28 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance( 0.008)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-0.418)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance( 0.015)));
+	apStream->addToBuffer(createOperator("c",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-2.199 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-1.969)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-5.555 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-2.242)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-4.642)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-1.42)));
+	apStream->addToBuffer(createOperator("c",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-4.024 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance( -0.862)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(  -3.916)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0.111)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-3.954)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0.916)));
+	apStream->addToBuffer(createOperator("c",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-5.658 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(1.795)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-6.772 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(3.222)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-6.772)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(4.839)));
+	apStream->addToBuffer(createOperator("c",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-6.772 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(7.509 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-3.74 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(9.674)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance (0)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(9.674 )));
+	apStream->addToBuffer(createOperator("c",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance( 3.74)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(9.674)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(6.772 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(7.509)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(6.772)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(4.839)));
+	apStream->addToBuffer(createOperator("c",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(6.772 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance( 2.167)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(3.74 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(0 )));
+	apStream->addToBuffer(createOperator("c",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance( 7.74 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(  12.616)));
+	apStream->addToBuffer(createOperator("m",ops));
+	ops.clear();
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-7.74 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(  12.616)));
+	apStream->addToBuffer(createOperator("l",ops));
+	ops.clear();
+
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-8.274 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(12.616 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance( -8.707)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(12.184)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance( -8.707)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(  11.649)));
+	apStream->addToBuffer(createOperator("c",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-8.707 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-3.831 )));
+	apStream->addToBuffer(createOperator("l",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-8.707 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-4.365 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance( -8.274)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-4.798)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-7.74 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance( -4.798)));
+	apStream->addToBuffer(createOperator("c",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-7.74 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance( -4.798)));
+	apStream->addToBuffer(createOperator("l",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance( 8.274)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance( -4.798)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(8.707)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(-4.365)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(8.707 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(  -3.831)));
+	apStream->addToBuffer(createOperator("c",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(8.707)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(11.649)));
+	apStream->addToBuffer(createOperator("l",ops));
+	ops.clear();
+
+	ops.push_back(PdfProperty(CRealFactory::getInstance(8.707)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(12.184 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(8.274)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance( 12.616)));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(7.74 )));
+	ops.push_back(PdfProperty(CRealFactory::getInstance(12.616 )));
+	apStream->addToBuffer(createOperator("c",ops));
+	ops.clear();
+
+	apStream->addToBuffer(createOperator("b",ops));
+
+
+	apStream->validate();
+END:
+	return _pdf->addIndirectProperty(apStream);
+}
 void TabPage::insertTextMarkup(Annot annot)
 {
 	//for all selected text
@@ -428,7 +779,7 @@ void TabPage::insertTextMarkup(Annot annot)
 	std::vector<float> coordinates;
 	float dim[4] = {FLT_MAX,FLT_MAX,0,0};
 	fillCoordinates(coordinates, dim);
-	IndiRef indi = createAppearanceDict(dim);
+	IndiRef indi = createAppearanceHighlight(dim);
 	{
 		CArray rect;
 		for ( int i = 0; i < 4;i++)
@@ -443,7 +794,7 @@ void TabPage::insertTextMarkup(Annot annot)
 		points.addProperty(*(PdfProperty(CRealFactory::getInstance(coordinates[i]))));
 	annot->getDictionary()->addProperty("QuadPoints",points);
 	boost::shared_ptr<pdfobjects::CDict> nDict(CDictFactory::getInstance());
-	
+
 	PdfProperty prop(pdfobjects::CRefFactory::getInstance(indi));
 	nDict->addProperty("N",*prop);
 	annot->getDictionary()->addProperty("AP",*nDict);
@@ -463,21 +814,36 @@ void TabPage::closeAnnotDiag()
 	//_mode = ModeSelectText;
 	//disconnect all?
 }
+void TabPage::insertTextAnnot(Annot a)
+{
+#ifdef _DEBUG
+	std::string m;
+	a->getDictionary()->getStringRepresentation(m);
+#endif // _DEBUG
+	_page->addAnnotation(a);
+	_page->getAllAnnotations(_annots);
+	a= _annots.back();
+	float dim[]={0,0,18,18};
+	boost::shared_ptr<pdfobjects::CDict> nDict(CDictFactory::getInstance());
+
+	IndiRef indi = createAppearanceComment(dim);
+	PdfProperty prop(pdfobjects::CRefFactory::getInstance(indi));
+	nDict->addProperty("N",*prop);
+	a->getDictionary()->addProperty("AP",*nDict);
+	redraw();
+}
 void TabPage::insertAnnotation(Annot a)
 {
 #ifdef _DEBUG
 	std::string m;
 	a->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
-	//vlozime do aktualnej stranky
-	//pre kazdu vysvietenu
-	//boundigbox pre vysvieteny text - ak ziady nie je, tak bod
 	_page->addAnnotation(a);
 	redraw();
-//	std::string m;
+	//	std::string m;
 	//_pdf->addIndirectProperty(a->getDictionary())
-//	_annots[0]->getDictionary()->setProperty("AP",a->getDictionary()->getpo);
-//	_pdf->getIndirectProperty(i)->getStringRepresentation(m);
+	//	_annots[0]->getDictionary()->setProperty("AP",a->getDictionary()->getpo);
+	//	_pdf->getIndirectProperty(i)->getStringRepresentation(m);
 	//setFromSplash();
 }
 //void TabPage::deleteAnnotation(QPoint point)
@@ -526,10 +892,11 @@ void TabPage::raiseChangeSelectedText()
 	_font->setText(s);
 	_font->setChange();
 }
-void TabPage::waitForPosition()
-{
-	_mode = ModeEmitPosition;
-}
+//void TabPage::waitForPosition(Annot _an)
+//{
+//	_annots.push_back(_an);
+//	_mode = ModeEmitPosition;
+//}
 void TabPage::raiseAnnotation(QPoint point)
 {
 	//_mode = ModeEmitPosition;
@@ -564,24 +931,15 @@ void TabPage::createList()
 	{
 		std::string n;
 		(*it)->getOperatorName(n);
-		if (n == "q")
+#ifdef _DEBUG
+		if (n=="BDC")
 		{
-			states.push_back(states.back()->copy());
+			std::string xx;
+			(*it)->getStringRepresentation(xx);
+			BBox b =(*it)->getBBox();
 		}
-		if(n == "Q")
-		{
-			states.pop_back();
-		}
-		if (n == "cm")
-		{
-			float cm[6];
-			PdfOperator::Operands pars;
-			(*it)->getParameters(pars);
-			assert(pars.size()==6);
-			for(int i =0;i <6; i++)
-				cm[i] = utils::getValueFromSimple<CReal>(pars[i]);
-			states.back()->concatCTM(cm[0],cm[1],cm[2],cm[3],cm[4],cm[5]);
-		}
+#endif // _DEBUG
+
 		if (!typeChecker.isType(OpTextName,n))
 		{
 			it++;
@@ -607,18 +965,12 @@ void TabPage::raiseInsertText(QPoint point)
 	_font->setPosition(x,y);
 	_font->setInsert();
 }
-void TabPage::UnSetTextSelect()
-{
-	_mode = DefaultMode;
-	if(_font)
-		delete _font;
-	_font = NULL;
-}
+
 void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, ze sa vyberie prvy operator
 {
 	switch (_parent->getMode())
 	{
-	case ModeInsertAnntotation:
+	case ModeInsertAnnotation:
 		{
 			_labelPage->annotation();
 			break;
@@ -640,8 +992,10 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			double y = point.y();//jelikoz to ide priamo do dictionary, musim prejst cez params.frompdf :-/
 			displayparams.convertPixmapPosToPdfPos(x,y,x,y);
 			rotatePdf(_page->getRotation(),x,y,true);
+			insertAnnotation(_annots.back());
+			_page->getAllAnnotations(_annots);
 			_cmts->addLink(_annots.back(), _page->getDictionary()->getIndiRef(),x,y);
-			_mode = ModeInsertAnntotation;//boli sme v tomto mode
+			_parent->setModeInsertAnotation();//boli sme v tomto mode
 #ifdef _DEBUG
 			_annots.back()->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
@@ -702,8 +1056,8 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 				return;
 			PdfOperator::Operands op;
 			ops.back()->getParameters(op);
-	//		image_dict.addProperty ("CS", CName ("RGB"));
-	//image_dict.addProperty ("BPC", CInt (8)); //
+			//		image_dict.addProperty ("CS", CName ("RGB"));
+			//image_dict.addProperty ("BPC", CInt (8)); //
 			shared_ptr<pdfobjects::CInlineImage> inIm =  boost::dynamic_pointer_cast<pdfobjects::CInlineImage>(op.back());
 			boost::shared_ptr<IProperty> prop = inIm->getProperty("CS");
 			std::string cs = utils::getNameFromIProperty(prop);
@@ -730,11 +1084,11 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 					index+=3;
 				}
 
-			QString fileName = QFileDialog::getSaveFileName(this, tr("Save image"), "", tr("Images (*.png *.jpg *.bmp))"));
-			if (fileName.isEmpty())
-				return;
-			image.save(fileName);
-			break;
+				QString fileName = QFileDialog::getSaveFileName(this, tr("Save image"), "", tr("Images (*.png *.jpg *.bmp))"));
+				if (fileName.isEmpty())
+					return;
+				image.save(fileName);
+				break;
 		}
 	case ImageMode:
 		{
@@ -816,7 +1170,7 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			return;
 		}
 	default:
-	//	highlight();//TODO ZMAZST
+		//	highlight();//TODO ZMAZST
 		break;
 	}
 	_dataReady = false;
@@ -1169,8 +1523,8 @@ QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
 void TabPage::updatePageInfoBar()
 {
 	//page changes
-	QVariant v(_pdf->getPageCount());
-	QVariant nPages(_page->getPagePosition());
+	QVariant nPages(_pdf->getPageCount());
+	QVariant v(_page->getPagePosition());
 	this->ui.pageInfo->setText( v.toString() + " / " + nPages.toString() );
 }
 void TabPage::pageUp()
@@ -1207,6 +1561,7 @@ bool TabPage::nextPage()
 }
 void TabPage::getBookMarks()
 {
+	return;
 	std::vector<shared_ptr<CDict> > outline;
 	if (!_pdf->getDictionary()->containsProperty("Outlines"))
 		return;
@@ -1315,6 +1670,11 @@ void TabPage::deletePage()
 }
 void TabPage::redraw()
 {
+	JustDraw();
+	createList();//TODO only in right mode
+}
+void TabPage::JustDraw()
+{
 	SplashColor paperColor;
 	paperColor[0] = paperColor[1] = paperColor[2] = 0xff;
 	SplashOutputDev splash (splashModeBGR8, 4, gFalse, paperColor);
@@ -1340,7 +1700,6 @@ void TabPage::redraw()
 	//image = image.scaled(QSize(max(x2,x1),max(y1,y2)));
 	_labelPage->setImage(image);
 	updatePageInfoBar();
-	createList();//TODO only in right mode
 }
 void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
 {
@@ -1480,7 +1839,7 @@ void TabPage::commitRevision()
 
 void TabPage::exportRevision()
 {
-	QString name = getFile();
+	QString name = getFile(false);
 	//if exists, save it here
 	FILE * f = fopen(name.toAscii().data(),"w");
 	//saving to new file
@@ -1493,9 +1852,13 @@ void TabPage::exportRevision()
 	fclose(f);
 }
 
-QString TabPage::getFile(QFileDialog::FileMode flags)
+QString TabPage::getFile(bool open, QFileDialog::FileMode flags)
 {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open pdf file"),".",tr("PdfFiles (*.pdf)"));
+	QString fileName;
+	if (open)
+	 fileName = QFileDialog::getOpenFileName(this, tr("Open pdf file"),".",tr("PdfFiles (*.pdf)"));
+	else
+		fileName = QFileDialog::getSaveFileName(this, tr("Save pdf file"),".",tr("PdfFiles (*.pdf)"));
 	if (fileName == NULL)
 		return NULL;//cancel pressed
 	return fileName;
@@ -1540,7 +1903,7 @@ void TabPage::addEmptyPage()
 	boost::shared_ptr<pdfobjects::CName> type(pdfobjects::CNameFactory::getInstance("Page"));
 	pageDict->addProperty("Type", *type);
 	boost::shared_ptr<pdfobjects::CPage> pageToAdd(new pdfobjects::CPage(pageDict));
-	_pdf->insertPage(pageToAdd, _pdf->getPagePosition(_page));//insert after
+	_pdf->insertPage(pageToAdd, _page->getPagePosition());//insert after
 }
 void TabPage::print()
 {
@@ -1588,11 +1951,11 @@ void TabPage::print()
 	painter.end();
 }
 
-void TabPage::draw() //change mode to drawing
-{
-	//	this->ui.content->_beginDraw();
-	_mode = DrawMode;
-}
+//void TabPage::draw() //change mode to drawing
+//{
+//	//	this->ui.content->_beginDraw();
+//	_mode = DrawMode;
+//}
 //na kazdej stranke mozu byt anotacie, po kliknuti na ne vyskoci pop-up alebo sa inak spravi akcia
 //page bude vediet o interaktovnyh miestach -> kvoli mouseMove
 void TabPage::showAnnotation()
@@ -1617,7 +1980,7 @@ void TabPage::showAnnotation()
 #ifdef _DEBUG 
 
 #if 0
-if ( !_pdf->isLinearized() && type == "Popup")
+		if ( !_pdf->isLinearized() && type == "Popup")
 		{
 			_page->delAnnotation(ann[i]);
 			return;
@@ -1631,39 +1994,87 @@ if ( !_pdf->isLinearized() && type == "Popup")
 		ann[iAnnot]->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
 		bool found = false;
-		/*for ( int iName =0; SupportedAnnotationNames[iName].size(); iName++ )
-		{
-			if (SupportedAnnotationNames[iName] == type)
-			{
-				found = true;
-				break;
-			}
-		}
-		if (!found)
-			continue;*/
-		//printf("%s\n",m.c_str());
-		/*	PdfProperty prop = _annots[i]->getDictionary()->getProperty("Subtype");
-		if (pdfobjects::IProperty::getSmartCObjectPtr(*/
+
 		PdfProperty prop = ann[iAnnot]->getDictionary()->getProperty("Rect");
 		shared_ptr<CArray>rect = pdfobjects::IProperty::getSmartCObjectPtr<CArray>(prop);
 #ifdef _DEBUG
 		ann[iAnnot]->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
-		double coor[4];
-		float x1,x2,y1,y2;
-		for ( int i =0; i<4; i++)
+		BBox b;
+		//		if (ann[iAnnot]->getDictionary()->containsProperty("StructParent"))
+		//		{
+		//			int index = utils::getSimpleValueFromDict<CInt>(ann[iAnnot]->getDictionary(), "StructParent");
+		//			PdfProperty myDict = utils::getReferencedObject(_pdf->getDictionary()->getProperty("StructTreeRoot"));
+		//			assert(isDict(myDict));
+		//			myDict =utils::getReferencedObject(myDict->getSmartCObjectPtr<CDict>(myDict)->getProperty("ParentTree"));
+		//#ifdef _DEBUG
+		//			std::string m;
+		//			myDict->getStringRepresentation(m);
+		//#endif // _DEBUG
+		//			shared_ptr<CDict> parentDict = myDict->getSmartCObjectPtr<CDict>(myDict);
+		//			//hladama parenta
+		//			while(true)
+		//			{
+		//				shared_ptr<CDict> test;
+		//				if (parentDict->containsProperty("Nums"))
+		//					break;
+		//				PdfProperty t = utils::getReferencedObject(parentDict->getProperty("Kids"));
+		//				shared_ptr<CArray> c =t->getSmartCObjectPtr<CArray>(t);
+		//				for ( int i =0; i < c->getPropertyCount(); i++)
+		//				{
+		//					test = IProperty::getSmartCObjectPtr<CDict>(utils::getReferencedObject(c->getProperty(i)));
+		//					assert(test->containsProperty("Limits"));
+		//					shared_ptr<CArray> r = IProperty::getSmartCObjectPtr<CArray>(test->getProperty("Limits"));
+		//					if (index > utils::getSimpleValueFromArray<CInt>(r,0) && index < utils::getSimpleValueFromArray<CInt>(r,1))
+		//					{
+		//						parentDict = test;
+		//						break;
+		//					}
+		//				}
+		//			}
+		//			shared_ptr<CArray> nums = IProperty::getSmartCObjectPtr<CArray>(parentDict->getProperty("Nums"));
+		//#ifdef _DEBUG
+		//			nums->getStringRepresentation(m);
+		//#endif // _DEBUG
+		//			int i=0;
+		//			for ( i =0; i< nums->getPropertyCount(); i+=2)
+		//				if (index == utils::getSimpleValueFromArray<CInt>(nums,i))
+		//					break;
+		//			if (i == nums->getPropertyCount())
+		//			{
+		//				assert(false);
+		//				return;
+		//			}
+		//			myDict = utils::getReferencedObject(nums->getProperty(i+1)); //distaneme value
+		//			assert(isDict(myDict));
+		//			myDict = utils::getReferencedObject(IProperty::getSmartCObjectPtr<CDict>(myDict)->getProperty("K")); //distaneme value
+		//			nums = IProperty::getSmartCObjectPtr<CArray>(myDict);
+		//			myDict = IProperty::getSmartCObjectPtr<CDict>(utils::getReferencedObject(nums->getProperty(1)));
+		//#ifdef _DEBUG
+		//			myDict->getStringRepresentation(m);
+		//#endif // _DEBUG
+		//			int res = 8;
+		//			//najdi 8 v 
+		//		}
+		//		else
 		{
-			PdfProperty aProp = rect->getProperty(i);
-			if (aProp->getType() == pInt)
-				coor[i] = utils::getSimpleValueFromArray<CInt>(rect,i);
-			else if (aProp->getType() == pReal)
-				coor[i]=utils::getSimpleValueFromArray<CReal>(rect,i);
+			double coor[4];
+			float x1,x2,y1,y2;
+			for ( int i =0; i<4; i++)
+			{
+				PdfProperty aProp = rect->getProperty(i);
+				if (aProp->getType() == pInt)
+					coor[i] = utils::getSimpleValueFromArray<CInt>(rect,i);
+				else if (aProp->getType() == pReal)
+					coor[i]=utils::getSimpleValueFromArray<CReal>(rect,i);
+			}
+
+			//dostat annotacny rectangle
+			//musime rucne parametre pre annotation reprezentovat, pretoe to NEMA bbox, ale priano to sisame z dictionary
+			displayparams.convertPdfPosToPixmapPos(coor[0],coor[1],coor[0],coor[1]);
+			displayparams.convertPdfPosToPixmapPos(coor[2],coor[3],coor[2],coor[3]);
+			b = BBox(coor[0],coor[1],coor[2], coor[3]);
 		}
-		//dostat annotacny rectangle
-		//musime rucne parametre pre annotation reprezentovat, pretoe to NEMA bbox, ale priano to sisame z dictionary
-		displayparams.convertPdfPosToPixmapPos(coor[0],coor[1],coor[0],coor[1]);
-		displayparams.convertPdfPosToPixmapPos(coor[2],coor[3],coor[2],coor[3]);
-		BBox b(coor[0],coor[1],coor[2], coor[3]);
 		QRect convertedRect = getRectangle(b);//PODIVNE
 		_labelPage->addPlace(convertedRect); //teraz vie o vsetkych miestach
 		_annots.push_back(ann[iAnnot]);
@@ -2029,6 +2440,7 @@ void TabPage::searchForw(QString srch)
 					//iter->setEnd(a);
 					iter->setBegin(b);
 					_selected = true; 
+
 					highlight();
 					return;
 				}
@@ -2044,10 +2456,13 @@ void TabPage::searchForw(QString srch)
 		}
 		//next page, etreba davat do splashu
 NextPage:
-		if (_pdf->getPagePosition(_page) == _pdf->getPageCount())
+		int pg = _page->getPagePosition();
+		int p2 = _pdf->getPagePosition(_page);
+		if ( pg == _pdf->getPageCount())
 			_pdf->getPage(1);
 		else
 			_page = _pdf->getNextPage(_page);
+		redraw();
 		//nastav nove _textbox, pretoze sme stejne v textovom rezime
 	}
 	QMessageBox::warning(this, tr("Not found"),
@@ -2185,10 +2600,10 @@ void TabPage::eraseSelectedText()
 		//vlozime to, ze sme menili
 		return;
 	}
-//	float distX1 =0;// -sTextIt->GetPreviousStop() + sTextIt->_origX2;//kolko sme zmazali
+	//	float distX1 =0;// -sTextIt->GetPreviousStop() + sTextIt->_origX2;//kolko sme zmazali
 	float distX2 = sTextItEnd->GetNextStop() - sTextItEnd->GetPreviousStop()-sTextItEnd->_charSpace;
 	distX2 *=corr;
-    //najskor musim deletnut tie, ktore urcite nechceme, v dalsom kuse kodu robim replace a nema sa to rado
+	//najskor musim deletnut tie, ktore urcite nechceme, v dalsom kuse kodu robim replace a nema sa to rado
 	TextData::iterator it = sTextIt;
 	it++;
 	while (true)
@@ -2205,8 +2620,8 @@ void TabPage::eraseSelectedText()
 		//uchovame to, co z praveho operatoru zostalo
 		sTextIt->split(s1,s2,s3); //splitneme
 		assert(s3=="");
-//		PdfOp td = FontWidget::createTranslationTd(distX1,0);
-//		sTextIt->_op->getContentStream()->insertOperator( sTextIt->_op,td);
+		//		PdfOp td = FontWidget::createTranslationTd(distX1,0);
+		//		sTextIt->_op->getContentStream()->insertOperator( sTextIt->_op,td);
 		sTextIt->replaceAllText(s1); // povodny operator bude nezmeneny az na to , ze mu
 		//td = FontWidget::createTranslationTd(-distX1,0);
 		//insertBefore( td, sTextIt->_op);
@@ -2501,7 +2916,7 @@ void TabPage::getDest( const char * nameToResolve, Bookmark *b )
 				pgl->getStringRepresentation(m);
 #endif // _DEBUG
 				return getDestFromArray(pgl,b);
-				
+
 			}
 		}
 	}
@@ -2592,8 +3007,9 @@ void TabPage::loadBookmark( QTreeWidgetItem * item )
 	n->setText(0,utils::getStringFromDict("Title",dict).c_str());
 }
 
-void TabPage::SetModePosition()
+void TabPage::SetModePosition(Annot a)
 {
+	_annots.push_back(a);
 	_parent->setMode(ModeEmitPosition);
 }
 
@@ -2608,6 +3024,11 @@ void TabPage::handleLink( int level )
 	_annots[level]->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
 	setTree(_annots[level]->getDictionary(),b1);
+	if (b1->getDest()<=0)
+	{
+		QMessageBox::warning(this, "not implemented","Link handler not found. Probably URI", QMessageBox::Ok,QMessageBox::Ok);
+		return;
+	}
 	//Bookmark * b2 = (Bookmark*)b1->child(1);
 	_page = _pdf->getPage(b1->getDest());
 	double x = b1->getX();

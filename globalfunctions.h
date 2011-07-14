@@ -27,12 +27,12 @@ void rotatePosition( T xin, T yin, T& xout, T &yout, int angle )
 	XX("Highlight", Highlight) \
 	XX("", Supported) \
 
-#define ENUMS(a,b) A##b,
+#define AENUMS(a,b) A##b,
 #define CREATE_ARRAY(a,b)	a,
 
 enum SupportedAnnotation
 {
-	ANNOTS(ENUMS)
+	ANNOTS(AENUMS)
 };
 
 #endif // __GLOBAL_F__

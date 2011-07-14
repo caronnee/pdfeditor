@@ -178,7 +178,7 @@ void DisplayPage::mousePressEvent(QMouseEvent * event)
 		}
 	default:
 		{
-			assert(false);
+			//assert(false);
 			break; //not implemented
 		}
 	}

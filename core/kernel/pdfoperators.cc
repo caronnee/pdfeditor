@@ -362,9 +362,28 @@ float TextSimpleOperator::getFontHeight()const
 }
 float TextSimpleOperator::getSpace()
 {
-	/*shared_ptr<PdfOperator> shr = this->_next().lock();
-	FontOperatorIterator it = this->getIterator<FontOperatorIterator>(shr,false);
-	boost::shared_ptr<*/
+	std::string name;
+	PdfOperator::Iterator it = this->_prev();
+	while (it.valid())
+	{
+		it.getCurrent()->getOperatorName(name);
+		if (name == "BT")
+			return 0;
+		if (name == "Tc")
+		{
+			shared_ptr<PdfOperator> op = it.getCurrent();
+			PdfOperator::Operands ops;
+			op->getParameters(ops);
+#if _DEBUG
+			std::string m;
+			op->getStringRepresentation(m);
+#endif
+			float f= utils::getValueFromSimple<CReal>(ops[0]);
+			if (f >=0)
+				return f;//for horizontal writing
+		}
+		it.prev();
+	}
 	return 0;
 }
 void TextSimpleOperator::getMatrix(float * values, boost::shared_ptr< PdfOperator>  beginOp)

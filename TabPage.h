@@ -135,7 +135,6 @@ private: //variables
 	QRegion _region;
 	QString _name; //name of the file to be opened
 	FontWidget * _font;	
-	Mode _mode;
 	//PdfOp _workingOp;
 	IsType typeChecker;
 	pdfobjects::DisplayParams displayparams;	
@@ -150,7 +149,6 @@ private: //variables
 
 	CPage::Annotations _annots;
 	DisplayPage * _labelPage;
-	pdfobjects::IndiRef createAppearanceDict(float *dim);
 	void fillCoordinates(std::vector<float>& coordinates, float * dim);
 	void initRevisions();
 	PdfOperator::Iterator TabPage::findTdAssOp(PdfOperator::Iterator iter);
@@ -177,7 +175,6 @@ public:
 	void delAnnot(int i); //page to u seba upravi, aby ID zodpovedali
 	void SetTextSelect();
 	
-	void UnSetTextSelect();
 	TabPage(OpenPdf *,QString name);
 	~TabPage(void);
 
@@ -207,7 +204,7 @@ private:
 	
 	void updatePageInfoBar();
 	// gets file, name is name of dialog
-	QString getFile(QFileDialog::FileMode flags = QFileDialog::AnyFile);
+	QString getFile(bool open,QFileDialog::FileMode flags = QFileDialog::AnyFile);
 	void showClicked(int x, int y);
 public:	
 	bool CanBeSaved();
@@ -216,7 +213,7 @@ public:
 	void getBookMarks(); //LATER, treba actions zisti, ako sa vykoavaju
 //	void changeImageProp(); // v selected mame images//LATER
 	//nastavi u page cakanie na skoncenie kreslenie ( nieco emitne:)
-	void draw();
+	//void draw();
 	void wheelEvent( QWheelEvent * event ); 
 	void deletePage();
 	void pageUp();
@@ -226,7 +223,7 @@ public:
 
 public slots:
 	PdfOp getPreviousFontInPosition(libs::Point pdfPos);
-	void SetModePosition();
+	void SetModePosition(Annot a);
 	void showAnnotation(int i);
 	void save();
 	void saveAs();
@@ -247,7 +244,7 @@ public slots:
 	void insertImage(PdfOp op);
 	void mouseReleased(QPoint); //nesprav nic, pretoze to bude robit mouseMove
 	void insertTextMarkup(Annot annot);
-	void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
+	//void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
 	
 	void insertAnnotation(Annot a);
 	//void deleteAnnotation(QPoint);
@@ -307,6 +304,7 @@ private slots:
 	void revertRevision();
 
 	void loadBookmark( QTreeWidgetItem * item );
+	void insertTextAnnot(Annot a);
 //----------------------------------------------------------------------------------------------------	
 	/* To implement
 	void showTextAnnot(std::string name);
@@ -322,6 +320,11 @@ signals:
 private:
 	void getDest( const char * nameToResolve, Bookmark *b ) ;
 	void getDestFromArray( PdfProperty pgl, Bookmark * b );;
+	void JustDraw();
+	boost::shared_ptr<pdfobjects::CStream> createAPStream(float * dim);
+	pdfobjects::IndiRef createAppearanceHighlight(float * dim);
+	pdfobjects::IndiRef createAppearanceComment(float *dim);
+
 };
 
 #endif

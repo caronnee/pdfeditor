@@ -33,6 +33,8 @@ protected:
 
 private:
 	Ui::pdfGuiClass ui;
+public:
+
 };
 
 #endif // PDFGUI_H

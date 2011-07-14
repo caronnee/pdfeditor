@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>662</width>
-    <height>659</height>
+    <width>878</width>
+    <height>646</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -48,7 +48,7 @@
           <bool>false</bool>
          </property>
          <property name="text">
-          <string/>
+          <string>Open</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -68,7 +68,7 @@
           <string>Save as</string>
          </property>
          <property name="text">
-          <string/>
+          <string>Save</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -88,7 +88,7 @@
           <string>save copy</string>
          </property>
          <property name="text">
-          <string/>
+          <string>Save copy</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -108,7 +108,7 @@
           <string>save decoded</string>
          </property>
          <property name="text">
-          <string/>
+          <string>Decode</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -131,7 +131,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string/>
+          <string>Pdf </string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -157,7 +157,7 @@
           <string>Show panel with text working</string>
          </property>
          <property name="text">
-          <string/>
+          <string>Text</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -180,7 +180,7 @@
        <item>
         <widget class="QPushButton" name="imageButton">
          <property name="text">
-          <string/>
+          <string>Images</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -203,7 +203,7 @@
        <item>
         <widget class="QPushButton" name="annotationButton">
          <property name="text">
-          <string/>
+          <string>Annotations</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -226,7 +226,7 @@
        <item>
         <widget class="QPushButton" name="opSelect">
          <property name="text">
-          <string/>
+          <string>Operators</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -242,6 +242,19 @@
           <bool>true</bool>
          </property>
          <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string>mainGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="debugButton">
+         <property name="text">
+          <string>Debug</string>
+         </property>
+         <property name="checkable">
           <bool>true</bool>
          </property>
          <attribute name="buttonGroup">
@@ -292,7 +305,7 @@
           <item>
            <widget class="QPushButton" name="derotateButton">
             <property name="text">
-             <string/>
+             <string>Rotate left</string>
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
@@ -309,7 +322,7 @@
           <item>
            <widget class="QPushButton" name="rotateButton">
             <property name="text">
-             <string/>
+             <string>Rotate right</string>
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
@@ -326,7 +339,7 @@
           <item>
            <widget class="QPushButton" name="insertEmpty">
             <property name="text">
-             <string/>
+             <string>Add page</string>
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
@@ -343,7 +356,7 @@
           <item>
            <widget class="QPushButton" name="pageUp">
             <property name="text">
-             <string/>
+             <string>Page up</string>
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
@@ -363,7 +376,7 @@
              <string>page down</string>
             </property>
             <property name="text">
-             <string/>
+             <string>Page down</string>
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
@@ -380,7 +393,7 @@
           <item>
            <widget class="QPushButton" name="deletePage">
             <property name="text">
-             <string/>
+             <string>Delete page</string>
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
@@ -400,7 +413,7 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string/>
+             <string>Export text</string>
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
@@ -454,7 +467,7 @@
           <string>choose text</string>
          </property>
          <property name="text">
-          <string/>
+          <string>Select text</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -483,7 +496,7 @@
           <string>insert text</string>
          </property>
          <property name="text">
-          <string/>
+          <string>Insert text</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -509,7 +522,7 @@
           <string>delete test ( can cause structure change)</string>
          </property>
          <property name="text">
-          <string/>
+          <string>Delete text</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -529,7 +542,7 @@
           <string>Change text</string>
          </property>
          <property name="text">
-          <string>change</string>
+          <string>Change text</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -549,7 +562,7 @@
           <string>cover text witl white line</string>
          </property>
          <property name="text">
-          <string>erase</string>
+          <string>Erase text</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -569,7 +582,7 @@
           <string>highlight text</string>
          </property>
          <property name="text">
-          <string>highlight</string>
+          <string>Highlight text</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -816,16 +829,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="selectAnnotationButton">
-         <property name="text">
-          <string>selectAnnotation</string>
-         </property>
-         <attribute name="buttonGroup">
-          <string>subGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="selectAnnotation">
          <property name="text">
           <string>change annotation</string>
@@ -868,6 +871,38 @@
      </widget>
     </item>
     <item>
+     <widget class="QFrame" name="debugFrame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QPushButton" name="repeter">
+         <property name="text">
+          <string>Repeter</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
      <widget class="OpenPdf" name="openedPdfs">
       <property name="acceptDrops">
        <bool>true</bool>
@@ -886,6 +921,13 @@
       </property>
       <property name="movable">
        <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="Help">
+      <property name="text">
+       <string/>
       </property>
      </widget>
     </item>
@@ -1199,6 +1241,22 @@
     <hint type="destinationlabel">
      <x>330</x>
      <y>163</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>debugButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>debugFrame</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>795</x>
+     <y>29</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>251</y>
     </hint>
    </hints>
   </connection>
