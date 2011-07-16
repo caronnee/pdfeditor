@@ -118,23 +118,23 @@ OK - ulozit PDF v neecrptovanej podobe -
 - undo & redo ( staci a jeden krat mozno?)
 - (vyhladavanie regexu)
 - (upravit text tak, aby bol zarovnany vzhladom na ine viditelne operatory)
-- attachments, zobrazit, stiahnut
-- heslo, ak sa nemoze nic menit
+- heslo, ak sa nemoze nic menit (credentials?)
 - uprav tak, aby sa texty neprekryvali
-- file attachmenets
-- zadanie, aka farba v pozadi sa ma zobrazovat 
-- erase text zrusit TDcka alebo okecat preco to vyzera tak debulne ako to vyzera
+WONT FIX - file attachmenets, attachments, zobrazit, stiahnu
+- zadanie, aka farba v pozadi sa ma zobrazovat ( U HIGHLIGHTU )
+FIXED - erase text zrusit TDcka alebo okecat preco to vyzera tak debulne ako to vyzera
 - pri insertovani testovat ci tam uzivatel nezadal novy riadok a osetrit to
 - BUG in STD stringu konverzii na Qstring -> exception
-- zmenit vsetko na wstring aby sa tam dala vlozit aj diakritika
-- dalsi parameter-> charakter spacing
+WONTFIX (diakritiku podporuje string, tot by bolo pre unicode - to tam nevtrepem) - zmenit vsetko na wstring aby sa tam dala vlozit aj diakritika 
+FIXED - dalsi parameter-> charakter spacing
 - moznost pridat uzivatelom definovany font(configs cestou kde ho hladat)
 - crt-F - hladat automaticky
 - pri hladani pridat progress bar
 - pri loadovani pridat progress bar
 - zalozky ( aby uzivatel vedel, kam sa vratit - a program tiez
-- ked mazem zranky, zmazat aj prislusne bookmarky
-- osertit ked sa nieco nepodari - zrusit alokaciu vsetkych poloziek
+- ked mazem stranky, zmazat aj prislusne bookmarky
+- pri zmazani revizia cheknut exception na stranku - zorazit len  taku, zo exituje!
+- osertit ked sa nieco nepodari + zrusit alokaciu vsetkych poloziek
 - vytvorit loader pre bookmarky a pre loadovanie a pre savovanie
 - vo foxite a v pdf sa inde zobrazuju anotacie
 - odstranit stream a prepisat to na nas obrazok ( anotacie ) - potom aktivne pluchy pridavat len z Rect, o zobrazenie sa postara kernel
@@ -148,10 +148,12 @@ MERGED ^^ clone nefunguje
 - savovanie revizie robi problemy
 - finisnut progressbar pre istotu po kazdom save
 - premenovat vsetky signaly na prefix so signalom
-- image potition emitovat
-- vysvietenie zrusi anotacie - to sa spravi streamom
+- image position emitovat
+FIXED - vysvietenie zrusi anotacie - to sa spravi streamom
 - namiesto _text mat iba zalozky kde to konci a kde zacina - text potrebujeme iba pri dele a replacovani - pri vysvieteni nemusime potomstale chodis a zistovat velkost fontu
 - uvodna obrazovka
 - about
 - pri rotovani priznak, ze sme zarotovali a maju sa zmenit boomarky
 - check pre ktore veci nemame font
+- warnint ak nie je ziadny text, akl nie ze ziadny obrazok...
+-- on closeevent na vsetky formulare - zavri a vycisti za sebou (operatory preddefinovane zmaz)

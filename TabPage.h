@@ -228,6 +228,7 @@ public slots:
 	void save();
 	void saveAs();
 	void saveEncoded();
+	void clearSelected();
 
 	void setTextOperator();
 	void setImageOperator();
@@ -313,6 +314,7 @@ private slots:
 	void move(int difx, int dify); //on mouse event, called on mouse realease
 	*/
 signals:
+	void ChangePageModeSignal(PageDrawMode);
 	void markPosition(QPoint point); //reverted point
 	void parsed(std::vector<float>);
 //	void pdfPosition(float a, float b, int w,int h);
@@ -324,7 +326,7 @@ private:
 	boost::shared_ptr<pdfobjects::CStream> createAPStream(float * dim);
 	pdfobjects::IndiRef createAppearanceHighlight(float * dim);
 	pdfobjects::IndiRef createAppearanceComment(float *dim);
-
+	
 };
 
 #endif

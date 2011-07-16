@@ -6,15 +6,17 @@
 #include <QWheelEvent>
 #include <QMenu>
 #include "ui_page.h"
+#include "typedefs.h"
 
 class DisplayPage : public QLabel
 {
 	Q_OBJECT
 
 private:
-	/** kontext menu  */
+	/** context menu  */
 	QMenu * menu;
 	QPoint _point;
+	PageDrawMode _mode;
 public:
 	DisplayPage(QWidget *parent = 0);
 	~DisplayPage();
@@ -41,7 +43,7 @@ private:
 
 	//we have to remeber original size
 	QSize _size;
-
+	QRect _rect;
 public slots:
 	void markPosition(QPoint point);
 	void changeImage();
@@ -56,6 +58,7 @@ public slots:
 	void addPlace(QRect r);
 	void insertImage();
 	void deleteImage();
+	void setMode(PageDrawMode mode);
 signals:
 	void HandleLink(int i);
 	void ShowAnnotation(int i);
@@ -71,6 +74,8 @@ signals:
 	void MouseClicked(QPoint p); //bolo na mna kliknute, robte s tym nieco!
 	void highlightText(int, int);
 	void MouseReleased(QPoint);
+protected:
+		virtual void paintEvent(QPaintEvent * event);
 public:
 	int deleteAnnotation(QPoint p);
 	void unsetImg();

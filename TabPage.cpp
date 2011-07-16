@@ -143,6 +143,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	connect (_labelPage,SIGNAL(MouseClicked(QPoint)),this, SLOT(clicked(QPoint))); //pri selecte sa to disconnectne a nahrasi inym modom
 	connect (this,SIGNAL(markPosition(QPoint)),_labelPage, SLOT(markPosition(QPoint))); //pri selecte sa to disconnectne a nahrasi inym modom
 	connect (_labelPage,SIGNAL(MouseReleased(QPoint)),this, SLOT(mouseReleased(QPoint))); //pri selecte sa to disconnectne
+	connect( this,SIGNAL(ChangePageModeSignal(PageDrawMode)), _labelPage, SLOT(setMode(PageDrawMode)));
 	connect (_labelPage,SIGNAL(InsertTextSignal(QPoint)),this,SLOT(raiseInsertText(QPoint)));
 	connect (_labelPage,SIGNAL(DeleteTextSignal()),this,SLOT(deleteSelectedText()));
 	connect (_labelPage,SIGNAL(EraseTextSignal()),this,SLOT(eraseSelectedText()));
@@ -168,6 +169,9 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	connect(ui.revision, SIGNAL(currentIndexChanged(int)),this, SLOT(initRevision(int) ));
 	connect(ui.branchRevision, SIGNAL(clicked()), this, SLOT(exportRevision()) );
 
+	//////////////////////////////////////////////////////////////////////////
+	//connect(_parent, SIGNAL(ModeChangedSignal(QString), this, SLOT(clearSelected())))
+	//////////////////////////////////////////////////////////////////////////
 	//redraw();
 	_dataReady = false;
 	//setZoom();
@@ -217,6 +221,8 @@ void TabPage::raiseSearch()
 }
 void TabPage::raiseChangeSelectedImage()
 {
+	if(!_selected)
+		return;
 	_image->setImage( _selectedImage, 72.0f/displayparams.vDpi); //TODO x,y
 	BBox b = _selectedImage->getBBox();
 	double scaleX = 72.0f/displayparams.vDpi;
@@ -257,6 +263,7 @@ void TabPage::deleteImage(QPoint point)
 	//mame iba obrazky
 	//zmaz len ten, ktore je 'navrchu' -> je v ops posledny?
 	op->getContentStream()->deleteOperator(op);
+	clearSelected();
 	redraw();
 }
 void TabPage::raiseInsertImage(QRect rect)
@@ -280,6 +287,7 @@ void TabPage::zoom(QString zoomscale)//later with how much pages, if all or not
 	float dpiy =_labelPage->logicalDpiY();
 	displayparams.hDpi = dpix * scale;
 	displayparams.vDpi = dpiy * scale;
+	clearSelected();
 	redraw();
 }
 void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
@@ -951,7 +959,6 @@ void TabPage::createList()
 	}
 	//sort list
 	_textList.sort();
-	_selected = false;
 	sTextIt = sTextItEnd = sTextMarker = _textList.begin();
 }
 void TabPage::raiseInsertText(QPoint point)
@@ -965,7 +972,12 @@ void TabPage::raiseInsertText(QPoint point)
 	_font->setPosition(x,y);
 	_font->setInsert();
 }
-
+void TabPage::clearSelected()
+{
+	_selected = false;
+	_parent->setPreviousMode();
+	emit ChangePageModeSignal(ModeDrawNothing);
+}
 void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, ze sa vyberie prvy operator
 {
 	switch (_parent->getMode())
@@ -1001,10 +1013,16 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 #endif // _DEBUG
 			break;
 		}
+	case ModeImageSelected:
 	case ModeSelectImage:
 		{//vyber nejaky BI operator a daj ho to vybranych
 			Ops ops;
-			_page->getObjectsAtPosition(ops,libs::Point(point.x(),point.y()));
+			double px = point.x(), py=point.y();
+			rotatePdf(_page->getRotation(),px,py,true);
+			//HACK`- px, py su teraz v PDF poziciach
+			//px, py musime ale zmenit vzhladom na to,ze sa u inline neberie do uvahy displayparams
+
+			_page->getObjectsAtPosition(ops,libs::Point(px,py));
 			while(!ops.empty())
 			{
 				std::string name;
@@ -1014,10 +1032,9 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 					_selected = true;
 					_selectedImage = ops.back();
 					BBox bbox = _selectedImage->getBBox();
-					rotatePdf(_page->getRotation(),bbox.xleft, bbox.yleft,false);
-					rotatePdf(_page->getRotation(),bbox.xright, bbox.yright,false);
-					QRect rect(min(bbox.xleft,bbox.xright), min(bbox.yleft, bbox.yright), abs(bbox.xleft-bbox.xright), abs(bbox.yleft-bbox.yright));
-					_labelPage->drawRectangle(rect);
+					QRect convertedRect = getRectangle(bbox);//PODIVNE
+					_labelPage->drawRectangle(convertedRect);
+					_parent->setMode(ModeImageSelected);
 					break;
 				}
 				ops.pop_back();
@@ -1029,6 +1046,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			highlightText(point); //nesprav nic, pretoze to bude robit mouseMove
 			break;
 		}
+	case ModeImagePartCopied:
 	case ModeImagePart:
 	case ModeInsertImage:
 		{
@@ -1132,6 +1150,7 @@ void TabPage::deleteSelectedImage()
 	_selectedImage->getContentStream()->deleteOperator(_selectedImage);
 	_selectedImage = PdfOp(); //empty
 	_selected = false;
+	clearSelected();
 	redraw();
 }
 void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit mouseMove
@@ -1161,12 +1180,14 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			_dataReady=false;
 			break;
 		}
+	case ModeImagePartCopied:
 	case ModeImagePart: //data ready
 		{
 			//copy to clipboard
 			QClipboard *clipBoard = QApplication::clipboard();
 			QRect rect(min(point.x(),_mousePos.x()), min(point.y(),_mousePos.y()), abs(point.x()-_mousePos.x()),abs(point.y()-_mousePos.y()));
 			clipBoard->setImage(_labelPage->getImage().copy(rect));
+			_parent->setMode(ModeImagePartCopied);
 			return;
 		}
 	default:
@@ -1634,10 +1655,14 @@ void TabPage::setTree(shared_ptr<CDict> d, Bookmark * b)
 //}
 void TabPage::changeSelectedImage(PdfOp op)
 {
+#ifdef _DEBUG
+	std::string m;
+	op->getStringRepresentation(m);
+#endif // _DEBUG
 	if (!_selected)
 		return;
 	_selectedImage->getContentStream()->replaceOperator(_selectedImage,op);
-	_selected = false;
+	clearSelected();
 	redraw();
 }
 void TabPage::insertImage(PdfOp op) //positions

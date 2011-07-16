@@ -1,14 +1,36 @@
 #include "page.h"
 #include "globalfunctions.h"
-#include "debug.h"
+#include <QPaintEvent>
 #include <QPainter>
 
+void DisplayPage::paintEvent(QPaintEvent * event)
+{
+	QLabel::paintEvent(event);
+	switch (_mode)
+	{
+	case ModeDrawNothing: //do now draw anything
+		break;
+	case ModeDrawRectangle:
+		{
+			QPainter p(this);
+			p.drawRoundedRect(_rect, 2.0,1.0);
+				break;
+		}
+	default:
+		assert(false);
+	}
+}
 void DisplayPage::drawRectangle(QRect rect)
 {
-//TODO
+	_mode = ModeDrawRectangle;
+	_rect = rect;
+	update();
 }
-DisplayPage::DisplayPage(QWidget *parent)
-	: QLabel(parent), _mousePressed(false)
+void DisplayPage::setMode(PageDrawMode mode)
+{
+	_mode = mode;
+}
+DisplayPage::DisplayPage(QWidget *parent): QLabel(parent), _mousePressed(false),_mode(ModeDrawNothing)
 {
 	 setBackgroundRole(QPalette::Base);
      setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);

@@ -76,4 +76,5 @@ public slots:
 	void setModeDeleteAnnotation();
 	void pdfChanged();
 	void redraw();
+	void setPreviousMode();
 };

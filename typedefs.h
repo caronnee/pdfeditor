@@ -15,6 +15,8 @@
 	XX(ModeSelectText,"Select text mode : Click and drag to select a text") \
 	XX(ModeInsertImage,"InsertImage mode: Select a rectangle to insert an image") \
 	XX(ModeSelectImage,"Select image mode: Click to select inline image")	\
+	XX(ModeImageSelected, "Image selected. Click on buttons to change or to delete image")	\
+	XX(ModeImagePartCopied,"Snapshot was copied to the clipboard")	\
 	XX(ModeImagePart,"Extract pdf part as image mode: select a rectangle to be saved as image")	\
 	XX(ModeExtractImage, "Extract image mode: click on inlineimage to extract an image")	\
 	XX(ModeOperatorSelect,"Operator select mode: click on text operator to highligh it")	\
@@ -35,7 +37,11 @@ enum Mode
 	MODES(ENUMS)
 	NModes
 };
-
+enum PageDrawMode
+{
+	ModeDrawRectangle,
+	ModeDrawNothing
+};
 typedef boost::shared_ptr<pdfobjects::IProperty> PdfProperty;
 typedef std::vector<boost::shared_ptr<pdfobjects::PdfOperator> > Ops;
 typedef std::list<boost::shared_ptr<pdfobjects::PdfOperator> > OpsList;

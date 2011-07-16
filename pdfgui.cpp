@@ -27,6 +27,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	ui.textFrame->hide();
 	ui.annotationFrame->hide();
 	ui.imageFrame->hide();
+	ui.debugFrame->hide();
 //TODO dat do uicka
 	connect( this->ui.opSelect, SIGNAL(clicked()), this->ui.openedPdfs,SLOT(setModeDefault()));
 	connect( this->ui.derotateButton, SIGNAL(clicked()), this->ui.openedPdfs,SLOT(derotate()));

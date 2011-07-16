@@ -123,7 +123,7 @@ void InsertImage::apply()
 	else
 	{
 		q->push_back(_invertCm,getLastOperator(q));
-		q->push_back(createOperatorTranslation(ui.positionX->value(),ui.positionY->value()),getLastOperator(q));
+		q->push_back(createOperatorTranslation(0,0-pixH),getLastOperator(q));
 		q->push_back(createOperatorRotation(toRadians(ui.rotation->value())),getLastOperator(q));
 		q->push_back(createOperatorScale(pixW,pixH ),getLastOperator(q));
 	}
@@ -202,7 +202,7 @@ void InsertImage::setImage(PdfOp ii, double scale)
 	}
 	const double * d = state.getCTM();
 	double s = d[3]*d[0] - d[1]*d[2];
-	Cm c(d[3]/s,d[1]/s,d[2]/s,d[0]/s,0,0);
+	Cm c(d[3]/s,d[1]/s,d[2]/s,-d[0]/s,0,0);
 #if _DEBUG
 	state.concatCTM(c.matrix[0],c.matrix[1],c.matrix[2],c.matrix[3],c.matrix[4],c.matrix[5]);
 	d = state.getCTM();

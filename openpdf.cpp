@@ -232,3 +232,15 @@ void OpenPdf::setMode( Mode mode )
 	_mode =  mode;
 	emit ModeChangedSignal(helper[mode]);
 }
+
+void OpenPdf::setPreviousMode()
+{
+	switch (_mode)
+	{
+	case ModeImageSelected:
+		{
+			setMode(ModeSelectImage);
+			break;
+		}
+	}//TODO dat do pola
+}

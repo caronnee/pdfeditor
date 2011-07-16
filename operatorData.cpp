@@ -82,7 +82,7 @@ int OperatorData::letters(double x)
 		t+= _op->getWidth(_text[i].unicode());
 		t+= this->_charSpace;
 		i++;
-		assert(i<=_text.size());
+		assert(i<=_text.size()+1);
 	}
 	return i;
 }
@@ -91,7 +91,7 @@ double OperatorData::position(int letters)
 	double place = _origX;
 	for(int i = 0; i< letters; i++)
 		place +=_op->getWidth(_text[i].unicode()) + _charSpace;
-	assert(place < _origX2+_charSpace+1e-2);
+	assert(place < _origX2+_charSpace+1.0f);
 	return place;
 }
 void OperatorData::setMark(float x, bool beg)

@@ -406,9 +406,10 @@ void TextSimpleOperator::getMatrix(float * values, boost::shared_ptr< PdfOperato
 	//}
 	//GfxState state;//reconstruct matrix
 }
-float TextSimpleOperator::getWidth(char chr)
+float TextSimpleOperator::getWidth(Unicode input)
 {
-	CharCode c;Unicode u;int a; double dy,cc,d,dx;
+	char chr = getCurrentFont()->getCodeFromUnicode(&input,1);
+	CharCode c; Unicode u;int a; double dy,cc,d,dx;
 	getCurrentFont()->getNextChar(&chr,1,&c,&u,(int)(sizeof(u) / sizeof(Unicode)),&a,&dx,&dy,&cc,&d);
 	//najdi predosly operator s velkostou font
 	shared_ptr<PdfOperator> shr = this->_prev().lock();

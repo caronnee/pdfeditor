@@ -185,7 +185,7 @@ public:
 	 */
 	const char* getFontName()const;
 	/** returns width of the text */
-	float getWidth(char c);
+	float getWidth(Unicode c);
 	float getFontHeight()const;
 	float getSpace();
 	void getMatrix(float * values, boost::shared_ptr< PdfOperator>  beginOp);
