@@ -15,8 +15,8 @@ class Bookmark : public QTreeWidgetItem
 	double _x;
 	int _zoom;
 public:
-	Bookmark(QTreeWidgetItem * parent): QTreeWidgetItem(parent),_page(0),_loaded(true),_x(0),_y(0),_zoom(1) {} //0 je invalid v tomto pripade
-	Bookmark(QTreeWidget * parent): QTreeWidgetItem(parent),_page(0),_loaded(true),_x(0),_y(0),_zoom(1) {} //0 je invalid v tomto
+	Bookmark(QTreeWidgetItem * parent): QTreeWidgetItem(parent),_page(0),_loaded(true),_y(0),_x(0),_zoom(1) {} //0 je invalid v tomto pripade
+	Bookmark(QTreeWidget * parent): QTreeWidgetItem(parent),_page(0),_loaded(true),_y(0),_x(0),_zoom(1) {} //0 je invalid v tomto
 	int getDest()const;
 	void setSubsection( pdfobjects::IndiRef ref );
 	void addSubsection(QTreeWidgetItem * item);

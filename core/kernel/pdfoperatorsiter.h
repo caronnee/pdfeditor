@@ -180,7 +180,7 @@ typedef AcceptingPdfOperatorIterator<4, itTextIterator> TextOperatorIterator;
 typedef struct AcceptingPdfOperatorIterator<4, itFontIterator> FontOperatorIterator;
 
 /**
-/* //TODO
+ * \TODO
  */
 typedef struct AcceptingPdfOperatorIterator<5, itTextChangeIterator> TextChangeOperatorIterator;
 

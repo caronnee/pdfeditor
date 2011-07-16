@@ -3,7 +3,7 @@
 #include <QFileDialog>
 #include <QTabWidget>
 #include "insertpagerange.h"
-#include "kernel\exceptions.h"
+#include "kernel/exceptions.h"
 #include <QMessageBox>
 
 void OpenPdf::pdfChanged()
@@ -242,5 +242,7 @@ void OpenPdf::setPreviousMode()
 			setMode(ModeSelectImage);
 			break;
 		}
+		default:
+		break;// nerob nic
 	}//TODO dat do pola
 }

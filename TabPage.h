@@ -151,7 +151,7 @@ private: //variables
 	DisplayPage * _labelPage;
 	void fillCoordinates(std::vector<float>& coordinates, float * dim);
 	void initRevisions();
-	PdfOperator::Iterator TabPage::findTdAssOp(PdfOperator::Iterator iter);
+	PdfOperator::Iterator findTdAssOp(PdfOperator::Iterator iter);
 	void rotatePdf(int angle, double& x,double& y,bool fromPixMap);
 	//float findDistance(std::string s,TextData::iterator textIter);
 	void SetNextPageRotate();

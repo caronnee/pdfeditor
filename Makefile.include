@@ -1,21 +1,10 @@
-LIBS += -L/afs/ms/u/p/peske5am/BIG/pdf/pdfedit-0.4.5/src/kernel/ \
--L/afs/ms/u/p/peske5am/BIG/pdf/pdfedit-0.4.5/src/utils/ \
--L/afs/ms/u/p/peske5am/BIG/pdf/pdfedit-0.4.5/src/xpdf/fofi \
--L/afs/ms/u/p/peske5am/BIG/pdf/pdfedit-0.4.5/src/xpdf/goo \
--L/afs/ms/u/p/peske5am/BIG/pdf/pdfedit-0.4.5/src/xpdf/splash \
--L/afs/ms/u/p/peske5am/BIG/pdf/pdfedit-0.4.5/src/xpdf/xpdf \
--lkernel -lutils -lfofi -lGoo -lsplash -lxpdf  \
--lkernel -lutils -lfofi -lGoo -lsplash -lxpdf  \
--lkernel -lutils -lfofi -lGoo -lsplash -lxpdf  \
--lkernel -lutils -lfofi -lGoo -lsplash -lxpdf  \
+LIBS += \
 -lkernel -lutils -lfofi -lGoo -lsplash -lxpdf  \
 -lkernel -lutils -lfofi -lGoo -lsplash -lxpdf  \
 -lkernel -lutils -lfofi -lGoo -lsplash -lxpdf  \
 -lt1
 
-INCPATH += -I. -I/afs/ms/u/p/peske5am/BIG/pdf/pdfedit-0.4.5/src/xpdf/ -I/afs/ms/u/p/peske5am/BIG/pdf/pdfedit-0.4.5/src/
+INCPATH += -I. -I./core/xpdf/ -I./core
 
 CFLAGS += -g
 CXXFLAGS += -g
-
-INCPATH += -I. -I/afs/ms/u/p/peske5am/BIG/pdf/pdfedit-0.4.5/src/xpdf/ -I/afs/ms/u/p/peske5am/BIG/pdf/pdfedit-0.4.5/src/

@@ -1,5 +1,4 @@
 make distclean
-qmake -project
 qmake
-echo "-include Makefile.include" >> Makefile
+cat Makefile.include >> Makefile
 make

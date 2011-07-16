@@ -5,8 +5,8 @@
 #include <kernel/pdfedit-core-dev.h>
 #include <kernel/cinlineimage.h>
 #include <boost/shared_ptr.hpp>
-#include <kernel\pdfoperators.h>
-#include <xpdf\xpdf\GfxState.h>
+#include <kernel/pdfoperators.h>
+#include <xpdf/xpdf/GfxState.h>
 #include "typedefs.h"
 
 class InsertImage : public QWidget

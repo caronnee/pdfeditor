@@ -29,15 +29,17 @@
 #include <QClipboard>
 #include <QTreeWidgetItem>
 #include <QToolTip>
-#include "ui_convertpagerange.h"
+#include "ui_convertPageRange.h"
 
 //PDF
 #include <kernel/pdfoperators.h>
 #include <kernel/cannotation.h>
 #include <typedefs.h>
 
+#include "kernel/pdfwriter.h"
 #include "openpdf.h"
 
+#include <QProgressBar>
 //#include <kernel/carray.h>
 
 //operatory, ktore musim zaklonovat, ked chcem pohnut textom
@@ -61,8 +63,6 @@ void TabPage::handleBookmark(QTreeWidgetItem* item, int) //nezaujima nas stlpec
 	this->ui.scrollArea->ensureVisible(x,y);
 	createList();
 }
-#include "kernel\pdfwriter.h"
-#include <QProgressBar>
 
 class PdfProgress : public pdfobjects::utils::IProgressBar
 {
