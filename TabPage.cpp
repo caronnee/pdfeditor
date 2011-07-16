@@ -112,7 +112,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	QObject::connect(_search, SIGNAL(search(QString,bool)),this,SLOT(search(QString,bool)));
 	QObject::connect(_search, SIGNAL(replaceTextSignal(QString,QString)),this,SLOT(replaceText(QString,QString)));
 	_font = new FontWidget(NULL);
-	loadFonts(_font);
+	_font->clearTempFonts();
 	for ( int i = BEGIN_ZOOM; i< MAX_ZOOM; i+= ZOOM_STEP)
 	{
 		QVariant s(i);
@@ -124,6 +124,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	connect(_font, SIGNAL(fontInPage(std::string)), this, SLOT(addFontToPage(std::string)));
 	connect(_font, SIGNAL(text(PdfOp)), this, SLOT(insertText(PdfOp)));
 	connect(_font, SIGNAL(changeTextSignal()), this, SLOT(changeSelectedText()));
+	connect(_font, SIGNAL(FindLastFontSignal()), this, SLOT(findLastFontMode()));
 	connect(_font, SIGNAL(getLastFontSignal(libs::Point)), this, SLOT(getPreviousFontInPosition(libs::Point)));
 	//show text button, hide everything else
 
@@ -279,10 +280,19 @@ void TabPage::raiseInsertImage(QRect rect)
 }
 void TabPage::zoom(QString zoomscale)//later with how much pages, if all or not
 {
-	//odstranit breberky za tym
-	zoomscale = zoomscale.remove("%");
-	zoomscale = zoomscale.remove(" ");
-	float scale = zoomscale.toFloat()/100;
+	QString res;
+	for ( int i =0;i< zoomscale.size(); i++)
+	{
+		if(zoomscale[i]<'0' || zoomscale[i]>'9')
+			continue;
+		res+=zoomscale[i];
+	}
+	float scale = res.toFloat()/100;
+	if (scale >5) //TODO QWarning
+	{
+		assert(false);
+		return;
+	}
 	float dpix=_labelPage->logicalDpiX();
 	float dpiy =_labelPage->logicalDpiY();
 	displayparams.hDpi = dpix * scale;
@@ -922,6 +932,7 @@ void TabPage::raiseAnnotation(QPoint point)
 
 void TabPage::createList()
 {
+	_font->clearTempFonts();
 	_textList.clear();
 	//get all pdf text operators in list
 	Ops ops;
@@ -982,6 +993,17 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 {
 	switch (_parent->getMode())
 	{
+	case ModeFindLastFont:
+		{
+			double x =  point.x(),y = point.y();
+			rotatePdf(_page->getRotation(),x,y,true);
+			_font->addFont(getPreviousFontInPosition(libs::Point(x,y)));
+			//find last TM
+			float w, h;
+			getPreviousTmInPosition(libs::Point(x,y),w,h);
+			_font->addTm(w,h);
+			break;
+		}
 	case ModeInsertAnnotation:
 		{
 			_labelPage->annotation();
@@ -1378,29 +1400,99 @@ void TabPage::insertBefore(PdfOp op, PdfOp before)
 	before->getContentStream()->replaceOperator(before,op);	
 	op->getContentStream()->insertOperator(op,clone);
 }
-PdfOp TabPage::getPreviousFontInPosition(libs::Point pdfPos)//iba pre textove veci, bez upravy displayparam
+
+void TabPage::getPreviousTmInPosition( libs::Point p, float&w, float&h )
 {
-	double x = pdfPos.x;
-	double y = pdfPos.y;
-	rotatePdf(_page->getRotation(),x,y,false);
+	double x = p.x;
+	double y = p.y;
+	//rotatePdf(_page->getRotation(),x,y,false);//TODO kontrola
 	TextData::iterator iter = _textList.begin();
 	TextData::iterator last = iter;
 	float dist = 10e38;
 	while (iter!= _textList.end())
 	{
-		float xdist = iter->_origX2 - pdfPos.x;//vzdialenesie
-		float ydist = iter->_ymin - pdfPos.y;
+		float xdist = iter->_origX2 - p.x;//vzdialenesie
+		float ydist = iter->_ymin - p.y;
 		float distTest = xdist*xdist + ydist*ydist;
 		if (dist<distTest)//nasli sme
 			break;
 		else
 			dist = distTest;
 		iter++;
+	}//TODO do spolocneho priestoru
+	float r[4] = {1,0,0,1};
+	std::vector<float> ints;
+	if (iter != _textList.end())
+	{
+		TextChangeOperatorIterator it = PdfOperator::getIterator<TextChangeOperatorIterator>(iter->_op,false);
+		std::string name;
+		while (it.valid())
+		{
+			it.getCurrent()->getOperatorName(name);
+			if(name == "BT")
+				break;
+			if(name == "Tm")//chceme zistit, aka sirka sa na to pouzivala
+			{
+				PdfOperator::Operands operands;
+				it.getCurrent()->getParameters(operands);
+				for ( int a = 0; a < 4; a++)
+					ints.push_back(utils::getValueFromSimple<CReal>(operands[a]));
+			}
+			it.prev();
+		}
 	}
-	if (iter == _textList.end())
-		return shared_ptr<PdfOperator>((PdfOperator *)NULL);
+	while(!ints.empty())
+	{
+		float pom[4];
+		for (int i =3; i>=0; i--)
+		{
+			pom[i] = ints.back();
+			ints.pop_back();
+		}
+		float a00 =pom[0]*r[0],
+			  a02 =pom[0]*r[2],
+			  a21 =pom[2]*r[1],
+			  a23 =pom[2]*r[3],
+			  a10 =pom[1]*r[0],
+			  a12 =pom[1]*r[2],
+			  a31 =pom[3]*r[1],
+			  a33=pom[3]*r[3];
+		r[0] = a00 + a21;
+		r[1] = a02 + a23;
+		r[2] = a10 + a31;
+		r[3] = a12 + a33;
+	}
+	w = r[0];//TODO toto moze sklamat, ak sa to este zvalstna skaluje, co nepredpokladam
+	h = r[3];
+}
+PdfOp TabPage::getPreviousFontInPosition(libs::Point pdfPos)//iba pre textove veci, bez upravy displayparam
+{
+	double x = pdfPos.x;
+	double y = pdfPos.y;
+	//rotatePdf(_page->getRotation(),x,y,false);//TODO kontrola
+	TextData::iterator iter = _textList.begin();
+	TextData::iterator last = iter;
+	TextData::iterator found = iter;
+	float distX = 10e38;
+	float distY = 10e38;
+	while (iter!= _textList.end())
+	{
+		float h = iter->_ymax - iter->_ymin;
+		float distXTest =  pdfPos.x - iter->_origX;//vzdialenesie
+		float distYTest = pdfPos.y - iter->_ymin;
+		if ((distYTest > -1) &&(distYTest < distY  )&&(distXTest >0))
+		{
+			if ((distXTest < distX)|| (iter->_origX < pdfPos.x && pdfPos.x < iter->_origX2) )
+			{
+				found = iter;
+				distX = distXTest;
+				distY = distYTest;
+			}
+		}
+		iter++;
+	}
 	//najdi posledny TF
-	FontOperatorIterator it = PdfOperator::getIterator<FontOperatorIterator>(iter->_op,false);
+	FontOperatorIterator it = PdfOperator::getIterator<FontOperatorIterator>(found->_op,false);
 
 	if (!it.valid())
 		return shared_ptr<PdfOperator>((PdfOperator*)NULL);
@@ -1830,6 +1922,8 @@ void TabPage::initRevision(int revision) //snad su revizie od nuly:-/
 		return;
 	size_t pos = _page->getPagePosition();
 	_pdf->changeRevision(revision);
+	if (pos > _pdf->getPageCount())
+		pos = _pdf->getPageCount();
 	_page = _pdf->getPage(pos);
 	if (pos > _pdf->getPageCount())
 		pos = _pdf->getPageCount();
@@ -1928,7 +2022,8 @@ void TabPage::addEmptyPage()
 	boost::shared_ptr<pdfobjects::CName> type(pdfobjects::CNameFactory::getInstance("Page"));
 	pageDict->addProperty("Type", *type);
 	boost::shared_ptr<pdfobjects::CPage> pageToAdd(new pdfobjects::CPage(pageDict));
-	_pdf->insertPage(pageToAdd, _page->getPagePosition());//insert after
+	_pdf->insertPage(pageToAdd, _page->getPagePosition()+1);//insert after
+	updatePageInfoBar();
 }
 void TabPage::print()
 {
@@ -2122,18 +2217,21 @@ QRect TabPage::getRectangle(BBox b)
 	QRect r(QPoint(min(x1,x2),min(y1,y2)),QPoint(max(x1,x2),max(y1,y2)));
 	return r;
 }
-
-void TabPage::loadFonts(FontWidget* fontWidget)
+void TabPage::findLastFontMode()
 {
-	//dostanme vsetky fontu, ktore su priamov pdf. bohuzial musime cez vsetky pages
-	CPage::FontList fontList;
-
-	CPageFonts::SystemFontList flist = CPageFonts::getSystemFonts();
-	for ( CPageFonts::SystemFontList::iterator i = flist.begin(); i != flist.end(); i++ )
-	{
-		fontWidget->addFont(*i,*i); //TODO zrusit a pridat do fontu, ktory si to moze naloadovat sam
-	}
+	_parent->setMode(ModeFindLastFont);//najde aj so Size, bude musiet emitovat aj Tm sirku a vysku
 }
+//void TabPage::loadFonts(FontWidget* fontWidget)
+//{
+//	//dostanme vsetky fontu, ktore su priamov pdf. bohuzial musime cez vsetky pages
+//	CPage::FontList fontList;
+//
+//	CPageFonts::SystemFontList flist = CPageFonts::getSystemFonts();
+//	for ( CPageFonts::SystemFontList::iterator i = flist.begin(); i != flist.end(); i++ )
+//	{
+//		fontWidget->addFont(*i,*i); //TODO zrusit a pridat do fontu, ktory si to moze naloadovat sam
+//	}
+//}
 void TabPage::insertText( PdfOp op )
 {
 	Ops ops;

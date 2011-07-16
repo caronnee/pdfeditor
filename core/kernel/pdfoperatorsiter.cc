@@ -67,7 +67,7 @@ const std::string StrokingOperatorIterator::accepted_opers[StrokingOperatorItera
 template<>
 const std::string TextChangeOperatorIterator::accepted_opers[TextChangeOperatorIterator::namecount] = 
 {
-	"Tc", "Tw", "Tz", "Ts"
+	"Tc", "Tw", "Tz", "Ts","Tm"
 };
 
 /** Operators accepted by font iterator. */

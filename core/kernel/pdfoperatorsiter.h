@@ -182,7 +182,7 @@ typedef struct AcceptingPdfOperatorIterator<4, itFontIterator> FontOperatorItera
 /**
 /* //TODO
  */
-typedef struct AcceptingPdfOperatorIterator<4, itTextChangeIterator> TextChangeOperatorIterator;
+typedef struct AcceptingPdfOperatorIterator<5, itTextChangeIterator> TextChangeOperatorIterator;
 
 /**
  * Inline image iterator.

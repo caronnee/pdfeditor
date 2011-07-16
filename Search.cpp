@@ -7,11 +7,11 @@ Search::Search(QWidget * parent) : QWidget(parent)
 }
 void Search::next()
 {
-	emit search(ui.text->toPlainText(),true);
+	emit search(ui.text->text(),true);
 }
 void Search::prev()
 {
-	emit search(ui.text->toPlainText(),false);
+	emit search(ui.text->text(),false);
 }
 void Search::replace()
 {

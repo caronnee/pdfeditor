@@ -48,6 +48,7 @@ class FontWidget : public QWidget
 	{
 		a,s,d,f,g,h,NumberOfShapes
 	};
+	bool _embededFont;
 	bool _change;
 	bool set[NumberOfOptions];
 	Ui::Properties ui;
@@ -55,6 +56,7 @@ class FontWidget : public QWidget
 	PdfComp _q;
 	PdfComp _BT;
 	float _pdfPosX,_pdfPosY;
+	float _scale[2];
 	PdfOp createMatrix(std::string op);
 public:
 	void setHeight(float h)
@@ -78,6 +80,7 @@ public:
 
 	// set
 	void addFont(std::string name, std::string value);
+	void addFont(PdfOp op);
 	//gets
 	int getRotation();
 	int getScale();
@@ -85,12 +88,15 @@ public:
 	int getX();
 	int getY();
 	void change();
+	void addTm( float w, float h );
+
 signals:
 	void changeTextSignal();
 	void text(PdfOp op);
 	void changeSelected();
 	PdfOp getLastFontSignal(libs::Point);
 	std::string fontInPage(std::string id);
+	void FindLastFontSignal();
 
 public slots:
 	void setInsert();
@@ -104,6 +110,8 @@ public slots:
 	void apply(); //on clicked
 	void createFromMulti( std::vector<PdfOp>& operators );
 	void sliderChanged(int value);
+	void clearTempFonts();
+	void fontIndexChanged( int );
 	//void setAngle(int angle);
 };
 

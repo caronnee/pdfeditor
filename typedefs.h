@@ -24,7 +24,8 @@
 	XX(ModeDeleteAnnotation, "Delete annotation mode: click on annotation to delete it")	\
 	XX(ModeEmitPosition, "Emit position mode: Pdf is waiting for position. Click somewhere in the pdf")	\
 	XX(ImageMode," Not Implemented")	\
-	XX(DrawMode,"NotImplementes")	\
+	XX(DrawMode,"NotImplemented, go away!")	\
+	XX(ModeFindLastFont, "Click to select font and font size by text in PDF")\
 	XX(DefaultMode,"Open an PDF")
 	
 

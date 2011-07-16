@@ -189,7 +189,7 @@ public:
 
 private:
 
-	void loadFonts(FontWidget * font);
+	//void loadFonts(FontWidget * font);
 	void getAtPosition(Ops& ops, int x, int y );
 	void setTextData(TextData::iterator &begin, TextData::iterator end, shared_ptr<PdfOperator> op);
 	void deleteText( QString text);
@@ -306,6 +306,7 @@ private slots:
 
 	void loadBookmark( QTreeWidgetItem * item );
 	void insertTextAnnot(Annot a);
+	void findLastFontMode();
 //----------------------------------------------------------------------------------------------------	
 	/* To implement
 	void showTextAnnot(std::string name);
@@ -326,7 +327,7 @@ private:
 	boost::shared_ptr<pdfobjects::CStream> createAPStream(float * dim);
 	pdfobjects::IndiRef createAppearanceHighlight(float * dim);
 	pdfobjects::IndiRef createAppearanceComment(float *dim);
-	
+	void getPreviousTmInPosition( libs::Point p, float&w, float&h);
 };
 
 #endif
