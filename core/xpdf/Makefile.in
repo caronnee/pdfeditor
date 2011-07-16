@@ -20,8 +20,6 @@ all: libxpdf
 
 staticlib: libxpdf
 
-extralib: libxpdf-extra
-
 libxpdf:
 	cd goo && $(MAKE)
 	cd fofi && $(MAKE)

@@ -7,7 +7,7 @@
 # includes basic building rules
 # REL_ADDR has to be defined, because Makefile.rules refers
 # to the Makefile.flags
-REL_ADDR = ../../
+REL_ADDR = ../
 include $(REL_ADDR)/Makefile.rules
 
 HEADERS = \
