@@ -13,13 +13,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug;</DefineConstants>
-    <WixVariables>QtSdkPath=c:\QtSDK\bin;TARGETSOURCE=pdfeditord.exe</WixVariables>
+    <DefineConstants>Debug;QtSdkPath=c:\QtSDK\lib;TARGETSOURCE=pdfeditord.exe</DefineConstants>
+    <WixVariables>
+    </WixVariables>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>QtSdkPath=c:\QtSDK\lib;TARGETSOURCE=pdfeditord.exe</DefineConstants>
+    <DefineConstants>QtSdkPath=c:\QtSDK\lib;TARGETSOURCE=pdfeditor.exe</DefineConstants>
     <WixVariables>
     </WixVariables>
   </PropertyGroup>
