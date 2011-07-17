@@ -45,6 +45,8 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.delAnnotation,SIGNAL(clicked()), this->ui.openedPdfs, SLOT(setModeDeleteAnnotation()));
 	connect( this->ui.openedPdfs, SIGNAL(ModeChangedSignal(QString)), this->ui.Help,SLOT(setText(QString)));
 	connect( this->ui.repeter, SIGNAL(clicked()), ui.openedPdfs, SLOT(redraw()));
+	connect( this->ui.pageUp, SIGNAL(clicked()), ui.openedPdfs, SLOT(pageUp()));
+	connect( this->ui.pageDown, SIGNAL(clicked()), ui.openedPdfs, SLOT(pageDown()));
 	//connect( this->ui.highlightButton,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(highlightSelected()));
 	//connect( this->ui.insertAnotation,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(setModeInsertComment()));
 }

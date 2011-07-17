@@ -18,8 +18,10 @@ void OpenPdf::setModeDeleteAnnotation()
 }
 OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeOperatorSelect)
 {
+#if _DEBUG
 	TabPage * page = new TabPage(this,"./zadani.pdf");
 	this->addTab(page,"test");
+#endif
 }
 void OpenPdf::search(QString s, bool v)
 {
@@ -144,12 +146,27 @@ void OpenPdf::saveAs()
 	}
 }
 
+#include "kernel/delinearizator.h"
+
 void OpenPdf::open(QString name)
 {
 	try
 	{
 		TabPage * page = new TabPage(this, name);
 		this->addTab(page,name);
+		//pri kazdon otvoreni sa spytaj, ci je to potreba delinerizovat(co noveho suboru), inak sa nebude dat savovat
+		if (page->checkLinearization())
+			return;
+		QString fileName = QFileDialog::getSaveFileName(this, tr("Save pdf file"),".",tr("PdfFiles (*.pdf)"));
+		if (fileName == "")
+			return;
+		page->delinearize(fileName);
+		
+		//close the old file & open deliarized version
+		this->deletePage();
+		page = new TabPage(this,fileName);
+		this->addTab(page,fileName);
+		assert(page->checkLinearization());
 	}
 
 	catch (PdfOpenException e)
@@ -157,15 +174,15 @@ void OpenPdf::open(QString name)
 		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
 
 	}
-	//catch (PdfException e)
-	//{
-	//	QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
-	////	return;
-	//}
-	//catch (std::exception e)
-	//{
-	//	QMessageBox::warning(this, "Unexpected exception",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
-	//}
+	catch (PdfException e)
+	{
+		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
+	//	return;
+	}
+	catch (std::exception e)
+	{
+		QMessageBox::warning(this, "Unexpected exception",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
+	}
 }
 void OpenPdf::openAnotherPdf()
 {

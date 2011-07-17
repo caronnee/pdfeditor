@@ -48,7 +48,7 @@
           <bool>false</bool>
          </property>
          <property name="text">
-          <string>Open</string>
+          <string>&amp;Open</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -68,7 +68,7 @@
           <string>Save as</string>
          </property>
          <property name="text">
-          <string>Save</string>
+          <string>&amp;Save</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -88,7 +88,7 @@
           <string>save copy</string>
          </property>
          <property name="text">
-          <string>Save copy</string>
+          <string>Save &amp;copy</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -108,7 +108,7 @@
           <string>save decoded</string>
          </property>
          <property name="text">
-          <string>Decode</string>
+          <string>&amp;Decode</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -131,7 +131,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Pdf </string>
+          <string>&amp;Pdf </string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -157,7 +157,7 @@
           <string>Show panel with text working</string>
          </property>
          <property name="text">
-          <string>Text</string>
+          <string>&amp;Text</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -180,7 +180,7 @@
        <item>
         <widget class="QPushButton" name="imageButton">
          <property name="text">
-          <string>Images</string>
+          <string>&amp;Images</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -203,7 +203,7 @@
        <item>
         <widget class="QPushButton" name="annotationButton">
          <property name="text">
-          <string>Annotations</string>
+          <string>&amp;Annotations</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -216,32 +216,6 @@
           </size>
          </property>
          <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string>mainGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="opSelect">
-         <property name="text">
-          <string>Operators</string>
-         </property>
-         <property name="icon">
-          <iconset resource="pdf.qrc">
-           <normaloff>:/images/operator.jpg</normaloff>:/images/operator.jpg</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="checked">
           <bool>true</bool>
          </property>
          <attribute name="buttonGroup">
@@ -860,6 +834,32 @@
          <property name="text">
           <string>Repeter</string>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="opSelect">
+         <property name="text">
+          <string>Operators</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/operator.jpg</normaloff>:/images/operator.jpg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string>mainGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>

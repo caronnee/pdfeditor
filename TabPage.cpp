@@ -1251,9 +1251,6 @@ void TabPage::setTextData(TextData::iterator & it, TextData::iterator end,shared
 
 void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka ser space
 {
-	double px = point.x(), py = point.y();
-	rotatePdf(_page->getRotation(),px,py,true);
-	point.setX(px); point.setY(py);
 	if (!_dataReady) //prvykrat, co sme dotkli nejakeho operatora
 	{
 		_mousePos = point;
@@ -1274,6 +1271,11 @@ void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka s
 	double xEnd;
 	TextData::iterator move = sTextMarker;
 	move->clear();
+	double xxPoint =  point.x(),yyPoint=point.y();
+	double xxOrig =  _mousePos.x(),yyOrig=_mousePos.y();
+	rotatePdf(_page->getRotation(),xxPoint,yyPoint,true);
+	rotatePdf(_page->getRotation(),xxOrig,yyOrig,true);
+
 	if ( *move < s)
 	{
 		while (move->_op!=s._op)
@@ -1293,22 +1295,22 @@ void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka s
 	if (*move < *sTextMarker)
 	{
 		sTextIt = move;
-		sTextIt->setBegin(min(point.x(),_mousePos.x()));
+		sTextIt->setBegin(min(xxOrig,xxPoint));
 		sTextItEnd = sTextMarker;
-		sTextItEnd->setEnd(max(_mousePos.x(),point.x()));
+		sTextItEnd->setEnd(max(xxOrig,xxPoint));
 	}
 	else if (move == sTextMarker)
 	{
 		sTextIt = sTextItEnd = sTextMarker;
-		sTextIt->setBegin(min(point.x(),_mousePos.x()));
-		sTextIt->setEnd(max(point.x(),_mousePos.x()));
+		sTextIt->setBegin(min(xxPoint,xxOrig));
+		sTextIt->setEnd(max(xxPoint,xxOrig));
 	}
 	else
 	{
 		sTextIt = sTextMarker;
-		sTextIt->setBegin(_mousePos.x());
+		sTextIt->setBegin(xxOrig);
 		sTextItEnd = move;
-		sTextItEnd->setEnd(point.x());
+		sTextItEnd->setEnd(xxPoint);
 	}
 
 	_selected =  true;
@@ -1642,16 +1644,28 @@ void TabPage::updatePageInfoBar()
 }
 void TabPage::pageUp()
 {
+	if (_pdf->getPageCount()==1)
+		return;
 	int pos = _pdf->getPagePosition(_page);
+	if(pos ==1)
+		return;
 	this->_pdf->removePage(pos);
-	this->_pdf->insertPage(_page,pos-2);
+	this->_pdf->insertPage(_page,pos-1);
+	_page = _pdf->getPage(pos-1);
+	redraw();
 	updatePageInfoBar();
 }
 void TabPage::pageDown()
 {
+	if (_pdf->getPageCount()==1)
+		return;
 	int pos = _pdf->getPagePosition(_page);
+	if (pos == _pdf->getPageCount())
+		return;
 	this->_pdf->removePage(pos);
-	this->_pdf->insertPage(_page,pos);
+	this->_pdf->insertPage(_page,pos+1);
+	_page = _pdf->getPage(pos+1);
+	redraw();
 	updatePageInfoBar();
 }
 bool TabPage::previousPage()
@@ -1878,7 +1892,7 @@ bool TabPage::CanBeSaved()
 {
 	if (_pdf->isLinearized())
 	{
-		QMessageBox::warning(this, "Linearized pdf","Pdf is linearized", QMessageBox::Ok,QMessageBox::Ok); 
+		QMessageBox::warning(this, "Linearized pdf","Pdf is linearized, cannot be saved", QMessageBox::Ok,QMessageBox::Ok); 
 		return false;
 	}
 	if (ui.revision->currentIndex() != ui.revision->count())
@@ -3165,4 +3179,19 @@ void TabPage::handleLink( int level )
 	rotatePdf(_page->getRotation(),x,y,false);
 	this->ui.scrollArea->ensureVisible(x,y);
 	return;
+}
+
+bool TabPage::checkLinearization()
+{
+	if (!_pdf->isLinearized())
+		return true;
+	if ( QMessageBox::warning(this, "Pdf id linerized","Should it be delinerized?", QMessageBox::Ok|QMessageBox::Discard,QMessageBox::Ok) == QMessageBox::Ok)
+		return false;
+	return true;
+}
+#include "kernel/delinearizator.h"
+void TabPage::delinearize( QString fileName )
+{
+	shared_ptr<utils::Delinearizator> d = utils::Delinearizator::getInstance(fileName.toAscii().data(), _pdf->getPdfWriter());
+	d->delinearize(fileName.toAscii().data());
 }

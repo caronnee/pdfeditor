@@ -121,6 +121,7 @@ class TabPage : public QWidget
 	Q_OBJECT
 
 private: //variables
+	
 	int _acceptedType;
 	OpenPdf * _parent;
 	Ui::TabUI ui; 
@@ -207,6 +208,7 @@ private:
 	QString getFile(bool open,QFileDialog::FileMode flags = QFileDialog::AnyFile);
 	void showClicked(int x, int y);
 public:	
+	void delinearize(QString name);
 	bool CanBeSaved();
 	bool CanBeSavedChanges();
 	void redraw();
@@ -219,6 +221,7 @@ public:
 	void pageUp();
 	void pageDown();
 	void savePdf(char * name);
+	bool checkLinearization();
 	//rotate page
 
 public slots:
@@ -307,6 +310,7 @@ private slots:
 	void loadBookmark( QTreeWidgetItem * item );
 	void insertTextAnnot(Annot a);
 	void findLastFontMode();
+
 //----------------------------------------------------------------------------------------------------	
 	/* To implement
 	void showTextAnnot(std::string name);
@@ -328,6 +332,7 @@ private:
 	pdfobjects::IndiRef createAppearanceHighlight(float * dim);
 	pdfobjects::IndiRef createAppearanceComment(float *dim);
 	void getPreviousTmInPosition( libs::Point p, float&w, float&h);
+
 };
 
 #endif

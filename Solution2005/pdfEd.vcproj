@@ -4,6 +4,7 @@
 	Version="8,00"
 	Name="pdfEd"
 	ProjectGUID="{31BB9A02-9199-42BB-AC07-9BBB0EF1837A}"
+	RootNamespace="pdfEd"
 	Keyword="Qt4VSv1.0"
 	>
 	<Platforms>
@@ -55,7 +56,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib freetype.lib zdll.lib"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
+				OutputFile="$(OutDir)\pdfeditor.exe"
 				AdditionalLibraryDirectories="..\dlls;.\libs;&quot;$(QTDIR)\lib&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="false"
@@ -84,11 +85,12 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy $(TargetPath) $(SolutionDir)\.."
 			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)d_pdfEd"
+			OutputDirectory="$(SolutionDir).."
 			IntermediateDirectory="$(SolutionDir)i_pdfEd"
 			ConfigurationType="1"
 			CharacterSet="1"
@@ -130,7 +132,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib freetype.lib zdll.lib"
 				ShowProgress="2"
-				OutputFile="$(OutDir)\$(ProjectName)d.exe"
+				OutputFile="$(OutDir)\pdfeditord.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\dlls;..\..\output\libs;&quot;$(QTDIR)\lib&quot;"
 				IgnoreAllDefaultLibraries="false"
