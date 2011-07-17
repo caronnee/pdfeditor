@@ -35,36 +35,17 @@ dev-rebuild: dev-clean utils kernel tests pdfedit
 
 # Cleanup
 clean:
-	cd $(GUIROOT) && $(MAKE) -f Makefile.gui clean || true
-	cd $(QSAROOT) && $(MAKE) clean || true
 	cd $(KERNELROOT) && $(MAKE) clean || true
-	cd $(TOOLSROOT) && $(MAKE) clean || true
-	cd $(TESTSROOT) && $(MAKE) clean || true
 	cd $(UTILSROOT) && $(MAKE) clean
 	cd $(XPDFROOT) && $(MAKE) clean || true
-	cd $(QOUTPUTDEVROOT) && $(MAKE) -f Makefile.gui clean || true
-	$(DEL_FILE) $(GUIROOT)/Makefile.qt 
-	$(DEL_FILE) $(QOUTPUTDEVROOT)/Makefile.qt
 
 dev-clean:
-	cd $(GUIROOT) && $(MAKE) -f Makefile.gui clean || true
 	cd $(KERNELROOT) && $(MAKE) clean || true
-	cd $(TOOLSROOT) && $(MAKE) clean || true
-	cd $(TESTSROOT) && $(MAKE) clean || true
 	cd $(UTILSROOT) && $(MAKE) clean
 
 
 # Dist Cleanup
 distclean: 
-	cd $(GUIROOT) && $(MAKE) -f Makefile.gui distclean || true
-	cd $(QSAROOT) && $(MAKE) distclean || true
 	cd $(KERNELROOT) && $(MAKE) distclean || true
-	cd $(TOOLSROOT) && $(MAKE) clean || true
-	cd $(TESTSROOT) && $(MAKE) distclean || true
 	cd $(UTILSROOT) && $(MAKE) distclean || true
 	cd $(XPDFROOT) && $(MAKE) distclean || true
-	cd $(QOUTPUTDEVROOT) && $(MAKE) -f Makefile.gui distclean || true
-	$(DEL_FILE) $(QOUTPUTDEVROOT)/Makefile || true
-	$(DEL_FILE) $(UTILSROOT)/aconf.h || true
-	$(DEL_FILE $(GUIROOT)/config.h $(GUIROOT)/Makefile.qt $(GUIROOT)/menugenerator $(GUIROOT)/pdfedit || true
-	$(DEL_FILE) $(QOUTPUTDEVROOT)/Makefile.qt
