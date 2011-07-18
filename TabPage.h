@@ -158,7 +158,7 @@ private: //variables
 	void SetNextPageRotate();
 	/* vytvorit textovy list */
 	void searchPrev(QString srch);
-	void searchForw(QString srch);
+	bool searchForw(QString srch);
 	void getSelected(int x , int y, Ops ops);
 	void toPdfPos(int x, int y, double & x1, double &y1);
 	void toPixmapPos(double x1, double y1, int & x, int & y);
@@ -241,7 +241,7 @@ public slots:
 	void changeSelectedImage(PdfOp op);
 	void raiseSearch();
 	void closeAnnotDiag();
-	void changeSelectedText();
+	void changeSelectedText(PdfOp);
 	void deleteSelectedText();
 	void eraseSelectedText();
 	void replaceSelectedText(QString by);
@@ -310,6 +310,8 @@ private slots:
 	void loadBookmark( QTreeWidgetItem * item );
 	void insertTextAnnot(Annot a);
 	void findLastFontMode();
+	std::string checkCode(QString s, std::string fontName);
+	void getPreviousTmInPosition( libs::Point p, float* size);
 
 //----------------------------------------------------------------------------------------------------	
 	/* To implement
@@ -331,8 +333,6 @@ private:
 	boost::shared_ptr<pdfobjects::CStream> createAPStream(float * dim);
 	pdfobjects::IndiRef createAppearanceHighlight(float * dim);
 	pdfobjects::IndiRef createAppearanceComment(float *dim);
-	void getPreviousTmInPosition( libs::Point p, float&w, float&h);
-
 };
 
 #endif

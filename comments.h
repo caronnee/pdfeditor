@@ -35,6 +35,7 @@ signals:
 	void WaitForPosition(Annot);
 
 public slots:
+	void setIndex(int i) { this->ui.annotType->setCurrentIndex(i); }
 	void setRectangle(libs::Rectangle rectangle);
 	void setRectangle(float pdfx, float pdfy, int pdfwidth, int pdfheight);
 	void setPoints(std::vector<float> flts);

@@ -43,16 +43,21 @@
  <!--             <Shortcut Id="desktopPdfEditor" Directory="DesktopFolder" Name="PdfEditor (Beta)"
                   WorkingDirectory='INSTALLDIR' Advertise="yes" /> -->
             </File>
-					</Component>
-        <Component Id='Libraries' Guid='8f654235-16ee-4a04-b607-2f848fc32db1'>
-          <File Id='qtcore' Source='$(var.QtSdkPath)\QtCore4.dll'/>
-          <File Id='qtGui'  Source='$(var.QtSdkPath)\QtGui4.dll'/>
-          <File Id='freetype' Source='..\..\dlls\freetype6.dll' />
-          <File Id='zdll' Source='..\..\dlls\zdll.dll' />
+            <Shortcut Id="UninstallProduct"
+                         Name="Uninstall My Application"
+                         Description="Uninstalls My Application"
+                         Target="[System64Folder]msiexec.exe"
+                         Arguments="/x [ProductCode]"/>
+          </Component>
+          <Component Id='Libraries' Guid='8f654235-16ee-4a04-b607-2f848fc32db1'>
+            <File Id='qtcore' Source='$(var.QtSdkPath)\QtCore4.dll'/>
+            <File Id='qtGui'  Source='$(var.QtSdkPath)\QtGui4.dll'/>
+            <File Id='freetype' Source='..\..\dlls\freetype6.dll' />
+            <File Id='zdll' Source='..\..\dlls\zlib1.dll' />
         </Component>
       </Directory>
     <Property Id="WIXUI_INSTALLDIR" Value="TARGETDIR" />
-    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_Mondo" />
 		<Feature Id="ProductFeature" Title="pdfSetup2005" Level="1">
 			<!-- TODO: Remove the comments around this ComponentRef element and the Component above in order to add resources to this installer. -->
 			<ComponentRef Id="Executable" />

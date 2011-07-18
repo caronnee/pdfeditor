@@ -13,7 +13,10 @@ public:
 	OpenPdf(QWidget * widget);
 	~OpenPdf(void);
 
+	Mode _previous;
 	Mode _mode;
+	QColor _color;
+	QColor _highlightColor;
 public:
 	void setMode(Mode mode);
 	Mode getMode() const { return _mode; }
@@ -77,4 +80,9 @@ public slots:
 	void pdfChanged();
 	void redraw();
 	void setPreviousMode();
+	void setColor(QColor);
+	void setHColor(QColor);
+	QColor getColor();
+	QColor getHColor();
+	void setModeInsertLinkAnotation();
 };

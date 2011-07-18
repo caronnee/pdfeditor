@@ -131,7 +131,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>&amp;Pdf </string>
+          <string>O&amp;perations </string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -208,6 +208,29 @@
          <property name="icon">
           <iconset resource="pdf.qrc">
            <normaloff>:/images/comment.ico</normaloff>:/images/comment.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string>mainGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="settings">
+         <property name="text">
+          <string>Settings</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/operator.jpg</normaloff>:/images/operator.jpg</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -771,7 +794,7 @@
        <item>
         <widget class="QPushButton" name="insertAnotation">
          <property name="text">
-          <string>insert comment</string>
+          <string>insert text annotation</string>
          </property>
          <property name="iconSize">
           <size>
@@ -785,9 +808,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="selectAnnotation">
+        <widget class="QPushButton" name="linkAnnotation">
          <property name="text">
-          <string>change annotation</string>
+          <string>insert link annotation</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -879,6 +902,51 @@
      </widget>
     </item>
     <item>
+     <widget class="QFrame" name="settingFrame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>highligh color</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="ColorPicker" name="hcolor" native="true"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>select color</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="ColorPicker" name="color" native="true"/>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_7">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
      <widget class="OpenPdf" name="openedPdfs">
       <property name="acceptDrops">
        <bool>true</bool>
@@ -918,6 +986,12 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
+  <customwidget>
+   <class>ColorPicker</class>
+   <extends>QWidget</extends>
+   <header>colorpicker.h</header>
+   <container>1</container>
+  </customwidget>
   <customwidget>
    <class>OpenPdf</class>
    <extends>QTabWidget</extends>
@@ -1233,6 +1307,22 @@
     <hint type="destinationlabel">
      <x>438</x>
      <y>251</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>settings</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>settingFrame</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>706</x>
+     <y>29</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>315</y>
     </hint>
    </hints>
   </connection>

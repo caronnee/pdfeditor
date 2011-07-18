@@ -16,12 +16,17 @@ void OpenPdf::setModeDeleteAnnotation()
 {
 	setMode(ModeDeleteAnnotation);
 }
-OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeOperatorSelect)
+QColor OpenPdf::getHColor()
+{
+	return _highlightColor;
+}
+OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeOperatorSelect),_previous(ModeOperatorSelect), _color(255,0,0,50), _highlightColor(0,255,0)
 {
 #if _DEBUG
 	TabPage * page = new TabPage(this,"./zadani.pdf");
 	this->addTab(page,"test");
 #endif
+	setMode(ModeOperatorSelect); //default mode
 }
 void OpenPdf::search(QString s, bool v)
 {
@@ -60,6 +65,10 @@ void OpenPdf::deleteSelectedText()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->deleteSelectedText();
+}
+void OpenPdf::setModeInsertLinkAnotation()
+{
+	setMode(ModeInsertLinkAnnotation);
 }
 void OpenPdf::setModeInsertAnotation()
 {
@@ -237,6 +246,10 @@ void OpenPdf::print()
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->print();
 }
+QColor OpenPdf::getColor()
+{
+	return _color;
+}
 void OpenPdf::deletePage()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
@@ -246,20 +259,23 @@ static const char * helper[] = { MODES(EARRAY) };
 
 void OpenPdf::setMode( Mode mode )
 {
+	_previous = _mode;
 	_mode =  mode;
 	emit ModeChangedSignal(helper[mode]);
 }
 
 void OpenPdf::setPreviousMode()
 {
-	switch (_mode)
-	{
-	case ModeImageSelected:
-		{
-			setMode(ModeSelectImage);
-			break;
-		}
-		default:
-		break;// nerob nic
-	}//TODO dat do pola
+	_mode = _previous;
+}
+
+void OpenPdf::setColor( QColor color )
+{
+	_color = color;
+	_color.setAlpha(50);
+}
+
+void OpenPdf::setHColor( QColor color)
+{
+	_highlightColor =color;
 }

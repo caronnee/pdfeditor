@@ -20,7 +20,8 @@
 	XX(ModeImagePart,"Extract pdf part as image mode: select a rectangle to be saved as image")	\
 	XX(ModeExtractImage, "Extract image mode: click on inlineimage to extract an image")	\
 	XX(ModeOperatorSelect,"Operator select mode: click on text operator to highligh it")	\
-	XX(ModeInsertAnnotation,"Insert Annotation mode: click on pdf to insert an annotation")	\
+	XX(ModeInsertAnnotation,"Insert Text Annotation mode: click on pdf to insert an annotation")	\
+	XX(ModeInsertLinkAnnotation,"Insert Link Annotation mode: click on pdf to insert a link annotation")	\
 	XX(ModeDeleteAnnotation, "Delete annotation mode: click on annotation to delete it")	\
 	XX(ModeEmitPosition, "Emit position mode: Pdf is waiting for position. Click somewhere in the pdf")	\
 	XX(ImageMode," Not Implemented")	\

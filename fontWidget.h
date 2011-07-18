@@ -72,9 +72,9 @@ public:
 	FontWidget(QWidget * parent);
 	FontWidget(const FontWidget & font);
 	~FontWidget();
-	PdfOp addText(std::string s);
+	PdfOp addText(QString s);
 	void createBT();
-	void addParameters();
+	std::string addParameters();
 	void addToBT(PdfOp op);
 	PdfOp createET();
 
@@ -91,7 +91,9 @@ public:
 	void addTm( float w, float h );
 
 signals:
-	void changeTextSignal();
+	void getLastTm(libs::Point,float *);
+	std::string convertTextFromUnicode(QString, std::string);
+	void changeTextSignal(PdfOp op);
 	void text(PdfOp op);
 	void changeSelected();
 	PdfOp getLastFontSignal(libs::Point);

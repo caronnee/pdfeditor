@@ -167,8 +167,8 @@ void Comments::fromDict( boost::shared_ptr<pdfobjects::CDict> annDict )
 	PdfProperty p = annDict->getProperty("Contents");
 	std::string str = pdfobjects::utils::getValueFromSimple<pdfobjects::CString>(p);
 	QString s = QString::fromStdString(str);
-	ui.text->setText(s);
+	//ui.text->setText(s);
 	boost::shared_ptr<pdfobjects::CDict> d = pdfobjects::IProperty::getSmartCObjectPtr<pdfobjects::CDict>(annDict->clone());
-	d->delProperty("Subj");
-	d->delProperty("T");
+	/*d->delProperty("Subj");
+	d->delProperty("T");*/
 }

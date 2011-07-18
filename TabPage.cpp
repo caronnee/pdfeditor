@@ -121,11 +121,13 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	//connect musi byt potom!!!->inak sa to zobrazi milion krat namiesto raz
 	connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
 	//	_font->show();
+	connect(_font, SIGNAL(getLastTm(libs::Point,float*)), this, SLOT(getPreviousTmInPosition(libs::Point,float*)));
 	connect(_font, SIGNAL(fontInPage(std::string)), this, SLOT(addFontToPage(std::string)));
 	connect(_font, SIGNAL(text(PdfOp)), this, SLOT(insertText(PdfOp)));
-	connect(_font, SIGNAL(changeTextSignal()), this, SLOT(changeSelectedText()));
+	connect(_font, SIGNAL(changeTextSignal(PdfOp)), this, SLOT(changeSelectedText(PdfOp)));
 	connect(_font, SIGNAL(FindLastFontSignal()), this, SLOT(findLastFontMode()));
 	connect(_font, SIGNAL(getLastFontSignal(libs::Point)), this, SLOT(getPreviousFontInPosition(libs::Point)));
+	connect(_font, SIGNAL(convertTextFromUnicode(QString,std::string)), this, SLOT(checkCode(QString,std::string)));
 	//show text button, hide everything else
 
 	//connections
@@ -791,6 +793,15 @@ void TabPage::insertTextMarkup(Annot annot)
 	//for all selected text
 	if (!_selected)
 		return;
+	{
+		QColor col = _parent->getHColor();
+		float f = col.redF();
+		pdfobjects::CArray arr;
+		arr.addProperty(*boost::shared_ptr< pdfobjects::CReal>(pdfobjects::CRealFactory::getInstance(col.redF()))); //add color
+		arr.addProperty(*boost::shared_ptr< pdfobjects::CReal>(pdfobjects::CRealFactory::getInstance(col.greenF()))); //add color
+		arr.addProperty(*boost::shared_ptr< pdfobjects::CReal>(pdfobjects::CRealFactory::getInstance(col.blueF()))); //add color
+		annot->getDictionary()->setProperty("C",arr);//TODO len pre markup, ale nic dalsie nepodporujeme, tak ze to tu bude ircite spravne
+	}
 	_page->addAnnotation(annot);
 	_page->getAllAnnotations(_annots);
 	annot = _annots.back();//posledny pridany, na nom budeme pachat zmeny
@@ -996,16 +1007,25 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 	case ModeFindLastFont:
 		{
 			double x =  point.x(),y = point.y();
-			rotatePdf(_page->getRotation(),x,y,true);
+			displayparams.convertPixmapPosToPdfPos(point.x(),point.y(),x,y);
+			rotatePdf(_page->getRotation(),x,y,false);
 			_font->addFont(getPreviousFontInPosition(libs::Point(x,y)));
 			//find last TM
-			float w, h;
-			getPreviousTmInPosition(libs::Point(x,y),w,h);
-			_font->addTm(w,h);
+			float w[2];
+			getPreviousTmInPosition(libs::Point(x,y),w);
+			_font->addTm(w[0],w[1]);
+			break;
+		}
+
+	case ModeInsertLinkAnnotation:
+		{
+			_cmts->setIndex(1);
+			_labelPage->annotation();
 			break;
 		}
 	case ModeInsertAnnotation:
 		{
+			_cmts->setIndex(0);
 			_labelPage->annotation();
 			break;
 		}
@@ -1212,6 +1232,25 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			_parent->setMode(ModeImagePartCopied);
 			return;
 		}
+	case ModeSelectImage:
+		{
+			//vytvor nove cm a posun obrazok
+			if(!_selected)
+				break;
+			double x = point.x(),y=point.y();
+			rotatePdf(_page->getRotation(),x,y,true);
+			PdfOp nw= createOperatorTranslation(point.x(), point.y());
+
+			BBox b = _selectedImage->getBBox();
+			x= b.xleft; y = max(b.yleft,b.yright);
+			PdfOp prev = createOperatorTranslation(x, y);
+			_selectedImage->getContentStream()->replaceOperator(_selectedImage,nw);
+			nw->getContentStream()->insertOperator(nw,_selectedImage);
+			_selectedImage->getContentStream()->insertOperator(_selectedImage,prev); //predchadzajuca pozicia
+			_selected = false;
+			redraw();
+			break;
+		}
 	default:
 		//	highlight();//TODO ZMAZST
 		break;
@@ -1322,7 +1361,6 @@ void TabPage::highlight()
 {
 	if (!_selected)
 		return;
-	QColor color(255,0,255,50);
 	TextData::iterator first = sTextIt;
 	TextData::iterator last = sTextItEnd; 
 	bool forw = (*sTextIt) < (*sTextItEnd);
@@ -1347,7 +1385,7 @@ void TabPage::highlight()
 		}
 		inDirection(first, forw);
 	}
-	_labelPage->fillRect( region, color );
+	_labelPage->fillRect( region, _parent->getColor() );
 }
 
 //zatial len v ramci jednej stranky
@@ -1403,7 +1441,7 @@ void TabPage::insertBefore(PdfOp op, PdfOp before)
 	op->getContentStream()->insertOperator(op,clone);
 }
 
-void TabPage::getPreviousTmInPosition( libs::Point p, float&w, float&h )
+void TabPage::getPreviousTmInPosition( libs::Point p, float* size )
 {
 	double x = p.x;
 	double y = p.y;
@@ -1464,31 +1502,33 @@ void TabPage::getPreviousTmInPosition( libs::Point p, float&w, float&h )
 		r[2] = a10 + a31;
 		r[3] = a12 + a33;
 	}
-	w = r[0];//TODO toto moze sklamat, ak sa to este zvalstna skaluje, co nepredpokladam
-	h = r[3];
+	size[0] = r[0];//TODO toto moze sklamat, ak sa to este zvalstna skaluje, co nepredpokladam
+	size[1] = r[3];
 }
 PdfOp TabPage::getPreviousFontInPosition(libs::Point pdfPos)//iba pre textove veci, bez upravy displayparam
 {
 	double x = pdfPos.x;
-	double y = pdfPos.y;
-	//rotatePdf(_page->getRotation(),x,y,false);//TODO kontrola
+	double y = pdfPos.y;//toto sa vola  parametrom pozicie, kam chceme insertnut text
+	{
+		displayparams.convertPdfPosToPixmapPos(pdfPos.x,pdfPos.y,x,y);
+		rotatePdf(_page->getRotation(),x,y,false);//TODO kontrola
+	}
 	TextData::iterator iter = _textList.begin();
 	TextData::iterator last = iter;
 	TextData::iterator found = iter;
-	float distX = 10e38;
-	float distY = 10e38;
+	float dist = 10e38;
 	while (iter!= _textList.end())
 	{
-		float h = iter->_ymax - iter->_ymin;
-		float distXTest =  pdfPos.x - iter->_origX;//vzdialenesie
-		float distYTest = pdfPos.y - iter->_ymin;
-		if ((distYTest > -1) &&(distYTest < distY  )&&(distXTest >0))
+		//float h = iter->_ymax - iter->_ymin;
+		float distXTest =  x - iter->_origX;//vzdialenesie
+		float distYTest = y - iter->_ymin;
+		if ((distYTest > -1) && (distXTest >-1))//je to pred
 		{
-			if ((distXTest < distX)|| (iter->_origX < pdfPos.x && pdfPos.x < iter->_origX2) )
+			float d = distXTest*distXTest + distYTest*distYTest;
+			if ( d < dist)
 			{
 				found = iter;
-				distX = distXTest;
-				distY = distYTest;
+				dist = d;
 			}
 		}
 		iter++;
@@ -1895,7 +1935,7 @@ bool TabPage::CanBeSaved()
 		QMessageBox::warning(this, "Linearized pdf","Pdf is linearized, cannot be saved", QMessageBox::Ok,QMessageBox::Ok); 
 		return false;
 	}
-	if (ui.revision->currentIndex() != ui.revision->count())
+	if (ui.revision->currentIndex() != ui.revision->count()-1)
 		if (QMessageBox::warning(this, "Revision mismatch","Cannot save older Revision\n Saving latest instead", QMessageBox::Ok | QMessageBox::Abort, QMessageBox::Ok)==QMessageBox::Abort)
 			return false;
 	return true;
@@ -2252,11 +2292,12 @@ void TabPage::insertText( PdfOp op )
 	ops.push_back(op);
 	_page->addContentStreamToBack(ops);
 	TextOperatorIterator iter(op);assert(iter.valid());
+	_parent->setPreviousMode();
 	redraw();
 }
 
 //slot
-void TabPage::changeSelectedText() //vsetko zosane na svojom mieste, akurat sa pridaju 
+void TabPage::changeSelectedText(PdfOp insertedText) //vsetko zosane na svojom mieste, akurat sa pridaju 
 {
 	assert(_selected);
 	float corr = displayparams.vDpi/72;
@@ -2269,11 +2310,7 @@ void TabPage::changeSelectedText() //vsetko zosane na svojom mieste, akurat sa p
 	if ( sTextIt==sTextItEnd ) //TODO co ak je s3 prazdne? -> Compact?:)
 	{
 		eraseSelectedText();
-		_font->setInsert();
-		_font->apply(); //musi tu byt apply, pretoze sa moze zmenit farba - potrebujeme Q operator
-		_font->close();
-		redraw();
-		createList();
+		insertText(insertedText);
 		return;
 	}
 	//stale ame v operatoroch ulozene suradnice
@@ -2422,10 +2459,12 @@ void TabPage::setSelected(TextData::iterator& first, TextData::iterator& last)
 //slot
 void TabPage::search(QString srch, bool forw)
 {
-	if (forw)
-		searchForw(srch);
-	else
-		searchPrev(srch);
+	if (forw && searchForw(srch))
+		highlight();
+	if (!forw)
+		return;
+	TextData::iterator act = sTextIt;
+	searchPrev(srch);
 }
 QString revert(QString s)
 {
@@ -2516,13 +2555,48 @@ NextPage:
 		QMessageBox::Ok);
 	//set from th beginning
 }
-void TabPage::searchForw(QString srch)
+std::string TabPage::checkCode(QString s, std::string fontName)
+{
+	std::string ret;
+	bool raiseWarning = false;
+	GfxFont * font = NULL;
+	std::vector<shared_ptr<CContentStream> > cont;
+	_page->getContentStreams(cont);
+	for (int i =0; i<cont.size(); i++ )
+	{
+		font = cont[i]->getResources()->lookupFont(fontName.c_str());
+		if (font)
+			break;
+	}
+	assert(font);
+	for (int i = 0; i< s.size(); i++)
+	{
+		Unicode u = s[i].unicode();
+		char c = font->getCodeFromUnicode(&u,1);
+		if (c == 0)
+			raiseWarning = true;
+		else
+			ret+=c;
+	}
+	if (raiseWarning)
+	{
+		QMessageBox::warning(this, tr("Text truncation"),
+			tr("Some characters are not supported.\n Truncated to ")+ret.c_str(),
+			QMessageBox::Ok,
+			QMessageBox::Ok);
+	}
+	return ret;
+}
+bool TabPage::searchForw(QString srch)
 {
 	for(int i = 0; i< _pdf->getPageCount(); i++)
 	{
+		TextData::iterator iter;
+		if (_textList.size() == 0)
+			goto NextPage;
 		_searchEngine.setPattern(srch); //vytvor strom, ktory bude hladat to slovo, pre kazdu stranku znova
 		//vysviet prve, ktore najdes
-		TextData::iterator iter = _textList.begin();
+		iter = _textList.begin();
 		iter->clear();
 		if (_selected)
 		{
@@ -2577,9 +2651,7 @@ void TabPage::searchForw(QString srch)
 					//iter->setEnd(a);
 					iter->setBegin(b);
 					_selected = true; 
-
-					highlight();
-					return;
+					return true;
 				}
 			default:
 				{
@@ -2718,8 +2790,8 @@ void TabPage::eraseSelectedText()
 		if (!s[2].isEmpty()) //s2 not empty-> nejaky operator zostava potom 
 		{
 			PdfOperator::Operands operands;
-			std::string e(s[2].toAscii().constData());
-			//s[2].toStdString()
+			std::string e = s[2].toStdString();
+			//s[2].toStdString();
 			operands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(e)));
 			PdfOp op = createOperator("Tj",operands); //stejny operator, stejny fot
 			dist = sTextIt->GetNextStop() - sTextIt->_origX;

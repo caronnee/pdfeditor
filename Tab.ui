@@ -58,7 +58,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QCommandLinkButton" name="previous">
+       <widget class="QPushButton" name="previous">
         <property name="text">
          <string>Previous</string>
         </property>
@@ -78,7 +78,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QCommandLinkButton" name="next">
+       <widget class="QPushButton" name="next">
         <property name="baseSize">
          <size>
           <width>10</width>

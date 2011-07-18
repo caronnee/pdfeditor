@@ -14,6 +14,7 @@ using namespace boost;
 
 //TODO doplnit a spravne vyrazy
 std::string fontShapes[] ={"Fill","Stroke","Fill&Stroke","Invisible"};
+
 void FontWidget::setChange()
 {
 	_scale[0] = _scale[1] = 1; //TODO dat do initu, vsade tm, kde sa ukazuje show
@@ -96,6 +97,7 @@ void FontWidget::addFont(PdfOp op)
 	addFont(fontId,fontId);
 	float size = utils::getValueFromSimple<CReal>(operands[1]);
 	QVariant q(size);
+	this->ui.fonts->setItemText(0, QString("Selected Text(") + fontId.c_str() + ")");
 	this->ui.fontsize->setItemData(0,q); //custom, bude na vrchu
 }
 void FontWidget::addFont(std::string name, std::string val)
@@ -151,7 +153,7 @@ void FontWidget::setText(QString s)
 {
 	ui.text->setText(s);
 }
-void FontWidget::addParameters() //TODO nie s jedine parametre
+std::string FontWidget::addParameters() //TODO nie s jedine parametre
 {
 	///rendering mode
 	{
@@ -178,10 +180,16 @@ void FontWidget::addParameters() //TODO nie s jedine parametre
 		//non-stroking operands
 		_BT->push_back( createOperator("rg", operands ), getLastOperator(_BT));
 	}
+	std::string fontName="";
 	PdfOp fontOp;
 	if (ui.fonts->currentIndex() == FINDFONT_INDEX )//posledny je vyber z fontu
 	{
 		fontOp = emit(getLastFontSignal(libs::Point(_pdfPosX, _pdfPosY)));
+		emit getLastTm(libs::Point(_pdfPosX, _pdfPosY),_scale);
+#ifdef _DEBUG
+		std::string m;
+		fontOp->getStringRepresentation(m);
+#endif // _DEBUG
 	}
 	else
 	{
@@ -191,8 +199,12 @@ void FontWidget::addParameters() //TODO nie s jedine parametre
 		_fonts[this->ui.fonts->currentIndex()].setId(id);
 		fontOp = _fonts[this->ui.fonts->currentIndex()].getFontOper(v.toInt());
 	}
+	PdfOperator::Operands pars;
+	fontOp->getParameters(pars); //font uz bude v PDF - otazne, co bude aj fontData -> osertit!
+	fontName = utils::getValueFromSimple<CName>(pars[0]);
 	_BT->push_back(fontOp, getLastOperator(_BT));
 	_BT->push_back( createMatrix("Tm"), getLastOperator(_BT));
+	return fontName;
 }
 PdfOp FontWidget::createTranslationTd(double x, double y)
 {
@@ -206,26 +218,27 @@ void FontWidget::addToBT(PdfOp o)
 	_BT->push_back(o,getLastOperator(_BT));
 }
 
-PdfOp FontWidget::addText(std::string txt)
+PdfOp FontWidget::addText( QString s )
 {
 	createBT();
-	addParameters();
+	std::string name = addParameters();
 	PdfOperator::Operands textOperands;
-	textOperands.push_back(shared_ptr<IProperty>(new CString(txt.c_str())));
+	std::string e = emit convertTextFromUnicode(s,name);
+	textOperands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(e)));
 	addToBT(createOperator("Tj", textOperands));
 	return createET();
 }
 
 void FontWidget::apply()
 {	
-	if (_change)
-	{
-		emit changeTextSignal();
-		return;
-	}
 	QString s = this->ui.text->text();
-	std::string txt(s.toAscii().data());
-	emit text(addText(txt));
+	if (_change)
+		emit changeTextSignal(addText(s));
+	else
+	{
+		_scale[0] = _scale[1] =1;
+		emit text(addText(s));
+	}
 	this->close();
 }
 void FontWidget::setPosition(float pdfx, float pdfy)
@@ -267,7 +280,7 @@ void FontWidget::fontIndexChanged( int index )
 		return;
 	if (index != 0 )
 	{
-		if (this->ui.fontsize->itemText(0) == "Generic")
+		if (this->ui.fontsize->itemText(0).mid(0,strlen("Generic")) == "Generic")
 			this->ui.fontsize->removeItem(0);
 		return;
 	}

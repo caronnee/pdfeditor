@@ -27,7 +27,7 @@ class pdfGui : public QMainWindow
 public:
 	pdfGui(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~pdfGui();
-
+	void closeEvent( QCloseEvent *event );
 protected:
 	//void keyPressEvent(QKeyEvent *event);
 

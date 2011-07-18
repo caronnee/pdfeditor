@@ -18,6 +18,8 @@ public:
 	int getR() { return ui.r->value(); }
 	int getG() { return ui.g->value(); }
 	int getB() { return ui.b->value(); }
+signals:
+	void ValueChangedSignal(QColor);
 	public slots:
 		void update()
 		{
@@ -27,6 +29,17 @@ public:
 			pal.setColor(QPalette::Background, color);
 			ui.preview->setAutoFillBackground(true);
 			ui.preview->setPalette(pal);
+			emit ValueChangedSignal(color);
+		}
+		void setColor(QColor color)
+		{
+			ui.r->setValue(color.red());
+			ui.g->setValue(color.green());
+			ui.b->setValue(color.blue());
+		}
+		QColor getColor()
+		{
+			return QColor (getR(),getG(),getB(),50);
 		}
 };
 #endif

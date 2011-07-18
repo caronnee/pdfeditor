@@ -31,9 +31,7 @@
        </widget>
       </item>
       <item row="8" column="2">
-       <widget class="ColorPicker" name="colorN" native="true">
-        <zorder>apply</zorder>
-       </widget>
+       <widget class="ColorPicker" name="colorN" native="true"/>
       </item>
       <item row="8" column="0">
        <widget class="QLabel" name="label_4">
@@ -125,7 +123,17 @@
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QLineEdit" name="text"/>
+       <widget class="QLineEdit" name="text">
+        <property name="locale">
+         <locale language="English" country="UnitedStates"/>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+        <property name="placeholderText">
+         <string notr="true"/>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
