@@ -333,6 +333,7 @@ private:
 	boost::shared_ptr<pdfobjects::CStream> createAPStream(float * dim);
 	pdfobjects::IndiRef createAppearanceHighlight(float * dim);
 	pdfobjects::IndiRef createAppearanceComment(float *dim);
+	PdfOp getValidTextOp( Ops& ops, bool & found);
 };
 
 #endif

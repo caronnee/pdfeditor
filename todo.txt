@@ -107,7 +107,7 @@ WONT FIX - set from splast iba raz a na cast, vzdy ina na konecnej, podla aktual
 - context menu - move, pohnut vysvietenym textom
 - ako pozadie dat obrazok, na ktorom sa vsetko bude vykreslovat
 - ukazovat nejakym tentintkom, kde sa pohybuje pridanie textu, obrazku
-- vytvorit instalator
+FIXED - vytvorit instalator
 - zmenit na viewPort
 ---------------------------------------PATCHES------
 OK - getfontwidth - pridava funkcia na sirku glyfu
@@ -121,10 +121,10 @@ OK - ulozit PDF v neecrptovanej podobe -
 - heslo, ak sa nemoze nic menit (credentials?)
 - uprav tak, aby sa texty neprekryvali
 WONT FIX - file attachmenets, attachments, zobrazit, stiahnu
-- zadanie, aka farba v pozadi sa ma zobrazovat ( U HIGHLIGHTU )
+FIXED - zadanie, aka farba v pozadi sa ma zobrazovat ( U HIGHLIGHTU )
 FIXED - erase text zrusit TDcka alebo okecat preco to vyzera tak debulne ako to vyzera
-- pri insertovani testovat ci tam uzivatel nezadal novy riadok a osetrit to
-- BUG in STD stringu konverzii na Qstring -> exception
+FIXED - pri insertovani testovat ci tam uzivatel nezadal novy riadok a osetrit to
+FIXED (nekonvertuje sa) - BUG in STD stringu konverzii na Qstring -> exception
 WONTFIX (diakritiku podporuje string, tot by bolo pre unicode - to tam nevtrepem) - zmenit vsetko na wstring aby sa tam dala vlozit aj diakritika 
 FIXED - dalsi parameter-> charakter spacing
 - moznost pridat uzivatelom definovany font(configs cestou kde ho hladat)
@@ -133,11 +133,11 @@ FIXED - dalsi parameter-> charakter spacing
 - pri loadovani pridat progress bar
 - zalozky ( aby uzivatel vedel, kam sa vratit - a program tiez
 - ked mazem stranky, zmazat aj prislusne bookmarky
-- pri zmazani revizia cheknut exception na stranku - zorazit len  taku, zo exituje!
+FIXED - pri zmazani revizia cheknut exception na stranku - zorazit len  taku, zo exituje!
 - osertit ked sa nieco nepodari + zrusit alokaciu vsetkych poloziek
 - vytvorit loader pre bookmarky a pre loadovanie a pre savovanie
 - vo foxite a v pdf sa inde zobrazuju anotacie
-- odstranit stream a prepisat to na nas obrazok ( anotacie ) - potom aktivne pluchy pridavat len z Rect, o zobrazenie sa postara kernel
+FIXED - odstranit stream a prepisat to na nas obrazok ( anotacie ) - potom aktivne pluchy pridavat len z Rect, o zobrazenie sa postara kernel
 - to same pre linky
 - dat bookmark do samostatnej propertyv pdf, aby sa to neskor dalo pre kazdeho loadovat - ostatne readery to budu ignorovat
 - veci, ktore sa daju len odklikat, po sekunde zmiznut ( odpocitavanie ) - nastavitelne v settingoch
@@ -156,4 +156,4 @@ FIXED - vysvietenie zrusi anotacie - to sa spravi streamom
 - pri rotovani priznak, ze sme zarotovali a maju sa zmenit boomarky
 - check pre ktore veci nemame font
 - warnint ak nie je ziadny text, akl nie ze ziadny obrazok...
--- on closeevent na vsetky formulare - zavri a vycisti za sebou (operatory preddefinovane zmaz)
+- on closeevent na vsetky formulare - zavri a vycisti za sebou (operatory preddefinovane zmaz)

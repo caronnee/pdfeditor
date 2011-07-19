@@ -6,7 +6,7 @@
 
 using namespace pdfobjects;
 
-OperatorData::OperatorData(PdfOp op,float scale) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _origX(0), _origX2(0), _text(""), _scale(scale)
+OperatorData::OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _origX(0), _origX2(0), _text("")
 {
 	std::string tmp;
 	std::wstring test;
@@ -77,7 +77,7 @@ int OperatorData::letters(double x)
 	double t = _origX;
 	x = min(x,_origX2);
 	int i =0;
-	while ( x - t >1e-2) //-1 je tolerancia
+	while ( x - t >1e-1) //-1 je tolerancia
 	{
 		t+= _op->getWidth(_text[i].unicode());
 		t+= this->_charSpace;
@@ -142,13 +142,13 @@ void OperatorData::split(QString & split1, QString& split2, QString& split3)
 	split2= s.mid(part1, part2-part1);
 	split3= s.mid(part2);
 }
-void OperatorData::replaceAllText(QString s)
+void OperatorData::replaceAllText( std::string s )
 {
 	PdfOperator::Operands ops;
-	ops.push_back(boost::shared_ptr<IProperty>(new CString(s.toAscii().data())));
+	ops.push_back(boost::shared_ptr<IProperty>(new CString(s)));
 	PdfTextOperator p = boost::dynamic_pointer_cast<TextSimpleOperator>(createOperator("Tj",ops));
 	_op->getContentStream()->replaceOperator(_op,p);
 	_op = p;
-	_text = s; //TODO make visible that now this is invalid
+	_text = QString::fromStdString(s); //TODO make visible that now this is invalid
 	clear();
 }
