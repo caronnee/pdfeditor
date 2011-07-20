@@ -419,8 +419,12 @@ float TextSimpleOperator::getWidth(Unicode input)
 	boost::shared_ptr<PdfOperator> op = it.getCurrent();
 	Operands operands;
 	op->getParameters(operands);
+#if _DEBUG
+	std::string m;
+	op->getStringRepresentation(m);
+#endif
 	float fs = utils::getValueFromSimple<CReal>(operands[1]);
-	return dx*fs*actualTransform[0] + dy*fs*actualTransform[1]; //* displayparameter issue in x value
+	return fabs(dx*fs*actualTransform[0] + dy*fs*actualTransform[1]); //* displayparameter issue in x value
 }
 
 void TextSimpleOperator::getFontText(std::wstring& str)const

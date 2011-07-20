@@ -145,7 +145,7 @@ FIXED - odstranit stream a prepisat to na nas obrazok ( anotacie ) - potom aktiv
 - save this revision as new revision - NEPODPORUJE KNIZNICE -> ADDITIONAL
 MERGED ^^ clone nefunguje 
 - parameter , aby sa sobory otvorili z commandline
-- savovanie revizie robi problemy
+FIXED (SU DEBIL)- savovanie revizie robi problemy
 - finisnut progressbar pre istotu po kazdom save
 - premenovat vsetky signaly na prefix so signalom
 - image position emitovat
@@ -154,6 +154,20 @@ FIXED - vysvietenie zrusi anotacie - to sa spravi streamom
 - uvodna obrazovka
 - about
 - pri rotovani priznak, ze sme zarotovali a maju sa zmenit boomarky
-- check pre ktore veci nemame font
+FIXED - check pre ktore veci nemame font
 - warnint ak nie je ziadny text, akl nie ze ziadny obrazok...
 - on closeevent na vsetky formulare - zavri a vycisti za sebou (operatory preddefinovane zmaz)
+-------------------------OUTSTANDING ISSUES-----------------------------
+--delete potrebuje TD pred operator
+--pokial je v textovom operatore aj cislo, neviem spravne zobrazit vysviecovanie, mazanie a posobne
+--Niekde ve v Tf zaporna hodnota
+--ako medzeru to ma osetrit _WordSpace
+--samostatny dialog pre highlight a pre comment ( highlihgt zmenit len farbu a text, comment zmenit iva text)
+--previous nefunguje
+--delete text posunie operator PRED ten mazany
+--export text nerozoznava dobre medzery
+--bookmarky schovavatelne
+--loader na finish -> hide, on init->hide
+--kin pre fontwidget, image a anotacie
+-------------------------------------------
+QT single application

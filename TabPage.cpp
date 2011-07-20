@@ -2027,7 +2027,7 @@ void TabPage::exportRevision()
 {
 	QString name = getFile(false);
 	//if exists, save it here
-	FILE * f = fopen(name.toAscii().data(),"w");
+	FILE * f = fopen(name.toAscii().data(),"wb");
 	//saving to new file
 	if (!f)
 	{
@@ -2731,7 +2731,14 @@ void TabPage::deleteSelectedText() //sucasne zarovna
 {
 	if (!_selected)
 		return;
-	//prvy  replasni, ostatne vymaz
+	//prvy  replasni, ostatne vymaz, pridaj TD pred posledne
+	{
+		float distX = sTextIt->_origX - sTextItEnd->GetPreviousStop(); //nesmie byt fabs!!
+		float distY =  sTextIt->_ymin - sTextItEnd->_ymin;
+		PdfOp op = FontWidget::createTranslationTd(distX,distY);
+		insertBefore(op,sTextItEnd->_op);
+	}
+
 	QString s[3];
 	sTextIt->split(s[0],s[1],s[2]);
 	PdfOperator::Operands operand;

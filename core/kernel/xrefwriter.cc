@@ -1218,7 +1218,15 @@ using namespace debug;
 		kernelPrintDbg(DBG_ERR, "Unable to write whole EOFMARKER (\"" << 
 				strerror(err) << "\").");
 	}
-	fflush(file);
+//	fflush(file);
+//using namespace utils;
+//	Object nl;
+//	nl.initNull();
+//	StreamWriter * nStream=new FileStreamWriter(file, 0, gFalse, 0, &nl); //TODO zapamataj odznova
+//
+//	size_t xrefPos=streamWriter->getPos();
+//	IPdfWriter::PrevSecInfo secInfo={lastXRefPos, XRef::maxObj+1};
+//	size_t newEofPos=pdfWriter->writeTrailer(*getTrailerDict(), secInfo, *nStream);
 
 	// restore stream position
 	streamWriter->setPos(pos);
