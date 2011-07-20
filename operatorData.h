@@ -13,6 +13,9 @@ struct OperatorData
 	PdfTextOperator _op;
 	double _origX, _origX2;
 	QString _text; //jak bol text v tom, pripadne uprava o medzeru, prepisanie ma medzeru, ako konci -, odstranit
+	float _width;
+	std::vector<float> _letters;
+	size_t _id;
 public:
 	OperatorData(PdfOp op);
 	float GetPreviousStop();
@@ -28,8 +31,9 @@ public:
 	void setBegin(float x);
 	void setEnd(float x);
 	bool operator<(const OperatorData & oper); //zoradime podla y-osi
-	bool forward (double x, double y)const;
+	bool forward (double x, double y, bool & eq)const;
 	//split odla toho, ako sme to vysvietili
 	void split(QString& split1, QString& split2, QString& split3);
 	void replaceAllText(std::string s);
+	~OperatorData();
 };

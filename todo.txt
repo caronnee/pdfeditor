@@ -170,4 +170,4 @@ FIXED - check pre ktore veci nemame font
 --loader na finish -> hide, on init->hide
 --kin pre fontwidget, image a anotacie
 -------------------------------------------
-QT single application
+QT single application + otvarat vsetko v tomto jednom

@@ -187,10 +187,10 @@ public:
 	/** returns width of the text */
 	float getWidth(Unicode c);
 	float getFontHeight()const;
-	float getSpace();
 	void getMatrix(float * values, boost::shared_ptr< PdfOperator>  beginOp);
 	void setTransformationMatrix( const double * param1 );
 	void concatTransformationMatrix( const double * param1 );
+	float getOper(const char * wanted, float def,int negative);
 }; // class TextSimpleOperator
 
 //==========================================================

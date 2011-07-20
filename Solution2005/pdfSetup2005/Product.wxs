@@ -4,58 +4,60 @@
 
     <Package InstallerVersion="200" Compressed="yes" />
 		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
-		<Directory Id="TARGETDIR" Name="SourceDir" FileSource="..\..">
-          <Directory Id="pdfImages" Name="images">
-            <Component Id="ImageSource" Guid="8f654235-16ee-4a04-b607-2f848fc32db5" >
-              <File Id="imgcomment" Name="comment.ico"  />
-              <File Id="imgcontent" Name="content.ico"  />
-              <File Id="imgdeletepage" Name="deletepage.ico"/>
-              <File Id="imgDeleteText" Name="DeleteText.ico"/>
-              <File Id="imgderotate" Name="derotate.ico"/>
-              <File Id="imgdownpage" Name="downpage.ico"/>
-              <File Id="imgeraseText" Name="eraseText.ico"/>
-              <File Id="imghand" Name="hand.ico"/>
-              <File Id="imgimages" Name="images.ico"/>
-              <File Id="imginserttext" Name="insert_text.ico"/>
-              <File Id="imginsertTextMarker" Name="insertTextMarker.ico"/>
-              <File Id="imgopen" Name="open.ico"/>
-              <File Id="pagedown" Name="page_down.ico"/>
-              <File Id="redo" Name="redo.ico"/>
-              <File Id="rotate" Name="rotate.ico"/>
-              <File Id="save" Name="save.ico"/>
-              <File Id="saveas" Name="saveas.ico"/>
-              <File Id="savecopy" Name="savecopy.ico"/>
-              <File Id="saveencoded" Name="save-encoded.ico"/>
-              <File Id="search" Name="search.ico"/>
-              <File Id="setText" Name="setText.ico"/>
-              <File Id="imgTextConvert.ico" Name="TextConvert.ico"  />
-              <File Id="imgundo.ico" Name="undo.ico"  />
-              <File Id="imgUppage.ico" Name="uppage.ico"  />
-              <File Id="imgZoom" Name="zoom.ico"  />
-              <File Id="imgDecrypt_icon" Name="decrypt_icon.jpg"  />
-              <File Id="imgOperator" Name="operator.jpg"  />
-              <File Id="imgUnknown" Name="unknown.jpg"  />
-              <File Id="imgAddPage" Name="addpage.png" />
-            </Component>
-          </Directory>
-					<Component Id="Executable" Guid="8f654235-16ee-4a04-b607-2f848fc32db4">
-            <File Id='PdfEditorExe' Name='$(var.TARGETSOURCE)' KeyPath='yes'>
- <!--             <Shortcut Id="desktopPdfEditor" Directory="DesktopFolder" Name="PdfEditor (Beta)"
-                  WorkingDirectory='INSTALLDIR' Advertise="yes" /> -->
-            </File>
-            <Shortcut Id="UninstallProduct"
-                         Name="Uninstall My Application"
-                         Description="Uninstalls My Application"
-                         Target="[System64Folder]msiexec.exe"
-                         Arguments="/x [ProductCode]"/>
+    <Directory Id="TARGETDIR" Name="SourceDir" FileSource="..\..">
+      <Directory Id="TARGETSUBDIR" Name="PdfEditor" FileSource="..\..">
+        <Directory Id="pdfImages" Name="images">
+          <Component Id="ImageSource" Guid="8f654235-16ee-4a04-b607-2f848fc32db5" >
+            <File Id="imgcomment" Name="comment.ico"  />
+            <File Id="imgcontent" Name="content.ico"  />
+            <File Id="imgdeletepage" Name="deletepage.ico"/>
+            <File Id="imgDeleteText" Name="DeleteText.ico"/>
+            <File Id="imgderotate" Name="derotate.ico"/>
+            <File Id="imgdownpage" Name="downpage.ico"/>
+            <File Id="imgeraseText" Name="eraseText.ico"/>
+            <File Id="imghand" Name="hand.ico"/>
+            <File Id="imgimages" Name="images.ico"/>
+            <File Id="imginserttext" Name="insert_text.ico"/>
+            <File Id="imginsertTextMarker" Name="insertTextMarker.ico"/>
+            <File Id="imgopen" Name="open.ico"/>
+            <File Id="pagedown" Name="page_down.ico"/>
+            <File Id="redo" Name="redo.ico"/>
+            <File Id="rotate" Name="rotate.ico"/>
+            <File Id="save" Name="save.ico"/>
+            <File Id="saveas" Name="saveas.ico"/>
+            <File Id="savecopy" Name="savecopy.ico"/>
+            <File Id="saveencoded" Name="save-encoded.ico"/>
+            <File Id="search" Name="search.ico"/>
+            <File Id="setText" Name="setText.ico"/>
+            <File Id="imgTextConvert.ico" Name="TextConvert.ico"  />
+            <File Id="imgundo.ico" Name="undo.ico"  />
+            <File Id="imgUppage.ico" Name="uppage.ico"  />
+            <File Id="imgZoom" Name="zoom.ico"  />
+            <File Id="imgDecrypt_icon" Name="decrypt_icon.jpg"  />
+            <File Id="imgOperator" Name="operator.jpg"  />
+            <File Id="imgUnknown" Name="unknown.jpg"  />
+            <File Id="imgAddPage" Name="addpage.png" />
           </Component>
-          <Component Id='Libraries' Guid='8f654235-16ee-4a04-b607-2f848fc32db1'>
-            <File Id='qtcore' Source='$(var.QtSdkPath)\QtCore4.dll'/>
-            <File Id='qtGui'  Source='$(var.QtSdkPath)\QtGui4.dll'/>
-            <File Id='freetype' Source='..\..\dlls\freetype6.dll' />
-            <File Id='zdll' Source='..\..\dlls\zlib1.dll' />
+        </Directory>
+        <Component Id="Executable" Guid="8f654235-16ee-4a04-b607-2f848fc32db4">
+          <File Id='PdfEditorExe' Name='$(var.TARGETSOURCE)' KeyPath='yes'>
+            <!--             <Shortcut Id="desktopPdfEditor" Directory="DesktopFolder" Name="PdfEditor (Beta)"
+                  WorkingDirectory='INSTALLDIR' Advertise="yes" /> -->
+          </File>
+          <Shortcut Id="UninstallProduct"
+                       Name="Uninstall My Application"
+                       Description="Uninstalls My Application"
+                       Target="[System64Folder]msiexec.exe"
+                       Arguments="/x [ProductCode]"/>
+        </Component>
+        <Component Id='Libraries' Guid='8f654235-16ee-4a04-b607-2f848fc32db1'>
+          <File Id='qtcore' Source='$(var.QtSdkPath)\QtCore4.dll'/>
+          <File Id='qtGui'  Source='$(var.QtSdkPath)\QtGui4.dll'/>
+          <File Id='freetype' Source='..\..\dlls\freetype6.dll' />
+          <File Id='zdll' Source='..\..\dlls\zlib1.dll' />
         </Component>
       </Directory>
+    </Directory>
     <Property Id="WIXUI_INSTALLDIR" Value="TARGETDIR" />
     <UIRef Id="WixUI_Mondo" />
 		<Feature Id="ProductFeature" Title="pdfSetup2005" Level="1">

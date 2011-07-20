@@ -360,16 +360,21 @@ float TextSimpleOperator::getFontHeight()const
 	float fs = utils::getValueFromSimple<CReal>(operands[1]);
 	return fs;
 }
-float TextSimpleOperator::getSpace()
+float TextSimpleOperator::getOper(const char * wanted, float def,int neg)
 {
 	std::string name;
 	PdfOperator::Iterator it = this->_prev();
+	int level=1;
 	while (it.valid())
 	{
 		it.getCurrent()->getOperatorName(name);
-		if (name == "BT")
-			return 0;
-		if (name == "Tc")
+		/*if (name == "BT")
+			return 1;*/
+		if (name == "Q" )//restore ->budeme ignrovat, pretoze hladame stav, v akom sme teraz
+			level++;
+		if(name == "q"&&level>0)
+			level--;
+		if (name == wanted && level==0) //-> musi to by ale v platnom Q,q
 		{
 			shared_ptr<PdfOperator> op = it.getCurrent();
 			PdfOperator::Operands ops;
@@ -379,13 +384,16 @@ float TextSimpleOperator::getSpace()
 			op->getStringRepresentation(m);
 #endif
 			float f= utils::getValueFromSimple<CReal>(ops[0]);
-			if (f >=0)
+			if (neg==0)
+				return f; //we do not care about sign
+			if (neg * f > 0)
 				return f;//for horizontal writing
 		}
 		it.prev();
 	}
-	return 0;
+	return def;
 }
+
 void TextSimpleOperator::getMatrix(float * values, boost::shared_ptr< PdfOperator>  beginOp)
 {
 	//memset(values,0, sizeof(float)*6);
@@ -414,7 +422,6 @@ float TextSimpleOperator::getWidth(Unicode input)
 	//najdi predosly operator s velkostou font
 	shared_ptr<PdfOperator> shr = this->_prev().lock();
 	//we need also all TM operator that operated with the width of glyph and also CM operators befor that
-	//first -> fin
 	FontOperatorIterator it = this->getIterator<FontOperatorIterator>(shr,false);
 	boost::shared_ptr<PdfOperator> op = it.getCurrent();
 	Operands operands;
@@ -424,7 +431,7 @@ float TextSimpleOperator::getWidth(Unicode input)
 	op->getStringRepresentation(m);
 #endif
 	float fs = utils::getValueFromSimple<CReal>(operands[1]);
-	return fabs(dx*fs*actualTransform[0] + dy*fs*actualTransform[1]); //* displayparameter issue in x value
+	return dx*fs*actualTransform[0] + dy*fs*actualTransform[1]; //* displayparameter issue in x value
 }
 
 void TextSimpleOperator::getFontText(std::wstring& str)const
