@@ -13,7 +13,7 @@ using namespace boost;
 #define FINDFONT_INDEX 0
 
 //TODO doplnit a spravne vyrazy
-std::string fontShapes[] ={"Fill","Stroke","Fill&Stroke","Invisible"};
+QString fontShapes[] ={"Fill","Stroke","Fill&Stroke","Invisible"};
 
 void FontWidget::setChange()
 {
@@ -65,7 +65,7 @@ FontWidget::FontWidget(QWidget *parent) : QWidget(parent),_embededFont(false)
 	for (int i = 0;i<NumberOfShapes;i++)
 	{
 		QVariant v(i);
-		ui.shape->addItem(QString(fontShapes[i].c_str()),v);
+		ui.shape->addItem(fontShapes[i],v);
 	}
 	//pridaj posledny polozku na zistovanie fontu z pdf operatora
 	this->ui.fonts->addItem("<Select font from text>");

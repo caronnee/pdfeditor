@@ -163,6 +163,7 @@ void OpenPdf::open(QString name)
 	{
 		TabPage * page = new TabPage(this, name);
 		this->addTab(page,name);
+		emit OpenSuccess(name);
 		//pri kazdon otvoreni sa spytaj, ci je to potreba delinerizovat(co noveho suboru), inak sa nebude dat savovat
 		if (page->checkLinearization())
 			return;
@@ -171,7 +172,7 @@ void OpenPdf::open(QString name)
 			return;
 		page->delinearize(fileName);
 		
-		//close the old file & open deliarized version
+		//close the old file & open delinearized version
 		this->deletePage();
 		page = new TabPage(this,fileName);
 		this->addTab(page,fileName);

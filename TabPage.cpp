@@ -75,7 +75,8 @@ public:
 	}
 	virtual void finish()
 	{
-		//do nothing
+		//hide it
+		_bar->hide();
 	};
 	virtual void update(int step)
 	{
@@ -129,10 +130,17 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	connect(_font, SIGNAL(getLastFontSignal(libs::Point)), this, SLOT(getPreviousFontInPosition(libs::Point)));
 	connect(_font, SIGNAL(convertTextFromUnicode(QString,std::string)), this, SLOT(checkCode(QString,std::string)));
 	//show text button, hide everything else
-
+	//--------------------------------Disabling------------------
+	ui.showBookmark->setEnabled( _pdf->getDictionary()->containsProperty("Outlines"));
+	//--------------------------------HIDING---------------------
+	//hiding necessary
+	this->ui.tree->hide();
+	this->ui.analyzeTree->hide();
+	this->ui.progressBar->hide();
+	//------------------------------CONNECTIONS----------------------
 	//connections
 	//pridanie anotacie
-
+	connect(this->ui.showBookmark, SIGNAL(clicked()), this, SLOT(checkLoadedBookmarks()));
 	connect(_cmts,SIGNAL(textAnnotation(Annot)),this,SLOT(insertTextAnnot(Annot)));
 	connect(_cmts,SIGNAL(annotation(Annot)),this,SLOT(insertAnnotation(Annot)));
 	connect(_cmts,SIGNAL(WaitForPosition(Annot)),this,SLOT(SetModePosition(Annot)));
@@ -176,12 +184,12 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	//connect(_parent, SIGNAL(ModeChangedSignal(QString), this, SLOT(clearSelected())))
 	//////////////////////////////////////////////////////////////////////////
 	//redraw();
+	this->ui.tree->setColumnCount(1); //only one columne
 	_dataReady = false;
 	//setZoom();
 
 	this->ui.zoom->setCurrentIndex(1);
 	_dataReady = false;
-	getBookMarks();
 	//search("oftwar",true);
 	//changeSelectedText();
 }
@@ -926,7 +934,7 @@ void TabPage::raiseChangeSelectedText()
 //	_annots.push_back(_an);
 //	_mode = ModeEmitPosition;
 //}
-void TabPage::raiseAnnotation(QPoint point)
+void TabPage::raiseAnnotation(QPoint point)//raise cpmment annotation
 {
 	//_mode = ModeEmitPosition;
 	double x=point.x(),y=point.y();
@@ -938,6 +946,7 @@ void TabPage::raiseAnnotation(QPoint point)
 	displayparams.convertPixmapPosToPdfPos(d[0],d[1],d[0],d[1]);
 	_cmts->setRectangle(d[0],d[1],30,30);//pre zvysok sa to vyhodi a nahradi sadou anotacii	
 	_cmts->setWindowFlags(Qt::Window);
+	_cmts->setIndex(AText);
 	_cmts->show();
 }
 
@@ -1741,12 +1750,14 @@ bool TabPage::nextPage()
 }
 void TabPage::getBookMarks()
 {
-	return;
 	std::vector<shared_ptr<CDict> > outline;
 	if (!_pdf->getDictionary()->containsProperty("Outlines"))
 		return;
 	shared_ptr<CDict> ol = _pdf->getDictionary()->getProperty<CDict>("Outlines");
-	ol = ol->getProperty<CDict>("First");
+	if (!ol->containsProperty("First"))
+		return;
+
+	ol = ol->getProperty<CDict>("First"); //musi obsahovat first
 	while(ol->containsProperty("Next"))
 	{
 		outline.push_back(ol);
@@ -1754,7 +1765,12 @@ void TabPage::getBookMarks()
 		ol = p->getSmartCObjectPtr<CDict>(p);
 	}
 	outline.push_back(ol);
-	this->ui.tree->setColumnCount(1); //only one columne
+
+	this->ui.progressBar->show();
+	this->ui.progressBar->setFormat("Loading bookmarks %p%");
+	this->ui.progressBar->setValue(0);
+	this->ui.progressBar->setMaximum(utils::getIntFromDict("Count",ol));
+
 	for (size_t i =0; i< outline.size(); i++)
 	{
 		Bookmark * b = new Bookmark(ui.tree);
@@ -1763,7 +1779,9 @@ void TabPage::getBookMarks()
 		std::string name = utils::getStringFromDict(outline[i],"Title");
 		QVariant v(name.c_str());
 		b->setText(0,v.toString());
+		this->ui.progressBar->setValue(i);
 	}
+	this->ui.progressBar->hide();
 }
 void TabPage::setTree(shared_ptr<CDict> d, Bookmark * b)
 {
@@ -2158,6 +2176,14 @@ void TabPage::showAnnotation()
 	while( iAnnot< (int)ann.size()-1 )
 	{
 		iAnnot++;
+		std::string name;
+		name = utils::getNameFromDict("Subtype",ann[iAnnot]->getDictionary());
+		int iter = 0;
+		for ( ; !SupportedAnnotationNames[iter].empty(); iter++)
+			if (SupportedAnnotationNames[iter] == name)
+				break;
+		if (SupportedAnnotationNames[iter].empty())
+			continue;
 #ifdef _DEBUG
 		std::vector<std::string> names; //subtype == text
 		ann[iAnnot]->getDictionary()->getAllPropertyNames(names);
@@ -2472,7 +2498,7 @@ void TabPage::setSelected(TextData::iterator& first, TextData::iterator& last)
 //slot
 void TabPage::search(QString srch, bool forw)
 {
-	if (forw && searchForw(srch))
+	if (forw && performSearch(srch, forw))
 	{
 		highlight();
 		return;
@@ -2613,90 +2639,105 @@ std::string TabPage::checkCode(QString s, std::string fontName)
 	}
 	return ret;
 }
-bool TabPage::searchForw(QString srch)
+bool TabPage::performSearch( QString srch, bool forw )
 {
+	QString s;
 	for(int i = 0; i< _pdf->getPageCount(); i++)
 	{
 		TextData::iterator iter;
 		if (_textList.size() == 0)
 			goto NextPage;
+		if(!forw)
+			srch = revert(srch);
 		_searchEngine.setPattern(srch); //vytvor strom, ktory bude hladat to slovo, pre kazdu stranku znova
+
 		//vysviet prve, ktore najdes
-		iter = _textList.begin();
+		if (forw)
+			iter = _textList.begin();
+		else
+			iter = _textList.end()--;//posledne
 		iter->clear();
 		if (_selected)
-		{
 			iter = sTextIt;//nic nemen v hladacom engine
-			_searchEngine.setText(iter->_text);
-			_searchEngine._begin=sTextIt->letters(sTextIt->_begin);
-		}
-		else
-		{
-			std::wstring w;
-			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
-			txt->getFontText(w);
-			_searchEngine.setText(QString::fromStdWString(w));
-		}
-		float prev = iter->_end;
+		s = iter->_text;
+		if (!forw)
+			s = revert(s);
+		_searchEngine.setText(s);
+		_searchEngine._begin = sTextIt->letters(sTextIt->_begin);
+
+		float prev = forw? iter->_end : iter->_begin;
 		while (iter != _textList.end())
 		{
 			switch (_searchEngine.search())
 			{
-			case Tree::Next:
+			case Tree::Next: //potrebuje dalsi token
 				{
-					iter++;
-					if (iter == _textList.end())
+					if (forw)
+						iter++;
+					if (iter == _textList.end() || iter == _textList.begin())
 						goto NextPage;
-					//s = iter->_text;
-					//sSimp
-					//float sizeOfSpace = iter->_op->
-					//aprozumijeme medzeru
-					shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
-					float dx = txt->getWidth(' ');//TODO zmenit na word
-					if (fabs(prev - iter->_begin) > dx ) //from which space?
-						_searchEngine.acceptSpace();
-					prev = iter->_end;
-
+					if (!forw)
+						iter--;
+					shared_ptr<TextSimpleOperator> txt= iter->_op;
+					//float dx = txt->getWidth(' ');//TODO zmenit na word
+					//if (fabs(prev - iter->_begin) > iter->_w ) //from which space?
+					//	_searchEngine.acceptSpace(); //space neberieme do uvahy, blbo sa s nimi pocita
+					prev = forw? iter->_end : iter->_begin;
 					break;
 				}
 			case Tree::Found:
 				{
 					_labelPage->unsetImg();
-					prev = iter->_end; 
+					//prev = iter->_end; //netreba
 					double a, b;
 					//ak je 
-					iter->setEnd(iter->position(_searchEngine._end+1));
+					if (forw)
+						iter->setEnd(iter->position(_searchEngine._end+1));
+					else
+						iter->setBegin(iter->position(iter->_text.size() - _searchEngine._end));
 					sTextItEnd = iter;
 					for ( int i = 0; i < _searchEngine._tokens; i++)
 					{
-						iter--;
+						if (forw)
+							iter--;
+						else
+							iter++;
 						iter->clear();
 					}
 					sTextIt = iter;
 					b = iter->position(_searchEngine._begin+1); 
-					//iter->setEnd(a);
-					iter->setBegin(b);
+					if (forw)
+						iter->setBegin(b);
+					else
+						iter->setEnd(b);
 					_selected = true; 
 					return true;
 				}
 			default:
 				{
-					throw "Unexpected t->search() token";
+					throw "Unexpected t->search() token"; //pre developera
 				}
 			}
-			std::wstring w;
-			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
-			txt->getFontText(w);
-			_searchEngine.setText(QString::fromStdWString(w));
+			_searchEngine.setText(iter->_text);
 		}
 		//next page, etreba davat do splashu
 NextPage:
 		int pg = _page->getPagePosition();
-		int p2 = _pdf->getPagePosition(_page);
-		if ( pg == _pdf->getPageCount())
-			_pdf->getPage(1);
+		//int p2 = _pdf->getPagePosition(_page);
+		if (forw)
+		{
+			if ( pg == _pdf->getPageCount())
+				_page = _pdf->getPage(1);
+			else
+				_page = _pdf->getNextPage(_page);
+		}
 		else
-			_page = _pdf->getNextPage(_page);
+		{
+			if ( pg == 1)
+				_page = _pdf->getPage(1);
+			else
+				_page = _pdf->getPrevPage(_page);
+		}
 		redraw();
 		//nastav nove _textbox, pretoze sme stejne v textovom rezime
 	}
@@ -3325,4 +3366,12 @@ PdfOp TabPage::getValidTextOp( Ops& ops, bool & found )
 			}
 		}
 	}
+	assert(false);
+	return PdfOp();
+}
+
+void TabPage::checkLoadedBookmarks()
+{
+	if (ui.tree->topLevelItemCount() == 0)
+		getBookMarks();
 }

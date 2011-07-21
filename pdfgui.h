@@ -28,13 +28,15 @@ public:
 	pdfGui(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~pdfGui();
 	void closeEvent( QCloseEvent *event );
-protected:
-	//void keyPressEvent(QKeyEvent *event);
+	
 
 private:
+	QMenu * _lastOpenedButtonMenu;
 	Ui::pdfGuiClass ui;
-public:
-
+public slots:
+	void openLastFile( );
+	void lastOpenedPdfs();
+	void appendToLast( QString s );
 };
 
 #endif // PDFGUI_H

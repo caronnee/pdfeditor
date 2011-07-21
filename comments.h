@@ -25,7 +25,14 @@ class Comments : public  QWidget
 	Annot _an;
 	libs::Rectangle rect;
 	typedef boost::shared_ptr<pdfobjects::utils::IAnnotInitializator> CAInit;
-	std::vector<CAInit> _inits;
+	struct InitName
+	{
+		std::string name;
+		CAInit init;
+		InitName(std::string n,CAInit i):name(n),init(i){};
+	};
+	std::vector<InitName> _inits;
+	int _index;
 public:
 	Comments();
 signals:
@@ -35,7 +42,7 @@ signals:
 	void WaitForPosition(Annot);
 
 public slots:
-	void setIndex(int i) { this->ui.annotType->setCurrentIndex(i); }
+	void setIndex(int i) { _index = i; }
 	void setRectangle(libs::Rectangle rectangle);
 	void setRectangle(float pdfx, float pdfy, int pdfwidth, int pdfheight);
 	void setPoints(std::vector<float> flts);

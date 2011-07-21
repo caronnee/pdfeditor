@@ -82,7 +82,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)releaseLibs"
+			OutputDirectory="$(SolutionDir)releaseLibs\"
 			IntermediateDirectory="$(SolutionDir)r_kernel"
 			ConfigurationType="4"
 			CharacterSet="2"

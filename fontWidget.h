@@ -46,7 +46,7 @@ class FontWidget : public QWidget
 	};
 	enum Shapes
 	{
-		a,s,d,f,g,h,NumberOfShapes
+		fill,stroke,both,invisible,NumberOfShapes
 	};
 	bool _embededFont;
 	bool _change;

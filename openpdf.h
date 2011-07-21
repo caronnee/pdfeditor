@@ -7,12 +7,12 @@ class OpenPdf :
 	public QTabWidget
 {
 	Q_OBJECT
-private:
-	void open(QString s);
+	
 public:
 	OpenPdf(QWidget * widget);
 	~OpenPdf(void);
 
+	void open(QString s);
 	Mode _previous;
 	Mode _mode;
 	QColor _color;
@@ -85,4 +85,6 @@ public slots:
 	QColor getColor();
 	QColor getHColor();
 	void setModeInsertLinkAnotation();
+signals:
+	void OpenSuccess(QString);
 };

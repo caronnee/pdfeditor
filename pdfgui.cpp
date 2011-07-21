@@ -2,6 +2,7 @@
 #include <QImage>
 #include <QColor>
 #include <QKeyEvent>
+#include <QMenu>
 
 #include "pdfgui.h"
 #include "typedefs.h"
@@ -15,7 +16,6 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	if ( 0 != pdfedit_core_dev_init(&argc, &argv, &init))
 		throw "Unable to init PdfEdit library";
 
-	
 	GlobalParams::initGlobalParams(NULL)->setEnableT1lib("no");
 	GlobalParams::initGlobalParams(NULL)->setEnableFreeType("yes");
 	GlobalParams::initGlobalParams(NULL)->setErrQuiet(gFalse);
@@ -29,7 +29,10 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	ui.imageFrame->hide();
 	ui.debugFrame->hide();
 	ui.settingFrame->hide();
+	
+
 //TODO dat do uicka
+	connect(this->ui.lastOpenedButton, SIGNAL(clicked()), this, SLOT(lastOpenedPdfs()));
 	connect( this->ui.opSelect, SIGNAL(clicked()), this->ui.openedPdfs,SLOT(setModeDefault()));
 	connect( this->ui.derotateButton, SIGNAL(clicked()), this->ui.openedPdfs,SLOT(derotate()));
 	connect( this->ui.deleteButton,SIGNAL(clicked()),this->ui.openedPdfs,SLOT(deleteSelectedText()));
@@ -52,6 +55,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 
 	connect( this->ui.hcolor, SIGNAL(ValueChangedSignal(QColor)), ui.openedPdfs, SLOT(setHColor(QColor)));
 	connect( this->ui.color, SIGNAL(ValueChangedSignal(QColor)), ui.openedPdfs, SLOT(setColor(QColor)));
+	connect( this->ui.openedPdfs, SIGNAL(OpenSuccess(QString)), this, SLOT(appendToLast(QString)));
 	
 	this->ui.openedPdfs->setMode(ModeSelectText);
 	//connect( this->ui.highlightButton,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(highlightSelected()));
@@ -59,6 +63,8 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	//load settings
 	ui.color->setColor(QColor(255,0,0,50));
 	ui.hcolor->setColor(QColor(0,255,0));
+	_lastOpenedButtonMenu = new QMenu();
+
 	FILE * f = fopen("config","r");
 	if (!f)
 		return;
@@ -89,10 +95,17 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 				i=0;
 				continue;
 			}
+			if(!stricmp(buffer,"file"))
+			{
+				s++;
+				_lastOpenedButtonMenu->addAction(s,this,SLOT(openLastFile()));
+			}
+
 		}
 		buffer[i] = c;
 		i++;
 	}
+	//--------------------
 	fclose(f);
 }
 void pdfGui::closeEvent( QCloseEvent *event )
@@ -106,10 +119,44 @@ void pdfGui::closeEvent( QCloseEvent *event )
 	fwrite(buffer,sizeof(char),strlen(buffer),f);
 	sprintf(buffer,"hcolor=%u\n",ui.hcolor->getColor().rgb());
 	fwrite(buffer,sizeof(char),strlen(buffer),f);
+	QList<QAction *> actions = _lastOpenedButtonMenu->actions();
+	for (int i =0; i< actions.size(); i++)
+	{
+		sprintf(buffer,"file=%s\n",actions[i]->text().toAscii().data());
+		fwrite(buffer,sizeof(char),strlen(buffer),f);
+	}
 	fclose(f);
 	//savni to do configu
 }
 pdfGui::~pdfGui()
 {
+	delete _lastOpenedButtonMenu;
 	pdfedit_core_dev_destroy();
+}
+
+void pdfGui::lastOpenedPdfs()//clicked
+{
+	if (_lastOpenedButtonMenu->actions().size()==0)
+		return;
+	_lastOpenedButtonMenu->exec(QCursor::pos());
+}
+
+void pdfGui::openLastFile()
+{
+	QAction * action = (QAction *)sender();
+	this->ui.openedPdfs->open(action->text());
+}
+
+void pdfGui::appendToLast( QString s )
+{
+// check if this is opened
+	QList<QAction *> actions = _lastOpenedButtonMenu->actions();
+	for ( int i =0; i < actions.size(); i++)
+		if (actions[i]->text() == s)
+			return;
+	_lastOpenedButtonMenu->addAction(s,this,SLOT(openLastFile()));
+#ifdef _DEBUG
+	QString name = _lastOpenedButtonMenu->actions().back()->text();
+	assert(name == s);
+#endif // _DEBUG
 }

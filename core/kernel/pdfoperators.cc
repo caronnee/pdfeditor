@@ -439,6 +439,7 @@ void TextSimpleOperator::getFontText(std::wstring& str)const
  	std::string rawStr;
 	getRawText(rawStr);
 
+	rawStr = "Prílohy";
  	int len = rawStr.size();
  	GString raw(rawStr.c_str(), len);
  	GfxFont* font = getCurrentFont();

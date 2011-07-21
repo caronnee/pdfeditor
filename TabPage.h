@@ -158,7 +158,7 @@ private: //variables
 	void SetNextPageRotate();
 	/* vytvorit textovy list */
 	void searchPrev(QString srch);
-	bool searchForw(QString srch);
+	bool performSearch(QString srch, bool forw);
 	void getSelected(int x , int y, Ops ops);
 	void toPdfPos(int x, int y, double & x1, double &y1);
 	void toPixmapPos(double x1, double y1, int & x, int & y);
@@ -312,6 +312,7 @@ private slots:
 	void findLastFontMode();
 	std::string checkCode(QString s, std::string fontName);
 	void getPreviousTmInPosition( libs::Point p, float* size);
+	void checkLoadedBookmarks();
 
 //----------------------------------------------------------------------------------------------------	
 	/* To implement
