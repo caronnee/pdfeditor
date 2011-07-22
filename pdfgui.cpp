@@ -74,36 +74,35 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	{
 		//dostan riadok
 		char c = getc(f);
-		if ( c == '\n')
+		if ( c != '\n')
 		{
-			buffer[i] ='\0';
-			char * s = strchr(buffer,'=');
-			*s='\0';
-			if (!stricmp(buffer,"hcolor"))
-			{
-				s++;//budu to vzdy len 3 hodnoty
-				QVariant str(s);
-				ui.hcolor->setColor((QRgb)str.toUInt());
-				i=0;
-				continue;
-			}
-			if(!stricmp(buffer,"color"))
-			{
-				s++;//budu to vzdy len 3 hodnoty
-				QVariant str(s);
-				ui.color->setColor((QRgb)str.toUInt());
-				i=0;
-				continue;
-			}
-			if(!stricmp(buffer,"file"))
-			{
-				s++;
-				_lastOpenedButtonMenu->addAction(s,this,SLOT(openLastFile()));
-			}
-
+			buffer[i] = c;
+			i++;
+			continue;
 		}
-		buffer[i] = c;
-		i++;
+
+		buffer[i] ='\0';
+		char * s = strchr(buffer,'=');
+		*s='\0';
+		if (!stricmp(buffer,"hcolor"))
+		{
+			s++;//budu to vzdy len 3 hodnoty
+			QVariant str(s);
+			ui.hcolor->setColor((QRgb)str.toUInt());
+		}
+		if(!stricmp(buffer,"color"))
+		{
+			s++;//budu to vzdy len 3 hodnoty
+			QVariant str(s);
+			ui.color->setColor((QRgb)str.toUInt());
+		}
+		if(!stricmp(buffer,"file"))
+		{
+			s++;
+			_lastOpenedButtonMenu->addAction(s,this,SLOT(openLastFile()));
+		}
+		i=0;
+
 	}
 	//--------------------
 	fclose(f);
@@ -126,7 +125,6 @@ void pdfGui::closeEvent( QCloseEvent *event )
 		fwrite(buffer,sizeof(char),strlen(buffer),f);
 	}
 	fclose(f);
-	//savni to do configu
 }
 pdfGui::~pdfGui()
 {

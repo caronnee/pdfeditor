@@ -6,6 +6,8 @@
 #include "globalfunctions.h"
 #include <QEvent>
 #include <QToolTip>
+#include <QPixmap>
+#include <QBitmap>
 
 using namespace pdfobjects;
 using namespace boost;
@@ -51,10 +53,44 @@ void FontWidget::reset() //nastavit rotaciu na nulu a podobne
 {
 	memset(set,0x0,sizeof(bool)*NumberOfOptions);
 }
-FontWidget::FontWidget(QWidget *parent) : QWidget(parent),_embededFont(false)
+void FontWidget::paintEvent( QPaintEvent * event )
+{
+	QVector<QPoint> points;
+	points.append(QPoint(0.0, 0.0)); //inverted
+	points.append(QPoint(width(), 0));
+	points.append(QPoint(width(), height()));
+	points.append(QPoint(0.0, height()));
+	points.append(QPoint(0.0, 0.0));
+
+	points.append(QPoint(ui.propFrame->x(), ui.propFrame->y()+10));
+	points.append(QPoint(ui.propFrame->x(), ui.propFrame->y()+ui.propFrame->height()));
+	points.append(QPoint(ui.propFrame->x()+ ui.propFrame->width(), ui.propFrame->y()+ui.propFrame->height()));
+	points.append(QPoint(ui.propFrame->x()+ ui.propFrame->width(), ui.propFrame->y()));
+	points.append(QPoint(ui.propFrame->x()+10, ui.propFrame->y()));
+
+	QPixmap image(this->size());
+	QPainter painter(&image);
+	QPainterPath path;
+	path.addPolygon(QPolygon(points));
+	path.closeSubpath();
+	painter.fillPath(path,QColor(0,0,0));
+	painter.end();
+	image.setAlphaChannel(image);
+	setFixedSize(image.size());
+	setMask(image.mask());//TODO nie v repainte
+//	image.save("test.png");
+	/*QPixmap pixmap("c:\\work\\svnsource\\images\\bubble.png");
+	pixmap = pixmap.scaled(QSize(440,400));
+	palette.setBrush(backgroundRole(), QBrush(pixmap));
+	setPalette(palette);
+	setFixedSize( pixmap.size() );
+	setMask(pixmap.mask()); */
+}
+FontWidget::FontWidget(QWidget *parent) : QWidget(parent, Qt::FramelessWindowHint),_embededFont(false)
 {
 	_scale[0] = _scale[1] = 1;
 	ui.setupUi(this);
+	
 	reset();
 	//set 10-40 fontsize
 	for ( int i = 10; i<=20; i++)

@@ -29,6 +29,7 @@
 #include <QClipboard>
 #include <QTreeWidgetItem>
 #include <QToolTip>
+#include <QShortcut>
 #include "ui_convertPageRange.h"
 
 //PDF
@@ -103,7 +104,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	ui.setupUi(this);
 	shared_ptr<pdfobjects::utils::ProgressObserver> prog(new pdfobjects::utils::ProgressObserver(new PdfProgress(ui.progressBar)));
 	_pdf->getPdfWriter()->registerObserver(prog);
-	_labelPage = new DisplayPage();
+	_labelPage = new DisplayPage(this);
 	_cmts = new Comments();
 	_search = new Search(NULL);//neptraia k tomuto mimiokienku
 	//_search->show();
@@ -119,6 +120,10 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 		QVariant s(i);
 		this->ui.zoom->addItem( s.toString()+" %",s);
 	}
+	_searchShortCut = new QShortcut(QKeySequence(tr("Ctrl+F", "Find texts")),this);
+	//addAction(_searchShortCut);
+	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(show()));
+
 	//connect musi byt potom!!!->inak sa to zobrazi milion krat namiesto raz
 	connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
 	//	_font->show();
@@ -3366,7 +3371,6 @@ PdfOp TabPage::getValidTextOp( Ops& ops, bool & found )
 			}
 		}
 	}
-	assert(false);
 	return PdfOp();
 }
 
@@ -3374,4 +3378,30 @@ void TabPage::checkLoadedBookmarks()
 {
 	if (ui.tree->topLevelItemCount() == 0)
 		getBookMarks();
+}
+
+void TabPage::copyTextToClipBoard()
+{
+	if (!_selected)
+		return;
+	QClipboard *clipBoard = QApplication::clipboard();
+	TextData::iterator act = sTextIt;
+	QString s[3];
+	act->split(s[0],s[1],s[2]);
+	if(sTextIt == sTextItEnd)
+	{
+		clipBoard->setText(s[1]);
+		return;
+	}
+	assert(s[1].isEmpty());
+	QString text=s[1];
+	act++;
+	while (act != sTextItEnd)
+	{
+		text += act->_text;
+		act++;
+	}
+	sTextItEnd->split(s[0],s[1],s[2]);
+	text+=s[1];
+	clipBoard->setText(text);
 }

@@ -143,7 +143,7 @@ bool OperatorData::forward(double x, double y, bool& eq)const
 		return maxy - y < 0;//pojde dopredy ak toto je vyssie ako y, ktore sme dostali
 	}
 	maxy = min(a.xleft, a.xright);
-	if (maxy == x)
+	if (fabs(maxy - x))
 		return eq = true;
 	return maxy < x;
 }

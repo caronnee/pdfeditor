@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>images/background.png</file>
     <file>images/eraseText.ico</file>
     <file>images/insertTextMarker.ico</file>
     <file>images/redo.ico</file>

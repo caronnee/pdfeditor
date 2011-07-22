@@ -151,28 +151,29 @@ FIXED (SU DEBIL)- savovanie revizie robi problemy
 FIXED - image position emitovat
 FIXED - vysvietenie zrusi anotacie - to sa spravi streamom
 FIXED - namiesto _text mat iba zalozky kde to konci a kde zacina - text potrebujeme iba pri dele a replacovani - pri vysvieteni nemusime potomstale chodis a zistovat velkost fontu
-- uvodna obrazovka
+FIEXD - uvodna obrazovka
 - about
-- pri rotovani priznak, ze sme zarotovali a maju sa zmenit boomarky
+WONTFIX (stejne to konvertujem pomocou RotatePdf) - pri rotovani priznak, ze sme zarotovali a maju sa zmenit boomarky
 FIXED - check pre ktore veci nemame font
-- warnint ak nie je ziadny text, akl nie ze ziadny obrazok...->rovno disabled
+- warning ak nie je ziadny text, akl nie ze ziadny obrazok...->rovno disabled
 - on closeevent na vsetky formulare - zavri a vycisti za sebou (operatory preddefinovane zmaz)
 -------------------------OUTSTANDING ISSUES-----------------------------
 --delete potrebuje TD pred operator
 --pokial je v textovom operatore aj cislo, neviem spravne zobrazit vysviecovanie, mazanie a posobne
-FIXED --Niekde ve v Tf zaporna hodnota
+FIXED -- Niekde ve v Tf zaporna hodnota
 FIXED -- ako medzeru to ma osetrit _WordSpace
 -- samostatny dialog pre highlight a pre comment ( highlihgt zmenit len farbu a text, comment zmenit iva text)
 -- previous nefunguje
 -- export text nerozoznava dobre medzery
-FIXED --bookmarky schovavatelne
---loader na finish -> hide, on init->hide
+FIXED -- bookmarky schovavatelne
+-- loader na finish -> hide, on init->hide, on save
 --skin pre fontwidget, image a anotacie - pohybovatelna bublina
 --BI obrazky maju nespravne operacie
 --ANALYZE neimplementovane
---repeter na redraw
+FIXED -- repeter na redraw
 --samostatna obrazovka na settings
---zapamatovat si posledne subory a pocet, sortit podla datumu otvorenia
+FIXED -- zapamatovat si posledne subory a pocet, sortit podla datumu otvorenia
 --check linearization
+--tooltips pre buttony
 -------------------------------------------
 QT single application + otvarat vsetko v tomto jednom

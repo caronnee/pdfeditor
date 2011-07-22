@@ -2,6 +2,7 @@
 #include "globalfunctions.h"
 #include <QPaintEvent>
 #include <QPainter>
+#include <QShortcut>
 
 void DisplayPage::paintEvent(QPaintEvent * event)
 {
@@ -44,6 +45,12 @@ DisplayPage::DisplayPage(QWidget *parent): QLabel(parent), _mousePressed(false),
 	 menu->addAction("InsertImage",this,SLOT(insertImage()));
 	 menu->addAction("DeleteImage",this,SLOT(deleteImage()));
 	 menu->addAction("Annotate",this,SLOT(annotation()));
+	 
+	 _copy = new QShortcut(QKeySequence(tr("Ctrl+C", "Copy Text")),this);
+	 /*_copy->setShortcut(QKeySequence(Qt::CTRL,Qt::Key_F));
+	 addAction(_copy);*/
+	 connect(_copy, SIGNAL(activated()), this, SLOT(copyText()));
+
 	// menu->addAction("Delete Annotation",this,SLOT(deleteAnnotation()));
 	 menu->addAction("Change image",this,SLOT(changeImage()));
 	 setMouseTracking(true);
@@ -251,4 +258,9 @@ void DisplayPage::addPlace( QRect r )
 void DisplayPage::clearLabels()
 {
 	_interactive.clear();
+}
+
+void DisplayPage::copyText()
+{
+	emit copySelectedSignal();
 }

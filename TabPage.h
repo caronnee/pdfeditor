@@ -167,6 +167,7 @@ private: //variables
 	void showAnnotation();
 public:
 	bool _changed;
+	QShortcut * _searchShortCut;
 	//static std::string SupportedAnnotations[] = { ANNOTS(CREATE_ARRAY) };
 
 	void deleteSelectedImage();
@@ -335,6 +336,8 @@ private:
 	pdfobjects::IndiRef createAppearanceHighlight(float * dim);
 	pdfobjects::IndiRef createAppearanceComment(float *dim);
 	PdfOp getValidTextOp( Ops& ops, bool & found);
+public slots:
+	void copyTextToClipBoard();
 };
 
 #endif

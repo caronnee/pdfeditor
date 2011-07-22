@@ -44,7 +44,8 @@ private:
 	//we have to remeber original size
 	QSize _size;
 	QRect _rect;
-public slots:
+	QShortcut * _copy;
+	public slots:
 	void markPosition(QPoint point);
 	void changeImage();
 	void annotation();
@@ -60,6 +61,7 @@ public slots:
 	void deleteImage();
 	void setMode(PageDrawMode mode);
 signals:
+	void copySelectedSignal();
 	void HandleLink(int i);
 	void ShowAnnotation(int i);
 	void ChangeImageSignal(QPoint p);
@@ -75,14 +77,15 @@ signals:
 	void highlightText(int, int);
 	void MouseReleased(QPoint);
 protected:
-		virtual void paintEvent(QPaintEvent * event);
+	virtual void paintEvent(QPaintEvent * event);
 public:
 	int deleteAnnotation(QPoint p);
 	void unsetImg();
 	void mouseMoveEvent(QMouseEvent *);
 	void mouseReleaseEvent(QMouseEvent * event);
 	void clearLabels();
-
+public slots:
+	void copyText();
 };
 
 #endif // PAGE_H

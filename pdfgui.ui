@@ -20,10 +20,13 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Pdf editor v1.04</string>
+   <string>Pdf editor v1.05</string>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -967,6 +970,12 @@
      <widget class="OpenPdf" name="openedPdfs">
       <property name="acceptDrops">
        <bool>true</bool>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
       </property>
       <property name="tabPosition">
        <enum>QTabWidget::North</enum>
