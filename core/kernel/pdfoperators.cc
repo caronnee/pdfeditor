@@ -254,60 +254,10 @@ using namespace utils;
 void 
 TextSimpleOperator::setFontText (const std::string& str)
 {
-		utilsPrintDbg(debug::DBG_DBG, "");
-	
-	std::string name;
-	getOperatorName(name);
-
+	utilsPrintDbg(debug::DBG_DBG, "");
 	std::string codeStr = utils::transformToCodeString(str, getCurrentFont());
 
-	Operands ops;
-	getParameters(ops);
-	if(name == "'" || name == "Tj")
-	{
-			if(ops.size() != 1 || !isString(ops[0]))
-			{
-				utilsPrintDbg(debug::DBG_WARN, "Bad operands for operator " <<name<<" count="<<ops.size()<<" ops[0] type="<< ops[0]->getType());
-				return;
-			}
-		setValueToSimple<CString, pString>(ops[0], codeStr);
-	}
-	else if (name == "\"")
-	{
-			if(ops.size() != 3 || !isArray(ops[2]))
-			{
-				utilsPrintDbg(debug::DBG_WARN, "Bad operands for operator "<<name<<" count="<<ops.size()<<" ops[2] type="<< ops[2]->getType());
-				return;
-			}
-		setValueToSimple<CString, pString>(ops[2], codeStr);
-	}
-	else if (name == "TJ")
-	{
-		shared_ptr<IProperty> op = ops[0];
-		if (!isArray(op) || ops.size() != 1)
-		{
-			utilsPrintDbg(debug::DBG_WARN, "Bad operands for TJ operator: ops[type="<< op->getType() <<" size="<<ops.size()<<"]");
-			return;
-		}
-		// We want to set a new text for this operator so let's 
-		// forget about the original parameters along with the
-		// formatting and add the given string as an only one
-		// parameter in the array.
-		if (isArray(op)) {
-			shared_ptr<CArray> array = IProperty::getSmartCObjectPtr<CArray>(op);
-			while (array->getPropertyCount() > 1)
-				array->delProperty(array->getPropertyCount()-1);
-			shared_ptr<IProperty> p = array->getProperty(0);
-			setValueToSimple<CString, pString>(p, codeStr);
-		}else
-			setValueToSimple<CString, pString>(ops[0], codeStr);
-		return;
-
-	}else
-	{
-		utilsPrintDbg(debug::DBG_WARN, "Bad operator name="<<name);
-		return;
-	}
+	setRawText(codeStr);
 }
 
 
@@ -431,7 +381,7 @@ float TextSimpleOperator::getWidth(Unicode input)
 	op->getStringRepresentation(m);
 #endif
 	float fs = utils::getValueFromSimple<CReal>(operands[1]);
-	return dx*fs*actualTransform[0] + dy*fs*actualTransform[1]; //* displayparameter issue in x value
+	return dx*fs/actualTransform[0] + dy*fs/actualTransform[3]; //* displayparameter issue in x value
 }
 
 void TextSimpleOperator::getFontText(std::wstring& str)const
@@ -532,6 +482,96 @@ libs::Point TextSimpleOperator::getPosition(int i, bool &ok)
 void TextSimpleOperator::savePosition( double tdx, double tdy )
 {
 	_positions.push_back(libs::Point(tdx,tdy));
+}
+
+void TextSimpleOperator::setSubPartExclusive( int begin, int end )
+{
+	std::string rawStr;
+	getRawText(rawStr);
+	std::string res;
+	
+	int len = rawStr.size();
+	GString raw(rawStr.c_str(), len);
+	GfxFont* font = getCurrentFont();
+	if(!font)
+		return;
+	utilsPrintDbg(debug::DBG_INFO, "Textoperator uses font="<<fontData->getFontName());
+	CharCode code;
+	Unicode u;
+	int uLen;
+	double dx, dy, originX, originY;
+	char * p=raw.getCString();
+	int cycles = 0;
+	while(len>0)
+	{
+		int n = font->getNextChar(p, len, &code, &u, (int)(sizeof(u) / sizeof(Unicode)), &uLen,
+			&dx, &dy, &originX, &originY);
+		if ( cycles < begin || cycles > end)
+			for (int i=0; i<n; ++i)
+				res += p[i];
+		p += n;
+		len -= n;
+		cycles++;
+	}
+	PdfOperator::Operands ops;
+	getParameters(ops);
+	//change first operator
+	//ops[0] = shared_ptr<IProperty>( CStringFactory::getInstance(res));
+	setRawText(res);
+}
+
+void TextSimpleOperator::setRawText( std::string codeStr )
+{
+	std::string name;
+	getOperatorName(name);
+
+	Operands ops;
+	getParameters(ops);
+	if(name == "'" || name == "Tj")
+	{
+		if(ops.size() != 1 || !isString(ops[0]))
+		{
+			utilsPrintDbg(debug::DBG_WARN, "Bad operands for operator " <<name<<" count="<<ops.size()<<" ops[0] type="<< ops[0]->getType());
+			return;
+		}
+		setValueToSimple<CString, pString>(ops[0], codeStr);
+	}
+	else if (name == "\"")
+	{
+		if(ops.size() != 3 || !isArray(ops[2]))
+		{
+			utilsPrintDbg(debug::DBG_WARN, "Bad operands for operator "<<name<<" count="<<ops.size()<<" ops[2] type="<< ops[2]->getType());
+			return;
+		}
+		setValueToSimple<CString, pString>(ops[2], codeStr);
+	}
+	else if (name == "TJ")
+	{
+		shared_ptr<IProperty> op = ops[0];
+		if (!isArray(op) || ops.size() != 1)
+		{
+			utilsPrintDbg(debug::DBG_WARN, "Bad operands for TJ operator: ops[type="<< op->getType() <<" size="<<ops.size()<<"]");
+			return;
+		}
+		// We want to set a new text for this operator so let's 
+		// forget about the original parameters along with the
+		// formatting and add the given string as an only one
+		// parameter in the array.
+		if (isArray(op)) {
+			shared_ptr<CArray> array = IProperty::getSmartCObjectPtr<CArray>(op);
+			while (array->getPropertyCount() > 1)
+				array->delProperty(array->getPropertyCount()-1);
+			shared_ptr<IProperty> p = array->getProperty(0);
+			setValueToSimple<CString, pString>(p, codeStr);
+		}else
+			setValueToSimple<CString, pString>(ops[0], codeStr);
+		return;
+
+	}else
+	{
+		utilsPrintDbg(debug::DBG_WARN, "Bad operator name="<<name);
+		return;
+	}
 }
 
 //==========================================================

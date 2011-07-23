@@ -199,6 +199,8 @@ public:
 	void clearPositions();
 	void savePosition( double tdx, double tdy );
 	libs::Point TextSimpleOperator::getPosition(int i, bool &ok);
+	void setSubPartExclusive( int begin, int end );
+	void setRawText( std::string res );
 }; // class TextSimpleOperator
 
 //==========================================================

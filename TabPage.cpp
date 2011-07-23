@@ -946,7 +946,7 @@ void TabPage::raiseChangeSelectedText()
 	TextData::iterator it = sTextIt;
 	sTextIt->split(s1,s,s3);
 	while (it != sTextItEnd)
-	{//TODO medzera
+	{//TODO medzera?
 		it++;
 		//musime vratane posledneho
 		if (it != sTextItEnd)
@@ -956,7 +956,14 @@ void TabPage::raiseChangeSelectedText()
 			it->split(s1,s2,s3);
 			s+=s2;
 		}
-	}//TODO set font heigth
+	}//TODO set font height
+	float corr = displayparams.vDpi/72;
+	float h = sTextIt->_op->getFontHeight();
+	double y = displayparams.DEFAULT_PAGE_RY - (sTextIt->_ymin+h)/corr; //TODO toto nemusi byt vyska BBoxu
+	double pos = sTextIt->GetPreviousStop();
+	rotatePdf(_page->getRotation(),pos,y,true);
+
+	_font->setPosition(pos/corr,y);
 	_font->setHeight(sTextIt->_op->getFontHeight());
 	_font->setText(s);
 	_font->setChange();
@@ -1451,7 +1458,7 @@ void TabPage::highlight()
 		y2 = first->_ymax;
 		rotatePdf(_page->getRotation(),x2,y2,false);
 		QRect r(min(x1,x2),min(y1,y2), fabs(x2-x1),fabs(y1-y2));
-		if (r.width() > first->_charSpace)
+//		if (r.width() > first->_charSpace)
 			region.append(r);
 		if (first == sTextItEnd)
 		{
@@ -1512,7 +1519,7 @@ void TabPage::moveText(int difX, int difY) //on mouse event, called on mouse rea
 void TabPage::insertBefore(PdfOp op, PdfOp before)
 {
 	PdfOp clone = before->clone();
-	before->getContentStream()->replaceOperator(before,op);	
+	before->getContentStream()->replaceOperator(before,op);
 	op->getContentStream()->insertOperator(op,clone);
 }
 
@@ -2400,7 +2407,7 @@ void TabPage::changeSelectedText(PdfOp insertedText) //vsetko zosane na svojom m
 	double y = displayparams.DEFAULT_PAGE_RY - (sTextIt->_ymin+h)/corr; //TODO toto nemusi byt vyska BBoxu
 	double pos = sTextIt->GetPreviousStop();
 	rotatePdf(_page->getRotation(),pos,y,true);
-	_font->setPosition(pos,y); //pretoze toto je v default user space
+//	_font->setPosition(pos,y); //pretoze toto je v default user space
 	//rozdelime na dva pripady - pokial je to roznake a pokial je zaciatok erozny od konca
 	if ( sTextIt==sTextItEnd ) //TODO co ak je s3 prazdne? -> Compact?:)
 	{
@@ -2416,7 +2423,7 @@ void TabPage::changeSelectedText(PdfOp insertedText) //vsetko zosane na svojom m
 	operands.clear();
 	TextData::iterator it = sTextIt;
 	it->split(s1,s2,s3);
-	float dist = it->GetPreviousStop() - it->_origX - sTextItEnd->_charSpace;
+	float dist = it->GetPreviousStop() - it->_origX/* - sTextItEnd->_charSpace*/;
 	dist*= corr;
 	float dx=sTextIt->GetPreviousStop() - sTextIt->_origX;
 	float dy=0;
@@ -2456,7 +2463,7 @@ void TabPage::changeSelectedText(PdfOp insertedText) //vsetko zosane na svojom m
 		sTextItEnd->split(s1,s2,s3);
 		assert(s1=="");
 		operands.clear();
-		dist = lastX - sTextItEnd->GetPreviousStop()-sTextItEnd->_charSpace;
+		dist = lastX - sTextItEnd->GetPreviousStop()/*-sTextItEnd->_charSpace*/;
 		dist /= corr;
 		operands.push_back(PdfProperty(CRealFactory::getInstance(dist)));
 		operands.push_back(PdfProperty(CRealFactory::getInstance(0)));
@@ -2818,7 +2825,7 @@ PdfOperator::Iterator TabPage::findTdAssOp(PdfOperator::Iterator iter)
 			return PdfOperator::Iterator(); //invalid
 		if (name == "ET")
 			return PdfOperator::Iterator(); //invalid
-		if (name == "td")
+		if (name == "Td")
 			return iter;
 		iter.next();
 	}
@@ -2828,52 +2835,62 @@ void TabPage::deleteSelectedText() //sucasne zarovna
 {
 	if (!_selected)
 		return;
-	//prvy  replasni, ostatne vymaz, pridaj TD pred posledne
-	{
-		float distX = sTextIt->_origX - sTextItEnd->GetPreviousStop(); //nesmie byt fabs!!
-		float distY =  sTextIt->_ymin - sTextItEnd->_ymin;
-		PdfOp op = FontWidget::createTranslationTd(distX,distY);
-		insertBefore(op,sTextItEnd->_op);
-	}
-
+	PdfOp insertTdBeforeThis;
+	//prvy replasni, ostatne vymaz, pridaj TD pred posledne
 	QString s[3];
 	sTextIt->split(s[0],s[1],s[2]);
 	PdfOperator::Operands operand;
 	operand.push_back(shared_ptr<IProperty>(new CString(s[0].toAscii().data())));;
-	PdfOp op = createOperator("Tj",operand);
 	_selected = false;
-	double diffX =0.0; //y bude vzdy nulove
-	if (s[2]!="") //prave jeden operand, nieco este zostalo
-	{
-		assert(sTextIt == sTextItEnd);
-		diffX = fabs(sTextIt->_end -sTextIt->_begin);
-		{
-			PdfOperator::Operands operand2;
-			operand2.push_back(shared_ptr<IProperty>(shared_ptr<IProperty>(new CString(s[2].toAscii().data()))));
-			PdfOp op2 = createOperator("Tj",operand2);
-			sTextIt->_op->getContentStream()->insertOperator(sTextIt->_op,op2);
-		}
-	}
-	if (s[0]!="")
-		sTextIt->_op->getContentStream()->replaceOperator(sTextIt->_op->getIterator(sTextIt->_op),op);
+	PdfOp op = createOperator("Tj",operand);
+	sTextIt->_op->setSubPartExclusive(sTextIt->letters(sTextIt->_begin), sTextIt->letters(sTextIt->_end));
+	float distX = -sTextIt->GetNextStop() + sTextItEnd->GetPreviousStop(); //nesmie byt fabs!! keby to 
+	float distY = sTextItEnd->_ymax - sTextIt->_ymax;
 	if (sTextIt == sTextItEnd)
+	{
+		//setRawText, je to jediny operand
+		assert(sTextIt == sTextItEnd);
+		distX /= displayparams.vDpi/72;
+		PdfOp tdop = FontWidget::createTranslationTd(distX,distY);
+		sTextIt->_op->getContentStream()->insertOperator(sTextIt->_op, tdop);
+		//insertBefore(op,);//insertneme ZA
 		goto End;
+	}
+
+	/////////////////////////////////MANY OPERATORS///////////
+	
+	//sTextIt->_op->setSubPartExclusive()getContentStream()->replaceOperator(PdfOperator::getIterator(sTextIt->_op),op);
+	distX =  sTextIt->GetPreviousStop() - sTextItEnd->_origX;
+	distX/= displayparams.vDpi/72;
+	distY =  sTextIt->_ymin - sTextItEnd->_ymin;
+	distY /= displayparams.hDpi/72;
 	sTextIt++;
 	while(sTextIt!=sTextItEnd)//delete also Td operators
 	{
-		PdfOperator::Iterator it = findTdAssOp(PdfOperator::getIterator(sTextIt->_op));
+	/*	PdfOperator::Iterator it = findTdAssOp(PdfOperator::getIterator(sTextIt->_op));
 		if (it.valid())
 		{
 			PdfOp tdOp = it.getCurrent();
 			tdOp->getContentStream()->deleteOperator(it);
-		}
+		}*/
 		sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op);
 		sTextIt++;
 	}
+	//jedno Td naraz
+	op = FontWidget::createTranslationTd(distX, distY);
+	assert(sTextIt->_op->getContentStream());
 	sTextIt->split(s[0],s[1],s[2]);
 	assert(s[0]=="");
-	if (s[2]=="")
-		sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op);
+	distX = sTextIt->_origX - sTextIt->GetNextStop();
+	distX /= displayparams.vDpi/72;
+	{
+		PdfOp op2 = FontWidget::createTranslationTd(distX,0);
+		sTextIt->_op->getContentStream()->insertOperator(sTextIt->_op, op2);
+		sTextIt->_op->setSubPartExclusive(sTextIt->letters(sTextIt->_begin), sTextIt->letters(sTextIt->_end));
+		insertBefore(op, sTextIt->_op);
+		assert(sTextIt->_op->getContentStream());
+	}
+
 End:
 	_selected = false;
 	createList();
@@ -2941,7 +2958,7 @@ void TabPage::eraseSelectedText()
 		return;
 	}
 	//	float distX1 =0;// -sTextIt->GetPreviousStop() + sTextIt->_origX2;//kolko sme zmazali
-	float distX2 = sTextItEnd->GetNextStop() - sTextItEnd->GetPreviousStop()-sTextItEnd->_charSpace;
+	float distX2 = sTextItEnd->GetNextStop() - sTextItEnd->GetPreviousStop()/*-sTextItEnd->_charSpace*/;
 	distX2 *=corr;
 	//najskor musim deletnut tie, ktore urcite nechceme, v dalsom kuse kodu robim replace a nema sa to rado
 	TextData::iterator it = sTextIt;
@@ -3008,18 +3025,24 @@ void TabPage::exportText()
 	QTextEdit * edit = new QTextEdit(this);
 	//TODO nejaka inicializacia
 	QString text;//TODO check ci nie je text moc dlhy, odmedzenia?
+	float dy = 0;
 	for ( size_t i = beg; i <= end; i++)
 	{
 		float prev =_textList.size() > 0  ? _textList.begin()->_begin : 0;
 		for (TextData::iterator iter = _textList.begin(); iter != _textList.end(); iter++)
 		{
 			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
-			if ( fabs(iter->_origX - prev) > iter->_charSpace )
+			float diff = iter->_origX - prev;
+			float customSpace = iter->_origX2 - iter->_origX;
+			customSpace /= iter->_text.size()+1;
+			dy = dy - iter->_ymax;
+			if ( diff > 1 || dy < 0) //TODO hack
 				text.append(" ");
 			std::wstring test;
 			txt->getFontText(test);
 			text.append(QString::fromStdWString(test));
 			prev = iter->_origX2;
+			dy = iter->_ymax;
 		}
 		SetNextPageRotate();
 		createList();

@@ -128,9 +128,8 @@ FIXED (nekonvertuje sa) - BUG in STD stringu konverzii na Qstring -> exception
 WONTFIX (diakritiku podporuje string, tot by bolo pre unicode - to tam nevtrepem) - zmenit vsetko na wstring aby sa tam dala vlozit aj diakritika 
 FIXED - dalsi parameter-> charakter spacing
 - moznost pridat uzivatelom definovany font(configs cestou kde ho hladat)
-- crt-F - hladat automaticky
-- pri hladani pridat progress bar
-- pri loadovani pridat progress bar
+FIXED - crt-F - hladat automaticky
+
 - zalozky ( aby uzivatel vedel, kam sa vratit - a program tiez
 - ked mazem stranky, zmazat aj prislusne bookmarky
 FIXED - pri zmazani revizia cheknut exception na stranku - zorazit len  taku, zo exituje!
@@ -164,20 +163,22 @@ FIXED -- bookmarky schovavatelne
 FIXED -- BI obrazky maju nespravne operacie
 FIXED -- repeter na redraw
 FIXED -- zapamatovat si posledne subory a pocet, sortit podla datumu otvorenia
-
+FIXED previous nefunguje
 FIXED (NEPRESNE!!)-- posuvatelny obrazok
 -- ANALYZE neimplementovane
+WONTFIX-- pokial je v textovom operatore aj cislo, neviem spravne zobrazit vysviecovanie, mazanie a posobne
+FIXED export text nerozoznava dobre medzery
+FIXED delete potrebuje TD pred operator
 
--- previous nefunguje
+
 -- samostatny dialog pre highlight a pre comment ( highlihgt zmenit len farbu a text, comment zmenit iva text)
--- export text nerozoznava dobre medzery
--- delete potrebuje TD pred operator
--- pokial je v textovom operatore aj cislo, neviem spravne zobrazit vysviecovanie, mazanie a posobne
+-- search novy thread ( pre zastavenie);
 -- loader na finish -> hide, on init->hide, on save
 -- skin pre fontwidget, image a anotacie - pohybovatelna bublina
--- search novy thread ( pre zastavenie);
 -- samostatna obrazovka na settings
 -- check linearization
+-- pri hladani pridat progress bar
+-- pri loadovani pridat progress bar
 -- tooltips pre buttony
 -------------------------------------------
 -- insert rotovaneho obrazka- rotuje sa okolo pociatku, nevyzera to dobre. Malo by sa zorotovat do boxu
