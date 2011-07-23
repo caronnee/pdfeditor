@@ -121,7 +121,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 		this->ui.zoom->addItem( s.toString()+" %",s);
 	}
 	_searchShortCut = new QShortcut(QKeySequence(tr("Ctrl+F", "Find texts")),this);
-	//addAction(_searchShortCut);
+
 	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(show()));
 
 	//connect musi byt potom!!!->inak sa to zobrazi milion krat namiesto raz
@@ -141,6 +141,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	//hiding necessary
 	this->ui.tree->hide();
 	this->ui.analyzeTree->hide();
+	this->ui.showAnalyzeButton->hide();
 	this->ui.progressBar->hide();
 	//------------------------------CONNECTIONS----------------------
 	//connections
@@ -159,7 +160,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	connect (_labelPage,SIGNAL(MouseClicked(QPoint)),this, SLOT(clicked(QPoint))); //pri selecte sa to disconnectne a nahrasi inym modom
 	connect (this,SIGNAL(markPosition(QPoint)),_labelPage, SLOT(markPosition(QPoint))); //pri selecte sa to disconnectne a nahrasi inym modom
 	connect (_labelPage,SIGNAL(MouseReleased(QPoint)),this, SLOT(mouseReleased(QPoint))); //pri selecte sa to disconnectne
-	connect( this,SIGNAL(ChangePageModeSignal(PageDrawMode)), _labelPage, SLOT(setMode(PageDrawMode)));
+	connect( this,SIGNAL(ChangePageModeSignal(ModeTrackDrawingRect)), _labelPage, SLOT(setMode(ModeTrackDrawingRect)));
 	connect (_labelPage,SIGNAL(InsertTextSignal(QPoint)),this,SLOT(raiseInsertText(QPoint)));
 	connect (_labelPage,SIGNAL(DeleteTextSignal()),this,SLOT(deleteSelectedText()));
 	connect (_labelPage,SIGNAL(EraseTextSignal()),this,SLOT(eraseSelectedText()));
@@ -171,7 +172,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	connect (_labelPage,SIGNAL(DeleteAnnotationSignal(QPoint)),this,SLOT(deleteAnnotation(QPoint)));
 	//connect (_labelPage,SIGNAL(ChangeImageSignal(QPoint)),this,SLOT(raiseChangeImage(QPoint)));
 
-	//end of connections
+	connect( _image, SIGNAL(ImageClosedSignal()),this,SLOT(operationDone()));
 	connect( _image, SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
 	connect( _image, SIGNAL(changeImage(PdfOp)),this,SLOT(changeSelectedImage(PdfOp)));
 	connect( _cmts,SIGNAL(annotationTextMarkup(Annot)),this,SLOT(insertTextMarkup(Annot)));
@@ -180,6 +181,8 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 
 	connect(ui.tree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(handleBookmark(QTreeWidgetItem*,int)));
 	connect(ui.tree, SIGNAL(itemExpanded( QTreeWidgetItem*)), this, SLOT(loadBookmark(QTreeWidgetItem *)));
+	connect(ui.analyzeTree, SIGNAL(itemExpanded( QTreeWidgetItem*)), this, SLOT(loadAnalyzeItem(QTreeWidgetItem *)));
+
 	//////////////////////////////////////////////////////////////////////////
 	initRevisions();
 	connect(ui.revision, SIGNAL(currentIndexChanged(int)),this, SLOT(initRevision(int) ));
@@ -289,7 +292,7 @@ void TabPage::raiseInsertImage(QRect rect)
 	y = (float)displayparams.DEFAULT_PAGE_RY-rect.y()*72.0f/displayparams.vDpi;*/
 	rotatePdf(_page->getRotation(), x, y, true);
 	y = displayparams.DEFAULT_PAGE_RY - y;
-	_image->setPosition(x,y,72.0f/displayparams.vDpi);
+	//_image->setPosition(x,y,72.0f/displayparams.vDpi);
 	_image->setSize(rect.width()*72.0f/displayparams.vDpi, rect.height()*72.0f/displayparams.vDpi);
 	_image->show();
 }
@@ -1073,9 +1076,10 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 	case ModeSelectImage:
 		{//vyber nejaky BI operator a daj ho to vybranych
 			Ops ops;
+			_mousePos = point;
 			double px = point.x(), py=point.y();
 			rotatePdf(_page->getRotation(),px,py,true);
-			//HACK`- px, py su teraz v PDF poziciach
+			//HACK - px, py su teraz v PDF poziciach
 			//px, py musime ale zmenit vzhladom na to,ze sa u inline neberie do uvahy displayparams
 
 			_page->getObjectsAtPosition(ops,libs::Point(px,py));
@@ -1089,7 +1093,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 					_selectedImage = ops.back();
 					BBox bbox = _selectedImage->getBBox();
 					QRect convertedRect = getRectangle(bbox);//PODIVNE
-					_labelPage->drawRectangle(convertedRect);
+					_labelPage->drawAndTrackRectangle(convertedRect);
 					_parent->setMode(ModeImageSelected);
 					break;
 				}
@@ -1110,7 +1114,13 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			{
 				_mousePos = point;
 				_dataReady = true;
+				QRect r(_mousePos,QSize(1,1));
+				_labelPage->drawAndTrackRectangle(r);
+				_labelPage->setMode(ModeTrackDrawingRect);
 				return;
+			}
+			{
+				assert(false);
 			}
 			break;
 		}
@@ -1232,6 +1242,12 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 		{
 			QRect r(min(_mousePos.x(),point.x()),min(_mousePos.y(),point.y()), 
 				abs(_mousePos.x()-point.x()), abs(_mousePos.y()-point.y()));
+			libs::Point p;
+			p.x = r.x();
+			p.y = r.y();
+			rotatePdf(_page->getPagePosition(), p.x, p.y,true);
+			displayparams.convertPixmapPosToPdfPos(p.x,p.y,p.x,p.y);
+			_image->setPosition(p.x,p.y, displayparams.vDpi/72);
 			raiseInsertImage(r);
 			_dataReady=false;
 			break;
@@ -1244,25 +1260,33 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			QRect rect(min(point.x(),_mousePos.x()), min(point.y(),_mousePos.y()), abs(point.x()-_mousePos.x()),abs(point.y()-_mousePos.y()));
 			clipBoard->setImage(_labelPage->getImage().copy(rect));
 			_parent->setMode(ModeImagePartCopied);
+			operationDone();
 			return;
 		}
-	case ModeSelectImage:
+	case ModeImageSelected:
 		{
 			//vytvor nove cm a posun obrazok
 			if(!_selected)
 				break;
-			double x = point.x(),y=point.y();
-			rotatePdf(_page->getRotation(),x,y,true);
-			PdfOp nw= createOperatorTranslation(point.x(), point.y());
-
-			BBox b = _selectedImage->getBBox();
-			x= b.xleft; y = max(b.yleft,b.yright);
-			PdfOp prev = createOperatorTranslation(x, y);
+			if (abs(_mousePos.x()-point.x())<2 && abs(_mousePos.y()-point.y()) <2)
+				return;//nebudeme pohybovat
+			double x = point.x()-_mousePos.x(),y=_mousePos.y() - point.y();
+			shared_ptr<InlineImageCompositePdfOperator> img = boost::dynamic_pointer_cast<InlineImageCompositePdfOperator>(_selectedImage);
+			//get invert matrix & get actual matrix
+			double invert[6];
+			double actual[6];
+			InsertImage::getInvertMatrix(img,actual, invert);
+			//converuje podla matice
+			double pomx =x, pomy =y;
+			x = invert[0] * pomx + invert[2] * pomy;
+			y = invert[1] * pomx + invert[3] * pomy;
+			PdfOp nw= createOperatorTranslation(x, y);//TODO zistit invertnu CM(bez poslednych POS suradnic)
+			PdfOp prev = createOperatorTranslation(-x, -y);
 			_selectedImage->getContentStream()->replaceOperator(_selectedImage,nw);
 			nw->getContentStream()->insertOperator(nw,_selectedImage);
 			_selectedImage->getContentStream()->insertOperator(_selectedImage,prev); //predchadzajuca pozicia
 			_selected = false;
-			redraw();
+			operationDone();
 			break;
 		}
 	default:
@@ -1852,7 +1876,7 @@ void TabPage::insertImage(PdfOp op) //positions
 	Ops ops;
 	ops.push_back(op);
 	_page->addContentStreamToBack(ops);
-	redraw();
+//redraw sa spravi po kazdom closnuti image widetu
 }
 void TabPage::insertPageRangeFromExisting()
 { 
@@ -1889,7 +1913,7 @@ void TabPage::JustDraw()
 	/*Ops oTest;
 	page->getObjectsAtPosition(oTest,libs::Point(229,619));*/
 	// display it = create internal splash bitmap
-	_page->displayPage(splash, displayparams);
+	_page->displayPage(splash, displayparams,-1,-1,-1,-1,true ); //vzdy reparsuj
 	splash.clearModRegion();
 
 	QImage image(splash.getBitmap()->getWidth(), splash.getBitmap()->getHeight(),QImage::Format_RGB32);	
@@ -3404,4 +3428,30 @@ void TabPage::copyTextToClipBoard()
 	sTextItEnd->split(s[0],s[1],s[2]);
 	text+=s[1];
 	clipBoard->setText(text);
+}
+
+void TabPage::operationDone()
+{
+	_labelPage->setMode(ModeDrawNothing);
+	redraw();
+}
+
+void TabPage::initAnalyze()
+{
+	if (this->ui.analyzeTree->topLevelItemCount()!=0)
+		return; //was initialized. TODO - inicializovat znova?
+	QStringList list;
+	list << "Name" << "Type" << "Value" << "Reference";
+	this->ui.analyzeTree->setHeaderLabels(list);
+	this->ui.analyzeTree->setColumnCount(4); //name type value, indirect prop
+	AnalyzeItem * b = new AnalyzeItem(this->ui.analyzeTree, _pdf->getDictionary());
+	this->ui.analyzeTree->addTopLevelItem(b);
+	b->setText(0,"DocCatalog");
+	this->ui.showAnalyzeButton->show();
+}
+
+void TabPage::loadAnalyzeItem( QTreeWidgetItem * item )
+{
+	AnalyzeItem * it = (AnalyzeItem *) item;
+	it->load();
 }

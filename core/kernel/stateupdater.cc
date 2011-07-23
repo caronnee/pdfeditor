@@ -690,7 +690,7 @@ namespace {
 		// Set edge of rectangle from actual position on output devices
 		state->transform(state->getCurX (), state->getCurY(), & rc->xleft, & rc->yleft);
 
-		utilsPrintDbg (DBG_DBG, "NOT IMPLEMENTED");
+		utilsPrintDbg (DBG_DBG, "Implemented - testing version");
 		utilsPrintDbg (DBG_DBG, " " << op->getParametersCount() << " , " << op->getChildrenCount());
 
 		
@@ -702,8 +702,31 @@ namespace {
 		// The coordinate origin (0, 0) is at the upper-left corner of the image,
 		// with coordinates ranging from 0 to w horizontally and 0 to h vertically.
 		//
-		rc->xright = rc->xleft + image_op->getWidth();
-		rc->yright = rc->yleft - image_op->getHeight();
+		//we must text all four edges
+		double x[4],y[4];
+		x[0] = rc->xleft;
+		x[1] = rc->xleft;
+		x[2] = rc->xleft + image_op->getWidth();
+		x[3] = rc->xleft + image_op->getWidth();
+		y[0] = rc->yleft;
+		y[1] = rc->yleft - image_op->getHeight();
+		y[2] = rc->yleft;
+		y[3] = rc->yleft - image_op->getHeight();
+		state->transform(1, 1, & x[0], & y[0]);
+		state->transform(0, 1, & x[1], & y[1]);
+		state->transform(1, 0, & x[2], & y[2]);
+		state->transform(0, 0, & x[3], & y[3]);
+		rc->xleft = min(rc->xleft,x[0]);
+		rc->xright = max(rc->xleft,x[0]);
+		rc->yleft = max(rc->yleft,y[0]);
+		rc->yright = min(rc->yright,y[0]);
+		for ( int i =0; i < 4; i++)
+		{
+			rc->xleft = min(rc->xleft,x[i]);
+			rc->xright = max(rc->xright,x[i]);
+			rc->yleft = max(rc->yleft,y[i]);
+			rc->yright = min(rc->yright,y[i]);
+		}
 		
 		// return changed state
 		return state;

@@ -1,9 +1,32 @@
 #ifndef __BOOKMARK__
 #define __BOOKMARK__
 
+#include <typedefs.h>
 #include <QTreeWidgetItem>
 #include <kernel/static.h>
 #include <kernel/indiref.h>
+#include <kernel/cpdf.h>
+#include <kernel/iproperty.h>
+
+class AnalyzeItem : public QTreeWidgetItem
+{
+	void Init();
+	bool _hasChild;
+	bool _isProp;
+	int _type;
+	PdfInstance _pdfs;
+	PdfProperty _prop;
+	PdfOp _op;
+	bool _loaded; //name, type, value, indiref
+public:
+	AnalyzeItem(QTreeWidget * parent, PdfProperty prop);
+	AnalyzeItem(QTreeWidgetItem * parent, PdfProperty prop);
+	AnalyzeItem(QTreeWidgetItem * parent, PdfOp prop);
+	bool loaded();
+	void load();
+	void loadOperator();
+	void loadProperty();
+};
 
 class Bookmark : public QTreeWidgetItem
 {

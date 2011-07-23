@@ -7,6 +7,8 @@
 #include "pdfgui.h"
 #include "typedefs.h"
 
+
+
 pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags) 
 	: QMainWindow(parent, flags), init()
 {
@@ -32,7 +34,8 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	
 
 //TODO dat do uicka
-	connect(this->ui.lastOpenedButton, SIGNAL(clicked()), this, SLOT(lastOpenedPdfs()));
+	connect( this->ui.analyzeButton, SIGNAL(clicked()), this->ui.openedPdfs, SLOT(initAnalyze()));
+	connect( this->ui.lastOpenedButton, SIGNAL(clicked()), this, SLOT(lastOpenedPdfs()));
 	connect( this->ui.opSelect, SIGNAL(clicked()), this->ui.openedPdfs,SLOT(setModeDefault()));
 	connect( this->ui.derotateButton, SIGNAL(clicked()), this->ui.openedPdfs,SLOT(derotate()));
 	connect( this->ui.deleteButton,SIGNAL(clicked()),this->ui.openedPdfs,SLOT(deleteSelectedText()));

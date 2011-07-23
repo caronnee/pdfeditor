@@ -482,6 +482,9 @@
          <property name="checked">
           <bool>false</bool>
          </property>
+         <attribute name="buttonGroup">
+          <string>subgroups</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -505,6 +508,9 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <attribute name="buttonGroup">
+          <string>subgroups</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -649,6 +655,9 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <attribute name="buttonGroup">
+          <string>subgroups</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -672,6 +681,9 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <attribute name="buttonGroup">
+          <string>subgroups</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -720,7 +732,7 @@
           <string>extract part of pdf as image</string>
          </property>
          <property name="text">
-          <string>Extract image</string>
+          <string>SnapShot</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -735,6 +747,9 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <attribute name="buttonGroup">
+          <string>subgroups</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -743,7 +758,7 @@
           <string>extract inline image</string>
          </property>
          <property name="text">
-          <string>SnapShot</string>
+          <string>ShapShot(imageOnly)</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -758,6 +773,9 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <attribute name="buttonGroup">
+          <string>subgroups</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -805,6 +823,9 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <attribute name="buttonGroup">
+          <string>subgroups</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -815,6 +836,9 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <attribute name="buttonGroup">
+          <string>subgroups</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -825,6 +849,9 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <attribute name="buttonGroup">
+          <string>subgroups</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -852,6 +879,13 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QPushButton" name="analyzeButton">
+         <property name="text">
+          <string>Analyze!</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QPushButton" name="repeter">
          <property name="text">
@@ -881,7 +915,7 @@
           <bool>true</bool>
          </property>
          <attribute name="buttonGroup">
-          <string>mainGroup</string>
+          <string>subgroups</string>
          </attribute>
         </widget>
        </item>
@@ -1354,6 +1388,7 @@
   </connection>
  </connections>
  <buttongroups>
+  <buttongroup name="subgroups"/>
   <buttongroup name="mainGroup"/>
  </buttongroups>
 </ui>

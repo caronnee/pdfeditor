@@ -21,9 +21,12 @@ class InsertImage : public QWidget
 	//to, kde sa pridava obrazok, je uz v matici
 	void createInlineImage();
 	void init();
+protected:
+	virtual void closeEvent ( QCloseEvent * event );
 public:
 	InsertImage(QWidget * parent);
 	void setImage(PdfOp image, double scale);//TODO x,y
+	static void getInvertMatrix(PdfOp op, double * act, double * res);
 public slots:
 	void apply();
 	//void rotationCm(int angle);
@@ -33,6 +36,7 @@ public slots:
 signals:
 	void insertImage(PdfOp op); //jake casti
 	void changeImage(PdfOp q);
+	void ImageClosedSignal();
 };
 #endif
 

@@ -11,6 +11,11 @@
 using namespace boost;
 using namespace pdfobjects;
 
+void InsertImage::closeEvent ( QCloseEvent * event )
+{
+	emit ImageClosedSignal();
+}
+
 InsertImage::InsertImage( QWidget * parent) : QWidget(parent)
 {
 	ui.setupUi(this);
@@ -29,7 +34,7 @@ void InsertImage::setPosition(float pdfX,float pdfY, float scale)
 }
 void InsertImage::setImagePath()
 {
-	//open dialogand get file
+	//open dialog and get file
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("Images (*.png *.jpg *.bmp)"));
 	if (!fileName.size() == 0)
 		this->ui.lineEdit->setText(fileName);
@@ -51,8 +56,11 @@ void InsertImage::setImagePath()
 //}
 void InsertImage::createInlineImage()
 {	
-	if (ui.lineEdit->text()==NULL)
-			return;
+	if (ui.lineEdit->text().isEmpty())
+	{
+		close();
+		return;
+	}
 	QImage image;
 	if (!image.load(tr(ui.lineEdit->text().toAscii().data())))
 	{
@@ -106,7 +114,7 @@ void InsertImage::apply()
 	//add to buffer everything that is in image
 	shared_ptr<UnknownCompositePdfOperator> q(new UnknownCompositePdfOperator("q", "Q"));
 	
-	int pixW = ui.sizeX->value(); 
+	int pixW = ui.sizeX->value();
 	int pixH = ui.sizeY->value();
 	float scaleX = (float)ui.scaleX->value()/(100.0f);
 	float scaleY = (float)ui.scaleY->value()/(100.0f); //POCET KOMPONENT
@@ -123,11 +131,10 @@ void InsertImage::apply()
 	else
 	{
 		q->push_back(_invertCm,getLastOperator(q));
-		q->push_back(createOperatorTranslation(0,0-pixH),getLastOperator(q));
+		q->push_back(createOperatorTranslation(0,0),getLastOperator(q));
 		q->push_back(createOperatorRotation(toRadians(ui.rotation->value())),getLastOperator(q));
-		q->push_back(createOperatorScale(pixW,pixH ),getLastOperator(q));
+		q->push_back(createOperatorScale(pixW*_scale,pixH*_scale ),getLastOperator(q));
 	}
-	//image.save("outputSave.png");
 	//vyhod alpha channel	
 	q->push_back(biOp,getLastOperator(q));
 	PdfOperator::Operands o;
@@ -137,7 +144,7 @@ void InsertImage::apply()
 	else
 		emit(changeImage(q));
 	biOp = boost::shared_ptr<InlineImageCompositePdfOperator>();
-	this->hide();
+	this->close();
 }
 struct Cm
 {
@@ -148,17 +155,12 @@ struct Cm
 		matrix[3] = d;matrix[4] = e;matrix[5] = f;
 	}
 };
-void InsertImage::setImage(PdfOp ii, double scale)
+void InsertImage::getInvertMatrix( PdfOp ii, double * act, double * res )
 {
-	_scale = scale;
 	DisplayParams params;
 	PDFRectangle pdfRect ( params.pageRect.xleft, params.pageRect.yleft, params.pageRect.xright, params.pageRect.yright );
 	GfxState state(params.hDpi, params.vDpi, &pdfRect, params.rotate, params.upsideDown );
-	biOp = boost::dynamic_pointer_cast<InlineImageCompositePdfOperator>(ii->clone());
-	ui.sizeX->setValue(biOp->getWidth());
-	ui.sizeY->setValue(biOp->getHeight());
-	//najdeme incerzu maticu
-	PdfOperator::Iterator iter = PdfOperator::getIterator(ii);
+PdfOperator::Iterator iter = PdfOperator::getIterator(ii);
 	iter = iter.next();
 	bool addCm = false;
 	std::vector<Cm> cms;
@@ -201,28 +203,41 @@ void InsertImage::setImage(PdfOp ii, double scale)
 		cms.pop_back();
 	}
 	const double * d = state.getCTM();
-	double s = d[3]*d[0] - d[1]*d[2];
-	Cm c(d[3]/s,d[1]/s,d[2]/s,-d[0]/s,0,0);
+	memcpy(act,d,sizeof(double)*6);
+	double s = -d[3]*d[0] + d[1]*d[2];
+	Cm c(-d[3]/s,d[1]/s,-d[2]/s,d[0]/s,0,0);//ziadne posuny
 #if _DEBUG
 	state.concatCTM(c.matrix[0],c.matrix[1],c.matrix[2],c.matrix[3],c.matrix[4],c.matrix[5]);
 	d = state.getCTM();
-	assert(fabs(d[0] - 1)<1e-4);
+	/*assert(fabs(d[0] - 1)<1e-4);
 	assert(fabs(d[1])<1e-4);
 	assert(fabs(d[2])<1e-4);
-	assert(fabs(d[3]-1)<1e-4);
+	assert(fabs(d[3]-1)<1e-4);*/
 #endif
-	//c.matrix[0]=1;
-	//c.matrix[3]=1;
+	/*c.matrix[0]=1;
+	c.matrix[0]=0;
+	c.matrix[0]=0;
+	c.matrix[3]=1;*/
+	memcpy(res,c.matrix,sizeof(double)*6);
+}
+void InsertImage::setImage(PdfOp ii, double scale)
+{
+	_scale = scale;
+	biOp = boost::dynamic_pointer_cast<InlineImageCompositePdfOperator>(ii->clone());
+	ui.sizeX->setValue(biOp->getWidth());
+	ui.sizeY->setValue(biOp->getHeight());
+	//najdeme inverznu maticu
+	Cm c;
 	PdfOperator::Operands operands;
 	for ( int i =0; i<6; i++)
 		operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(c.matrix[i])));
 	_invertCm = createOperator("cm",operands);
 	BBox b = ii->getBBox();
-	ui.positionX->setMaximum(DisplayParams::DEFAULT_PAGE_RX*_scale-min(b.xleft,b.xleft));//o kolko a poze posunut doprava
-	ui.positionX->setMinimum(-min(b.xleft,b.xleft));//o kolko a poze posunut doprava
+	//ui.positionX->setMaximum(DisplayParams::DEFAULT_PAGE_RX*_scale-min(b.xleft,b.xleft));//o kolko a poze posunut doprava
+	//ui.positionX->setMinimum(-min(b.xleft,b.xleft));//o kolko a poze posunut doprava
 	ui.positionX->setValue(0);
 
-	ui.positionY->setMaximum(DisplayParams::DEFAULT_PAGE_RY*_scale-min(b.yleft,b.yleft));//o kolko a poze posunut doprava
-	ui.positionY->setMinimum(-min(b.yleft,b.yleft));//o kolko a poze posunut doprava
+	//ui.positionY->setMaximum(DisplayParams::DEFAULT_PAGE_RY*_scale-min(b.yleft,b.yleft));//o kolko a poze posunut doprava
+	//ui.positionY->setMinimum(-min(b.yleft,b.yleft));//o kolko a poze posunut doprava
 	ui.positionY->setValue(0);
 }

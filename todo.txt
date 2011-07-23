@@ -134,7 +134,7 @@ FIXED - dalsi parameter-> charakter spacing
 - zalozky ( aby uzivatel vedel, kam sa vratit - a program tiez
 - ked mazem stranky, zmazat aj prislusne bookmarky
 FIXED - pri zmazani revizia cheknut exception na stranku - zorazit len  taku, zo exituje!
-- osertit ked sa nieco nepodari + zrusit alokaciu vsetkych poloziek
+FIXED - osetrit ked sa nieco nepodari + zrusit alokaciu vsetkych poloziek
 - vytvorit loader pre bookmarky a pre loadovanie a pre savovanie
 - vo foxite a v pdf sa inde zobrazuju anotacie
 FIXED - odstranit stream a prepisat to na nas obrazok ( anotacie ) - potom aktivne pluchy pridavat len z Rect, o zobrazenie sa postara kernel
@@ -158,22 +158,26 @@ FIXED - check pre ktore veci nemame font
 - warning ak nie je ziadny text, akl nie ze ziadny obrazok...->rovno disabled
 - on closeevent na vsetky formulare - zavri a vycisti za sebou (operatory preddefinovane zmaz)
 -------------------------OUTSTANDING ISSUES-----------------------------
---delete potrebuje TD pred operator
---pokial je v textovom operatore aj cislo, neviem spravne zobrazit vysviecovanie, mazanie a posobne
 FIXED -- Niekde ve v Tf zaporna hodnota
 FIXED -- ako medzeru to ma osetrit _WordSpace
+FIXED -- bookmarky schovavatelne
+FIXED -- BI obrazky maju nespravne operacie
+FIXED -- repeter na redraw
+FIXED -- zapamatovat si posledne subory a pocet, sortit podla datumu otvorenia
+
+FIXED (NEPRESNE!!)-- posuvatelny obrazok
+-- ANALYZE neimplementovane
 -- samostatny dialog pre highlight a pre comment ( highlihgt zmenit len farbu a text, comment zmenit iva text)
+
 -- previous nefunguje
 -- export text nerozoznava dobre medzery
-FIXED -- bookmarky schovavatelne
+-- delete potrebuje TD pred operator
+-- pokial je v textovom operatore aj cislo, neviem spravne zobrazit vysviecovanie, mazanie a posobne
 -- loader na finish -> hide, on init->hide, on save
---skin pre fontwidget, image a anotacie - pohybovatelna bublina
---BI obrazky maju nespravne operacie
---ANALYZE neimplementovane
-FIXED -- repeter na redraw
---samostatna obrazovka na settings
-FIXED -- zapamatovat si posledne subory a pocet, sortit podla datumu otvorenia
---check linearization
---tooltips pre buttony
+-- skin pre fontwidget, image a anotacie - pohybovatelna bublina
+-- samostatna obrazovka na settings
+-- check linearization
+-- tooltips pre buttony
 -------------------------------------------
+-- insert rotovaneho obrazka- rotuje sa okolo pociatku, nevyzera to dobre. Malo by sa zorotovat do boxu
 QT single application + otvarat vsetko v tomto jednom

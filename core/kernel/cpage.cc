@@ -218,9 +218,9 @@ CPage::setDisplayParams (const DisplayParams& dp)
 //
 //
 void 
-CPage::displayPage (::OutputDev& out, const DisplayParams& params, int x, int y, int w, int h)
+CPage::displayPage (::OutputDev& out, const DisplayParams& params, int x, int y, int w, int h, bool reparse)
 { 
-	_display->setDisplayParams (params);
+	_display->setDisplayParams (params, reparse);
 	_display->displayPage (out, x, y, w ,h); 
 }
 

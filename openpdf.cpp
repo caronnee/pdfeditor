@@ -6,6 +6,11 @@
 #include "kernel/exceptions.h"
 #include <QMessageBox>
 
+void OpenPdf::initAnalyze()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->initAnalyze();
+}
 void OpenPdf::pdfChanged()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());

@@ -23,6 +23,7 @@ public:
 signals:
 	void ModeChangedSignal(QString);
 public slots:
+	void initAnalyze();
 	void search(QString s, bool v);
 	void deleteSelectedText();
 	void eraseSelectedText();

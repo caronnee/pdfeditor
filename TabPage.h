@@ -338,6 +338,9 @@ private:
 	PdfOp getValidTextOp( Ops& ops, bool & found);
 public slots:
 	void copyTextToClipBoard();
+	void operationDone();
+	void initAnalyze();
+	void loadAnalyzeItem( QTreeWidgetItem * item );
 };
 
 #endif

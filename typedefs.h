@@ -41,9 +41,12 @@ enum Mode
 };
 enum PageDrawMode
 {
-	ModeDrawRectangle,
-	ModeDrawNothing
+	ModeTrackCompleteRectangle,
+	ModeDrawNothing,
+	ModeTrackDrawingRect
 };
+
+typedef boost::shared_ptr<pdfobjects::CPdf> PdfInstance;
 typedef boost::shared_ptr<pdfobjects::IProperty> PdfProperty;
 typedef std::vector<boost::shared_ptr<pdfobjects::PdfOperator> > Ops;
 typedef std::list<boost::shared_ptr<pdfobjects::PdfOperator> > OpsList;

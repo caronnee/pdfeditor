@@ -43,7 +43,7 @@ using namespace utils;
 //
 //
 void 
-CPageDisplay::setDisplayParams (const DisplayParams& dp)
+CPageDisplay::setDisplayParams (const DisplayParams& dp, bool forceReparse)
 { 
 		if (_params == dp)
 			return;
@@ -51,7 +51,7 @@ CPageDisplay::setDisplayParams (const DisplayParams& dp)
 	// TODO ROTATION !!!!
 
 	bool need_reparse = false;
-	if (_params.hDpi != dp.hDpi || _params.vDpi != dp.vDpi)
+	if (_params.hDpi != dp.hDpi || _params.vDpi != dp.vDpi ||forceReparse)
 		need_reparse = true;
 
 	_params = dp; 

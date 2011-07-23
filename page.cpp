@@ -11,7 +11,8 @@ void DisplayPage::paintEvent(QPaintEvent * event)
 	{
 	case ModeDrawNothing: //do now draw anything
 		break;
-	case ModeDrawRectangle:
+	case ModeTrackDrawingRect:
+	case ModeTrackCompleteRectangle:
 		{
 			QPainter p(this);
 			p.drawRoundedRect(_rect, 2.0,1.0);
@@ -21,10 +22,11 @@ void DisplayPage::paintEvent(QPaintEvent * event)
 		assert(false);
 	}
 }
-void DisplayPage::drawRectangle(QRect rect)
+void DisplayPage::drawAndTrackRectangle(QRect rect)
 {
-	_mode = ModeDrawRectangle;
+	_mode = ModeTrackCompleteRectangle;
 	_rect = rect;
+	_origRect = _rect.topLeft();
 	update();
 }
 void DisplayPage::setMode(PageDrawMode mode)
@@ -58,11 +60,11 @@ DisplayPage::DisplayPage(QWidget *parent): QLabel(parent), _mousePressed(false),
 
 QPoint DisplayPage::convertCoord(QPoint point)
 {
-	return (QPoint(point.x(),this->size().height() - _point.y()));
+	return (QPoint(point.x(),this->size().height() - _pos.y()));
 }
 void DisplayPage::changeImage()
 {
-	QPoint p(_point.x(), this->size().height() - _point.y());
+	QPoint p(_pos.x(), this->size().height() - _pos.y());
 	emit ChangeImageSignal(p);//vieme o ktory obrazok ide
 }
 int DisplayPage::deleteAnnotation(QPoint point)
@@ -80,16 +82,16 @@ int DisplayPage::deleteAnnotation(QPoint point)
 }
 void DisplayPage::annotation()
 {
-	emit AnnotationSignal(_point); //TODO emit also rectangle
+	emit AnnotationSignal(_pos); //TODO emit also rectangle
 }
 void DisplayPage::deleteImage()
 {
-	QPoint p(_point.x(), this->size().height() - _point.y());
+	QPoint p(_pos.x(), this->size().height() - _pos.y());
 	emit DeleteImageSignal(p);
 }
 void DisplayPage::insertImage()
 {
-	emit InsertImageSignal(_point);
+	emit InsertImageSignal(_pos);
 }
 void DisplayPage::changeText()
 {
@@ -105,7 +107,7 @@ void DisplayPage::deleteText()
 }
 void DisplayPage::insertText()
 {	
-	emit InsertTextSignal(_point);
+	emit InsertTextSignal(_pos);
 }
 DisplayPage::~DisplayPage(){}
 
@@ -187,7 +189,7 @@ void DisplayPage::unsetImg() //against from image, for removing highligh and so
 }
 void DisplayPage::mousePressEvent(QMouseEvent * event)
 {
-	_point = event->pos();
+	_pos = event->pos();
 	//ak to bol lavy button, nerob nic)
 	switch(event->button())
 	{
@@ -200,7 +202,6 @@ void DisplayPage::mousePressEvent(QMouseEvent * event)
 		{
 			//pass parent the coordinates
 			//chceme suradnice vzhladom na label //TODO co ak budeme v continuous mode?
-		
 			_mousePressed = true;
 			mouseMoveEvent(event);
 			break;
@@ -218,6 +219,26 @@ void DisplayPage::mouseMoveEvent(QMouseEvent * event)
 	{
 		if (event->button() == Qt::LeftButton)
 			emit MouseClicked(event->pos());
+		if (_mode == ModeTrackCompleteRectangle)
+		{
+			//zmenime len pociatok rectanglu - ten uz mame_
+			QPoint diff = _pos - event->pos();
+#ifdef _DEBUG
+			QPoint ttt = diff;
+#endif // _DEBUG
+			diff = _origRect - diff;
+			_rect.moveTo(diff);
+			if(diff.y()>300)
+				assert(false);
+			update();
+		}
+		if ( _mode == ModeTrackDrawingRect )
+		{
+			int left = min(_pos.x(),event->pos().x());
+			int top = min(_pos.y(), event->pos().y());
+			_rect = QRect(left, top, abs(_pos.x() - event->pos().x()),abs(_pos.y()- event->pos().y()));
+			update();
+		}
 		return;
 	}
 	QPoint p = event->pos();

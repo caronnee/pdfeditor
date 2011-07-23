@@ -15,13 +15,12 @@ class DisplayPage : public QLabel
 private:
 	/** context menu  */
 	QMenu * menu;
-	QPoint _point;
 	PageDrawMode _mode;
 public:
 	DisplayPage(QWidget *parent = 0);
 	~DisplayPage();
 
-	void drawRectangle( QRect rect);
+	void drawAndTrackRectangle( QRect rect);
 	void setImage( const QImage & image);
 
 	void fillRect(QList<QRect> rects,QColor color);
@@ -45,6 +44,8 @@ private:
 	QSize _size;
 	QRect _rect;
 	QShortcut * _copy;
+	QPoint _pos;
+	QPoint _origRect;
 	public slots:
 	void markPosition(QPoint point);
 	void changeImage();
