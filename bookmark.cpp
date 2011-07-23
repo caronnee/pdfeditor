@@ -124,6 +124,10 @@ void AnalyzeItem::Init()
 		setText(1, "String");
 		setText(2, utils::getValueFromSimple<CString>(_prop).c_str());
 		break;
+	case pName:
+		setText(1, "Name");
+		setText(2, utils::getValueFromSimple<CName>(_prop).c_str());
+		break;
 	case pReal:
 		setText(1, "Real");
 		setText(2, QVariant(utils::getValueFromSimple<CReal>(_prop)).toString());
@@ -216,13 +220,7 @@ void AnalyzeItem::loadProperty()
 			item->setText(0,"Referenced");
 			break;
 		}
-
-		{
-			boost::shared_ptr<pdfobjects::CStream> stream = _prop->getSmartCObjectPtr<CStream>(_prop);
-			//stream->getop
-			assert(false);
-			break;
-		}
+		//TODO
 	default:
 		assert(false);
 	}

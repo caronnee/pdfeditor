@@ -13,7 +13,7 @@ class AnalyzeItem : public QTreeWidgetItem
 	void Init();
 	bool _hasChild;
 	bool _isProp;
-	int _type;
+	pdfobjects::PropertyType _type;
 	PdfInstance _pdfs;
 	PdfProperty _prop;
 	PdfOp _op;

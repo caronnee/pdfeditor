@@ -2554,15 +2554,8 @@ void TabPage::setSelected(TextData::iterator& first, TextData::iterator& last)
 //slot
 void TabPage::search(QString srch, bool forw)
 {
-	if (forw && performSearch(srch, forw))
-	{
+	if (performSearch(srch, forw))
 		highlight();
-		return;
-	}
-	if (!forw)
-		return;
-	TextData::iterator act = sTextIt;
-	searchPrev(srch);
 }
 QString revert(QString s)
 {
@@ -2697,7 +2690,7 @@ std::string TabPage::checkCode(QString s, std::string fontName)
 }
 bool TabPage::performSearch( QString srch, bool forw )
 {
-	QString s;
+	QString s; //TODO do threadu
 	for(int i = 0; i< _pdf->getPageCount(); i++)
 	{
 		TextData::iterator iter;
@@ -2711,9 +2704,14 @@ bool TabPage::performSearch( QString srch, bool forw )
 		if (forw)
 			iter = _textList.begin();
 		else
-			iter = _textList.end()--;//posledne
+		{
+			iter = _textList.end();//posledne
+			iter--;
+		}
 		iter->clear();
-		if (_selected)
+		if (_selected && forw)
+			iter = sTextItEnd;//nic nemen v hladacom engine
+		if (_selected && !forw)
 			iter = sTextIt;//nic nemen v hladacom engine
 		s = iter->_text;
 		if (!forw)
@@ -2750,7 +2748,7 @@ bool TabPage::performSearch( QString srch, bool forw )
 					if (forw)
 						iter->setEnd(iter->position(_searchEngine._end+1));
 					else
-						iter->setBegin(iter->position(iter->_text.size() - _searchEngine._end));
+						iter->setBegin(iter->position(iter->_text.size() - _searchEngine._end-1));
 					sTextItEnd = iter;
 					for ( int i = 0; i < _searchEngine._tokens; i++)
 					{
@@ -2761,11 +2759,10 @@ bool TabPage::performSearch( QString srch, bool forw )
 						iter->clear();
 					}
 					sTextIt = iter;
-					b = iter->position(_searchEngine._begin+1); 
 					if (forw)
-						iter->setBegin(b);
+						iter->setBegin(iter->position(_searchEngine._begin));
 					else
-						iter->setEnd(b);
+						iter->setEnd(iter->position(_searchEngine._begin+1));
 					_selected = true; 
 					return true;
 				}
@@ -2774,7 +2771,10 @@ bool TabPage::performSearch( QString srch, bool forw )
 					throw "Unexpected t->search() token"; //pre developera
 				}
 			}
-			_searchEngine.setText(iter->_text);
+			QString s = iter->_text;
+			if (!forw)
+				s = revert(s);
+			_searchEngine.setText(s);
 		}
 		//next page, etreba davat do splashu
 NextPage:

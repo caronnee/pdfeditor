@@ -175,6 +175,7 @@ FIXED (NEPRESNE!!)-- posuvatelny obrazok
 -- pokial je v textovom operatore aj cislo, neviem spravne zobrazit vysviecovanie, mazanie a posobne
 -- loader na finish -> hide, on init->hide, on save
 -- skin pre fontwidget, image a anotacie - pohybovatelna bublina
+-- search novy thread ( pre zastavenie);
 -- samostatna obrazovka na settings
 -- check linearization
 -- tooltips pre buttony
