@@ -167,9 +167,9 @@ FIXED -- zapamatovat si posledne subory a pocet, sortit podla datumu otvorenia
 
 FIXED (NEPRESNE!!)-- posuvatelny obrazok
 -- ANALYZE neimplementovane
--- samostatny dialog pre highlight a pre comment ( highlihgt zmenit len farbu a text, comment zmenit iva text)
 
 -- previous nefunguje
+-- samostatny dialog pre highlight a pre comment ( highlihgt zmenit len farbu a text, comment zmenit iva text)
 -- export text nerozoznava dobre medzery
 -- delete potrebuje TD pred operator
 -- pokial je v textovom operatore aj cislo, neviem spravne zobrazit vysviecovanie, mazanie a posobne

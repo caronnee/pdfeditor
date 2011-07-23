@@ -139,7 +139,7 @@ void AnalyzeItem::Init()
 	if (_type!= pOther)
 	{
 		IndiRef ind = _prop->getIndiRef();
-		setText(3,QString("( gen: ")+ QString(ind.gen) +QString(",") + QString(ind.num) + QString(")"));
+		setText(3,QString("( gen: ")+ QVariant(ind.gen).toString() + QString(", num:") + QVariant(ind.num).toString() + QString(")"));
 	}
 	else
 		setText(3,"-");

@@ -223,6 +223,7 @@ public:
 	void pageDown();
 	void savePdf(char * name);
 	bool checkLinearization();
+	bool containsOperator(std::string name);
 	//rotate page
 
 public slots:

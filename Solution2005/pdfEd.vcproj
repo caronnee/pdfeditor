@@ -117,7 +117,7 @@
 				PreprocessorDefinitions=",WIN32,QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_DLL"
 				RuntimeLibrary="1"
 				TreatWChar_tAsBuiltInType="false"
-				DebugInformationFormat="3"
+				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

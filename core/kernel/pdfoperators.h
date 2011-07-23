@@ -136,13 +136,18 @@ class TextSimpleOperator: public SimpleGenericOperator
 	 */
 	FontData* fontData;
 protected:
+	/** position of simple chars
+	*/
+	std::vector<libs::Point> _positions;
+
 	/** Finds current font for operator from fontName.
 	 * Uses resources from content stream to retriev font by name.
 	 * Returned instance must not be deallocated by caller.
 	 * @return Font instance for this operator.
 	 */
-	GfxFont* getCurrentFont()const;
+	
 public:
+	GfxFont* getCurrentFont()const;
 	TextSimpleOperator (const char* opTxt, const size_t numOper, Operands& opers)
 		:SimpleGenericOperator(opTxt, numOper, opers), fontData(NULL) {}
 	TextSimpleOperator(const std::string& opTxt, Operands& opers)
@@ -191,6 +196,9 @@ public:
 	void setTransformationMatrix( const double * param1 );
 	void concatTransformationMatrix( const double * param1 );
 	float getOper(const char * wanted, float def,int negative);
+	void clearPositions();
+	void savePosition( double tdx, double tdy );
+	libs::Point TextSimpleOperator::getPosition(int i, bool &ok);
 }; // class TextSimpleOperator
 
 //==========================================================

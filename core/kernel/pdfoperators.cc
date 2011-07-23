@@ -439,7 +439,7 @@ void TextSimpleOperator::getFontText(std::wstring& str)const
  	std::string rawStr;
 	getRawText(rawStr);
 
-	rawStr = "Prílohy";
+	//rawStr = "Prílohy";
  	int len = rawStr.size();
  	GString raw(rawStr.c_str(), len);
  	GfxFont* font = getCurrentFont();
@@ -515,6 +515,23 @@ void TextSimpleOperator::concatTransformationMatrix( const double * param1 )
 			actualTransform[i] = -1e10;
 		}
 	}
+}
+
+void TextSimpleOperator::clearPositions()
+{
+	_positions.clear();
+}
+libs::Point TextSimpleOperator::getPosition(int i, bool &ok)
+{
+	ok=true;
+	if (i < _positions.size())
+		return _positions[i];
+	ok = false;
+	return libs::Point();
+}
+void TextSimpleOperator::savePosition( double tdx, double tdy )
+{
+	_positions.push_back(libs::Point(tdx,tdy));
 }
 
 //==========================================================

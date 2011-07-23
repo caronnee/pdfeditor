@@ -88,12 +88,36 @@ public:
 		_bar->setRange(0,maxStep);
 	};
 };
-
+bool TabPage::containsOperator(std::string wanted)
+{
+	std::vector<shared_ptr<CContentStream> > streams;
+	_page->getContentStreams(streams);
+	for ( int content = 0; content < streams.size() ; content++)
+	{
+		Ops ops;
+		streams[content]->getPdfOperators(ops);
+		for ( int i = 0; i < ops.size(); i++)
+		{
+			PdfOperator::Iterator iter = PdfOperator::getIterator(ops[i]);
+			while(iter.valid())
+			{
+				std::string name;
+				iter.getCurrent()->getOperatorName(name);
+				if (name == wanted)
+					return true;
+				iter.next();
+			}
+		}
+	}
+	return false;
+}
 TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false)
 {
 	_pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 	debug::changeDebugLevel(10000);
 	_page = boost::shared_ptr<pdfobjects::CPage> (_pdf->getPage(1)); //or set from last
+	if (containsOperator("TJ"))
+		QMessageBox::warning(this, "Unsupported element","Pdf contains unsupported element. Some text operator may not work correctly", QMessageBox::Ok,QMessageBox::Ok); 
 	displayparams.rotate = _page->getRotation();
 	//displayparams.upsideDown = true;
 	// init splash bitmap
@@ -1775,6 +1799,9 @@ bool TabPage::nextPage()
 	_page = _pdf->getNextPage(_page);
 	displayparams.rotate = _page->getRotation();
 	this->redraw();
+	if (containsOperator("TJ"))
+		QMessageBox::warning(this, "Unsupported element","Pdf contains unsupported element. Some text operator may not work correctly", QMessageBox::Ok,QMessageBox::Ok); 
+
 	return true;
 }
 void TabPage::getBookMarks()

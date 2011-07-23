@@ -14,7 +14,7 @@ OperatorData::OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _
 	std::wstring test;
 	_op = boost::dynamic_pointer_cast<TextSimpleOperator>(op);
 	_op->getFontText(test);
-	_text = QString::fromStdWString(test);
+	_text = QString::fromStdWString(test); //TODO pozor na leak
 	libs::Rectangle r = _op->getBBox();
 	_ymin = min<double>(r.yleft, r.yright);
 	_ymax = max<double>(r.yleft, r.yright);
@@ -27,8 +27,25 @@ OperatorData::OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _
 	_width /= 100.0f;
 	float leading = _op->getOper("TL",0,0); //TODO osetri aj TD
 	_letters.push_back(_origX + leading);
-	for ( int i = 1; i< _text.size(); i++)
-		_letters.push_back( _letters.back() + _width*_op->getWidth(_text[i].unicode()) + _charSpace ); //kde zacina tato pozicia + TODO glyph positioning
+	int n=-1;
+	std::string rawString;
+	_op->getRawText(rawString);
+	const char * data = rawString.c_str();
+	int len = rawString.size(),uLen = 0;
+	double dx, dy, dx2, dy2, originX, originY;
+	CharCode code;
+	Unicode u[8];
+	float fontw = _op->getFontHeight();
+	int i =-1;
+	while ( true )
+	{
+		i++;
+		bool ok = false;
+		libs::Point p = _op->getPosition(i,ok);
+		if (!ok)
+			break;
+		_letters.push_back( _letters.back() + p.x*1.33); //kde zacina tato pozicia, nezaujima nas y
+	}
 	_letters.push_back(_origX2);
 }
 OperatorData::~OperatorData()
@@ -79,7 +96,7 @@ void OperatorData::set(float x,double &place)
 }
 int OperatorData::letters(double x)
 {
-	for ( int i =0; i <_text.size(); i++)
+	for ( int i =0; i <_letters.size()-1; i++)
 		if ( x< _letters[i+1])
 			return i;
 	return _text.size();

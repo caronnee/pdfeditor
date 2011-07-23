@@ -442,6 +442,7 @@ namespace {
 		// This can happen in really damaged pdfs
  		if (state->getFont()) {
 			TextSimpleOperator *txtOp = dynamic_cast<TextSimpleOperator*>(op.get());
+			txtOp->clearPositions();
 			assert(txtOp);
 			// TODO - can we use const GfxFont *?
 			txtOp->setFontData((GfxFont *)state->getFont());
@@ -449,7 +450,7 @@ namespace {
 			txtOp->concatTransformationMatrix(state->getTextMat());
 			std::string rawStr;
 			txtOp->getRawText(rawStr);
-			StateUpdater::printTextUpdate (state, rawStr, rc);
+			StateUpdater::printTextUpdate (state, rawStr, rc,txtOp);
 		}
 		
 		// return changed state
@@ -510,12 +511,13 @@ namespace {
 
 
 		TextSimpleOperator *txtOp = dynamic_cast<TextSimpleOperator*>(op.get());
+		txtOp->clearPositions();
 		assert(txtOp);
 		// TODO can we use const GfxFont *?
 		txtOp->setFontData((GfxFont *)state->getFont());
 		std::string rawStr;
 		txtOp->getRawText(rawStr);
-		StateUpdater::printTextUpdate (state, rawStr, rc);
+		StateUpdater::printTextUpdate (state, rawStr, rc,txtOp);
 
 		// Set edge of rectangle from actual position on output devices
 		//state->transform(state->getCurX (), state->getCurY(), & rc->xright, & rc->yright);
@@ -527,8 +529,9 @@ namespace {
 	GfxState *
 	opTJUpdate (GfxState* state, boost::shared_ptr<GfxResources>, const boost::shared_ptr<PdfOperator> op, const PdfOperator::Operands& args, BBox* rc)
 	{
+		TextSimpleOperator *txtOp = dynamic_cast<TextSimpleOperator*>(op.get());
+		txtOp->clearPositions();
 		assert (1 <= args.size ());
-
 		// This can happen in really damaged pdfs
 		if (!state->getFont()) 
 			return state;
@@ -574,9 +577,10 @@ namespace {
 
 					break;
 			case pString:
-		      		StateUpdater::printTextUpdate (state, getStringFromIProperty (item), & h_rc);
+				{
+		      		StateUpdater::printTextUpdate (state, getStringFromIProperty (item), & h_rc,txtOp);
 					break;
-
+				}
 			default:
 					assert (!"opTJUpdate: Bad object type.");
 					throw ElementBadTypeException ("opTJUpdate: Bad object type.");
@@ -587,7 +591,6 @@ namespace {
 			rc->yright = max( rc->yright, max( h_rc.yleft, h_rc.yright ) );
 		}// for
 		
-		TextSimpleOperator *txtOp = dynamic_cast<TextSimpleOperator*>(op.get());
 		assert(txtOp);
 		// TODO can we use const GfxFont *?
 		txtOp->setFontData((GfxFont *)state->getFont());
@@ -785,8 +788,9 @@ namespace {
 // Actual state (position) updaters
 //
 GfxState*
-StateUpdater::printTextUpdate (GfxState* state, const std::string& txt, BBox* rc)
+StateUpdater::printTextUpdate (GfxState* state, const std::string& txt, BBox* rc, PdfOperator* oper)
 {
+	TextSimpleOperator * txtOper = dynamic_cast<TextSimpleOperator*>(oper);
 	const GfxFont *font;
 	int wMode;
 	double riseX, riseY;
@@ -977,6 +981,8 @@ StateUpdater::printTextUpdate (GfxState* state, const std::string& txt, BBox* rc
 			originY *= state->getFontSize();
 			state->textTransformDelta(originX, originY, &tOriginX, &tOriginY);
 			state->shift(tdx, tdy);
+			TextSimpleOperator *txtOp = dynamic_cast<TextSimpleOperator*>(oper);
+			txtOp->savePosition(tdx,tdy);
 			p += n;
 			len -= n;
 		}
