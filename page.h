@@ -87,6 +87,7 @@ public:
 	void clearLabels();
 public slots:
 	void copyText();
+	int getPlace( QPoint point );
 };
 
 #endif // PAGE_H

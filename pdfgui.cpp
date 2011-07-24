@@ -7,8 +7,6 @@
 #include "pdfgui.h"
 #include "typedefs.h"
 
-
-
 pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags) 
 	: QMainWindow(parent, flags), init()
 {
@@ -50,6 +48,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.extractButton,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(setModeExtractImage()));
 	connect( this->ui.insertAnotation, SIGNAL(clicked()), this->ui.openedPdfs, SLOT(setModeInsertAnotation()));
 	connect( this->ui.linkAnnotation, SIGNAL(clicked()), this->ui.openedPdfs, SLOT(setModeInsertLinkAnotation()));
+	connect( this->ui.changeAnnotationButton, SIGNAL(clicked()), this->ui.openedPdfs, SLOT(setModeChangeAnnotation()) );
 	connect( this->ui.delAnnotation,SIGNAL(clicked()), this->ui.openedPdfs, SLOT(setModeDeleteAnnotation()));
 	connect( this->ui.openedPdfs, SIGNAL(ModeChangedSignal(QString)), this->ui.Help,SLOT(setText(QString)));
 	connect( this->ui.repeter, SIGNAL(clicked()), ui.openedPdfs, SLOT(redraw()));
@@ -59,8 +58,8 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.hcolor, SIGNAL(ValueChangedSignal(QColor)), ui.openedPdfs, SLOT(setHColor(QColor)));
 	connect( this->ui.color, SIGNAL(ValueChangedSignal(QColor)), ui.openedPdfs, SLOT(setColor(QColor)));
 	connect( this->ui.openedPdfs, SIGNAL(OpenSuccess(QString)), this, SLOT(appendToLast(QString)));
-	
-	this->ui.openedPdfs->setMode(ModeSelectText);
+	connect( this->ui.highlightButton_2, SIGNAL(clicked()), this->ui.openedPdfs, SLOT(setHighlighCommentText()));
+	this->ui.openedPdfs->setMode(ModeDoNothing);
 	//connect( this->ui.highlightButton,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(highlightSelected()));
 	//connect( this->ui.insertAnotation,SIGNAL(clicked()),this->ui.openedPdfs, SLOT(setModeInsertComment()));
 	//load settings

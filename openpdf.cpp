@@ -17,6 +17,10 @@ void OpenPdf::pdfChanged()
 	page->_changed = true;
 	this->setTabText( currentIndex(), QString("*") + this->tabText(currentIndex() )); //TODO zmenit na coot?
 }
+void OpenPdf::setModeChangeAnnotation()
+{
+	setMode(ModeChangeAnntation);
+}
 void OpenPdf::setModeDeleteAnnotation()
 {
 	setMode(ModeDeleteAnnotation);
@@ -288,4 +292,9 @@ void OpenPdf::setColor( QColor color )
 void OpenPdf::setHColor( QColor color)
 {
 	_highlightColor =color;
+}
+
+void OpenPdf::setHighlighCommentText()
+{
+	setMode(ModeHighlighComment);
 }

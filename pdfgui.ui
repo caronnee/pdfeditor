@@ -20,7 +20,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Pdf editor v1.05</string>
+   <string>Pdf editor v1.06</string>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -835,6 +835,26 @@
          </property>
          <property name="checkable">
           <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string>subgroups</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="changeAnnotationButton">
+         <property name="text">
+          <string>changeAnnotation</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string>subgroups</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="highlightButton_2">
+         <property name="text">
+          <string>highlight text</string>
          </property>
          <attribute name="buttonGroup">
           <string>subgroups</string>

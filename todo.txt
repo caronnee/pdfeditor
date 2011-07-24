@@ -103,7 +103,7 @@ FIXED - save -  savne sa posledna cast, aj ked nie je revizia->automaticky sa cm
 WONT FIX - set from splast iba raz a na cast, vzdy ina na konecnej, podla aktualne situacie
 - zmenit pismo(typ pisma)( tlste, kurziva ) -> set line width
 - preview textu v pridavani textu
-- vyhladaj cele slovo, vyhladaj ignore-case
+
 - context menu - move, pohnut vysvietenym textom
 - ako pozadie dat obrazok, na ktorom sa vsetko bude vykreslovat
 - ukazovat nejakym tentintkom, kde sa pohybuje pridanie textu, obrazku
@@ -170,7 +170,7 @@ WONTFIX-- pokial je v textovom operatore aj cislo, neviem spravne zobrazit vysvi
 FIXED export text nerozoznava dobre medzery
 FIXED delete potrebuje TD pred operator
 
-
+-- vyhladaj cele slovo, vyhladaj ignore-case, volby
 -- samostatny dialog pre highlight a pre comment ( highlihgt zmenit len farbu a text, comment zmenit iva text)
 -- search novy thread ( pre zastavenie);
 -- loader na finish -> hide, on init->hide, on save

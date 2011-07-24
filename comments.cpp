@@ -3,7 +3,29 @@
 #include "globalfunctions.h"
 #include "typedefs.h"
 #include "kernel/factories.h"
+#include "kernel/cdict.h"
+#include <QMessageBox>
 
+void Comments::setIndex( int i )
+{
+	_change = false;
+	_index = i;
+	switch (i)
+	{
+	case AText:
+		this->ui.linkLabel->hide();
+		this->ui.hFrame->hide();
+		break;
+	case AHighlight:
+		this->ui.linkLabel->hide();
+		this->ui.hFrame->show();
+		break;
+	case ALink:
+		this->ui.linkLabel->show();
+		this->ui.hFrame->hide();
+		break;
+	}
+}
 //toto sa zavola vzdy iva vtedy, ked ine o novy anotaciu
 void Comments::setRectangle(float x, float y, int width, int height)
 {
@@ -86,13 +108,14 @@ void Comments::apply()
 	case AText: //text, obycajny
 		{//mame spravne KDE ma byt, zostava zistit obsah
 			d->setProperty("Open", *PdfProperty(pdfobjects::CBoolFactory::getInstance(0)));
-			d->addProperty("Subj", *PdfProperty(pdfobjects::CStringFactory::getInstance("Created by pdf Editor")));
+			d->setProperty("Subj", *PdfProperty(pdfobjects::CStringFactory::getInstance("Created by pdf Editor")));
 			//shared_ptr<CDict> ap = createApp
 #ifdef _DEBUG
 			std::string m;
 			_an->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
-			emit (textAnnotation (_an));
+			if (!_change)
+				emit (textAnnotation (_an));
 			return;
 		} 
 	case ALink: //co ked je to URL? - linkova anotacia, vyriesit v texte. Tot sa odkazuje oba ramci textu
@@ -111,14 +134,14 @@ void Comments::apply()
 //	case AStrike:
 		{
 			//d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance("Content of Highligh")));
-			d->addProperty("Subtype", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CNameFactory::getInstance(_inits[_index].name)));
+			d->setProperty("Subtype", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CNameFactory::getInstance(_inits[_index].name)));
 			//farba
 			pdfobjects::CArray arr;
 			arr.addProperty(*boost::shared_ptr< pdfobjects::CReal>(pdfobjects::CRealFactory::getInstance(1))); //add color
 			arr.addProperty(*boost::shared_ptr< pdfobjects::CReal>(pdfobjects::CRealFactory::getInstance(1))); //add color
 			arr.addProperty(*boost::shared_ptr< pdfobjects::CReal>(pdfobjects::CRealFactory::getInstance(0))); //add color
-			d->addProperty("C",arr);
-			d->addProperty("F", *boost::shared_ptr<pdfobjects::CInt>(pdfobjects::CIntFactory::getInstance(4)));
+			d->setProperty("C",arr);
+			d->setProperty("F", *boost::shared_ptr<pdfobjects::CInt>(pdfobjects::CIntFactory::getInstance(4)));
 			{
 				pdfobjects::CArray rect;
 				rect.addProperty(*(PdfProperty(pdfobjects::CIntFactory::getInstance(0))));
@@ -144,7 +167,7 @@ void Comments::setDestination(pdfobjects::IndiRef ref)
 	arr->addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CIntFactory::getInstance(0)));
 }//TODO pre zaciatok, potom bude aj na konkretnu cast dokumentu
 
-void Comments::addLink( Annot an, pdfobjects::IndiRef ref, float x, float y )
+void Comments::addLink( PdfAnnot an, pdfobjects::IndiRef ref, float x, float y )
 {
 	pdfobjects::CArray arr;
 	arr.addProperty(*PdfProperty(pdfobjects::CRefFactory::getInstance(ref)));
@@ -170,4 +193,16 @@ void Comments::fromDict( boost::shared_ptr<pdfobjects::CDict> annDict )
 	boost::shared_ptr<pdfobjects::CDict> d = pdfobjects::IProperty::getSmartCObjectPtr<pdfobjects::CDict>(annDict->clone());
 	/*d->delProperty("Subj");
 	d->delProperty("T");*/
+}
+
+void Comments::loadAnnotation( PdfAnnot _annots )
+{
+	//check if we support this
+	std::string type;
+	type = pdfobjects::utils::getNameFromDict( _annots->getDictionary(), "SubType");
+	if ( type!= "Highlight" && type!= "Text" ) //link sa zmaze a prepise znova
+		QMessageBox::warning(this, "Unsupported Annotation","This annotation can't be changed",QMessageBox::Ok,QMessageBox::Ok);
+	_change = true;
+	this->_an = _annots;
+	show();
 }

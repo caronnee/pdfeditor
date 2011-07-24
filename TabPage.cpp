@@ -171,9 +171,9 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	//connections
 	//pridanie anotacie
 	connect(this->ui.showBookmark, SIGNAL(clicked()), this, SLOT(checkLoadedBookmarks()));
-	connect(_cmts,SIGNAL(textAnnotation(Annot)),this,SLOT(insertTextAnnot(Annot)));
-	connect(_cmts,SIGNAL(annotation(Annot)),this,SLOT(insertAnnotation(Annot)));
-	connect(_cmts,SIGNAL(WaitForPosition(Annot)),this,SLOT(SetModePosition(Annot)));
+	connect(_cmts,SIGNAL(textAnnotation(PdfAnnot)),this,SLOT(insertTextAnnot(PdfAnnot)));
+	connect(_cmts,SIGNAL(annotation(PdfAnnot)),this,SLOT(insertAnnotation(PdfAnnot)));
+	connect(_cmts,SIGNAL(WaitForPosition(PdfAnnot)),this,SLOT(SetModePosition(PdfAnnot)));
 	connect(_labelPage,SIGNAL(ShowAnnotation(int)),this,SLOT(showAnnotation(int)));
 
 	//	connect(this,SIGNAL(pdfPosition(float,float,int,int)),_cmts,SLOT(setRectangle(float,float,int,int)));
@@ -199,7 +199,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	connect( _image, SIGNAL(ImageClosedSignal()),this,SLOT(operationDone()));
 	connect( _image, SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
 	connect( _image, SIGNAL(changeImage(PdfOp)),this,SLOT(changeSelectedImage(PdfOp)));
-	connect( _cmts,SIGNAL(annotationTextMarkup(Annot)),this,SLOT(insertTextMarkup(Annot)));
+	connect( _cmts,SIGNAL(annotationTextMarkup(PdfAnnot)),this,SLOT(insertTextMarkup(PdfAnnot)));
 
 	///////////////////////////BOOKMARKS///////////////////////////////////////////////
 
@@ -828,7 +828,7 @@ goto END;
 END:
 	return _pdf->addIndirectProperty(apStream);
 }
-void TabPage::insertTextMarkup(Annot annot)
+void TabPage::insertTextMarkup(PdfAnnot annot)
 {
 	//for all selected text
 	if (!_selected)
@@ -883,7 +883,7 @@ void TabPage::closeAnnotDiag()
 	//_mode = ModeSelectText;
 	//disconnect all?
 }
-void TabPage::insertTextAnnot(Annot a)
+void TabPage::insertTextAnnot(PdfAnnot a)
 {
 #ifdef _DEBUG
 	std::string m;
@@ -901,7 +901,7 @@ void TabPage::insertTextAnnot(Annot a)
 	a->getDictionary()->addProperty("AP",*nDict);
 	redraw();
 }
-void TabPage::insertAnnotation(Annot a)
+void TabPage::insertAnnotation(PdfAnnot a)
 {
 #ifdef _DEBUG
 	std::string m;
@@ -1052,6 +1052,8 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 {
 	switch (_parent->getMode())
 	{
+	case ModeDoNothing:
+		break;
 	case ModeFindLastFont:
 		{
 			double x =  point.x(),y = point.y();
@@ -1064,17 +1066,24 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			_font->addTm(w[0],w[1]);
 			break;
 		}
-
+	case ModeChangeAnntation:
+		{
+			int index = _labelPage->getPlace(point);
+			if (index == -1)
+				break;
+			_cmts->loadAnnotation(_annots[index]);
+			break;
+		}
 	case ModeInsertLinkAnnotation:
 		{
-			_cmts->setIndex(1);
 			_labelPage->annotation();
+			_cmts->setIndex(ALink);
 			break;
 		}
 	case ModeInsertAnnotation:
 		{
-			_cmts->setIndex(0);
 			_labelPage->annotation();
+			_cmts->setIndex(0);
 			break;
 		}
 	case ModeInsertText:
@@ -1132,6 +1141,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			}
 			break;
 		}
+	case ModeHighlighComment:
 	case ModeSelectText:
 		{
 			highlightText(point); //nesprav nic, pretoze to bude robit mouseMove
@@ -1263,6 +1273,13 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			_page->getAllAnnotations(_annots);
 			redraw();
 			break;
+		}
+	case ModeHighlighComment:
+		{
+			highlight();
+			_cmts->setIndex(AHighlight);
+			_labelPage->annotation();
+			break;	
 		}
 	case ModeSelectText:
 		{
@@ -3370,7 +3387,7 @@ void TabPage::loadBookmark( QTreeWidgetItem * item )
 	n->setText(0,utils::getStringFromDict("Title",dict).c_str());
 }
 
-void TabPage::SetModePosition(Annot a)
+void TabPage::SetModePosition(PdfAnnot a)
 {
 	_annots.push_back(a);
 	_parent->setMode(ModeEmitPosition);

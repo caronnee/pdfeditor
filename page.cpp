@@ -285,3 +285,13 @@ void DisplayPage::copyText()
 {
 	emit copySelectedSignal();
 }
+
+int DisplayPage::getPlace( QPoint point )
+{
+	for ( int i =0; i < this->_interactive.size(); i++)
+	{
+		if (_interactive[i].contains(point))
+			return i;
+	}
+	return -1;
+}

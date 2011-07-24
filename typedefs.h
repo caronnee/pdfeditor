@@ -5,12 +5,14 @@
 #include <boost/shared_ptr.hpp>
 #include <kernel/pdfoperatorsbase.h>
 #include <kernel/pdfoperators.h>
+#include <kernel/cannotation.h>
 
 #define BEGIN_ZOOM 50
 #define MAX_ZOOM 500
 #define ZOOM_STEP 50
 
 #define MODES(XX) \
+	XX(ModeDoNothing," Viewmode ")	\
 	XX(ModeInsertText,"InsertText mode : click on pdf to insert a text")	\
 	XX(ModeSelectText,"Select text mode : Click and drag to select a text") \
 	XX(ModeInsertImage,"InsertImage mode: Select a rectangle to insert an image") \
@@ -27,7 +29,9 @@
 	XX(ImageMode," Not Implemented")	\
 	XX(DrawMode,"NotImplemented, go away!")	\
 	XX(ModeFindLastFont, "Click to select font and font size by text in PDF")\
-	XX(DefaultMode,"Open an PDF")
+	XX(ModeChangeAnntation, "Click on anotation to change it") \
+	XX(DefaultMode,"Open an PDF") \
+	XX(ModeHighlighComment,"After selecting text, fill please content") \
 	
 
 #define ENUMS(a,b) a,
@@ -46,6 +50,7 @@ enum PageDrawMode
 	ModeTrackDrawingRect
 };
 
+typedef boost::shared_ptr<pdfobjects::CAnnotation> PdfAnnot;
 typedef boost::shared_ptr<pdfobjects::CPdf> PdfInstance;
 typedef boost::shared_ptr<pdfobjects::IProperty> PdfProperty;
 typedef std::vector<boost::shared_ptr<pdfobjects::PdfOperator> > Ops;

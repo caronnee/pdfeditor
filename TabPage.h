@@ -228,7 +228,7 @@ public:
 
 public slots:
 	PdfOp getPreviousFontInPosition(libs::Point pdfPos);
-	void SetModePosition(Annot a);
+	void SetModePosition(PdfAnnot a);
 	void showAnnotation(int i);
 	void save();
 	void saveAs();
@@ -249,10 +249,10 @@ public slots:
 	void replaceSelectedText(QString by);
 	void insertImage(PdfOp op);
 	void mouseReleased(QPoint); //nesprav nic, pretoze to bude robit mouseMove
-	void insertTextMarkup(Annot annot);
+	void insertTextMarkup(PdfAnnot annot);
 	//void waitForPosition(); //nastao stav taky aby emitovala aktualne kliknitu poziciu
 	
-	void insertAnnotation(Annot a);
+	void insertAnnotation(PdfAnnot a);
 	//void deleteAnnotation(QPoint);
 	void search(QString text,bool forw);
 	void handleBookmark(QTreeWidgetItem* item, int);
@@ -310,7 +310,7 @@ private slots:
 	void revertRevision();
 
 	void loadBookmark( QTreeWidgetItem * item );
-	void insertTextAnnot(Annot a);
+	void insertTextAnnot(PdfAnnot a);
 	void findLastFontMode();
 	std::string checkCode(QString s, std::string fontName);
 	void getPreviousTmInPosition( libs::Point p, float* size);
