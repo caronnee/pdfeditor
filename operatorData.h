@@ -1,6 +1,7 @@
 #include <kernel/pdfoperators.h>
 #include "typedefs.h"
 #include <QString>
+#include "kernel/displayparams.h"
 
 typedef boost::shared_ptr<pdfobjects::TextSimpleOperator> PdfTextOperator;
 //TODO pozor na rotaciu stranky, bude to fachat?
@@ -16,8 +17,11 @@ struct OperatorData
 	float _width;
 	std::vector<float> _letters;
 	size_t _id;
+#ifdef _DEBUG
+	std::string operatorName;
+#endif // _DEBUG
 public:
-	OperatorData(PdfOp op);
+	OperatorData(PdfOp op, pdfobjects::DisplayParams& displayParams);
 	float GetPreviousStop();
 	float GetNextStop();
 	void change(bool from_beg);

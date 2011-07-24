@@ -3,13 +3,17 @@
 #include "kernel/pdfoperators.h"
 #include "kernel/cobjectsimple.h"
 #include "kernel/ccontentstream.h"
+#include "kernel/displayparams.h"
 
 using namespace pdfobjects;
 
 static size_t idCount =0;
 
-OperatorData::OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _origX(0), _origX2(0), _text(""),_id(idCount++) //nevadi ani ked to pretecie, je to tu iba pre porovnacvacie ucely
+OperatorData::OperatorData(PdfOp op, DisplayParams& displayParams) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _origX(0), _origX2(0), _text(""),_id(idCount++) //nevadi ani ked to pretecie, je to tu iba pre porovnacvacie ucely
 {
+#ifdef _DEBUG
+	op->getOperatorName(operatorName);
+#endif // _DEBUG
 	std::string tmp;
 	std::wstring test;
 	_op = boost::dynamic_pointer_cast<TextSimpleOperator>(op);
@@ -44,7 +48,7 @@ OperatorData::OperatorData(PdfOp op) : _begin(0), _end(0), _ymin(0), _ymax(0), _
 		libs::Point p = _op->getPosition(i,ok);
 		if (!ok)
 			break;
-		_letters.push_back( _letters.back() + p.x*1.33); //kde zacina tato pozicia, nezaujima nas y
+		_letters.push_back( _letters.back() + p.x*displayParams.vDpi/72); //kde zacina tato pozicia, nezaujima nas y
 	}
 	_letters.push_back(_origX2);
 }
@@ -96,8 +100,10 @@ void OperatorData::set(float x,double &place)
 }
 int OperatorData::letters(double x)
 {
+	if (fabs( x - _letters.back() ) < 1e-3)
+		return _text.size();
 	for ( int i =0; i <_letters.size()-1; i++)
-		if ( x< _letters[i+1])
+		if ( x < _letters[i+1])
 			return i;
 	return _text.size();
 		//double t = _origX;
@@ -115,7 +121,9 @@ int OperatorData::letters(double x)
 double OperatorData::position(int letters)
 {
 	assert(letters<=_text.size());
+//	assert(_letters[letters] > _origX);
 	return _letters[letters];
+
 	/*double place = _origX;
 	for(int i = 0; i< letters; i++)
 		place +=_op->getWidth(_text[i].unicode()) + _charSpace;

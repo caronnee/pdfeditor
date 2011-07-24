@@ -22,8 +22,7 @@ void FontWidget::setChange()
 	_scale[0] = _scale[1] = 1; //TODO dat do initu, vsade tm, kde sa ukazuje show
 	_change = true;
 	show();
-	this->ui.fonts->setCurrentIndex(1);
-	this->ui.fonts->setCurrentIndex(0);
+	clearTempFonts();
 }
 void FontWidget::sliderChanged(int value)
 {
@@ -41,6 +40,7 @@ void FontWidget::setInsert()
 {
 	_scale[0] = _scale[1] = 1;
 	_change = false;
+	clearTempFonts();
 	show();
 	this->ui.fonts->setCurrentIndex(1);
 	this->ui.fonts->setCurrentIndex(0);
@@ -80,7 +80,7 @@ void FontWidget::paintEvent( QPaintEvent * event )
 	//setMask(image.mask());//TODO nie v repainte
 
 }
-FontWidget::FontWidget(QWidget *parent) : QWidget(parent, Qt::FramelessWindowHint),_embededFont(false)
+FontWidget::FontWidget(QWidget *parent) : QWidget(parent/*, Qt::FramelessWindowHint*/),_embededFont(false)
 {
 	_scale[0] = _scale[1] = 1;
 	ui.setupUi(this);
@@ -257,6 +257,10 @@ PdfOp FontWidget::addText( QString s )
 	textOperands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(e)));
 	addToBT(createOperator("Tj", textOperands));
 	return createET();
+}
+void FontWidget::closeEvent ( QCloseEvent * event )
+{
+	emit FontClosedSignal();
 }
 
 void FontWidget::apply()

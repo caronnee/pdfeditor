@@ -44,9 +44,10 @@
             <!--             <Shortcut Id="desktopPdfEditor" Directory="DesktopFolder" Name="PdfEditor (Beta)"
                   WorkingDirectory='INSTALLDIR' Advertise="yes" /> -->
           </File>
+          <File Id='configFile' Name='config'  />
           <Shortcut Id="UninstallProduct"
-                       Name="Uninstall My Application"
-                       Description="Uninstalls My Application"
+                       Name="UninstallPdfEditor"
+                       Description="Removes pdf Editor from the operating system"
                        Target="[System64Folder]msiexec.exe"
                        Arguments="/x [ProductCode]"/>
         </Component>
@@ -59,7 +60,7 @@
       </Directory>
     </Directory>
     <Property Id="WIXUI_INSTALLDIR" Value="TARGETDIR" />
-    <UIRef Id="WixUI_Mondo" />
+    <UIRef Id="WixUI_InstallDir" />
 		<Feature Id="ProductFeature" Title="pdfSetup2005" Level="1">
 			<!-- TODO: Remove the comments around this ComponentRef element and the Component above in order to add resources to this installer. -->
 			<ComponentRef Id="Executable" />

@@ -195,7 +195,7 @@ void DisplayPage::mousePressEvent(QMouseEvent * event)
 	{
 	case Qt::RightButton:
 		{
-			menu->exec(event->globalPos());
+			//menu->exec(event->globalPos());
 			return;
 		}
 	case Qt::LeftButton:

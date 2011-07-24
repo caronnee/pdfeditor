@@ -20,7 +20,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Pdf editor v1.09</string>
+   <string>Pdf editor v1.12</string>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -812,7 +812,7 @@
        <item>
         <widget class="QPushButton" name="insertAnotation">
          <property name="text">
-          <string>insert text annotation</string>
+          <string>Insert comment</string>
          </property>
          <property name="iconSize">
           <size>
@@ -831,7 +831,7 @@
        <item>
         <widget class="QPushButton" name="linkAnnotation">
          <property name="text">
-          <string>insert link annotation</string>
+          <string>insert link</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -844,7 +844,7 @@
        <item>
         <widget class="QPushButton" name="changeAnnotationButton">
          <property name="text">
-          <string>changeAnnotation</string>
+          <string>Change</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -857,7 +857,7 @@
        <item>
         <widget class="QPushButton" name="highlightButton_2">
          <property name="text">
-          <string>highlight text</string>
+          <string>Highlight</string>
          </property>
          <attribute name="buttonGroup">
           <string>subgroups</string>
@@ -867,7 +867,7 @@
        <item>
         <widget class="QPushButton" name="delAnnotation">
          <property name="text">
-          <string>delete Annotation</string>
+          <string>Delete</string>
          </property>
          <property name="checkable">
           <bool>true</bool>

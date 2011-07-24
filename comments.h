@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QRect>
-
+#include <QColor>
 #include <vector>
 #include "ui_comments.h"
 //PDF
@@ -33,8 +33,9 @@ class Comments : public  QWidget
 	std::vector<InitName> _inits;
 	int _index;
 	bool _change;
+	std::string _name;
 public:
-	Comments();
+	Comments(std::string name6);
 signals:
 	void textAnnotation (PdfAnnot);
 	void annotationTextMarkup(PdfAnnot);
@@ -53,6 +54,8 @@ public slots:
 	void addLink( PdfAnnot an, pdfobjects::IndiRef ref, float x, float y );
 	void fromDict( boost::shared_ptr<pdfobjects::CDict> annDict );
 	void loadAnnotation( PdfAnnot _annots );
+	QColor getHColor();
+	void setHColor( QColor colo );
 };
 
 #endif

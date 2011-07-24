@@ -17,6 +17,7 @@ public:
 	Mode _mode;
 	QColor _color;
 	QColor _highlightColor;
+	std::string _author;
 public:
 	void setMode(Mode mode);
 	Mode getMode() const { return _mode; }
@@ -91,4 +92,6 @@ public slots:
 	void setModeInsertLinkAnotation();
 signals:
 	void OpenSuccess(QString);
+public:
+	std::string Author();
 };

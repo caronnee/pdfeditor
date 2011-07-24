@@ -60,6 +60,7 @@ class FontWidget : public QWidget
 	PdfOp createMatrix(std::string op);
 	QPalette palette;
 public:
+
 	void paintEvent(QPaintEvent * event);
 	void setHeight(float h)
 	{
@@ -93,6 +94,7 @@ public:
 	void addTm( float w, float h );
 
 signals:
+	void FontClosedSignal();
 	void getLastTm(libs::Point,float *);
 	std::string convertTextFromUnicode(QString, std::string);
 	void changeTextSignal(PdfOp op);
@@ -116,6 +118,7 @@ public slots:
 	void sliderChanged(int value);
 	void clearTempFonts();
 	void fontIndexChanged( int );
+	void closeEvent ( QCloseEvent * event );
 	//void setAngle(int angle);
 };
 

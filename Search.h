@@ -11,6 +11,9 @@ class Search : public QWidget
 	Q_OBJECT
 
 	Ui::Search ui;
+	bool _ignoreCase;
+	bool _wholeWord;
+	bool _regexp;
 public:
 	Search(QWidget * widget);
 public slots:

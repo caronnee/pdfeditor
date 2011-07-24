@@ -57,7 +57,7 @@ void Comments::setRectangle(libs::Rectangle rectangle)
 	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.yright)));
 	_an->getDictionary()->setProperty("Rect",arr);
 }
-Comments::Comments() :_index(0),_change(false)
+Comments::Comments(std::string name) :_index(0),_change(false),_name(name)
 {
 	_inits.push_back(InitName("Text", CAInit(new pdfobjects::utils::TextAnnotInitializer())));
 	_inits.push_back(InitName("Link",CAInit(new pdfobjects::utils::LinkAnnotInitializer()))) ;
@@ -102,7 +102,7 @@ void Comments::apply()
 	//zisti, ci je to text
 	ADictionary d = _an->getDictionary();
 	d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string(ui.content->toPlainText().toAscii().data()))));
-	d->setProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance("mruf?")));//autor
+	d->setProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string("Created by") + _name)));//autor
 	switch (_index)
 	{
 	case AText: //text, obycajny
@@ -147,7 +147,7 @@ void Comments::apply()
 				rect.addProperty(*(PdfProperty(pdfobjects::CIntFactory::getInstance(0))));
 				rect.addProperty(*(PdfProperty(pdfobjects::CIntFactory::getInstance(0))));
 				rect.addProperty(*(PdfProperty(pdfobjects::CIntFactory::getInstance(1))));
-				d->addProperty("Border",rect); 
+				d->setProperty("Border",rect); 
 			}
 			emit (annotationTextMarkup (_an)); //jedine, co chyba doplnit, je quadpoint -> doplni sa v taboage
 			return;
@@ -216,4 +216,15 @@ void Comments::loadAnnotation( PdfAnnot _annots )
 	}
 	this->_an = _annots;
 	show();
+}
+
+QColor Comments::getHColor()
+{
+	QColor color(this->ui.hColor->getR(),this->ui.hColor->getG(),this->ui.hColor->getB(),50);
+	return color;
+}
+
+void Comments::setHColor( QColor colo )
+{
+	this->ui.hColor->setColor(colo);
 }

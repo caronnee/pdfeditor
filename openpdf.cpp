@@ -29,13 +29,13 @@ QColor OpenPdf::getHColor()
 {
 	return _highlightColor;
 }
-OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeDoNothing),_previous(ModeDoNothing), _color(255,0,0,50), _highlightColor(0,255,0)
+OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeDoNothing),_previous(ModeDoNothing), _color(255,0,0,50), _highlightColor(0,255,0),_author("Unknown")
 {
 #if _DEBUG
 	TabPage * page = new TabPage(this,"./zadani.pdf");
 	this->addTab(page,"test");
 #endif
-	setMode(ModeOperatorSelect); //default mode
+	setModeDefault(); //default mode
 }
 void OpenPdf::search(QString s, bool v)
 {
@@ -83,25 +83,31 @@ void OpenPdf::deleteSelectedText()
 void OpenPdf::setModeInsertLinkAnotation()
 {
 	setMode(ModeInsertLinkAnnotation);
+	setMode(ModeInsertLinkAnnotation);
 }
 void OpenPdf::setModeInsertAnotation()
 {
+	setMode(ModeInsertAnnotation);
 	setMode(ModeInsertAnnotation);
 }
 void OpenPdf::setModeExtractImage()
 {
 	setMode(ModeExtractImage);
+	setMode(ModeExtractImage);
 }
 void OpenPdf::setModeImagePart()
 {
+	setMode(ModeImagePart);
 	setMode(ModeImagePart);
 }
 void OpenPdf::setModeInsertImage()
 {
 	setMode(ModeInsertImage);
+	setMode(ModeInsertImage);
 }
 void OpenPdf::setModeDefault()
 {
+	setMode(ModeDoNothing);
 	setMode(ModeDoNothing);
 }
 void OpenPdf::setModeSelectImage()
@@ -111,10 +117,12 @@ void OpenPdf::setModeSelectImage()
 void OpenPdf::setModeInsertText()
 {
 	setMode(ModeInsertText);
+	setMode(ModeInsertText);
 }
 void OpenPdf::setModeSelectText()
 {
 	setMode(ModeSelectText);
+	setMode(ModeSelectText); //prepisanie previous
 }
 OpenPdf::~OpenPdf(void){}
 
@@ -178,6 +186,7 @@ void OpenPdf::open(QString name)
 		TabPage * page = new TabPage(this, name);
 		this->addTab(page,name);
 		emit OpenSuccess(name);
+		setCurrentIndex(count() -1);
 		//pri kazdon otvoreni sa spytaj, ci je to potreba delinerizovat(co noveho suboru), inak sa nebude dat savovat
 		if (page->checkLinearization())
 			return;
@@ -276,16 +285,34 @@ void OpenPdf::deletePage()
 }
 static const char * helper[] = { MODES(EARRAY) };
 
+bool PermanentMode(Mode mode)
+{
+	return mode == ModeChangeAnntation ||
+		mode == ModeDeleteAnnotation ||
+		mode == ModeDoNothing ||
+		mode == ModeExtractImage ||
+		mode == ModeImagePart ||
+		mode == ModeImagePartCopied ||
+		mode == ModeImageSelected ||
+		mode == ModeInsertAnnotation ||
+		mode == ModeInsertLinkAnnotation ||
+		mode == ModeInsertText ||
+		mode == ModeSelectText ||
+		mode == ModeSelectImage ||
+		mode == ModeOperatorSelect ;
+}
 void OpenPdf::setMode( Mode mode )
 {
 	_previous = _mode;
+	if (PermanentMode(mode))
+		_previous = mode;
 	_mode =  mode;
 	emit ModeChangedSignal(helper[mode]);
 }
 
 void OpenPdf::setPreviousMode()
 {
-	_mode = _previous;
+	setMode(_previous);
 }
 
 void OpenPdf::setColor( QColor color )
@@ -302,4 +329,9 @@ void OpenPdf::setHColor( QColor color)
 void OpenPdf::setHighlighCommentText()
 {
 	setMode(ModeHighlighComment);
+}
+
+std::string OpenPdf::Author()
+{
+	return _author;
 }

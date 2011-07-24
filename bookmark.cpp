@@ -82,10 +82,11 @@ _hasChild(false),_isProp(false),_type(pdfobjects::pNull),_loaded(true), _op(prop
 }
 void AnalyzeItem::Init()
 {
+	setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicator);
 	if (_prop)
 	{
 		_type = _prop->getType();
-		if (_type == pArray || _type == pDict || pStream)
+		if (_type == pArray || _type == pDict || _type == pStream || _type == pRef)
 		{
 			_hasChild = true;
 			_loaded = false;
