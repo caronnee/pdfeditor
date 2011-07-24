@@ -20,7 +20,6 @@ public:
 public:
 	void setMode(Mode mode);
 	Mode getMode() const { return _mode; }
-	void setModeChangeAnnotation();
 
 signals:
 	void ModeChangedSignal(QString);
@@ -32,6 +31,7 @@ public slots:
 	void changeSelectedText();
 	void highlightSelected();
 
+	void setModeChangeAnnotation();
 	void setHighlighCommentText();
 	void setModeExtractImage();
 	void setModeImagePart();

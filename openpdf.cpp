@@ -29,7 +29,7 @@ QColor OpenPdf::getHColor()
 {
 	return _highlightColor;
 }
-OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeOperatorSelect),_previous(ModeOperatorSelect), _color(255,0,0,50), _highlightColor(0,255,0)
+OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeDoNothing),_previous(ModeDoNothing), _color(255,0,0,50), _highlightColor(0,255,0)
 {
 #if _DEBUG
 	TabPage * page = new TabPage(this,"./zadani.pdf");
@@ -102,7 +102,7 @@ void OpenPdf::setModeInsertImage()
 }
 void OpenPdf::setModeDefault()
 {
-	setMode(ModeOperatorSelect);
+	setMode(ModeDoNothing);
 }
 void OpenPdf::setModeSelectImage()
 {

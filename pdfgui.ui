@@ -20,7 +20,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Pdf editor v1.07</string>
+   <string>Pdf editor v1.09</string>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -666,7 +666,7 @@
           <string>select inline image</string>
          </property>
          <property name="text">
-          <string>Select image</string>
+          <string>Select</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -692,7 +692,7 @@
           <string>delete inline image</string>
          </property>
          <property name="text">
-          <string>Delete seleted image</string>
+          <string>Delete seleted</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -712,7 +712,7 @@
           <string>change inline image</string>
          </property>
          <property name="text">
-          <string>Change selected image</string>
+          <string>Change selected</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -845,6 +845,9 @@
         <widget class="QPushButton" name="changeAnnotationButton">
          <property name="text">
           <string>changeAnnotation</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
          <attribute name="buttonGroup">
           <string>subgroups</string>

@@ -170,6 +170,7 @@ WONTFIX-- pokial je v textovom operatore aj cislo, neviem spravne zobrazit vysvi
 FIXED export text nerozoznava dobre medzery
 FIXED delete potrebuje TD pred operator
 
+-- change annotation
 -- vyhladaj cele slovo, vyhladaj ignore-case, volby
 -- samostatny dialog pre highlight a pre comment ( highlihgt zmenit len farbu a text, comment zmenit iva text)
 -- search novy thread ( pre zastavenie);

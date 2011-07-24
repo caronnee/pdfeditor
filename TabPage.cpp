@@ -899,7 +899,7 @@ void TabPage::insertTextAnnot(PdfAnnot a)
 	IndiRef indi = createAppearanceComment(dim);
 	PdfProperty prop(pdfobjects::CRefFactory::getInstance(indi));
 	nDict->addProperty("N",*prop);
-	a->getDictionary()->addProperty("AP",*nDict);
+	a->getDictionary()->setProperty("AP",*nDict);
 	redraw();
 }
 void TabPage::insertAnnotation(PdfAnnot a)

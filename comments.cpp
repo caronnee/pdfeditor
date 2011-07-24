@@ -4,6 +4,7 @@
 #include "typedefs.h"
 #include "kernel/factories.h"
 #include "kernel/cdict.h"
+#include "kernel/cobjecthelpers.h"
 #include <QMessageBox>
 
 void Comments::setIndex( int i )
@@ -56,9 +57,8 @@ void Comments::setRectangle(libs::Rectangle rectangle)
 	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.yright)));
 	_an->getDictionary()->setProperty("Rect",arr);
 }
-Comments::Comments()
+Comments::Comments() :_index(0),_change(false)
 {
-	_index=0;
 	_inits.push_back(InitName("Text", CAInit(new pdfobjects::utils::TextAnnotInitializer())));
 	_inits.push_back(InitName("Link",CAInit(new pdfobjects::utils::LinkAnnotInitializer()))) ;
 	_inits.push_back(InitName("Highlight",CAInit(new pdfobjects::utils::UniversalAnnotInitializer())));
@@ -102,7 +102,7 @@ void Comments::apply()
 	//zisti, ci je to text
 	ADictionary d = _an->getDictionary();
 	d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string(ui.content->toPlainText().toAscii().data()))));
-	d->addProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance("mruf?")));//autor
+	d->setProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance("mruf?")));//autor
 	switch (_index)
 	{
 	case AText: //text, obycajny
@@ -199,10 +199,21 @@ void Comments::loadAnnotation( PdfAnnot _annots )
 {
 	//check if we support this
 	std::string type;
-	type = pdfobjects::utils::getNameFromDict( _annots->getDictionary(), "SubType");
+	type = pdfobjects::utils::getNameFromDict("Subtype",_annots->getDictionary());
 	if ( type!= "Highlight" && type!= "Text" ) //link sa zmaze a prepise znova
 		QMessageBox::warning(this, "Unsupported Annotation","This annotation can't be changed",QMessageBox::Ok,QMessageBox::Ok);
 	_change = true;
+	if (type == "Text")
+		setIndex(AText);
+	else if (type == "Highlight")
+		setIndex(AHighlight);
+	else if (type == "Link")
+		setIndex(ALink);
+	if (_annots->getDictionary()->containsProperty("Contents"))
+	{
+		type = pdfobjects::utils::getStringFromDict("Contents",_annots->getDictionary());
+		this->ui.content->setText(QString(type.c_str()));
+	}
 	this->_an = _annots;
 	show();
 }
