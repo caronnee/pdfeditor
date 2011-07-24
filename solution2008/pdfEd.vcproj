@@ -946,6 +946,26 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\images\background.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\images\comment.ico"
 				>
 				<FileConfiguration
@@ -1067,6 +1087,26 @@
 			</File>
 			<File
 				RelativePath="..\images\downpage.ico"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\eraseText.ico"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1235,7 +1275,7 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing $(InputFileName)..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(InputPath);..\images\addpage.png;..\images\comment.ico;..\images\content.ico;..\images\decrypt_icon.jpg;..\images\deletepage.ico;..\images\DeleteText.ico;..\images\derotate.ico;..\images\downpage.ico;..\images\hand.ico;..\images\images.ico;..\images\insert_text.ico;..\images\insertTextMarker.ico;..\images\open.ico;..\images\operator.jpg;..\images\page_down.ico;..\images\rotate.ico;..\images\save.ico;..\images\saveas.ico;..\images\savecopy.ico;..\images\save-encoded.ico;..\images\search.ico;..\images\setText.ico;..\images\TextConvert.ico;..\images\uppage.ico;..\images\zoom.ico"
+						AdditionalDependencies="$(InputPath);..\images\background.png;..\images\eraseText.ico;..\images\insertTextMarker.ico;..\images\redo.ico;..\images\undo.ico;..\images\unknown.jpg;..\images\addpage.png;..\images\comment.ico;..\images\content.ico;..\images\decrypt_icon.jpg;..\images\deletepage.ico;..\images\DeleteText.ico;..\images\derotate.ico;..\images\downpage.ico;..\images\hand.ico;..\images\images.ico;..\images\insert_text.ico;..\images\insertTextMarker.ico;..\images\open.ico;..\images\operator.jpg;..\images\page_down.ico;..\images\rotate.ico;..\images\save.ico;..\images\saveas.ico;..\images\savecopy.ico;..\images\save-encoded.ico;..\images\search.ico;..\images\setText.ico;..\images\TextConvert.ico;..\images\uppage.ico;..\images\zoom.ico"
 						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
 					/>
 				</FileConfiguration>
@@ -1246,8 +1286,28 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing $(InputFileName)..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(InputPath);..\images\addpage.png;..\images\comment.ico;..\images\content.ico;..\images\decrypt_icon.jpg;..\images\deletepage.ico;..\images\DeleteText.ico;..\images\derotate.ico;..\images\downpage.ico;..\images\hand.ico;..\images\images.ico;..\images\insert_text.ico;..\images\insertTextMarker.ico;..\images\open.ico;..\images\operator.jpg;..\images\page_down.ico;..\images\rotate.ico;..\images\save.ico;..\images\saveas.ico;..\images\savecopy.ico;..\images\save-encoded.ico;..\images\search.ico;..\images\setText.ico;..\images\TextConvert.ico;..\images\uppage.ico;..\images\zoom.ico"
+						AdditionalDependencies="$(InputPath);..\images\background.png;..\images\eraseText.ico;..\images\insertTextMarker.ico;..\images\redo.ico;..\images\undo.ico;..\images\unknown.jpg;..\images\addpage.png;..\images\comment.ico;..\images\content.ico;..\images\decrypt_icon.jpg;..\images\deletepage.ico;..\images\DeleteText.ico;..\images\derotate.ico;..\images\downpage.ico;..\images\hand.ico;..\images\images.ico;..\images\insert_text.ico;..\images\insertTextMarker.ico;..\images\open.ico;..\images\operator.jpg;..\images\page_down.ico;..\images\rotate.ico;..\images\save.ico;..\images\saveas.ico;..\images\savecopy.ico;..\images\save-encoded.ico;..\images\search.ico;..\images\setText.ico;..\images\TextConvert.ico;..\images\uppage.ico;..\images\zoom.ico"
 						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\redo.ico"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 			</File>
@@ -1412,6 +1472,46 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\images\undo.ico"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\unknown.jpg"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\images\uppage.ico"
 				>
 				<FileConfiguration
@@ -1459,7 +1559,7 @@
 			SourceControlFiles="false"
 			>
 			<File
-				RelativePath=".\generatedfiles\qrc_pdf.cpp"
+				RelativePath=".\GeneratedFiles\qrc_pdf.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"

@@ -380,18 +380,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\core\kernel\textoutputbuilder.cc"
-				>
-			</File>
-			<File
-				RelativePath="..\core\kernel\textoutputengines.cc"
-				>
-			</File>
-			<File
-				RelativePath="..\core\kernel\textoutputentities.cc"
-				>
-			</File>
-			<File
 				RelativePath="..\core\kernel\xpdf.cc"
 				>
 			</File>
