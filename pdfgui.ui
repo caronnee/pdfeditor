@@ -579,7 +579,7 @@
           <string>highlight text</string>
          </property>
          <property name="text">
-          <string>Highlight text</string>
+          <string>Highlight</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">

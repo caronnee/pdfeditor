@@ -256,6 +256,7 @@ void TabPage::initRevisions()
 }
 void TabPage::highLightAnnSelected()
 {
+	_cmts->setIndex(AHighlight);
 	_cmts->insertMarkup();
 }
 void TabPage::raiseSearch()
