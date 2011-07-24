@@ -2770,7 +2770,7 @@ bool TabPage::performSearch( QString srch, bool forw )
 					double a, b;
 					//ak je 
 					if (forw)
-						iter->setEnd(iter->position(_searchEngine._end+1));
+						iter->setEnd(iter->position(_searchEngine._end));
 					else
 						iter->setBegin(iter->position(iter->_text.size() - _searchEngine._end-1));
 					sTextItEnd = iter;
@@ -2786,7 +2786,7 @@ bool TabPage::performSearch( QString srch, bool forw )
 					if (forw)
 						iter->setBegin(iter->position(_searchEngine._begin));
 					else
-						iter->setEnd(iter->position(_searchEngine._begin+1));
+						iter->setEnd(iter->position(iter->_text.size() - _searchEngine._begin-1));
 					_selected = true; 
 					return true;
 				}

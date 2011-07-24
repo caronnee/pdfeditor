@@ -39,6 +39,11 @@ OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeO
 }
 void OpenPdf::search(QString s, bool v)
 {
+	if (s.isEmpty())
+	{
+		QMessageBox::warning(this, "Empty string","No string to search", QMessageBox::Ok,QMessageBox::Ok); 
+		return;
+	}
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->search(s,v);
 }
@@ -186,8 +191,8 @@ void OpenPdf::open(QString name)
 		page = new TabPage(this,fileName);
 		this->addTab(page,fileName);
 		assert(page->checkLinearization());
+		setCurrentIndex(count() -1);
 	}
-
 	catch (PdfOpenException e)
 	{
 		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
@@ -216,7 +221,7 @@ void OpenPdf::openAnotherPdf()
 	QStringList fileNames = d.selectedFiles();
 	for ( int i =0; i < fileNames.size(); i++)
 		open(fileNames[i]);
-	setCurrentIndex(count() -1);
+
 }
 void OpenPdf::save()
 {

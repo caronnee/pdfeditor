@@ -98,7 +98,7 @@ FontWidget::FontWidget(QWidget *parent) : QWidget(parent, Qt::FramelessWindowHin
 		ui.shape->addItem(fontShapes[i],v);
 	}
 	//pridaj posledny polozku na zistovanie fontu z pdf operatora
-	this->ui.fonts->addItem("<Select font from text>");
+	this->ui.fonts->insertItem(this->ui.fonts->count(), "<Select font from text>", QVariant(-1));
 	connect(ui.rotation, SIGNAL(valueChanged(int)),this,SLOT(sliderChanged(int)));
 	connect(ui.fonts, SIGNAL(currentIndexChanged(int)), this, SLOT(fontIndexChanged(int)));
 }
