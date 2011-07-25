@@ -36,6 +36,8 @@ public slots:
 	void changeSelectedText();
 	void highlightSelected();
 
+	void setModeOperator();
+	void setModeView();
 	void setModeChangeAnnotation();
 	void setHighlighCommentText();
 	void setModeExtractImage();

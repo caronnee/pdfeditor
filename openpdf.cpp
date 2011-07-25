@@ -8,6 +8,11 @@
 #ifdef _WIN32
 #include <Windows.h>
 #endif // _WIN32
+
+void OpenPdf::setModeOperator()
+{
+	setMode(ModeOperatorSelect);
+}
 void OpenPdf::initAnalyze()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
@@ -36,7 +41,7 @@ OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeD
 #ifdef _WIN32
 	char name[256];
 	DWORD size = sizeof(name);
-	//GetUserName(name,&size);
+	GetUserName(name,&size);
 	_author = name;
 #else
 	assert(false); //TODO unix
@@ -112,7 +117,7 @@ void OpenPdf::setModeInsertImage()
 }
 void OpenPdf::setModeDefault()
 {
-	setMode(ModeDoNothing);
+	setModeView();
 }
 void OpenPdf::setModeSelectImage()
 {
@@ -352,4 +357,9 @@ void OpenPdf::setHighlighCommentText()
 std::string OpenPdf::Author() const
 {
 	return _author;
+}
+
+void OpenPdf::setModeView()
+{
+	setMode(ModeDoNothing);
 }

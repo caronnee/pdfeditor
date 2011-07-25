@@ -1288,9 +1288,9 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 		}
 	case ModeHighlighComment:
 		{
-			highlight();
-			_cmts->setIndex(AHighlight);
+			highlightText(point);
 			_labelPage->annotation();
+			_cmts->setIndex(AHighlight);
 			break;	
 		}
 	case ModeSelectText:

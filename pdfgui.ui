@@ -276,6 +276,32 @@
         </widget>
        </item>
        <item>
+        <widget class="QToolButton" name="viewButton">
+         <property name="text">
+          <string>View</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/view.ico</normaloff>:/images/view.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+         <attribute name="buttonGroup">
+          <string>mainGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
         <widget class="QToolButton" name="settingsButton">
          <property name="toolTip">
           <string>show setting dialog</string>

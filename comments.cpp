@@ -102,7 +102,7 @@ void Comments::apply()
 	//zisti, ci je to text
 	ADictionary d = _an->getDictionary();
 	d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string(ui.content->toPlainText().toAscii().data()))));
-	d->setProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string("Created by") + _name)));//autor
+	d->setProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string("Created by ") + _name)));//autor
 	switch (_index)
 	{
 	case AText: //text, obycajny

@@ -58,7 +58,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>88</y>
+        <y>96</y>
         <width>429</width>
         <height>177</height>
        </rect>
@@ -142,12 +142,15 @@
         </property>
         <property name="iconSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>16</width>
+          <height>16</height>
          </size>
         </property>
+        <property name="shortcut">
+         <string>P</string>
+        </property>
         <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextUnderIcon</enum>
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
         </property>
        </widget>
       </item>
@@ -184,12 +187,15 @@
         </property>
         <property name="iconSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>16</width>
+          <height>16</height>
          </size>
         </property>
+        <property name="shortcut">
+         <string>N</string>
+        </property>
         <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextUnderIcon</enum>
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
         </property>
        </widget>
       </item>
@@ -220,8 +226,8 @@
         </property>
         <property name="iconSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>16</width>
+          <height>16</height>
          </size>
         </property>
         <property name="toolButtonStyle">
@@ -243,8 +249,8 @@
         </property>
         <property name="iconSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>16</width>
+          <height>16</height>
          </size>
         </property>
         <property name="toolButtonStyle">
