@@ -22,6 +22,7 @@ InsertImage::InsertImage( QWidget * parent) : QWidget(parent)
 }
 void InsertImage::setSize(float w,float h)
 {
+	this->ui.imagechooseFrame->show();
 	ui.sizeX->setValue(w);
 	ui.sizeY->setValue(h);
 }
@@ -222,6 +223,7 @@ PdfOperator::Iterator iter = PdfOperator::getIterator(ii);
 }
 void InsertImage::setImage(PdfOp ii, double scale)
 {
+	this->ui.imagechooseFrame->hide();
 	_scale = scale;
 	biOp = boost::dynamic_pointer_cast<InlineImageCompositePdfOperator>(ii->clone());
 	ui.sizeX->setValue(biOp->getWidth());

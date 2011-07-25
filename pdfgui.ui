@@ -558,7 +558,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="getText">
+           <widget class="QToolButton" name="exportButton">
             <property name="toolTip">
              <string>export text</string>
             </property>

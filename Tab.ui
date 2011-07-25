@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>638</width>
-    <height>569</height>
+    <width>640</width>
+    <height>582</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -58,7 +58,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>96</y>
+        <y>102</y>
         <width>429</width>
         <height>177</height>
        </rect>
@@ -214,6 +214,12 @@
       </item>
       <item>
        <widget class="QToolButton" name="commit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string>creates new revision</string>
         </property>
@@ -237,6 +243,12 @@
       </item>
       <item>
        <widget class="QToolButton" name="branchRevision">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string>saves this revision to another file</string>
         </property>
@@ -270,7 +282,7 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="3" column="1">
+      <item row="4" column="1">
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -296,6 +308,9 @@
           <width>20</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Show/hide bookmarks</string>
         </property>
         <property name="text">
          <string>B
@@ -330,6 +345,9 @@ s</string>
           <height>16777215</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>Analyze pdf document</string>
+        </property>
         <property name="text">
          <string>A
 n
@@ -353,7 +371,7 @@ e</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="3" rowspan="3">
+      <item row="1" column="4" rowspan="4">
        <widget class="QTreeWidget" name="tree">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
@@ -380,13 +398,57 @@ e</string>
         </column>
        </widget>
       </item>
-      <item row="1" column="2" rowspan="3">
+      <item row="1" column="3" rowspan="4">
        <widget class="QTreeWidget" name="analyzeTree">
         <column>
          <property name="text">
           <string notr="true">1</string>
          </property>
         </column>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QPushButton" name="historyButton">
+        <property name="maximumSize">
+         <size>
+          <width>20</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>H
+i
+s
+t
+o
+r
+y</string>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+H</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2" rowspan="4">
+       <widget class="QTextEdit" name="historyText">
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="documentTitle">
+         <string>History</string>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
      </layout>
@@ -427,6 +489,22 @@ e</string>
     <hint type="destinationlabel">
      <x>116</x>
      <y>270</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>historyButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>historyText</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>56</x>
+     <y>325</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>111</x>
+     <y>264</y>
     </hint>
    </hints>
   </connection>

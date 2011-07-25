@@ -30,6 +30,7 @@
 #include <QTreeWidgetItem>
 #include <QToolTip>
 #include <QShortcut>
+#include <QVariant>
 #include "ui_convertPageRange.h"
 
 //PDF
@@ -50,6 +51,7 @@ std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","c
 void TabPage::handleBookmark(QTreeWidgetItem* item, int) //nezaujima nas stlpec
 {
 	Bookmark * b = (Bookmark *)(item);
+	emit addHistory(QString("Navigating to page ")+ QVariant(b->getDest()).toString() + ", zoom:" +QVariant(b->getZoom()).toString() +"\n" );
 	_page = _pdf->getPage(b->getDest());
 	double z = b->getZoom();
 	int index = z/0.5 -1;
@@ -147,8 +149,8 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	}
 	_searchShortCut = new QShortcut(QKeySequence(tr("Ctrl+F", "Find texts")),this);
 
+	connect(this, SIGNAL(addHistory(QString)), this->ui.historyText, SLOT(append(QString)));
 	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(show()));
-
 	//connect musi byt potom!!!->inak sa to zobrazi milion krat namiesto raz
 	connect(this->ui.zoom, SIGNAL(currentIndexChanged(int)),this,SLOT(zoom(int)));
 	//	_font->show();
@@ -166,6 +168,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	//--------------------------------HIDING---------------------
 	//hiding necessary
 	this->ui.tree->hide();
+	this->ui.historyText->hide();
 	this->ui.analyzeTree->hide();
 	this->ui.showAnalyzeButton->hide();
 	this->ui.progressBar->hide();
@@ -232,6 +235,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 }
 void TabPage::showAnnotation(int level)
 {
+	//emit addHistory("Getting")
 	std::string typ = utils::getNameFromDict("Subtype",_annots[level]->getDictionary());
 	if (typ == "Text" || typ == "Highlight")
 	{
@@ -265,6 +269,7 @@ void TabPage::highLightAnnSelected()
 		return;//TODO musi byt tie non-empty
 	_cmts->setIndex(AHighlight);
 	_cmts->insertMarkup();
+	emit ("Inserted highlight annotation withou comment");
 }
 void TabPage::raiseSearch()
 {
@@ -273,7 +278,10 @@ void TabPage::raiseSearch()
 void TabPage::raiseChangeSelectedImage()
 {
 	if(!_selected)
+	{
+		emit addHistory("No image was selected, ignoring");
 		return;
+	}
 	_image->setImage( _selectedImage, 72.0f/displayparams.vDpi); //TODO x,y
 	BBox b = _selectedImage->getBBox();
 	double scaleX = 72.0f/displayparams.vDpi;
@@ -286,6 +294,7 @@ void TabPage::raiseChangeSelectedImage()
 	rotatePdf(_page->getRotation(),x,y,false);
 	_image->setPosition(x,y,72.0f/displayparams.vDpi);
 	_image->setSize(abs(b.xleft-b.xright), abs(b.xleft-b.xright));
+	emit addHistory(QString("Raising image change at position ") + QVariant(abs(b.xleft-b.xright)).toString() + " " + QVariant(abs(b.xleft-b.xright)).toString() + "\n");
 	_image->show();
 }
 
@@ -314,6 +323,7 @@ void TabPage::deleteImage(QPoint point)
 	//mame iba obrazky
 	//zmaz len ten, ktore je 'navrchu' -> je v ops posledny?
 	op->getContentStream()->deleteOperator(op);
+	emit addHistory("Inline image deleted \n");
 	clearSelected();
 	redraw();
 }
@@ -341,6 +351,7 @@ void TabPage::zoom( int zoomscale )
 	float dpiy =_labelPage->logicalDpiY();
 	displayparams.hDpi = dpix * scale;
 	displayparams.vDpi = dpiy * scale;
+	emit addHistory( QString("Rezoomed to ") + QVariant(scale).toString() + "\n" );
 	clearSelected();
 	redraw();
 }
@@ -387,6 +398,7 @@ void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 }
 pdfobjects::IndiRef TabPage::createAppearanceHighlight( float * dim )
 {
+	addHistory("Creating appearance directory fro highlighting..\n");
 	shared_ptr<CStream> apStream = createAPStream(dim);
 	PdfOperator::Operands operands;
 	operands.push_back((PdfProperty(CNameFactory::getInstance("TransGs"))));
@@ -430,10 +442,12 @@ pdfobjects::IndiRef TabPage::createAppearanceHighlight( float * dim )
 
 	//std::string text("173.11566 660.86603 m 181.534 660.86603 l 181.534 639.63373 l 164.869 639.63373 l h f");
 	apStream->validate();
+	addHistory("Appearance directory created\n");
 	return _pdf->addIndirectProperty(apStream);//hack
 }
 boost::shared_ptr<pdfobjects::CStream> TabPage::createAPStream(float * dim)
 {
+	addHistory("Creating appearance stream ...\n");
 	boost::shared_ptr<pdfobjects::CStream> apStream(new CStream());
 	apStream->addProperty("Type",*PdfProperty(CNameFactory::getInstance("XObject")));
 	apStream->addProperty("SubType",*PdfProperty(CNameFactory::getInstance("Form")));
@@ -489,12 +503,14 @@ boost::shared_ptr<pdfobjects::CStream> TabPage::createAPStream(float * dim)
 		rct.addProperty(*(PdfProperty(CRealFactory::getInstance(1))));
 		apStream->addProperty("Border",rct);
 	}
+	addHistory("Appearance stream created\n");
 	return apStream;
 }
 #define ADD(q,op) q->push_back(op, getLastOperator(q))
 
 pdfobjects::IndiRef TabPage::createAppearanceComment(float *dim)
 {
+	addHistory("Creating appearance stream for comment...\n");
 	shared_ptr<CStream> apStream = createAPStream(dim);
 	//pdfoperatory
 	std::string b("q 1 1 1 rg 0 i 1 w 4 M 1 j 0 J []0 d /GS0 gs 1 0 0 1 9 5.0908 cm 7.74 12.616 m -7.74 12.616 l -8.274 12.616 -8.707 12.184 -8.707 11.649 c -8.707 -3.831 l -8.707 -4.365 -8.274 -4.798 -7.74 -4.798 c 7.74 -4.798 l 8.274 -4.798 8.707 -4.365 8.707 -3.831 c 8.707 11.649 l 8.707 12.184 8.274 12.616 7.74 12.616 c h f Q 0 G 1 1 0 rg 0 i 0.60 w 4 M 1 j 0 J []0 d  1 1 0 rg 0 G 0 i 0.59 w 4 M 1 j 0 J []0 d  1 0 0 1 9 5.0908 cm 0 0 m -0.142 0 -0.28 0.008 -0.418 0.015 c -2.199 -1.969 -5.555 -2.242 -4.642 -1.42 c -4.024 -0.862 -3.916 0.111 -3.954 0.916 c -5.658 1.795 -6.772 3.222 -6.772 4.839 c -6.772 7.509 -3.74 9.674 0 9.674 c 3.74 9.674 6.772 7.509 6.772 4.839 c 6.772 2.167 3.74 0 0 0 c 7.74 12.616 m -7.74 12.616 l -8.274 12.616 -8.707 12.184 -8.707 11.649 c -8.707 -3.831 l -8.707 -4.365 -8.274 -4.798 -7.74 -4.798 c 7.74 -4.798 l 8.274 -4.798 8.707 -4.365 8.707 -3.831 c 8.707 11.649 l 8.707 12.184 8.274 12.616 7.74 12.616 c b");
@@ -828,13 +844,17 @@ goto END;
 
 	apStream->validate();
 END:
+	addHistory("Appearance stream for comment created\n");
 	return _pdf->addIndirectProperty(apStream);
 }
 void TabPage::insertTextMarkup(PdfAnnot annot)
 {
 	//for all selected text
 	if (!_selected)
+	{
+		addHistory("Text not selected, aborting\n");
 		return;
+	}
 	
 	{
 		QColor col = _cmts->getHColor();
@@ -848,11 +868,13 @@ void TabPage::insertTextMarkup(PdfAnnot annot)
 	for ( int i =0; i < _annots.size(); i++)
 		if (_annots[i] == annot)
 		{
+			emit addHistory("Annotation changed\n");
 			redraw();
 			return;
 		}
 	//toto je len pre highlighty, ktore este nemame
 	_page->addAnnotation(annot);
+	emit addHistory("Annotation added\n");
 	_page->getAllAnnotations(_annots);
 	annot = _annots.back();//posledny pridany, na nom budeme pachat zmeny
 	std::vector<float> coordinates;
@@ -900,8 +922,9 @@ void TabPage::insertTextAnnot(PdfAnnot a)
 	a->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
 	_page->addAnnotation(a);
+	emit addHistory("Text annotation added\n");
 	_page->getAllAnnotations(_annots);
-	a= _annots.back();
+	a = _annots.back();
 	float dim[]={0,0,18,18};
 	boost::shared_ptr<pdfobjects::CDict> nDict(CDictFactory::getInstance());
 
@@ -918,6 +941,7 @@ void TabPage::insertAnnotation(PdfAnnot a)
 	a->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
 	_page->addAnnotation(a);
+	emit addHistory("General annotation added\n");
 	redraw();
 	//	std::string m;
 	//_pdf->addIndirectProperty(a->getDictionary())
@@ -1002,6 +1026,7 @@ void TabPage::raiseAnnotation(QPoint point)//raise cpmment annotation
 
 void TabPage::createList()
 {
+	emit addHistory("Recreating text list\n");
 	_textList.clear();
 	//get all pdf text operators in list
 	Ops ops;
@@ -1074,6 +1099,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			float w[2];
 			getPreviousTmInPosition(libs::Point(x,y),w);
 			_font->addTm(w[0],w[1]);
+			emit addHistory("Font was selected\n");
 			break;
 		}
 	case ModeChangeAnntation:
@@ -1121,6 +1147,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 #ifdef _DEBUG
 			_annots.back()->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
+			emit addHistory("Position was selected\n");
 			break;
 		}
 	case ModeImageSelected:
@@ -1146,11 +1173,13 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 					QRect convertedRect = getRectangle(bbox);//PODIVNE
 					_labelPage->drawAndTrackRectangle(convertedRect);
 					_parent->setMode(ModeImageSelected);
-					_parent->setMode(ModeImageSelected);
+					emit addHistory("Image was selected\n");
 					break;
 				}
 				ops.pop_back();
 			}
+			if (ops.empty())
+				emit addHistory("No inline image found\n");
 			break;
 		}
 	case ModeHighlighComment:
@@ -1190,10 +1219,13 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 				ops.pop_back();
 			}
 			if (ops.empty())
+			{
+				emit addHistory("No inline image found\n");
 				return;
+			}
 			PdfOperator::Operands op;
 			ops.back()->getParameters(op);
-			//		image_dict.addProperty ("CS", CName ("RGB"));
+			//image_dict.addProperty ("CS", CName ("RGB"));
 			//image_dict.addProperty ("BPC", CInt (8)); //
 			shared_ptr<pdfobjects::CInlineImage> inIm =  boost::dynamic_pointer_cast<pdfobjects::CInlineImage>(op.back());
 			boost::shared_ptr<IProperty> prop = inIm->getProperty("CS");
@@ -1206,6 +1238,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			int bpp = utils::getIntFromIProperty(inIm->getProperty("BPC"));
 			if(bpp!=8)
 			{
+				emit addHistory("Failed to export an image\n");
 				QMessageBox::warning(this, "Unable to export inline image","Wrong depth", QMessageBox::Ok,QMessageBox::Ok);
 				return;
 			}
@@ -1225,6 +1258,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 				if (fileName.isEmpty())
 					return;
 				image.save(fileName);
+				emit addHistory("Image saved\n");
 				break;
 		}
 	case ImageMode:
@@ -1255,7 +1289,8 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 	default: //ukazuje celeho operatora
 		{
 			_labelPage->unsetImg();
-			showClicked(point.x(),point.y());//zmenit 
+			showClicked(point.x(),point.y());//zmenit
+			
 		}
 	}
 }
@@ -1747,9 +1782,9 @@ void TabPage::showClicked(int x, int y)
 	for ( size_t i =0; i < ops.size(); i++)
 	{
 		//ukaz len povolene typy
-#if _DEBUG 
 		std::string s;
 		ops[i]->getOperatorName(s);
+#if _DEBUG 
 		if (!typeChecker.isType(OpTextName,s))
 			continue;
 		std::wstring w;
@@ -1762,6 +1797,7 @@ void TabPage::showClicked(int x, int y)
 		rotatePdf(_page->getRotation(),b.xleft,b.yleft,false);
 		rotatePdf(_page->getRotation(),b.xright,b.yright,false);
 		_labelPage->fillRect( b.xleft, b.yleft, b.xright, b.yright, color );
+		emit addHistory(QString("Selected operator ") + s.c_str() +"\n");
 	}
 }
 QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
@@ -1797,6 +1833,7 @@ void TabPage::updatePageInfoBar()
 }
 void TabPage::pageUp()
 {
+	emit addHistory("Moving page up");
 	if (_pdf->getPageCount()==1)
 		return;
 	int pos = _pdf->getPagePosition(_page);
@@ -1809,6 +1846,7 @@ void TabPage::pageUp()
 }
 void TabPage::pageDown()
 {
+	emit addHistory("Moving page down");
 	if (_pdf->getPageCount()==1)
 		return;
 	int pos = _pdf->getPagePosition(_page);
@@ -1845,6 +1883,7 @@ void TabPage::getBookMarks()
 	std::vector<shared_ptr<CDict> > outline;
 	if (!_pdf->getDictionary()->containsProperty("Outlines"))
 		return;
+	emit addHistory("Getting bookmarks");
 	shared_ptr<CDict> ol = _pdf->getDictionary()->getProperty<CDict>("Outlines");
 	if (!ol->containsProperty("First"))
 		return;
@@ -1932,6 +1971,7 @@ void TabPage::changeSelectedImage(PdfOp op)
 		return;
 	_selectedImage->getContentStream()->replaceOperator(_selectedImage,op);
 	clearSelected();
+	emit addHistory("Inline image changed");
 	redraw();
 }
 void TabPage::insertImage(PdfOp op) //positions
@@ -1960,6 +2000,7 @@ void TabPage::deletePage()
 	if ( i > _pdf->getPageCount() ) //if removing last page..
 		i =_pdf->getPageCount() ;
 	_page = _pdf->getPage(i);
+	emit addHistory(QString("page")+ QVariant(i).toString() + " deleted");
 	redraw();
 }
 void TabPage::redraw()
@@ -2044,17 +2085,20 @@ void TabPage::saveEncoded()
 	return;
 #endif
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("PdfFile Decoded (*.decoded)"));
+	emit addHistory(QString("Saved decoded pdf to file") + fileName);
 	_pdf->saveDecoded(fileName.toAscii().data());
 }
 void TabPage::save() //revision je inde
 {
 	_pdf->save(false);
+	emit addHistory("PDF saved to hidden revision");
 	initRevisions();
 }
 void TabPage::saveAs()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("PdfFile (*.pdf)"));
 	savePdf(fileName.toAscii().data());
+	emit addHistory(QString("Saved copy as ") + fileName);
 	initRevisions();
 }
 bool TabPage::CanBeSavedChanges()
@@ -2083,9 +2127,11 @@ void TabPage::savePdf(char * name)
 	if (name == NULL)
 	{
 		_pdf->save();
+		emit addHistory("saved to new revision\n");
 		initRevisions();
 		return;
 	}
+	emit addHistory(QString("Saves PDF to new file\n") + name);
 	_pdf->saveChangesToNew(name);
 }
 TabPage::~TabPage(void)	{}
@@ -2127,7 +2173,7 @@ void TabPage::rotate(int angle) //rotovanie pages
 	//std::cout << "Rotating" << angle << std::endl;
 	_page->setRotation(_page->getRotation()+angle);
 	displayparams.rotate = _page->getRotation();
-
+	emit addHistory("Page rotated\n");
 	redraw();
 	createList();
 }
@@ -2141,7 +2187,10 @@ void TabPage::commitRevision()
 	//save revision to pdf
 	this->_pdf->save(true);
 	if (_pdf->getRevisionsCount() == (size_t)this->ui.revision->count()+1)
-		addRevision(this->ui.revision->count());	
+	{
+		addRevision(this->ui.revision->count());
+		emit addHistory("New revision created\n");
+	}
 	else
 	{ 
 		QMessageBox::warning(this, "Nothing to commit","File was not changed", QMessageBox::Ok, QMessageBox::Ok);
@@ -2163,6 +2212,7 @@ void TabPage::exportRevision()
 	}
 	_pdf->clone(f);
 	fclose(f);
+	emit addHistory("Version exported\n");
 }
 
 QString TabPage::getFile(bool open, QFileDialog::FileMode flags)
@@ -2176,29 +2226,7 @@ QString TabPage::getFile(bool open, QFileDialog::FileMode flags)
 		return NULL;//cancel pressed
 	return fileName;
 }
-void TabPage::revertRevision()
-{
-	//only last time!
-	if (_pdf->getRevisionsCount() == 1)
-		return;
-	size_t pos = _pdf->getPagePosition( _page );
-	_pdf->changeRevision(_pdf->getRevisionsCount()-1);
-	_pdf->save(false);
-	//save to file that is tmpdte
-	FILE * f;
-	std::string s(_name.toAscii().data());
-	s+= ".tmp";
-	f = fopen(s.c_str(), "w");
-	if (!f)
-	{
-		QMessageBox::warning(this, tr("Not able to revert"),tr("There was problem to open file for writing"), QMessageBox::Ok);
-	}
-	//TODO skontrolovat, ci sa zmenia zamky na subore
-	if (pos >  _pdf->getPageCount())
-		pos = _pdf->getPageCount();
-	_page = _pdf->getPage(pos);
-	addRevision();
-}
+
 void TabPage::insertRange()
 {
 	//opens file
@@ -2217,6 +2245,7 @@ void TabPage::addEmptyPage()
 	pageDict->addProperty("Type", *type);
 	boost::shared_ptr<pdfobjects::CPage> pageToAdd(new pdfobjects::CPage(pageDict));
 	_pdf->insertPage(pageToAdd, _page->getPagePosition()+1);//insert after
+	emit addHistory("Added empty page\n");
 	updatePageInfoBar();
 }
 void TabPage::print()
@@ -2407,6 +2436,7 @@ void TabPage::delAnnot(int i) //page to u seba upravi, aby ID zodpovedali
 {
 	_page->delAnnotation(_annots[i]);
 	_annots[i] = _annots.back();
+	 emit addHistory("Annotation deleted\n");
 	_annots.pop_back();
 }
 QRect TabPage::getRectangle(BBox b)
@@ -2421,6 +2451,7 @@ QRect TabPage::getRectangle(BBox b)
 }
 void TabPage::findLastFontMode()
 {
+	emit addHistory("Waiting for user to select font from page\n");
 	_parent->setMode(ModeFindLastFont);//najde aj so Size, bude musiet emitovat aj Tm sirku a vysku
 }
 //void TabPage::loadFonts(FontWidget* fontWidget)
@@ -2441,6 +2472,7 @@ void TabPage::insertText( PdfOp op )
 	_page->addContentStreamToBack(ops);
 	TextOperatorIterator iter(op);assert(iter.valid());
 	_parent->setPreviousMode();
+	emit addHistory("Text inserted\n");
 	redraw();
 }
 
@@ -2973,7 +3005,9 @@ void TabPage::replaceSelectedText(QString by)
 void TabPage::eraseSelectedText()
 {
 	if (!_selected)
+	{
 		return; //staci iba vymazat a vhodne pridat operator \Td
+	}
 	float corr = 72.0f/displayparams.vDpi;
 	if (sTextIt == sTextItEnd)
 	{
@@ -3001,6 +3035,7 @@ void TabPage::eraseSelectedText()
 		else
 			sTextIt->replaceAllText(checkCode(s[0],sTextIt->_op->getFontName()));
 		//vlozime to, ze sme menili
+		emit addHistory("Text erased\n");
 		return;
 	}
 	//	float distX1 =0;// -sTextIt->GetPreviousStop() + sTextIt->_origX2;//kolko sme zmazali
@@ -3039,6 +3074,7 @@ void TabPage::eraseSelectedText()
 		insertBefore(op, sTextItEnd->_op);
 	}
 	_selected = false;
+	emit addHistory("Text in multiple operators erased\n");
 }
 void TabPage::deleteText( QString text)
 {
@@ -3093,15 +3129,19 @@ void TabPage::exportText()
 		SetNextPageRotate();
 		createList();
 	}
+	edit->setGeometry(0,0,600,700);
 	edit->setText(text);
 	edit->setReadOnly(true);
-	edit->setGeometry(QRect(0,0,150,150));
+	edit->setGeometry(QRect(0,0,550,450));
 	edit->setWindowFlags(Qt::Window);
+	edit->setWindowModality(Qt::WindowModal);
+	edit->setDocumentTitle("Exported text");
 	//text += QString::from
 	//edit->setText(text.latin());
+	emit addHistory("Text exportedfrom page from " + QVariant(beg).toString() + " to " +QVariant(end).toString());
 	edit->show();
 	_page=_pdf->getPage(old);
-	//cakaj na e
+	//delete edit;
 }
 void TabPage::SetNextPageRotate()
 {
@@ -3396,6 +3436,7 @@ void TabPage::loadBookmark( QTreeWidgetItem * item )
 	Bookmark * b = (Bookmark *) item;
 	if (b->loaded())
 		return;
+	emit addHistory("Loading content of bookmark\n");
 	IndiRef r = b->getIndiRef();
 	PdfProperty p = _pdf->getIndirectProperty(r);
 	assert(isDict(p));
@@ -3419,6 +3460,7 @@ void TabPage::loadBookmark( QTreeWidgetItem * item )
 void TabPage::SetModePosition(PdfAnnot a)
 {
 	_annots.push_back(a);
+	emit addHistory("Waitinf for position to be set\n");
 	_parent->setMode(ModeEmitPosition);
 }
 
@@ -3464,6 +3506,7 @@ bool TabPage::checkLinearization()
 #include "kernel/delinearizator.h"
 void TabPage::delinearize( QString fileName )
 {
+	emit addHistory("Delinearization performed\n");
 	shared_ptr<utils::Delinearizator> d = utils::Delinearizator::getInstance(fileName.toAscii().data(), _pdf->getPdfWriter());
 	d->delinearize(fileName.toAscii().data());
 }
@@ -3524,6 +3567,7 @@ void TabPage::copyTextToClipBoard()
 	sTextItEnd->split(s[0],s[1],s[2]);
 	text+=s[1];
 	clipBoard->setText(text);
+	emit addHistory("Text was copied to clipboard\n");
 }
 
 void TabPage::operationDone()
@@ -3537,6 +3581,7 @@ void TabPage::initAnalyze()
 {
 	if (this->ui.analyzeTree->topLevelItemCount()!=0)
 		return; //was initialized. TODO - inicializovat znova?
+	emit addHistory("Tree for analyzation loaded\n");
 	QStringList list;
 	list << "Name" << "Type" << "Value" << "Reference";
 	this->ui.analyzeTree->setHeaderLabels(list);

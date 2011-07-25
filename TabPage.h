@@ -307,8 +307,7 @@ private slots:
 	/// Saves revision-specific pdf to new pdf
 	void exportRevision();
 
-	/// Revert revision
-	void revertRevision();
+
 
 	void loadBookmark( QTreeWidgetItem * item );
 	void insertTextAnnot(PdfAnnot a);
@@ -325,6 +324,7 @@ private slots:
 	void move(int difx, int dify); //on mouse event, called on mouse realease
 	*/
 signals:
+	void addHistory(QString);
 	void ChangePageModeSignal(PageDrawMode);
 	void markPosition(QPoint point); //reverted point
 	void parsed(std::vector<float>);

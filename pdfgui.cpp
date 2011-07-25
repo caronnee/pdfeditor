@@ -37,7 +37,8 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.saveButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(save()));
 	connect( this->ui.saveAsButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(saveAs()));
 	connect( this->ui.saveEncodedButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(saveEncoded()));
-connect(this->ui.viewButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeView()));
+	connect( this->ui.viewButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeView()));
+	connect( this->ui.exportButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(getText()));
 
 	connect( this->ui.analyzeButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(initAnalyze()));
 	connect( this->ui.lastOpenedButton, SIGNAL(pressed()), this, SLOT(lastOpenedPdfs()));
