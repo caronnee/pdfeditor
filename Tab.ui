@@ -38,12 +38,8 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="search">
-        <property name="text">
-         <string>Search</string>
+        <property name="toolTip">
+         <string>save revisions(incremental changes)</string>
         </property>
        </widget>
       </item>
@@ -55,11 +51,14 @@
      <property name="mouseTracking">
       <bool>true</bool>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
      <widget class="QWidget" name="content">
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>88</y>
         <width>429</width>
         <height>177</height>
        </rect>
@@ -130,9 +129,25 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="previous">
+       <widget class="QToolButton" name="previous">
+        <property name="toolTip">
+         <string>previous page</string>
+        </property>
         <property name="text">
-         <string>Previous</string>
+         <string>Previous page</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pdf.qrc">
+          <normaloff>:/images/previousPage.ico</normaloff>:/images/previousPage.ico</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextUnderIcon</enum>
         </property>
        </widget>
       </item>
@@ -150,15 +165,31 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="next">
+       <widget class="QToolButton" name="next">
         <property name="baseSize">
          <size>
           <width>10</width>
           <height>30</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>next page</string>
+        </property>
         <property name="text">
-         <string>Next</string>
+         <string>Next page</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pdf.qrc">
+          <normaloff>:/images/nextpage.ico</normaloff>:/images/nextpage.ico</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextUnderIcon</enum>
         </property>
        </widget>
       </item>
@@ -176,16 +207,48 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="commit">
+       <widget class="QToolButton" name="commit">
+        <property name="toolTip">
+         <string>creates new revision</string>
+        </property>
         <property name="text">
          <string>Commit</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pdf.qrc">
+          <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextUnderIcon</enum>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="branchRevision">
+       <widget class="QToolButton" name="branchRevision">
+        <property name="toolTip">
+         <string>saves this revision to another file</string>
+        </property>
         <property name="text">
          <string>Export</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pdf.qrc">
+          <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextUnderIcon</enum>
         </property>
        </widget>
       </item>
@@ -325,40 +388,10 @@ e</string>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="pdf.qrc"/>
+ </resources>
  <connections>
-  <connection>
-   <sender>search</sender>
-   <signal>clicked()</signal>
-   <receiver>TabUI</receiver>
-   <slot>raiseSearch()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>commit</sender>
-   <signal>clicked()</signal>
-   <receiver>TabUI</receiver>
-   <slot>commitRevision()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>showBookmark</sender>
    <signal>toggled(bool)</signal>

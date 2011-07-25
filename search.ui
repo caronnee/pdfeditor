@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>280</width>
-    <height>48</height>
+    <height>58</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <widget class="QLineEdit" name="text"/>
    </item>
    <item>
-    <widget class="QPushButton" name="prev">
+    <widget class="QToolButton" name="prevButton">
      <property name="text">
       <string>Previous</string>
      </property>
@@ -26,16 +26,22 @@
       <iconset resource="pdf.qrc">
        <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
      </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
+     </property>
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="next">
+    <widget class="QToolButton" name="nextButton">
      <property name="text">
       <string>Next</string>
      </property>
      <property name="icon">
       <iconset resource="pdf.qrc">
        <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>
@@ -44,38 +50,5 @@
  <resources>
   <include location="pdf.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>next</sender>
-   <signal>clicked()</signal>
-   <receiver>Search</receiver>
-   <slot>next()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>prev</sender>
-   <signal>clicked()</signal>
-   <receiver>Search</receiver>
-   <slot>prev()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

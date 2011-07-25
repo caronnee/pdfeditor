@@ -1,5 +1,41 @@
 <RCC>
   <qresource prefix="/">
+    <file>images/about.ico</file>
+    <file>images/addpage.png</file>
+    <file>images/background.png</file>
+    <file>images/bubble.png</file>
+    <file>images/comment.ico</file>
+    <file>images/content.ico</file>
+    <file>images/debug.ico</file>
+    <file>images/decrypt_icon.jpg</file>
+    <file>images/deletepage.ico</file>
+    <file>images/DeleteText.ico</file>
+    <file>images/derotate.ico</file>
+    <file>images/downpage.ico</file>
+    <file>images/eraseText.ico</file>
+    <file>images/hand.ico</file>
+    <file>images/images.ico</file>
+    <file>images/insert_text.ico</file>
+    <file>images/insertTextMarker.ico</file>
+    <file>images/nextpage.ico</file>
+    <file>images/open.ico</file>
+    <file>images/operator.jpg</file>
+    <file>images/page_down.ico</file>
+    <file>images/previousPage.ico</file>
+    <file>images/redo.ico</file>
+    <file>images/rotate.ico</file>
+    <file>images/save.ico</file>
+    <file>images/saveas.ico</file>
+    <file>images/savecopy.ico</file>
+    <file>images/save-encoded.ico</file>
+    <file>images/search.ico</file>
+    <file>images/setText.ico</file>
+    <file>images/TextConvert.ico</file>
+    <file>images/undo.ico</file>
+    <file>images/unknown.jpg</file>
+    <file>images/uppage.ico</file>
+    <file>images/zoom.ico</file>
+    <file>images/debug.ico</file>
     <file>images/background.png</file>
     <file>images/eraseText.ico</file>
     <file>images/insertTextMarker.ico</file>

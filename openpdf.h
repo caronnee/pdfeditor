@@ -1,6 +1,7 @@
 #pragma once
 #include <QTabWidget>
 #include <QString>
+#include <QTimer>
 #include "typedefs.h"
 
 class OpenPdf :
@@ -8,6 +9,7 @@ class OpenPdf :
 {
 	Q_OBJECT
 	
+
 public:
 	OpenPdf(QWidget * widget);
 	~OpenPdf(void);
@@ -18,6 +20,7 @@ public:
 	QColor _color;
 	QColor _highlightColor;
 	std::string _author;
+	QTimer pageTimer;
 public:
 	void setMode(Mode mode);
 	Mode getMode() const { return _mode; }
@@ -25,6 +28,7 @@ public:
 signals:
 	void ModeChangedSignal(QString);
 public slots:
+	void about();
 	void initAnalyze();
 	void search(QString s, bool v);
 	void deleteSelectedText();
@@ -78,7 +82,6 @@ public slots:
 
 	///print a page
 	void print();
-
 	//Deletes actual page, if theree is more that one page
 	void deletePage();
 	void setModeDeleteAnnotation();
@@ -93,5 +96,6 @@ public slots:
 signals:
 	void OpenSuccess(QString);
 public:
-	std::string Author();
+	std::string Author()const;
+	//void resizeEvent(QResizeEvent *event);
 };

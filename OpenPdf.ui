@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>506</width>
-    <height>511</height>
+    <width>634</width>
+    <height>472</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -19,13 +19,15 @@
   <property name="styleSheet">
    <string notr="true">border-image: url(:/images/background.png);</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout"/>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>506</width>
+     <width>634</width>
      <height>21</height>
     </rect>
    </property>

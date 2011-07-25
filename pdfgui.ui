@@ -46,7 +46,17 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QPushButton" name="openFile">
+        <widget class="QToolButton" name="openButton">
+         <property name="font">
+          <font>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>Open PDF file</string>
+         </property>
          <property name="autoFillBackground">
           <bool>false</bool>
          </property>
@@ -63,10 +73,22 @@
            <height>32</height>
           </size>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="lastOpenedButton">
+        <widget class="QToolButton" name="lastOpenedButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>open last opened files</string>
+         </property>
          <property name="text">
           <string>Last Opened</string>
          </property>
@@ -80,12 +102,15 @@
            <height>32</height>
           </size>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="saveButton">
+        <widget class="QToolButton" name="saveButton">
          <property name="toolTip">
-          <string>Save as</string>
+          <string>save changes</string>
          </property>
          <property name="text">
           <string>&amp;Save</string>
@@ -100,12 +125,15 @@
            <height>32</height>
           </size>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="saveAsButton">
+        <widget class="QToolButton" name="saveAsButton">
          <property name="toolTip">
-          <string>save copy</string>
+          <string>save to another file</string>
          </property>
          <property name="text">
           <string>Save &amp;copy</string>
@@ -120,15 +148,21 @@
            <height>32</height>
           </size>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="contentButton">
+        <widget class="QToolButton" name="contentButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>show pdf manipulation operations</string>
          </property>
          <property name="text">
           <string>O&amp;perations </string>
@@ -146,15 +180,18 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
          <attribute name="buttonGroup">
           <string>mainGroup</string>
          </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="textButton">
+        <widget class="QToolButton" name="textButton">
          <property name="toolTip">
-          <string>Show panel with text working</string>
+          <string>show text operations</string>
          </property>
          <property name="text">
           <string>&amp;Text</string>
@@ -172,13 +209,19 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
          <attribute name="buttonGroup">
           <string>mainGroup</string>
          </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="imageButton">
+        <widget class="QToolButton" name="imageButton">
+         <property name="toolTip">
+          <string>show image operation</string>
+         </property>
          <property name="text">
           <string>&amp;Images</string>
          </property>
@@ -195,13 +238,19 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
          <attribute name="buttonGroup">
           <string>mainGroup</string>
          </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="annotationButton">
+        <widget class="QToolButton" name="annotationButton">
+         <property name="toolTip">
+          <string>show annotation operations</string>
+         </property>
          <property name="text">
           <string>&amp;Annotations</string>
          </property>
@@ -218,13 +267,19 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
          <attribute name="buttonGroup">
           <string>mainGroup</string>
          </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="settings">
+        <widget class="QToolButton" name="settingsButton">
+         <property name="toolTip">
+          <string>show setting dialog</string>
+         </property>
          <property name="text">
           <string>Settings</string>
          </property>
@@ -241,22 +296,61 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
          <attribute name="buttonGroup">
           <string>mainGroup</string>
          </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="debugButton">
+        <widget class="QToolButton" name="debugButton">
+         <property name="toolTip">
+          <string>show debug options</string>
+         </property>
          <property name="text">
           <string>Debug</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/debug.ico</normaloff>:/images/debug.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
          <attribute name="buttonGroup">
           <string>mainGroup</string>
          </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="aboutButton">
+         <property name="text">
+          <string>About</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/about.ico</normaloff>:/images/about.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
@@ -300,7 +394,10 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPushButton" name="derotateButton">
+           <widget class="QToolButton" name="derotateButton">
+            <property name="toolTip">
+             <string>rotate page left</string>
+            </property>
             <property name="text">
              <string>Rotate left</string>
             </property>
@@ -314,10 +411,16 @@
               <height>32</height>
              </size>
             </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="rotateButton">
+           <widget class="QToolButton" name="rotateButton">
+            <property name="toolTip">
+             <string>rotate page right</string>
+            </property>
             <property name="text">
              <string>Rotate right</string>
             </property>
@@ -331,10 +434,16 @@
               <height>32</height>
              </size>
             </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="insertEmpty">
+           <widget class="QToolButton" name="insertEmpty">
+            <property name="toolTip">
+             <string>add empty page</string>
+            </property>
             <property name="text">
              <string>Add page</string>
             </property>
@@ -348,10 +457,16 @@
               <height>32</height>
              </size>
             </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pageUp">
+           <widget class="QToolButton" name="pageUp">
+            <property name="toolTip">
+             <string>move page up</string>
+            </property>
             <property name="text">
              <string>Page up</string>
             </property>
@@ -365,12 +480,15 @@
               <height>32</height>
              </size>
             </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pageDown">
+           <widget class="QToolButton" name="pageDown">
             <property name="toolTip">
-             <string>page down</string>
+             <string>move page down</string>
             </property>
             <property name="text">
              <string>Page down</string>
@@ -385,10 +503,16 @@
               <height>32</height>
              </size>
             </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="deletePage">
+           <widget class="QToolButton" name="deletePage">
+            <property name="toolTip">
+             <string>delete page</string>
+            </property>
             <property name="text">
              <string>Delete page</string>
             </property>
@@ -402,10 +526,16 @@
               <height>32</height>
              </size>
             </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="getText">
+           <widget class="QToolButton" name="getText">
+            <property name="toolTip">
+             <string>export text</string>
+            </property>
             <property name="autoFillBackground">
              <bool>false</bool>
             </property>
@@ -421,6 +551,9 @@
               <width>32</width>
               <height>32</height>
              </size>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
             </property>
            </widget>
           </item>
@@ -459,12 +592,12 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QPushButton" name="selectTextButton">
+        <widget class="QToolButton" name="selectTextButton">
          <property name="toolTip">
-          <string>choose text</string>
+          <string>select text</string>
          </property>
          <property name="text">
-          <string>Select text</string>
+          <string>Select</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -482,18 +615,21 @@
          <property name="checked">
           <bool>false</bool>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
          <attribute name="buttonGroup">
-          <string>subgroups</string>
+          <string>subGroup</string>
          </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="insertTextButton">
+        <widget class="QToolButton" name="insertTextButton">
          <property name="toolTip">
           <string>insert text</string>
          </property>
          <property name="text">
-          <string>Insert text</string>
+          <string>Insert</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -508,18 +644,21 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
          <attribute name="buttonGroup">
-          <string>subgroups</string>
+          <string>subGroup</string>
          </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="deleteButton">
+        <widget class="QToolButton" name="deleteButton">
          <property name="toolTip">
-          <string>delete test ( can cause structure change)</string>
+          <string>delete text (leaves no empty space)</string>
          </property>
          <property name="text">
-          <string>Delete text</string>
+          <string>Delete</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -531,15 +670,21 @@
            <height>32</height>
           </size>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="changeButton">
+        <widget class="QToolButton" name="changeButton">
          <property name="toolTip">
-          <string>Change text</string>
+          <string>change text</string>
          </property>
          <property name="text">
-          <string>Change text</string>
+          <string>Change</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -551,15 +696,21 @@
            <height>32</height>
           </size>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="eraseButton">
+        <widget class="QToolButton" name="eraseButton">
          <property name="toolTip">
-          <string>cover text witl white line</string>
+          <string>replace text with blank space</string>
          </property>
          <property name="text">
-          <string>Erase text</string>
+          <string>Erase</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
@@ -571,10 +722,16 @@
            <height>32</height>
           </size>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="highlightButton">
+        <widget class="QToolButton" name="highlightButton">
          <property name="toolTip">
           <string>highlight text</string>
          </property>
@@ -591,6 +748,12 @@
            <height>32</height>
           </size>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -635,7 +798,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QPushButton" name="insertImageButton">
+        <widget class="QToolButton" name="insertImageButton">
          <property name="toolTip">
           <string>Insert inline image</string>
          </property>
@@ -655,13 +818,13 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
-         <attribute name="buttonGroup">
-          <string>subgroups</string>
-         </attribute>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="selectImageButton">
+        <widget class="QToolButton" name="selectImageButton">
          <property name="toolTip">
           <string>select inline image</string>
          </property>
@@ -681,13 +844,13 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
-         <attribute name="buttonGroup">
-          <string>subgroups</string>
-         </attribute>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="deleteImageButton">
+        <widget class="QToolButton" name="deleteImageButton">
          <property name="toolTip">
           <string>delete inline image</string>
          </property>
@@ -704,10 +867,13 @@
            <height>32</height>
           </size>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="changeImageButton">
+        <widget class="QToolButton" name="changeImageButton">
          <property name="toolTip">
           <string>change inline image</string>
          </property>
@@ -724,10 +890,13 @@
            <height>32</height>
           </size>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="imagePartButton">
+        <widget class="QToolButton" name="imagePartButton">
          <property name="toolTip">
           <string>extract part of pdf as image</string>
          </property>
@@ -747,13 +916,13 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
-         <attribute name="buttonGroup">
-          <string>subgroups</string>
-         </attribute>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="extractButton">
+        <widget class="QToolButton" name="extractButton">
          <property name="toolTip">
           <string>extract inline image</string>
          </property>
@@ -773,8 +942,11 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
          <attribute name="buttonGroup">
-          <string>subgroups</string>
+          <string>mainGroup</string>
          </attribute>
         </widget>
        </item>
@@ -810,7 +982,10 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QPushButton" name="insertAnotation">
+        <widget class="QToolButton" name="insertAnotation">
+         <property name="toolTip">
+          <string>insert text annotation</string>
+         </property>
          <property name="text">
           <string>Insert comment</string>
          </property>
@@ -823,58 +998,70 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
-         <attribute name="buttonGroup">
-          <string>subgroups</string>
-         </attribute>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="linkAnnotation">
+        <widget class="QToolButton" name="linkAnnotation">
+         <property name="toolTip">
+          <string>insert link annotation</string>
+         </property>
          <property name="text">
-          <string>insert link</string>
+          <string>Insert link</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
          </property>
-         <attribute name="buttonGroup">
-          <string>subgroups</string>
-         </attribute>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="changeAnnotationButton">
+        <widget class="QToolButton" name="changeAnnotationButton">
+         <property name="toolTip">
+          <string>click &amp; change annotation</string>
+         </property>
          <property name="text">
           <string>Change</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
          </property>
-         <attribute name="buttonGroup">
-          <string>subgroups</string>
-         </attribute>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="highlightButton_2">
+        <widget class="QToolButton" name="highlightButton_2">
+         <property name="toolTip">
+          <string>insert highlight annotation</string>
+         </property>
          <property name="text">
           <string>Highlight</string>
          </property>
-         <attribute name="buttonGroup">
-          <string>subgroups</string>
-         </attribute>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="delAnnotation">
+        <widget class="QToolButton" name="delAnnotation">
+         <property name="toolTip">
+          <string>delete annotation</string>
+         </property>
          <property name="text">
           <string>Delete</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
          </property>
-         <attribute name="buttonGroup">
-          <string>subgroups</string>
-         </attribute>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
@@ -903,21 +1090,36 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <widget class="QPushButton" name="analyzeButton">
+        <widget class="QToolButton" name="analyzeButton">
+         <property name="toolTip">
+          <string>create analyze tree</string>
+         </property>
          <property name="text">
           <string>Analyze!</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="repeter">
-         <property name="text">
-          <string>Repeter</string>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="opSelect">
+        <widget class="QToolButton" name="repeter">
+         <property name="toolTip">
+          <string>redraw page</string>
+         </property>
+         <property name="text">
+          <string>Repeter</string>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="opSelect">
+         <property name="toolTip">
+          <string>select operators</string>
+         </property>
          <property name="text">
           <string>Operators</string>
          </property>
@@ -937,13 +1139,13 @@
          <property name="checked">
           <bool>true</bool>
          </property>
-         <attribute name="buttonGroup">
-          <string>subgroups</string>
-         </attribute>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="saveEncodedButton">
+        <widget class="QToolButton" name="saveEncodedButton">
          <property name="toolTip">
           <string>save decoded</string>
          </property>
@@ -959,6 +1161,9 @@
            <width>32</width>
            <height>32</height>
           </size>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
         </widget>
        </item>
@@ -1030,9 +1235,6 @@
       </property>
       <property name="autoFillBackground">
        <bool>true</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true"/>
       </property>
       <property name="tabPosition">
        <enum>QTabWidget::North</enum>
@@ -1106,22 +1308,6 @@
  </resources>
  <connections>
   <connection>
-   <sender>getText</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>getText()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>openedPdfs</sender>
    <signal>tabCloseRequested(int)</signal>
    <receiver>openedPdfs</receiver>
@@ -1138,210 +1324,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>openFile</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>openAnotherPdf()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>118</x>
-     <y>75</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>221</x>
-     <y>269</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>saveButton</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>save()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>359</x>
-     <y>75</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>221</x>
-     <y>300</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>insertImageButton</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>setModeInsertImage()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>insertTextButton</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>setModeInsertText()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>selectTextButton</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>setModeSelectText()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>saveAsButton</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>saveAs()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>359</x>
-     <y>75</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>221</x>
-     <y>300</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>saveEncodedButton</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>saveEncoded()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>359</x>
-     <y>75</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>221</x>
-     <y>300</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>insertEmpty</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>insertEmpty()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>221</x>
-     <y>199</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>221</x>
-     <y>300</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>deletePage</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>deletePage()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>386</x>
-     <y>199</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>221</x>
-     <y>300</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>contentButton</sender>
    <signal>toggled(bool)</signal>
    <receiver>contentFrame</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>412</x>
-     <y>21</y>
+     <x>259</x>
+     <y>37</y>
     </hint>
     <hint type="destinationlabel">
-     <x>228</x>
-     <y>53</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rotateButton</sender>
-   <signal>clicked()</signal>
-   <receiver>openedPdfs</receiver>
-   <slot>rotate()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>412</x>
-     <y>21</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>228</x>
-     <y>53</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>contentButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>fileProp</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>354</x>
-     <y>29</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>228</x>
-     <y>77</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>annotationButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>annotationFrame</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>380</x>
-     <y>29</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>330</x>
-     <y>203</y>
+     <x>438</x>
+     <y>100</y>
     </hint>
    </hints>
   </connection>
@@ -1352,12 +1346,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>280</x>
-     <y>29</y>
+     <x>313</x>
+     <y>37</y>
     </hint>
     <hint type="destinationlabel">
-     <x>330</x>
-     <y>124</y>
+     <x>438</x>
+     <y>162</y>
     </hint>
    </hints>
   </connection>
@@ -1368,12 +1362,44 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>330</x>
-     <y>29</y>
+     <x>356</x>
+     <y>37</y>
     </hint>
     <hint type="destinationlabel">
-     <x>330</x>
-     <y>163</y>
+     <x>438</x>
+     <y>224</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>annotationButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>annotationFrame</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>416</x>
+     <y>37</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>269</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>settingsButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>settingFrame</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>477</x>
+     <y>37</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>387</y>
     </hint>
    </hints>
   </connection>
@@ -1384,34 +1410,18 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>795</x>
-     <y>29</y>
+     <x>525</x>
+     <y>37</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
-     <y>251</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>settings</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>settingFrame</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>706</x>
-     <y>29</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>438</x>
-     <y>315</y>
+     <y>324</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="subgroups"/>
   <buttongroup name="mainGroup"/>
+  <buttongroup name="subGroup"/>
  </buttongroups>
 </ui>

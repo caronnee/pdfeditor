@@ -111,7 +111,7 @@ bool TabPage::containsOperator(std::string wanted)
 	}
 	return false;
 }
-TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false)
+TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),_allowResize(false)
 {
 	_pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 	debug::changeDebugLevel(10000);
@@ -135,6 +135,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	//_search->show();
 	_image = new InsertImage(NULL);
 	this->ui.scrollArea->setWidget(_labelPage);	
+	//this->ui.scrollArea->set
 	//this->ui.displayManipulation->hide();
 	QObject::connect(_search, SIGNAL(search(QString,bool)),this,SLOT(search(QString,bool)));
 	QObject::connect(_search, SIGNAL(replaceTextSignal(QString,QString)),this,SLOT(replaceText(QString,QString)));
@@ -149,7 +150,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(show()));
 
 	//connect musi byt potom!!!->inak sa to zobrazi milion krat namiesto raz
-	connect(this->ui.zoom, SIGNAL(currentIndexChanged(QString)),this,SLOT(zoom(QString)));
+	connect(this->ui.zoom, SIGNAL(currentIndexChanged(int)),this,SLOT(zoom(int)));
 	//	_font->show();
 	connect(_font, SIGNAL(getLastTm(libs::Point,float*)), this, SLOT(getPreviousTmInPosition(libs::Point,float*)));
 	connect( _font, SIGNAL(FontClosedSignal()),this,SLOT(operationDone()));
@@ -227,6 +228,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	_parent->setMode(oldMode);
 	//search("oftwar",true);
 	//changeSelectedText();
+	_allowResize = true;
 }
 void TabPage::showAnnotation(int level)
 {
@@ -326,16 +328,10 @@ void TabPage::raiseInsertImage(QRect rect)
 	_image->setSize(rect.width()*72.0f/displayparams.vDpi, rect.height()*72.0f/displayparams.vDpi);
 	_image->show();
 }
-void TabPage::zoom(QString zoomscale)//later with how much pages, if all or not
+void TabPage::zoom( int zoomscale )
 {
-	QString res;
-	for ( int i =0;i< zoomscale.size(); i++)
-	{
-		if(zoomscale[i]<'0' || zoomscale[i]>'9')
-			continue;
-		res+=zoomscale[i];
-	}
-	float scale = res.toFloat()/100;
+	QVariant v = ui.zoom->itemData(zoomscale);
+	float scale = v.toFloat()/100;
 	if (scale >5) //TODO QWarning
 	{
 		assert(false);
@@ -1809,7 +1805,6 @@ void TabPage::pageUp()
 	this->_pdf->removePage(pos);
 	this->_pdf->insertPage(_page,pos-1);
 	_page = _pdf->getPage(pos-1);
-	redraw();
 	updatePageInfoBar();
 }
 void TabPage::pageDown()
@@ -1822,7 +1817,6 @@ void TabPage::pageDown()
 	this->_pdf->removePage(pos);
 	this->_pdf->insertPage(_page,pos+1);
 	_page = _pdf->getPage(pos+1);
-	redraw();
 	updatePageInfoBar();
 }
 bool TabPage::previousPage()
@@ -2000,6 +1994,21 @@ void TabPage::JustDraw()
 	//image = image.scaled(QSize(max(x2,x1),max(y1,y2)));
 	_labelPage->setImage(image);
 	updatePageInfoBar();
+}
+void TabPage::rezoom(QResizeEvent * event)
+{
+	this->resizeEvent(event);
+	float ratio = event->size().width();
+	ratio /= event->oldSize().width();
+	int ratioInt = ui.zoom->itemData(ui.zoom->currentIndex()).toInt()*ratio;
+	QVariant v(ratioInt);
+	int index = ui.zoom->findData(v);
+	if ( index == -1)
+	{
+		index = ui.zoom->count();
+		ui.zoom->addItem( QString( "Custom (" ) +v.toString() +")",v);
+	}
+	ui.zoom->setCurrentIndex(index);
 }
 void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
 {
@@ -2882,7 +2891,7 @@ void TabPage::deleteSelectedText() //sucasne zarovna
 	PdfOp op = createOperator("Tj",operand);
 	sTextIt->_op->setSubPartExclusive(sTextIt->letters(sTextIt->_begin), sTextIt->letters(sTextIt->_end));
 	float distX = -sTextIt->GetNextStop() + sTextItEnd->GetPreviousStop(); //nesmie byt fabs!! keby to 
-	float distY = sTextItEnd->_ymax - sTextIt->_ymax;
+	float distY =  sTextIt->_ymax - sTextItEnd->_ymax;
 	if (sTextIt == sTextItEnd)
 	{
 		//setRawText, je to jediny operand
@@ -2914,7 +2923,7 @@ void TabPage::deleteSelectedText() //sucasne zarovna
 		sTextIt++;
 	}
 	//jedno Td naraz
-	op = FontWidget::createTranslationTd(distX, distY);
+	op = FontWidget::createTranslationTd(distX, -distY);
 	assert(sTextIt->_op->getContentStream());
 	sTextIt->split(s[0],s[1],s[2]);
 	assert(s[0]=="");

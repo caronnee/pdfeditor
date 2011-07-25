@@ -3,6 +3,7 @@
 
 #include <QtGui/QMainWindow>
 #include <QCloseEvent>
+#include <QDialog>
 
 #include "openpdf.h"
 #include "ui_pdfgui.h"
@@ -18,12 +19,16 @@
 #include "xpdf/GlobalParams.h"
 #undef NO_CMAP
 
+#include "ui_aboutDialog.h"
+
 class pdfGui : public QMainWindow
 {
 	Q_OBJECT
 
 	struct pdfedit_core_dev_init init;
 
+	QDialog aboutDialog;
+	Ui::AboutDialog aboutDialogUI;
 public:
 	pdfGui(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~pdfGui();

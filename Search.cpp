@@ -4,7 +4,12 @@
 Search::Search(QWidget * parent) : QWidget(parent),_ignoreCase(false),_wholeWord(false),_regexp(false)
 {
 	ui.setupUi(this);
+	connect(this->ui.text, SIGNAL(returnPressed()),this, SLOT(next()));
+	connect(this->ui.nextButton, SIGNAL(pressed()),this, SLOT(next()));
+	connect(this->ui.prevButton, SIGNAL(pressed()),this, SLOT(prev()));
+
 }
+
 void Search::next()
 {
 	emit search(ui.text->text(),true);

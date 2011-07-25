@@ -5,7 +5,9 @@
 #include "insertpagerange.h"
 #include "kernel/exceptions.h"
 #include <QMessageBox>
-
+#ifdef _WIN32
+#include <Windows.h>
+#endif // _WIN32
 void OpenPdf::initAnalyze()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
@@ -31,6 +33,14 @@ QColor OpenPdf::getHColor()
 }
 OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeDoNothing),_previous(ModeDoNothing), _color(255,0,0,50), _highlightColor(0,255,0),_author("Unknown")
 {
+#ifdef _WIN32
+	char name[256];
+	DWORD size = sizeof(name);
+	//GetUserName(name,&size);
+	_author = name;
+#else
+	assert(false); //TODO unix
+#endif
 #if _DEBUG
 	TabPage * page = new TabPage(this,"./zadani.pdf");
 	this->addTab(page,"test");
@@ -83,31 +93,25 @@ void OpenPdf::deleteSelectedText()
 void OpenPdf::setModeInsertLinkAnotation()
 {
 	setMode(ModeInsertLinkAnnotation);
-	setMode(ModeInsertLinkAnnotation);
 }
 void OpenPdf::setModeInsertAnotation()
 {
-	setMode(ModeInsertAnnotation);
 	setMode(ModeInsertAnnotation);
 }
 void OpenPdf::setModeExtractImage()
 {
 	setMode(ModeExtractImage);
-	setMode(ModeExtractImage);
 }
 void OpenPdf::setModeImagePart()
 {
-	setMode(ModeImagePart);
 	setMode(ModeImagePart);
 }
 void OpenPdf::setModeInsertImage()
 {
 	setMode(ModeInsertImage);
-	setMode(ModeInsertImage);
 }
 void OpenPdf::setModeDefault()
 {
-	setMode(ModeDoNothing);
 	setMode(ModeDoNothing);
 }
 void OpenPdf::setModeSelectImage()
@@ -117,12 +121,10 @@ void OpenPdf::setModeSelectImage()
 void OpenPdf::setModeInsertText()
 {
 	setMode(ModeInsertText);
-	setMode(ModeInsertText);
 }
 void OpenPdf::setModeSelectText()
 {
 	setMode(ModeSelectText);
-	setMode(ModeSelectText); //prepisanie previous
 }
 OpenPdf::~OpenPdf(void){}
 
@@ -214,13 +216,23 @@ void OpenPdf::open(QString name)
 	}
 	catch (PermissionException)
 	{
-		QMessageBox::warning(this, "Encrypted document",QString("Unable to open file ( it is ecnrypted") , QMessageBox::Ok, QMessageBox::Ok);
+		QMessageBox::warning(this, "Encrypted document",QString("Unable to open file ( it is ecnrypted )") , QMessageBox::Ok, QMessageBox::Ok);
 	}
 	catch (std::exception e)
 	{
 		QMessageBox::warning(this, "Unexpected exception",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
 	}
 }
+//void OpenPdf::resizeEvent(QResizeEvent *event)
+//{
+//	if (event->oldSize().width()<0)
+//		return;
+//	for (int i =0; i < this->count(); i++)
+//	{
+//		TabPage * t = (TabPage *)this->widget(i);
+//		t->rezoom(event);
+//	}
+//}
 void OpenPdf::openAnotherPdf()
 {
 	QFileDialog d(this);
@@ -246,8 +258,14 @@ void OpenPdf::pageUp()
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->pageUp();
 }
+void OpenPdf::about()
+{
+	
+}
 void OpenPdf::pageDown()
 {
+	/*timer.setSingleShot(false);
+	timer.*/
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->pageDown();
 }
@@ -331,7 +349,7 @@ void OpenPdf::setHighlighCommentText()
 	setMode(ModeHighlighComment);
 }
 
-std::string OpenPdf::Author()
+std::string OpenPdf::Author() const
 {
 	return _author;
 }

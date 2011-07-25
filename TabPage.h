@@ -121,7 +121,6 @@ class TabPage : public QWidget
 	Q_OBJECT
 
 private: //variables
-	
 	int _acceptedType;
 	OpenPdf * _parent;
 	Ui::TabUI ui; 
@@ -168,6 +167,7 @@ private: //variables
 public:
 	bool _changed;
 	QShortcut * _searchShortCut;
+	bool _allowResize;
 	//static std::string SupportedAnnotations[] = { ANNOTS(CREATE_ARRAY) };
 
 	void deleteSelectedImage();
@@ -219,14 +219,15 @@ public:
 	//void draw();
 	void wheelEvent( QWheelEvent * event ); 
 	void deletePage();
-	void pageUp();
-	void pageDown();
+
 	void savePdf(char * name);
 	bool checkLinearization();
 	bool containsOperator(std::string name);
 	//rotate page
 
 public slots:
+	void pageUp();
+	void pageDown();
 	PdfOp getPreviousFontInPosition(libs::Point pdfPos);
 	void SetModePosition(PdfAnnot a);
 	void showAnnotation(int i);
@@ -291,7 +292,7 @@ public slots:
 
 private slots:
 	void handleLink( int annot );
-	void zoom(QString zoomscale);
+	void zoom(int zoomscale);
 	/// init pdf-reader to have this revision
 	void initRevision(int revision);
 
@@ -342,6 +343,7 @@ public slots:
 	void operationDone();
 	void initAnalyze();
 	void loadAnalyzeItem( QTreeWidgetItem * item );
+	void rezoom(QResizeEvent * event);
 };
 
 #endif
