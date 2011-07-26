@@ -581,6 +581,32 @@
 			UniqueIdentifier="{99349809-55BA-4b9d-BF79-8FDBB0286EB3}"
 			>
 			<File
+				RelativePath="..\aboutDialog.ui"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;.\GeneratedFiles\ui_$(InputName).h&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;.\GeneratedFiles\ui_$(InputName).h&quot;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\colorPicker.ui"
 				>
 				<FileConfiguration
@@ -926,6 +952,26 @@
 			ParseFiles="false"
 			>
 			<File
+				RelativePath="..\images\about.ico"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\images\addpage.png"
 				>
 				<FileConfiguration
@@ -987,6 +1033,26 @@
 			</File>
 			<File
 				RelativePath="..\images\content.ico"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\debug.ico"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1206,6 +1272,26 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\images\nextpage.ico"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\images\open.ico"
 				>
 				<FileConfiguration
@@ -1275,7 +1361,7 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing $(InputFileName)..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(InputPath);..\images\background.png;..\images\eraseText.ico;..\images\insertTextMarker.ico;..\images\redo.ico;..\images\undo.ico;..\images\unknown.jpg;..\images\addpage.png;..\images\comment.ico;..\images\content.ico;..\images\decrypt_icon.jpg;..\images\deletepage.ico;..\images\DeleteText.ico;..\images\derotate.ico;..\images\downpage.ico;..\images\hand.ico;..\images\images.ico;..\images\insert_text.ico;..\images\insertTextMarker.ico;..\images\open.ico;..\images\operator.jpg;..\images\page_down.ico;..\images\rotate.ico;..\images\save.ico;..\images\saveas.ico;..\images\savecopy.ico;..\images\save-encoded.ico;..\images\search.ico;..\images\setText.ico;..\images\TextConvert.ico;..\images\uppage.ico;..\images\zoom.ico"
+						AdditionalDependencies="$(InputPath);..\images\view.ico;..\images\about.ico;..\images\addpage.png;..\images\background.png;..\images\bubble.png;..\images\comment.ico;..\images\content.ico;..\images\debug.ico;..\images\decrypt_icon.jpg;..\images\deletepage.ico;..\images\DeleteText.ico;..\images\derotate.ico;..\images\downpage.ico;..\images\eraseText.ico;..\images\hand.ico;..\images\images.ico;..\images\insert_text.ico;..\images\insertTextMarker.ico;..\images\nextpage.ico;..\images\open.ico;..\images\operator.jpg;..\images\page_down.ico;..\images\previousPage.ico;..\images\redo.ico;..\images\rotate.ico;..\images\save.ico;..\images\saveas.ico;..\images\savecopy.ico;..\images\save-encoded.ico;..\images\search.ico;..\images\setText.ico;..\images\TextConvert.ico;..\images\undo.ico;..\images\unknown.jpg;..\images\uppage.ico;..\images\zoom.ico;..\images\debug.ico;..\images\background.png;..\images\eraseText.ico;..\images\insertTextMarker.ico;..\images\redo.ico;..\images\undo.ico;..\images\unknown.jpg;..\images\addpage.png;..\images\comment.ico;..\images\content.ico;..\images\decrypt_icon.jpg;..\images\deletepage.ico;..\images\DeleteText.ico;..\images\derotate.ico;..\images\downpage.ico;..\images\hand.ico;..\images\images.ico;..\images\insert_text.ico;..\images\insertTextMarker.ico;..\images\open.ico;..\images\operator.jpg;..\images\page_down.ico;..\images\rotate.ico;..\images\save.ico;..\images\saveas.ico;..\images\savecopy.ico;..\images\save-encoded.ico;..\images\search.ico;..\images\setText.ico;..\images\TextConvert.ico;..\images\uppage.ico;..\images\zoom.ico"
 						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
 					/>
 				</FileConfiguration>
@@ -1286,8 +1372,28 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing $(InputFileName)..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(InputPath);..\images\background.png;..\images\eraseText.ico;..\images\insertTextMarker.ico;..\images\redo.ico;..\images\undo.ico;..\images\unknown.jpg;..\images\addpage.png;..\images\comment.ico;..\images\content.ico;..\images\decrypt_icon.jpg;..\images\deletepage.ico;..\images\DeleteText.ico;..\images\derotate.ico;..\images\downpage.ico;..\images\hand.ico;..\images\images.ico;..\images\insert_text.ico;..\images\insertTextMarker.ico;..\images\open.ico;..\images\operator.jpg;..\images\page_down.ico;..\images\rotate.ico;..\images\save.ico;..\images\saveas.ico;..\images\savecopy.ico;..\images\save-encoded.ico;..\images\search.ico;..\images\setText.ico;..\images\TextConvert.ico;..\images\uppage.ico;..\images\zoom.ico"
+						AdditionalDependencies="$(InputPath);..\images\view.ico;..\images\about.ico;..\images\addpage.png;..\images\background.png;..\images\bubble.png;..\images\comment.ico;..\images\content.ico;..\images\debug.ico;..\images\decrypt_icon.jpg;..\images\deletepage.ico;..\images\DeleteText.ico;..\images\derotate.ico;..\images\downpage.ico;..\images\eraseText.ico;..\images\hand.ico;..\images\images.ico;..\images\insert_text.ico;..\images\insertTextMarker.ico;..\images\nextpage.ico;..\images\open.ico;..\images\operator.jpg;..\images\page_down.ico;..\images\previousPage.ico;..\images\redo.ico;..\images\rotate.ico;..\images\save.ico;..\images\saveas.ico;..\images\savecopy.ico;..\images\save-encoded.ico;..\images\search.ico;..\images\setText.ico;..\images\TextConvert.ico;..\images\undo.ico;..\images\unknown.jpg;..\images\uppage.ico;..\images\zoom.ico;..\images\debug.ico;..\images\background.png;..\images\eraseText.ico;..\images\insertTextMarker.ico;..\images\redo.ico;..\images\undo.ico;..\images\unknown.jpg;..\images\addpage.png;..\images\comment.ico;..\images\content.ico;..\images\decrypt_icon.jpg;..\images\deletepage.ico;..\images\DeleteText.ico;..\images\derotate.ico;..\images\downpage.ico;..\images\hand.ico;..\images\images.ico;..\images\insert_text.ico;..\images\insertTextMarker.ico;..\images\open.ico;..\images\operator.jpg;..\images\page_down.ico;..\images\rotate.ico;..\images\save.ico;..\images\saveas.ico;..\images\savecopy.ico;..\images\save-encoded.ico;..\images\search.ico;..\images\setText.ico;..\images\TextConvert.ico;..\images\uppage.ico;..\images\zoom.ico"
 						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\previousPage.ico"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 			</File>
@@ -1532,6 +1638,26 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\images\view.ico"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\images\zoom.ico"
 				>
 				<FileConfiguration
@@ -1577,6 +1703,10 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\GeneratedFiles\ui_aboutDialog.h"
+				>
 			</File>
 			<File
 				RelativePath=".\GeneratedFiles\ui_colorPicker.h"
