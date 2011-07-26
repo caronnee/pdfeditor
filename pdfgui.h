@@ -42,6 +42,7 @@ public slots:
 	void openLastFile( );
 	void lastOpenedPdfs();
 	void appendToLast( QString s );
+	void handleModeChange( HelptextIcon s );
 };
 
 #endif // PDFGUI_H

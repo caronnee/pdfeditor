@@ -3,6 +3,7 @@
 #include <QColor>
 #include <QKeyEvent>
 #include <QMenu>
+#include <QIcon>
 
 #include "pdfgui.h"
 #include "typedefs.h"
@@ -60,7 +61,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.linkAnnotation, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeInsertLinkAnotation()));
 	connect( this->ui.changeAnnotationButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeChangeAnnotation()) );
 	connect( this->ui.delAnnotation,SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeDeleteAnnotation()));
-	connect( this->ui.openedPdfs, SIGNAL(ModeChangedSignal(QString)), this->ui.Help,SLOT(setText(QString)));
+	connect( this->ui.openedPdfs, SIGNAL(ModeChangedSignal(HelptextIcon)), this,SLOT(handleModeChange(HelptextIcon)));
 	connect( this->ui.repeter, SIGNAL(pressed()), ui.openedPdfs, SLOT(redraw()));
 	connect( this->ui.pageUp, SIGNAL(pressed()), ui.openedPdfs, SLOT(pageUp()));
 	connect( this->ui.pageDown, SIGNAL(pressed()), ui.openedPdfs, SLOT(pageDown()));
@@ -169,4 +170,10 @@ void pdfGui::appendToLast( QString s )
 	QString name = _lastOpenedButtonMenu->actions().back()->text();
 	assert(name == s);
 #endif // _DEBUG
+}
+
+void pdfGui::handleModeChange( HelptextIcon str )
+{
+	this->ui.Help->setText(str.helpText);
+	this->ui.actualButton->setIcon(QIcon(QString(":images/")+str.icon));
 }

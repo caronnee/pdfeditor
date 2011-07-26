@@ -4,6 +4,12 @@
 #include <QTimer>
 #include "typedefs.h"
 
+struct HelptextIcon
+{
+	const char * helpText;
+	const char * icon;
+};
+
 class OpenPdf :
 	public QTabWidget
 {
@@ -26,7 +32,7 @@ public:
 	Mode getMode() const { return _mode; }
 
 signals:
-	void ModeChangedSignal(QString);
+	void ModeChangedSignal(HelptextIcon);
 public slots:
 	void about();
 	void initAnalyze();

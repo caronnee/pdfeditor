@@ -306,7 +306,7 @@ void OpenPdf::deletePage()
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->deletePage();
 }
-static const char * helper[] = { MODES(EARRAY) };
+static const HelptextIcon helper[] = { MODES(EARRAY) };
 
 bool PermanentMode(Mode mode)
 {
