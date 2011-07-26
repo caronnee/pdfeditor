@@ -41,7 +41,7 @@ OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeD
 #ifdef _WIN32
 	char name[256];
 	DWORD size = sizeof(name);
-	GetUserName(name,&size);
+	GetUserNameA(name,&size);
 	_author = name;
 #else
 	assert(false); //TODO unix

@@ -21,7 +21,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
-       <widget class="QFrame" name="frame_4">
+       <widget class="QFrame" name="mainFrame">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
@@ -224,7 +224,7 @@
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QFrame" name="imagechooseFrame">
+          <widget class="QFrame" name="imageChooseFrame">
            <property name="frameShape">
             <enum>QFrame::StyledPanel</enum>
            </property>

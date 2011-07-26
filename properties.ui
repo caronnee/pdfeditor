@@ -93,6 +93,9 @@
       </item>
       <item row="4" column="2">
        <widget class="QComboBox" name="fonts">
+        <property name="toolTip">
+         <string>If &quot;select font&quot; is selected chhose a font from pae, otherwise choose predefined fonts</string>
+        </property>
         <property name="insertPolicy">
          <enum>QComboBox::InsertAtTop</enum>
         </property>

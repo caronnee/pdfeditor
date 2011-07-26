@@ -33,6 +33,7 @@ public slots:
 	void setImagePath();
 	void setPosition(float f1, float f2,float scale); //todo xscale, yscale
 	void setSize(float w,float h);
+	void showAngleToolTip( int value );
 signals:
 	void insertImage(PdfOp op); //jake casti
 	void changeImage(PdfOp q);

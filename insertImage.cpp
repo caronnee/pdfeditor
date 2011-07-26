@@ -7,6 +7,7 @@
 #include <kernel/factories.h>
 #include <kernel/cinlineimage.h>
 #include <kernel/displayparams.h>
+#include <QToolTip>
 
 using namespace boost;
 using namespace pdfobjects;
@@ -19,10 +20,11 @@ void InsertImage::closeEvent ( QCloseEvent * event )
 InsertImage::InsertImage( QWidget * parent) : QWidget(parent)
 {
 	ui.setupUi(this);
+	connect(this->ui.rotation, SIGNAL(sliderMoved(int)), this, SLOT(showAngleToolTip(int)));
 }
 void InsertImage::setSize(float w,float h)
 {
-	this->ui.imagechooseFrame->show();
+	this->ui.imageChooseFrame->show();
 	ui.sizeX->setValue(w);
 	ui.sizeY->setValue(h);
 }
@@ -223,13 +225,15 @@ PdfOperator::Iterator iter = PdfOperator::getIterator(ii);
 }
 void InsertImage::setImage(PdfOp ii, double scale)
 {
-	this->ui.imagechooseFrame->hide();
+	this->ui.imageChooseFrame->hide();
 	_scale = scale;
 	biOp = boost::dynamic_pointer_cast<InlineImageCompositePdfOperator>(ii->clone());
 	ui.sizeX->setValue(biOp->getWidth());
 	ui.sizeY->setValue(biOp->getHeight());
 	//najdeme inverznu maticu
 	Cm c;
+	double actual[6];
+	InsertImage::getInvertMatrix(ii,actual, c.matrix);
 	PdfOperator::Operands operands;
 	for ( int i =0; i<6; i++)
 		operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(c.matrix[i])));
@@ -242,4 +246,11 @@ void InsertImage::setImage(PdfOp ii, double scale)
 	//ui.positionY->setMaximum(DisplayParams::DEFAULT_PAGE_RY*_scale-min(b.yleft,b.yleft));//o kolko a poze posunut doprava
 	//ui.positionY->setMinimum(-min(b.yleft,b.yleft));//o kolko a poze posunut doprava
 	ui.positionY->setValue(0);
+}
+
+void InsertImage::showAngleToolTip( int value )
+{
+	QString str(QString("Angle:") + QVariant(value).toString());
+	QToolTip::showText( QCursor::pos() , str, this );
+	this->ui.rotation->setToolTip(str);
 }

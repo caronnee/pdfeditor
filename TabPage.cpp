@@ -282,7 +282,6 @@ void TabPage::raiseChangeSelectedImage()
 		emit addHistory("No image was selected, ignoring");
 		return;
 	}
-	_image->setImage( _selectedImage, 72.0f/displayparams.vDpi); //TODO x,y
 	BBox b = _selectedImage->getBBox();
 	double scaleX = 72.0f/displayparams.vDpi;
 	double scaleY = 72.0f/displayparams.hDpi;
@@ -295,6 +294,7 @@ void TabPage::raiseChangeSelectedImage()
 	_image->setPosition(x,y,72.0f/displayparams.vDpi);
 	_image->setSize(abs(b.xleft-b.xright), abs(b.xleft-b.xright));
 	emit addHistory(QString("Raising image change at position ") + QVariant(abs(b.xleft-b.xright)).toString() + " " + QVariant(abs(b.xleft-b.xright)).toString() + "\n");
+	_image->setImage( _selectedImage, 72.0f/displayparams.vDpi); //TODO x,y
 	_image->show();
 }
 
