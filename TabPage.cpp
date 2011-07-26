@@ -45,7 +45,7 @@
 //#include <kernel/carray.h>
 
 //operatory, ktore musim zaklonovat, ked chcem pohnut textom
-
+#define ZOOM_AFTER_HACK 4
 std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","cs", "SC","SCN", "sc","scn", "G","g","RG","rg","k","K","Tc","Tw", "Tz", "TL", "Tf","Tr","Ts","Td","TD","Tm","T*" };
 
 void TabPage::handleBookmark(QTreeWidgetItem* item, int) //nezaujima nas stlpec
@@ -113,7 +113,7 @@ bool TabPage::containsOperator(std::string wanted)
 	}
 	return false;
 }
-TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),_allowResize(false)
+TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),_allowResize(0)
 {
 	_pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 	debug::changeDebugLevel(10000);
@@ -231,7 +231,6 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	_parent->setMode(oldMode);
 	//search("oftwar",true);
 	//changeSelectedText();
-	_allowResize = true;
 }
 void TabPage::showAnnotation(int level)
 {
@@ -2036,12 +2035,22 @@ void TabPage::JustDraw()
 	_labelPage->setImage(image);
 	updatePageInfoBar();
 }
-void TabPage::rezoom(QResizeEvent * event)
+#include <cmath>
+void TabPage::resizeEvent(QResizeEvent * event)
 {
-	this->resizeEvent(event);
+	_allowResize++;
+	if (_allowResize< ZOOM_AFTER_HACK)
+		return;
+	_allowResize = ZOOM_AFTER_HACK;
+	//this->resizeEvent(event);
 	float ratio = event->size().width();
 	ratio /= event->oldSize().width();
-	int ratioInt = ui.zoom->itemData(ui.zoom->currentIndex()).toInt()*ratio;
+	int ratioInt;
+	if (ratio < 1)
+		ratioInt = ceil(ui.zoom->itemData(ui.zoom->currentIndex()).toInt()*ratio);
+	else 
+		ratioInt = floor(ui.zoom->itemData(ui.zoom->currentIndex()).toInt()*ratio);
+
 	QVariant v(ratioInt);
 	int index = ui.zoom->findData(v);
 	if ( index == -1)

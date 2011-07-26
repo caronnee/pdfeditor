@@ -44,7 +44,7 @@
             <!--             <Shortcut Id="desktopPdfEditor" Directory="DesktopFolder" Name="PdfEditor (Beta)"
                   WorkingDirectory='INSTALLDIR' Advertise="yes" /> -->
           </File>
-          <File Id='configFile' Name='config'  />
+          <RemoveFile Id="PurgeAppFolder" Name="config" On="uninstall" />
           <Shortcut Id="UninstallProduct"
                        Name="UninstallPdfEditor"
                        Description="Removes pdf Editor from the operating system"

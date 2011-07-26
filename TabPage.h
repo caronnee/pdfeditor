@@ -167,7 +167,7 @@ private: //variables
 public:
 	bool _changed;
 	QShortcut * _searchShortCut;
-	bool _allowResize;
+	int _allowResize;
 	//static std::string SupportedAnnotations[] = { ANNOTS(CREATE_ARRAY) };
 
 	void deleteSelectedImage();
@@ -343,7 +343,8 @@ public slots:
 	void operationDone();
 	void initAnalyze();
 	void loadAnalyzeItem( QTreeWidgetItem * item );
-	void rezoom(QResizeEvent * event);
+	public:
+	void resizeEvent(QResizeEvent * event);
 };
 
 #endif
