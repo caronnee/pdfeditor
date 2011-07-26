@@ -12,15 +12,15 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>33</width>
-    <height>30</height>
+    <width>600</width>
+    <height>400</height>
    </size>
   </property>
   <property name="mouseTracking">
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Pdf editor v1.16</string>
+   <string>Pdf editor v1.17</string>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -47,6 +47,12 @@
        </property>
        <item>
         <widget class="QToolButton" name="openButton">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <weight>50</weight>
@@ -65,7 +71,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/open.ico</normaloff>:/images/open.ico</iconset>
+           <normaloff>:/images/open.png</normaloff>:/images/open.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -86,15 +92,21 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="toolTip">
           <string>open last opened files</string>
          </property>
          <property name="text">
-          <string>Last Opened</string>
+          <string>Recent</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/open.ico</normaloff>:/images/open.ico</iconset>
+           <normaloff>:/images/open.png</normaloff>:/images/open.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -109,6 +121,12 @@
        </item>
        <item>
         <widget class="QToolButton" name="saveButton">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="toolTip">
           <string>save changes</string>
          </property>
@@ -117,7 +135,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/save.ico</normaloff>:/images/save.ico</iconset>
+           <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -132,6 +150,12 @@
        </item>
        <item>
         <widget class="QToolButton" name="saveAsButton">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="toolTip">
           <string>save to another file</string>
          </property>
@@ -140,7 +164,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/savecopy.ico</normaloff>:/images/savecopy.ico</iconset>
+           <normaloff>:/images/savecopy.png</normaloff>:/images/savecopy.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -155,11 +179,11 @@
        </item>
        <item>
         <widget class="QToolButton" name="contentButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
          </property>
          <property name="toolTip">
           <string>show pdf manipulation operations</string>
@@ -169,7 +193,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/content.ico</normaloff>:/images/content.ico</iconset>
+           <normaloff>:/images/content.png</normaloff>:/images/content.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -190,6 +214,12 @@
        </item>
        <item>
         <widget class="QToolButton" name="textButton">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="toolTip">
           <string>show text operations</string>
          </property>
@@ -198,7 +228,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/insertTextMarker.ico</normaloff>:/images/insertTextMarker.ico</iconset>
+           <normaloff>:/images/insertTextMarker.png</normaloff>:/images/insertTextMarker.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -219,6 +249,12 @@
        </item>
        <item>
         <widget class="QToolButton" name="imageButton">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="toolTip">
           <string>show image operation</string>
          </property>
@@ -227,7 +263,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/images.ico</normaloff>:/images/images.ico</iconset>
+           <normaloff>:/images/images.png</normaloff>:/images/images.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -248,6 +284,12 @@
        </item>
        <item>
         <widget class="QToolButton" name="annotationButton">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="toolTip">
           <string>show annotation operations</string>
          </property>
@@ -256,7 +298,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/comment.ico</normaloff>:/images/comment.ico</iconset>
+           <normaloff>:/images/comment.png</normaloff>:/images/comment.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -277,12 +319,18 @@
        </item>
        <item>
         <widget class="QToolButton" name="viewButton">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
           <string>View</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/view.ico</normaloff>:/images/view.ico</iconset>
+           <normaloff>:/images/view.png</normaloff>:/images/view.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -303,6 +351,12 @@
        </item>
        <item>
         <widget class="QToolButton" name="settingsButton">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="toolTip">
           <string>show setting dialog</string>
          </property>
@@ -311,7 +365,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/operator.jpg</normaloff>:/images/operator.jpg</iconset>
+           <normaloff>:/images/operator.png</normaloff>:/images/operator.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -332,6 +386,12 @@
        </item>
        <item>
         <widget class="QToolButton" name="debugButton">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="toolTip">
           <string>show debug options</string>
          </property>
@@ -340,7 +400,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/debug.ico</normaloff>:/images/debug.ico</iconset>
+           <normaloff>:/images/debug.png</normaloff>:/images/debug.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -361,12 +421,18 @@
        </item>
        <item>
         <widget class="QToolButton" name="aboutButton">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
           <string>About</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/about.ico</normaloff>:/images/about.ico</iconset>
+           <normaloff>:/images/about.png</normaloff>:/images/about.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -394,8 +460,23 @@
        </item>
        <item>
         <widget class="QToolButton" name="actualButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Actual mode</string>
+         </property>
          <property name="text">
           <string>...</string>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -436,7 +517,7 @@
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
-              <normaloff>:/images/derotate.ico</normaloff>:/images/derotate.ico</iconset>
+              <normaloff>:/images/derotate.png</normaloff>:/images/derotate.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -459,7 +540,7 @@
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
-              <normaloff>:/images/rotate.ico</normaloff>:/images/rotate.ico</iconset>
+              <normaloff>:/images/rotate.png</normaloff>:/images/rotate.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -505,7 +586,7 @@
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
-              <normaloff>:/images/uppage.ico</normaloff>:/images/uppage.ico</iconset>
+              <normaloff>:/images/uppage.png</normaloff>:/images/uppage.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -528,7 +609,7 @@
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
-              <normaloff>:/images/downpage.ico</normaloff>:/images/downpage.ico</iconset>
+              <normaloff>:/images/downpage.png</normaloff>:/images/downpage.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -551,7 +632,7 @@
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
-              <normaloff>:/images/deletepage.ico</normaloff>:/images/deletepage.ico</iconset>
+              <normaloff>:/images/deletepage.png</normaloff>:/images/deletepage.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -577,7 +658,7 @@
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
-              <normaloff>:/images/TextConvert.ico</normaloff>:/images/TextConvert.ico</iconset>
+              <normaloff>:/images/TextConvert.png</normaloff>:/images/TextConvert.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -634,7 +715,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/hand.ico</normaloff>:/images/hand.ico</iconset>
+           <normaloff>:/images/hand.png</normaloff>:/images/hand.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -666,7 +747,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/insert_text.ico</normaloff>:/images/insert_text.ico</iconset>
+           <normaloff>:/images/insert_text.png</normaloff>:/images/insert_text.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -691,11 +772,11 @@
           <string>delete text (leaves no empty space)</string>
          </property>
          <property name="text">
-          <string>Delete</string>
+          <string>Delete </string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/DeleteText.ico</normaloff>:/images/DeleteText.ico</iconset>
+           <normaloff>:/images/DeleteText.png</normaloff>:/images/DeleteText.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -721,7 +802,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
+           <normaloff>:/images/change.png</normaloff>:/images/change.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -747,7 +828,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
+           <normaloff>:/images/eraseText.png</normaloff>:/images/eraseText.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -773,7 +854,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
+           <normaloff>:/images/highlight.png</normaloff>:/images/highlight.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -840,7 +921,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/addpage.png</normaloff>:/images/addpage.png</iconset>
+           <normaloff>:/images/addImage.png</normaloff>:/images/addImage.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -866,7 +947,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/hand.ico</normaloff>:/images/hand.ico</iconset>
+           <normaloff>:/images/hand.png</normaloff>:/images/hand.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -888,11 +969,11 @@
           <string>delete inline image</string>
          </property>
          <property name="text">
-          <string>Delete seleted</string>
+          <string>Delete</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/DeleteText.ico</normaloff>:/images/DeleteText.ico</iconset>
+           <normaloff>:/images/DeleteText.png</normaloff>:/images/DeleteText.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -911,11 +992,11 @@
           <string>change inline image</string>
          </property>
          <property name="text">
-          <string>Change selected</string>
+          <string>Change</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/operator.jpg</normaloff>:/images/operator.jpg</iconset>
+           <normaloff>:/images/change.png</normaloff>:/images/change.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -938,7 +1019,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/operator.jpg</normaloff>:/images/operator.jpg</iconset>
+           <normaloff>:/images/snapshot.png</normaloff>:/images/snapshot.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -960,16 +1041,17 @@
           <string>extract inline image</string>
          </property>
          <property name="text">
-          <string>ShapShot(imageOnly)</string>
+          <string>ShapShot
+(imageOnly)</string>
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/TextConvert.ico</normaloff>:/images/TextConvert.ico</iconset>
+           <normaloff>:/images/snapshot.png</normaloff>:/images/snapshot.png</iconset>
          </property>
          <property name="iconSize">
           <size>
            <width>32</width>
-           <height>32</height>
+           <height>16</height>
           </size>
          </property>
          <property name="checkable">
@@ -1022,6 +1104,10 @@
          <property name="text">
           <string>Insert comment</string>
          </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/addComment.png</normaloff>:/images/addComment.png</iconset>
+         </property>
          <property name="iconSize">
           <size>
            <width>32</width>
@@ -1044,6 +1130,16 @@
          <property name="text">
           <string>Insert link</string>
          </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/addLink.png</normaloff>:/images/addLink.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
          <property name="checkable">
           <bool>true</bool>
          </property>
@@ -1059,6 +1155,16 @@
          </property>
          <property name="text">
           <string>Change</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/change.png</normaloff>:/images/change.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -1076,6 +1182,16 @@
          <property name="text">
           <string>Highlight</string>
          </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/highlight.png</normaloff>:/images/highlight.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
@@ -1088,6 +1204,16 @@
          </property>
          <property name="text">
           <string>Delete</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/DeleteText.png</normaloff>:/images/DeleteText.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -1130,6 +1256,16 @@
          <property name="text">
           <string>Analyze!</string>
          </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/analyze.png</normaloff>:/images/analyze.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
@@ -1141,7 +1277,17 @@
           <string>redraw page</string>
          </property>
          <property name="text">
-          <string>Repeter</string>
+          <string>Refresh</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/refresh.png</normaloff>:/images/refresh.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -1158,7 +1304,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/operator.jpg</normaloff>:/images/operator.jpg</iconset>
+           <normaloff>:/images/operator.png</normaloff>:/images/operator.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -1187,7 +1333,7 @@
          </property>
          <property name="icon">
           <iconset resource="pdf.qrc">
-           <normaloff>:/images/decrypt_icon.jpg</normaloff>:/images/decrypt_icon.jpg</iconset>
+           <normaloff>:/images/decrypt_icon.png</normaloff>:/images/decrypt_icon.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -1449,54 +1595,6 @@
     <hint type="destinationlabel">
      <x>438</x>
      <y>324</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>textButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>selectTextButton</receiver>
-   <slot>click()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>313</x>
-     <y>37</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>29</x>
-     <y>162</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>imageButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>insertImageButton</receiver>
-   <slot>click()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>356</x>
-     <y>37</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>41</x>
-     <y>224</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>annotationButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>insertAnotation</receiver>
-   <slot>click()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>416</x>
-     <y>37</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>53</x>
-     <y>269</y>
     </hint>
    </hints>
   </connection>

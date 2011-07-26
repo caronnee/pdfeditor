@@ -12,7 +12,7 @@
 #define ZOOM_STEP 50
 
 #define MODES(XX) \
-	XX(ModeDoNothing," Viewmode ","view.ico")	\
+	XX(ModeDoNothing," Viewmode ","view.png")	\
 	XX(ModeInsertText,"InsertText mode : click on pdf to insert a text","unknown.jpg")	\
 	XX(ModeSelectText,"Select text mode : Click and drag to select a text","unknown.jpg") \
 	XX(ModeInsertImage,"InsertImage mode: Select a rectangle to insert an image","unknown.jpg") \

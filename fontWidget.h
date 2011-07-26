@@ -17,7 +17,7 @@ class TextFont
 	std::string _name;
 	std::string _fontId;
 public:
-	TextFont(std::string name) : _name(_name),_fontId("") {}
+	TextFont(std::string name) : _name(name),_fontId("") {}
 	//vrati pdfoperator TF, s nastavenim fontu a velkosti
 	boost::shared_ptr<pdfobjects::PdfOperator> getFontOper(int size)
 	{
@@ -73,7 +73,7 @@ public:
 	void setText(QString s);
 	void reset();
 	FontWidget(QWidget * parent);
-	FontWidget(const FontWidget & font);
+	//FontWidget(const FontWidget & font);
 	~FontWidget();
 	PdfOp addText(QString s);
 	void createBT();
@@ -117,7 +117,7 @@ public slots:
 	void createFromMulti( std::vector<PdfOp>& operators );
 	void sliderChanged(int value);
 	void clearTempFonts();
-	void fontIndexChanged( int );
+	void waitForFont( );
 	void closeEvent ( QCloseEvent * event );
 	//void setAngle(int angle);
 };

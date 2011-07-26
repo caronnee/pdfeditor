@@ -8,36 +8,36 @@
       <Directory Id="TARGETSUBDIR" Name="PdfEditor" FileSource="..\..">
         <Directory Id="pdfImages" Name="images">
           <Component Id="ImageSource" Guid="8f654235-16ee-4a04-b607-2f848fc32db5" >
-            <File Id="imgabout" Name="about.ico"  />
-            <File Id="imgcomment" Name="comment.ico"  />
-            <File Id="imgcontent" Name="content.ico"  />
-            <File Id="imgdebug" Name="debug.ico"  />
-            <File Id="imgdeletepage" Name="deletepage.ico"/>
-            <File Id="imgDeleteText" Name="DeleteText.ico"/>
-            <File Id="imgderotate" Name="derotate.ico"/>
-            <File Id="imgdownpage" Name="downpage.ico"/>
-            <File Id="imgeraseText" Name="eraseText.ico"/>
-            <File Id="imghand" Name="hand.ico"/>
-            <File Id="imgimages" Name="images.ico"/>
-            <File Id="imginserttext" Name="insert_text.ico"/>
-            <File Id="imginsertTextMarker" Name="insertTextMarker.ico"/>
-            <File Id="imgnextpage" Name="nextpage.ico"  />
-            <File Id="imgopen" Name="open.ico"/>
-            <File Id="pagedown" Name="page_down.ico"/>
-            <File Id="imgpreviousPage" Name="previousPage.ico"/>
-            <File Id="redo" Name="redo.ico"/>
-            <File Id="rotate" Name="rotate.ico"/>
-            <File Id="save" Name="save.ico"/>
-            <File Id="saveas" Name="saveas.ico"/>
-            <File Id="savecopy" Name="savecopy.ico"/>
-            <File Id="saveencoded" Name="save-encoded.ico"/>
-            <File Id="search" Name="search.ico"/>
-            <File Id="setText" Name="setText.ico"/>
-            <File Id="imgTextConvert.ico" Name="TextConvert.ico"  />
-            <File Id="imgundo.ico" Name="undo.ico"  />
-            <File Id="imgUppage.ico" Name="uppage.ico"  />
-            <File Id="imgView.ico" Name="view.ico"  />
-            <File Id="imgZoom" Name="zoom.ico"  />
+            <File Id="imgabout" Name="about.png"  />
+            <File Id="imgcomment" Name="comment.png"  />
+            <File Id="imgcontent" Name="content.png"  />
+            <File Id="imgdebug" Name="debug.png"  />
+            <File Id="imgdeletepage" Name="deletepage.png"/>
+            <File Id="imgDeleteText" Name="DeleteText.png"/>
+            <File Id="imgderotate" Name="derotate.png"/>
+            <File Id="imgdownpage" Name="downpage.png"/>
+            <File Id="imgeraseText" Name="eraseText.png"/>
+            <File Id="imghand" Name="hand.png"/>
+            <File Id="imgimages" Name="images.png"/>
+            <File Id="imginserttext" Name="insert_text.png"/>
+            <File Id="imginsertTextMarker" Name="insertTextMarker.png"/>
+            <File Id="imgnextpage" Name="nextpage.png"  />
+            <File Id="imgopen" Name="open.png"/>
+            <File Id="pagedown" Name="page_down.png"/>
+            <File Id="imgpreviousPage" Name="previousPage.png"/>
+            <File Id="redo" Name="redo.png"/>
+            <File Id="rotate" Name="rotate.png"/>
+            <File Id="save" Name="save.png"/>
+            <File Id="saveas" Name="saveas.png"/>
+            <File Id="savecopy" Name="savecopy.png"/>
+            <File Id="saveencoded" Name="save-encoded.png"/>
+            <File Id="search" Name="search.png"/>
+            <File Id="setText" Name="setText.png"/>
+            <File Id="imgTextConvert.png" Name="TextConvert.png"  />
+            <File Id="imgundo.png" Name="undo.png"  />
+            <File Id="imgUppage.png" Name="uppage.png"  />
+            <File Id="imgView.png" Name="view.png"  />
+            <File Id="imgZoom" Name="zoom.png"  />
             <File Id="imgDecrypt_icon" Name="decrypt_icon.jpg"  />
             <File Id="imgOperator" Name="operator.jpg"  />
             <File Id="imgUnknown" Name="unknown.jpg"  />

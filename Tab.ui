@@ -43,6 +43,19 @@
         </property>
        </widget>
       </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
      </layout>
     </widget>
    </item>
@@ -88,7 +101,7 @@
    <item row="3" column="0" colspan="2">
     <widget class="QGroupBox" name="pageManipulation">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -133,6 +146,10 @@
         <property name="text">
          <string>First Page</string>
         </property>
+        <property name="icon">
+         <iconset resource="pdf.qrc">
+          <normaloff>:/images/firstPage.png</normaloff>:/images/firstPage.png</iconset>
+        </property>
        </widget>
       </item>
       <item>
@@ -141,11 +158,11 @@
          <string>previous page</string>
         </property>
         <property name="text">
-         <string>Previous page</string>
+         <string/>
         </property>
         <property name="icon">
          <iconset resource="pdf.qrc">
-          <normaloff>:/images/previousPage.ico</normaloff>:/images/previousPage.ico</iconset>
+          <normaloff>:/images/previousPage.png</normaloff>:/images/previousPage.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -186,11 +203,11 @@
          <string>next page</string>
         </property>
         <property name="text">
-         <string>Next page</string>
+         <string/>
         </property>
         <property name="icon">
          <iconset resource="pdf.qrc">
-          <normaloff>:/images/nextpage.ico</normaloff>:/images/nextpage.ico</iconset>
+          <normaloff>:/images/nextpage.png</normaloff>:/images/nextpage.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -209,7 +226,11 @@
       <item>
        <widget class="QToolButton" name="lastPage">
         <property name="text">
-         <string>last Page</string>
+         <string>Last Page</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pdf.qrc">
+          <normaloff>:/images/lastPage.png</normaloff>:/images/lastPage.png</iconset>
         </property>
        </widget>
       </item>
@@ -242,7 +263,7 @@
         </property>
         <property name="icon">
          <iconset resource="pdf.qrc">
-          <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
+          <normaloff>:/images/commit.png</normaloff>:/images/commit.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -271,7 +292,7 @@
         </property>
         <property name="icon">
          <iconset resource="pdf.qrc">
-          <normaloff>:/images/unknown.jpg</normaloff>:/images/unknown.jpg</iconset>
+          <normaloff>:/images/export.png</normaloff>:/images/export.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -285,6 +306,13 @@
        </widget>
       </item>
      </layout>
+     <zorder>firstPage</zorder>
+     <zorder>pageInfo</zorder>
+     <zorder>next</zorder>
+     <zorder>commit</zorder>
+     <zorder>branchRevision</zorder>
+     <zorder>lastPage</zorder>
+     <zorder>previous</zorder>
     </widget>
    </item>
    <item row="2" column="0">

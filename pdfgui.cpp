@@ -61,6 +61,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.selectImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeSelectImage()));
 	connect( this->ui.deleteImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(deleteSelectedImage()));
 	connect( this->ui.changeImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(changeSelectedImage()));
+	connect( this->ui.insertTextButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeInsertText()));
 
 	connect( this->ui.selectTextButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeSelectText()));
 	connect( this->ui.imagePartButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeImagePart()));

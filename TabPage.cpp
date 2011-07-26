@@ -1098,6 +1098,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			float w[2];
 			getPreviousTmInPosition(libs::Point(x,y),w);
 			_font->addTm(w[0],w[1]);
+			_font->show();
 			emit addHistory("Font was selected\n");
 			break;
 		}
@@ -3306,7 +3307,7 @@ std::string TabPage::addFontToPage( std::string name )
 	_page->getFontIdsAndNames(fonts);
 	CPageFonts::FontList::const_iterator it=pdfobjects::findFont(fonts,name);
 	if (it!=fonts.end())
-		return it->second;
+		return it->first;
 	std::string ret = _page->addSystemType1Font(name);
 	return ret;
 }

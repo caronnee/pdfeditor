@@ -100,19 +100,19 @@ FontWidget::FontWidget(QWidget *parent) : QWidget(parent/*, Qt::FramelessWindowH
 	//pridaj posledny polozku na zistovanie fontu z pdf operatora
 	this->ui.fonts->insertItem(this->ui.fonts->count(), "<Select font from text>", QVariant(-1));
 	connect(ui.rotation, SIGNAL(valueChanged(int)),this,SLOT(sliderChanged(int)));
-	connect(ui.fonts, SIGNAL(currentIndexChanged(int)), this, SLOT(fontIndexChanged(int)));
+	connect(ui.selectFont, SIGNAL(pressed()), this, SLOT(waitForFont()));
 }
 
-FontWidget::FontWidget(const FontWidget & font) : QWidget(font.parentWidget()),_embededFont(false)
-{
-	for ( int i = 10; i<= 40; i+=2)
-	{
-		QVariant q(i);
-		this->ui.fontsize->insertItem(0, q.toString(),q);
-	}
-	//copy TODO
-	throw "Not now";
-}
+//FontWidget::FontWidget(const FontWidget & font) : QWidget(font.parentWidget()),_embededFont(false)
+//{
+//	for ( int i = 10; i<= 40; i+=2)
+//	{
+//		QVariant q(i);
+//		this->ui.fontsize->insertItem(0, q.toString(),q);
+//	}
+//	//copy TODO
+//	throw "Not now";
+//}
 void FontWidget::addFont(PdfOp op)
 {
 	std::string val;
@@ -127,14 +127,26 @@ void FontWidget::addFont(PdfOp op)
 	addFont(fontId,fontId);
 	float size = utils::getValueFromSimple<CReal>(operands[1]);
 	QVariant q(size);
-	this->ui.fonts->setItemText(0, QString("Selected Text(") + fontId.c_str() + ")");
-	this->ui.fontsize->setItemData(0,q); //custom, bude na vrchu
+	int index  = ui.fontsize->findData(q); //TODO radsej toString
+	if (index)
+	{
+		ui.fontsize->insertItem(0,q.toString(), q);
+		index = ui.fontsize->findData(q);
+	}
+	ui.fontsize->setCurrentIndex(index);
 }
 void FontWidget::addFont(std::string name, std::string val)
 {
-	QVariant q(val.c_str()); 
-	ui.fonts->insertItem(ui.fonts->count(),q.toString(),q); //Qvariant?
-	_fonts.push_back(name);
+	int index = ui.fonts->findText(name.c_str());
+	if (index <0 ) //uz ho tam mame
+	{
+		QVariant q(val.c_str()); 
+		ui.fonts->insertItem(ui.fonts->count(),q.toString(),q); //Qvariant?
+		_fonts.push_back(name);
+		index = ui.fonts->findData(q);
+	}
+	ui.fonts->setCurrentIndex(index);
+
 }
 FontWidget::~FontWidget() {}
 void FontWidget::createBT()
@@ -212,16 +224,16 @@ std::string FontWidget::addParameters() //TODO nie s jedine parametre
 	}
 	std::string fontName="";
 	PdfOp fontOp;
-	if (ui.fonts->currentIndex() == FINDFONT_INDEX )//posledny je vyber z fontu
-	{
-		fontOp = emit(getLastFontSignal(libs::Point(_pdfPosX, _pdfPosY)));
-		emit getLastTm(libs::Point(_pdfPosX, _pdfPosY),_scale);
-#ifdef _DEBUG
-		std::string m;
-		fontOp->getStringRepresentation(m);
-#endif // _DEBUG
-	}
-	else
+//	if (ui.fonts->currentIndex() == FINDFONT_INDEX )//posledny je vyber z fontu
+//	{
+//		fontOp = emit(getLastFontSignal(libs::Point(_pdfPosX, _pdfPosY)));
+//		emit getLastTm(libs::Point(_pdfPosX, _pdfPosY),_scale);
+//#ifdef _DEBUG
+//		std::string m;
+//		fontOp->getStringRepresentation(m);
+//#endif // _DEBUG
+//	}
+//	else
 	{
 		QVariant v = this->ui.fontsize->itemData(this->ui.fontsize->currentIndex());
 		std::string id = emit fontInPage(_fonts[this->ui.fonts->currentIndex()].getName());
@@ -296,8 +308,8 @@ void FontWidget::createFromMulti( std::vector<PdfOp>& operators )
 void FontWidget::clearTempFonts()
 {
 	ui.fonts->clear();
-	QVariant q("Select font from operator"); 
-	ui.fonts->insertItem(ui.fonts->count(),q.toString(),q); //Qvariant?
+	//QVariant q("Select font from operator"); 
+	//ui.fonts->insertItem(ui.fonts->count(),q.toString(),q); //Qvariant?
 
 	CPage::FontList fontList;
 	CPageFonts::SystemFontList flist = CPageFonts::getSystemFonts();
@@ -308,21 +320,21 @@ void FontWidget::clearTempFonts()
 	//_fonts.push_back(name);
 }
 
-void FontWidget::fontIndexChanged( int index )
+void FontWidget::waitForFont(  )
 {
-	if (!this->isVisible())
-		return;
-	if (index != 0 )
-	{
-		if (this->ui.fontsize->itemText(0).mid(0,strlen("Generic")) == "Generic")
-			this->ui.fontsize->removeItem(0);
-		return;
-	}
-	//add "Generic"
-	QVariant q(10);
-	this->ui.fontsize->insertItem(0, "Generic",q);
-	this->ui.fontsize->setCurrentIndex(0);
+	//if (index != 0 )
+	//{
+	//	if (this->ui.fontsize->itemText(0).mid(0,strlen("Generic")) == "Generic")
+	//		this->ui.fontsize->removeItem(0);
+	//	return;
+	//}
+	////add "Generic"
+	//QVariant q(10);
+	//this->ui.fontsize->insertItem(0, "Generic",q);
+	//this->ui.fontsize->setCurrentIndex(0);
 	emit FindLastFontSignal();
+	this->hide();
+	//((QWidget *)parent())->show();
 }
 
 void FontWidget::addTm( float w, float h )
