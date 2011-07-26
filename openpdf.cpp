@@ -59,6 +59,8 @@ void OpenPdf::search(QString s, bool v)
 		QMessageBox::warning(this, "Empty string","No string to search", QMessageBox::Ok,QMessageBox::Ok); 
 		return;
 	}
+	if (this->count()==0)
+		return;
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->search(s,v);
 }

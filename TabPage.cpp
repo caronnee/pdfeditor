@@ -133,24 +133,24 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	_labelPage = new DisplayPage(this);
 	_cmts = new Comments(_parent->Author());
 	_cmts->setHColor(_parent->getHColor());
-	_search = new Search(NULL);//neptraia k tomuto mimiokienku
-	//_search->show();
+
 	_image = new InsertImage(NULL);
 	this->ui.scrollArea->setWidget(_labelPage);	
 	//this->ui.scrollArea->set
 	//this->ui.displayManipulation->hide();
-	QObject::connect(_search, SIGNAL(search(QString,bool)),this,SLOT(search(QString,bool)));
-	QObject::connect(_search, SIGNAL(replaceTextSignal(QString,QString)),this,SLOT(replaceText(QString,QString)));
+	
 	_font = new FontWidget(NULL);
 	for ( int i = BEGIN_ZOOM; i< MAX_ZOOM; i+= ZOOM_STEP)
 	{
 		QVariant s(i);
 		this->ui.zoom->addItem( s.toString()+" %",s);
 	}
-	_searchShortCut = new QShortcut(QKeySequence(tr("Ctrl+F", "Find texts")),this);
+
+	connect( this->ui.pageInfo, SIGNAL(returnPressed()),this, SLOT(setPageFromInfo()));
+	connect (this->ui.firstPage, SIGNAL(pressed()), this, SLOT(setFirstPage()));
+	connect (this->ui.lastPage, SIGNAL(pressed()), this, SLOT(setLastPage()));
 
 	connect(this, SIGNAL(addHistory(QString)), this->ui.historyText, SLOT(append(QString)));
-	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(show()));
 	//connect musi byt potom!!!->inak sa to zobrazi milion krat namiesto raz
 	connect(this->ui.zoom, SIGNAL(currentIndexChanged(int)),this,SLOT(zoom(int)));
 	//	_font->show();
@@ -269,10 +269,6 @@ void TabPage::highLightAnnSelected()
 	_cmts->setIndex(AHighlight);
 	_cmts->insertMarkup();
 	emit ("Inserted highlight annotation withou comment");
-}
-void TabPage::raiseSearch()
-{
-	_search->show();
 }
 void TabPage::raiseChangeSelectedImage()
 {
@@ -3605,4 +3601,34 @@ void TabPage::loadAnalyzeItem( QTreeWidgetItem * item )
 {
 	AnalyzeItem * it = (AnalyzeItem *) item;
 	it->load();
+}
+
+void TabPage::setFirstPage()
+{
+	_page = _pdf->getPage(1);
+	redraw();
+	updatePageInfoBar();
+}
+
+void TabPage::setLastPage()
+{
+	_page = _pdf->getPage(_pdf->getPageCount());
+	redraw();
+	updatePageInfoBar();
+}
+
+void TabPage::setPageFromInfo()
+{
+	QString text = this->ui.pageInfo->text();
+	bool ok;
+	int pos = text.toInt(&ok);
+	if (!ok || pos <=0 || pos > _pdf->getPageCount())
+	{
+		QMessageBox::warning(this, "Not a page","No such page exists",QMessageBox::Ok,QMessageBox::Ok);
+		updatePageInfoBar();
+		return;
+	}
+	_page = _pdf->getPage(pos);
+	redraw();
+	updatePageInfoBar();
 }

@@ -125,7 +125,6 @@ private: //variables
 	OpenPdf * _parent;
 	Ui::TabUI ui; 
 	QWidget * widget;
-	Search * _search;
 	InsertImage * _image;
 	QPoint _mousePos;
 	Tree _searchEngine;
@@ -166,7 +165,6 @@ private: //variables
 	void showAnnotation();
 public:
 	bool _changed;
-	QShortcut * _searchShortCut;
 	int _allowResize;
 	//static std::string SupportedAnnotations[] = { ANNOTS(CREATE_ARRAY) };
 
@@ -242,7 +240,7 @@ public slots:
 	std::string addFontToPage(std::string id);
 	void replaceText( QString what, QString by);
 	void changeSelectedImage(PdfOp op);
-	void raiseSearch();
+	//void raiseSearch();
 	void closeAnnotDiag();
 	void changeSelectedText(PdfOp);
 	void deleteSelectedText();
@@ -345,6 +343,9 @@ public slots:
 	void loadAnalyzeItem( QTreeWidgetItem * item );
 	public:
 	void resizeEvent(QResizeEvent * event);
+	void setFirstPage();
+	void setLastPage();
+	void setPageFromInfo();
 };
 
 #endif

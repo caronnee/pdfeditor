@@ -27,6 +27,7 @@ class pdfGui : public QMainWindow
 
 	struct pdfedit_core_dev_init init;
 
+	QShortcut * _searchShortCut;
 	QDialog aboutDialog;
 	Ui::AboutDialog aboutDialogUI;
 public:
@@ -36,6 +37,7 @@ public:
 	
 
 private:
+	Search * _search;
 	QMenu * _lastOpenedButtonMenu;
 	Ui::pdfGuiClass ui;
 public slots:

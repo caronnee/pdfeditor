@@ -4,7 +4,7 @@
 #include <QKeyEvent>
 #include <QMenu>
 #include <QIcon>
-
+#include <QShortcut>
 #include "pdfgui.h"
 #include "typedefs.h"
 
@@ -32,6 +32,13 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	ui.settingFrame->hide();
 	aboutDialogUI.setupUi(&aboutDialog);
 
+	_search = new Search(NULL);//neptraia k tomuto mimiokienku
+	_searchShortCut = new QShortcut(QKeySequence(tr("Ctrl+F", "Find texts")),this);
+
+	QObject::connect(_search, SIGNAL(search(QString,bool)),this->ui.openedPdfs,SLOT(search(QString,bool)));
+	//QObject::connect(_search, SIGNAL(replaceTextSignal(QString,QString)),this,SLOT(replaceText(QString,QString)));
+	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(show()));
+
 //TODO dat do uicka
 	connect(this->ui.aboutButton, SIGNAL(pressed()), &aboutDialog, SLOT(open()) );
 	connect( this->ui.openButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(openAnotherPdf()));
@@ -44,6 +51,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.analyzeButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(initAnalyze()));
 	connect( this->ui.lastOpenedButton, SIGNAL(pressed()), this, SLOT(lastOpenedPdfs()));
 	connect( this->ui.opSelect, SIGNAL(pressed()), this->ui.openedPdfs,SLOT(setModeOperator()));
+	connect( this->ui.rotateButton, SIGNAL(pressed()), this->ui.openedPdfs,SLOT(rotate()));
 	connect( this->ui.derotateButton, SIGNAL(pressed()), this->ui.openedPdfs,SLOT(derotate()));
 	connect( this->ui.deleteButton,SIGNAL(pressed()),this->ui.openedPdfs,SLOT(deleteSelectedText()));
 	connect( this->ui.changeButton,SIGNAL(pressed()),this->ui.openedPdfs,SLOT(changeSelectedText()));
@@ -62,9 +70,12 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.changeAnnotationButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeChangeAnnotation()) );
 	connect( this->ui.delAnnotation,SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeDeleteAnnotation()));
 	connect( this->ui.openedPdfs, SIGNAL(ModeChangedSignal(HelptextIcon)), this,SLOT(handleModeChange(HelptextIcon)));
+
 	connect( this->ui.repeter, SIGNAL(pressed()), ui.openedPdfs, SLOT(redraw()));
 	connect( this->ui.pageUp, SIGNAL(pressed()), ui.openedPdfs, SLOT(pageUp()));
 	connect( this->ui.pageDown, SIGNAL(pressed()), ui.openedPdfs, SLOT(pageDown()));
+	connect( this->ui.insertEmpty, SIGNAL(pressed()), ui.openedPdfs, SLOT(insertEmpty()));
+	connect( this->ui.deletePage, SIGNAL(pressed()), ui.openedPdfs, SLOT(deletePage()));
 
 	connect( this->ui.hcolor, SIGNAL(ValueChangedSignal(QColor)), ui.openedPdfs, SLOT(setHColor(QColor)));
 	connect( this->ui.color, SIGNAL(ValueChangedSignal(QColor)), ui.openedPdfs, SLOT(setColor(QColor)));
@@ -122,6 +133,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 }
 void pdfGui::closeEvent( QCloseEvent *event )
 {
+	_search->close();
 	FILE * f = fopen("config","w");
 	if (!f)
 		return;
