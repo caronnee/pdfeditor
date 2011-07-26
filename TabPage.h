@@ -341,11 +341,13 @@ public slots:
 	void operationDone();
 	void initAnalyze();
 	void loadAnalyzeItem( QTreeWidgetItem * item );
-	public:
-	void resizeEvent(QResizeEvent * event);
 	void setFirstPage();
 	void setLastPage();
 	void setPageFromInfo();
+
+public:
+	void resizeEvent(QResizeEvent * event);
+
 };
 
 #endif

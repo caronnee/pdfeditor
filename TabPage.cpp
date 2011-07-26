@@ -988,11 +988,15 @@ void TabPage::raiseChangeSelectedText()
 	}//TODO set font height
 	float corr = displayparams.vDpi/72;
 	float h = sTextIt->_op->getFontHeight()*sTextIt->_width;//TODO fontmatrix, fontBBox
+	
 	double ret, dummy; //TODO conevrt page rotation!!
 	//rotatePdf(_page->getRotation(),pos,ret,true);
-	displayparams.convertPixmapPosToPdfPos(sTextIt->_origX, sTextIt->_ymax, dummy, ret);//TODO font matrix
+	displayparams.convertPixmapPosToPdfPos(sTextIt->_origX, sTextIt->_ymin, dummy, ret);//TODO font matrix
 	double pos = sTextIt->GetPreviousStop();
 
+	const double * fMatrix = sTextIt->_op->getCurrentFont()->getFontBBox();
+	ret -= fMatrix[3]*h ; //TODO toto nemusi byt vyska BBoxu
+//TODO checknut aj pre ostatne fonty, mozno treba fontmatrix sofistikovanejsiu
 	_font->setPosition(pos/corr,ret);
 	_font->setHeight(sTextIt->_op->getFontHeight());
 	_font->setText(s);
@@ -2486,11 +2490,12 @@ void TabPage::changeSelectedText(PdfOp insertedText) //vsetko zosane na svojom m
 {
 	assert(_selected);
 	float corr = displayparams.vDpi/72;
-	float h = sTextIt->_op->getFontHeight();
-	double y = displayparams.DEFAULT_PAGE_RY - (sTextIt->_ymin+h)/corr; //TODO toto nemusi byt vyska BBoxu
+	//float h = sTextIt->_op->getFontHeight();
+	//const double * fMatrix = sTextIt->_op->getCurrentFont()->getFontBBox();
+	//double y = displayparams.DEFAULT_PAGE_RY - sTextIt->_ymax/corr + fMatrix[3]*h ; //TODO toto nemusi byt vyska BBoxu
 	double pos = sTextIt->GetPreviousStop();
-	rotatePdf(_page->getRotation(),pos,y,true);
-//	_font->setPosition(pos,y); //pretoze toto je v default user space
+	//rotatePdf(_page->getRotation(),pos,y,true);
+	//_font->setPosition(pos,y); //pretoze toto je v default user space
 	//rozdelime na dva pripady - pokial je to roznake a pokial je zaciatok erozny od konca
 	if ( sTextIt==sTextItEnd ) //TODO co ak je s3 prazdne? -> Compact?:)
 	{

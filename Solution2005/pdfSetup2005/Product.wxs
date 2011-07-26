@@ -8,8 +8,10 @@
       <Directory Id="TARGETSUBDIR" Name="PdfEditor" FileSource="..\..">
         <Directory Id="pdfImages" Name="images">
           <Component Id="ImageSource" Guid="8f654235-16ee-4a04-b607-2f848fc32db5" >
+            <File Id="imgabout" Name="about.ico"  />
             <File Id="imgcomment" Name="comment.ico"  />
             <File Id="imgcontent" Name="content.ico"  />
+            <File Id="imgdebug" Name="debug.ico"  />
             <File Id="imgdeletepage" Name="deletepage.ico"/>
             <File Id="imgDeleteText" Name="DeleteText.ico"/>
             <File Id="imgderotate" Name="derotate.ico"/>
@@ -19,8 +21,10 @@
             <File Id="imgimages" Name="images.ico"/>
             <File Id="imginserttext" Name="insert_text.ico"/>
             <File Id="imginsertTextMarker" Name="insertTextMarker.ico"/>
+            <File Id="imgnextpage" Name="nextpage.ico"  />
             <File Id="imgopen" Name="open.ico"/>
             <File Id="pagedown" Name="page_down.ico"/>
+            <File Id="imgpreviousPage" Name="previousPage.ico"/>
             <File Id="redo" Name="redo.ico"/>
             <File Id="rotate" Name="rotate.ico"/>
             <File Id="save" Name="save.ico"/>
@@ -32,6 +36,7 @@
             <File Id="imgTextConvert.ico" Name="TextConvert.ico"  />
             <File Id="imgundo.ico" Name="undo.ico"  />
             <File Id="imgUppage.ico" Name="uppage.ico"  />
+            <File Id="imgView.ico" Name="view.ico"  />
             <File Id="imgZoom" Name="zoom.ico"  />
             <File Id="imgDecrypt_icon" Name="decrypt_icon.jpg"  />
             <File Id="imgOperator" Name="operator.jpg"  />

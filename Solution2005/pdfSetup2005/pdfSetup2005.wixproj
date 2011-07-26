@@ -42,4 +42,7 @@
 	<Target Name="AfterBuild">
 	</Target>
 	-->
+  <PropertyGroup>
+    <PreBuildEvent>copy $(ProjectDir)..\releasepdf\pdfeditor.exe  $(SolutionDir)\..</PreBuildEvent>
+  </PropertyGroup>
 </Project>
