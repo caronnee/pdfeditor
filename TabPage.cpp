@@ -60,12 +60,13 @@ void TabPage::handleBookmark(QTreeWidgetItem* item, int) //nezaujima nas stlpec
 		index = 0;
 	if (index >= ui.zoom->count())
 		index = ui.zoom->count()-1;
+	if(ui.zoom->currentIndex() == index )
+		redraw();
 	ui.zoom->setCurrentIndex(index);
 	double x = b->getX();
 	double y = b->getY();
 	rotatePdf(_page->getRotation(), x,y,false);
 	this->ui.scrollArea->ensureVisible(x,y);
-	createList();
 }
 
 class PdfProgress : public pdfobjects::utils::IProgressBar
@@ -1903,7 +1904,7 @@ void TabPage::getBookMarks()
 	this->ui.progressBar->show();
 	this->ui.progressBar->setFormat("Loading bookmarks %p%");
 	this->ui.progressBar->setValue(0);
-	this->ui.progressBar->setMaximum(utils::getIntFromDict("Count",ol));
+	this->ui.progressBar->setMaximum(outline.size());
 
 	for (size_t i =0; i< outline.size(); i++)
 	{
@@ -2021,6 +2022,7 @@ void TabPage::JustDraw()
 	_page->displayPage(splash, displayparams,-1,-1,-1,-1,true ); //vzdy reparsuj
 	splash.clearModRegion();
 
+	//( uchar * data, int width, int height, Format format )
 	QImage image(splash.getBitmap()->getWidth(), splash.getBitmap()->getHeight(),QImage::Format_RGB32);	
 	Guchar * p = new Guchar[3];
 	for ( int i =0; i< image.width(); i++)
@@ -2052,7 +2054,8 @@ void TabPage::resizeEvent(QResizeEvent * event)
 		ratioInt = ceil(ui.zoom->itemData(ui.zoom->currentIndex()).toInt()*ratio);
 	else 
 		ratioInt = floor(ui.zoom->itemData(ui.zoom->currentIndex()).toInt()*ratio);
-
+	if (ratioInt ==1)
+		return;
 	QVariant v(ratioInt);
 	int index = ui.zoom->findData(v);
 	if ( index == -1)
@@ -2145,7 +2148,10 @@ void TabPage::savePdf(char * name)
 	emit addHistory(QString("Saves PDF to new file\n") + name);
 	_pdf->saveChangesToNew(name);
 }
-TabPage::~TabPage(void)	{}
+TabPage::~TabPage(void)	
+{
+
+}
 
 ///---private--------
 void TabPage::addRevision( int i )
@@ -3433,11 +3439,11 @@ void TabPage::getDestFromArray( PdfProperty pgl, Bookmark * ret )
 			{
 				if (destination->getProperty(2)->getType() == pInt)
 					x = destination->getProperty<CInt>(2)->getValue();
-				else
+				else if	(destination->getProperty(2)->getType() == pReal)
 					x = destination->getProperty<CReal>(2)->getValue();
 				if (destination->getProperty(3)->getType() == pInt)
 					y = destination->getProperty<CInt>(3)->getValue();
-				else
+				else if (destination->getProperty(3)->getType() ==pReal)
 					y = destination->getProperty<CReal>(3)->getValue();
 				t = 1;
 				if (destination->getProperty(4)->getType() != pNull)
@@ -3543,7 +3549,7 @@ bool TabPage::checkLinearization()
 void TabPage::delinearize( QString fileName )
 {
 	emit addHistory("Delinearization performed\n");
-	shared_ptr<utils::Delinearizator> d = utils::Delinearizator::getInstance(fileName.toAscii().data(), _pdf->getPdfWriter());
+	shared_ptr<utils::Delinearizator> d = utils::Delinearizator::getInstance(_name.toAscii().data(), _pdf->getPdfWriter());
 	d->delinearize(fileName.toAscii().data());
 }
 

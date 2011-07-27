@@ -190,7 +190,9 @@ void OpenPdf::saveAs()
 
 void OpenPdf::open(QString name)
 {
+#ifndef _DEBUG
 	try
+#endif
 	{
 		TabPage * page = new TabPage(this, name);
 		this->addTab(page,name);
@@ -205,30 +207,39 @@ void OpenPdf::open(QString name)
 		page->delinearize(fileName);
 		
 		//close the old file & open delinearized version
-		this->deletePage();
+		this->closeAndRemoveTab(this->count());
+		//delete page;
 		page = new TabPage(this,fileName);
 		this->addTab(page,fileName);
 		assert(page->checkLinearization());
 		setCurrentIndex(count() -1);
 	}
+#ifndef _DEBUG
 	catch (PdfOpenException e)
 	{
 		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
+		delete page;
 
 	}
 	catch (PdfException e)
 	{
 		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
+		delete page;
+
 	//	return;
 	}
 	catch (PermissionException)
 	{
 		QMessageBox::warning(this, "Encrypted document",QString("Unable to open file ( it is ecnrypted )") , QMessageBox::Ok, QMessageBox::Ok);
+		delete page;
 	}
 	catch (std::exception e)
 	{
 		QMessageBox::warning(this, "Unexpected exception",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
+		delete page;
 	}
+#endif // _DEBUG
+
 }
 //void OpenPdf::resizeEvent(QResizeEvent *event)
 //{
