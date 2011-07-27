@@ -1272,7 +1272,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="repeter">
+        <widget class="QToolButton" name="refreshButton">
          <property name="toolTip">
           <string>redraw page</string>
          </property>

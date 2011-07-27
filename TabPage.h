@@ -121,6 +121,7 @@ class TabPage : public QWidget
 	Q_OBJECT
 
 private: //variables
+	SplashOutputDev splash;
 	int _acceptedType;
 	OpenPdf * _parent;
 	Ui::TabUI ui; 

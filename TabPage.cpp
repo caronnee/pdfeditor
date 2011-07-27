@@ -10,6 +10,7 @@
 #include "bookmark.h"
 #include "globalfunctions.h"
 #include "utils/types/coordinates.h"
+#include "kernel/carray.h"
 #include <float.h>
 #include <vector>
 #include <QRgb>
@@ -113,7 +114,9 @@ bool TabPage::containsOperator(std::string wanted)
 	}
 	return false;
 }
-TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),_allowResize(0)
+static SplashColor paperColor = {0xff,0xff,0xff};
+
+TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),_allowResize(0),splash (splashModeBGR8, 4, gFalse, paperColor)
 {
 	_pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 	debug::changeDebugLevel(10000);
@@ -2010,9 +2013,7 @@ void TabPage::redraw()
 }
 void TabPage::JustDraw()
 {
-	SplashColor paperColor;
-	paperColor[0] = paperColor[1] = paperColor[2] = 0xff;
-	SplashOutputDev splash (splashModeBGR8, 4, gFalse, paperColor);
+	
 
 	/*Ops oTest;
 	page->getObjectsAtPosition(oTest,libs::Point(229,619));*/
@@ -2742,6 +2743,9 @@ NextPage:
 		QMessageBox::Ok);
 	//set from th beginning
 }
+#include "splash/SplashGlyphBitmap.h"
+#include "splash/SplashFont.h"
+
 std::string TabPage::checkCode(QString s, std::string fontName)
 {
 	//get ID
@@ -2770,17 +2774,23 @@ std::string TabPage::checkCode(QString s, std::string fontName)
 	{
 		Unicode u = s[i].unicode();
 		char c = font->getCodeFromUnicode(&u,1);
-		if (c == 0)
+		double temp[] = {1,0,0,1,0,0};
+		SplashFont * fnt = splash.getFont(font->getName(),temp);
+		SplashGlyphBitmap tBitmap;
+		fnt->getGlyph(c,0,0,&tBitmap);
+		if (tBitmap.w == 0)
 			raiseWarning = true;
 		else
 			ret+=c;
 	}
 	if (raiseWarning)
 	{
-		QMessageBox::warning(this, tr("Text truncation"),
-			tr("Some characters are not supported.\n Truncated to ")+ret.c_str(),
-			QMessageBox::Ok,
-			QMessageBox::Ok);
+		int res = QMessageBox::warning(this, tr("Text truncation"),
+			tr("Some characters are not supported.\n Truncated to ")+ret.c_str() + "\nContinue?",
+			QMessageBox::Ok|QMessageBox::Discard,
+			QMessageBox::Discard);
+		if (res == QMessageBox::Discard)
+			ret = "";
 	}
 	return ret;
 }
@@ -2860,6 +2870,7 @@ bool TabPage::performSearch( QString srch, bool forw )
 					else
 						iter->setEnd(iter->position(iter->_text.size() - _searchEngine._begin-1));
 					_selected = true; 
+					emit addHistory("Found occurrence of word \"" +srch+"\" on page " + QVariant(_pdf->getPagePosition(_page)).toString());
 					return true;
 				}
 			default:
@@ -2890,6 +2901,7 @@ NextPage:
 			else
 				_page = _pdf->getPrevPage(_page);
 		}
+		emit addHistory("Trying next page " +QVariant(_pdf->getPagePosition(_page)).toString());
 		redraw();
 		//nastav nove _textbox, pretoze sme stejne v textovom rezime
 	}
@@ -3338,14 +3350,27 @@ void TabPage::getDest( const char * nameToResolve, Bookmark *b )
 		pgl = _pdf->getIndirectProperty(refs.back());
 		names = IProperty::getSmartCObjectPtr<CDict>(pgl);
 		refs.pop_back();
+#ifdef _DEBUG
+		int texxxxt = refs.size();
+#endif // _DEBUG
 		if (names->containsProperty("Kids"))
 		{
+			shared_ptr<CArray> arr;
+			if (names->containsProperty("Limits"))
+			{
+				pgl = names->getProperty("Limits");
+				arr = IProperty::getSmartCObjectPtr<CArray>(pgl);
+				std::string minName = utils::getStringFromArray(arr,0);
+				std::string maxName = utils::getStringFromArray(arr,1);
+				if (minName.compare(nameToResolve) > 0 || maxName.compare(nameToResolve) < 0)
+					continue;
+			}
 			pgl = names->getProperty("Kids");
 #ifdef _DEBUG
 			pgl->getStringRepresentation(m);
 #endif
-			shared_ptr<CArray> arr = IProperty::getSmartCObjectPtr<CArray>(pgl);
-			for (int i =0; i< arr->getPropertyCount(); i++)
+			arr = IProperty::getSmartCObjectPtr<CArray>(pgl);
+			for (int i =arr->getPropertyCount()-1; i>=0 ; i--)
 			{
 				refs.push_back(utils::getRefFromArray(arr,i));
 			}
@@ -3381,7 +3406,7 @@ void TabPage::getDest( const char * nameToResolve, Bookmark *b )
 		}
 	}
 	assert(refs.empty());
-	throw "Not in the page!";
+	assert(false);
 	//TODO null would be better
 }
 

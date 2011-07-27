@@ -201,6 +201,18 @@ void AnalyzeItem::loadProperty()
 			break;
 		}
 	case pStream: //TODO operators in cstream
+		{
+			boost::shared_ptr<pdfobjects::CStream> dict = _prop->getSmartCObjectPtr<pdfobjects::CStream>(_prop);
+			std::vector<std::string> names;
+			dict->getAllPropertyNames(names);
+			for ( int i =0; i< names.size(); i++)
+			{
+				AnalyzeItem * item = new AnalyzeItem(this, dict->getProperty(names[i]));
+				addChild(item);
+				item->setText(0,QString(names[i].c_str()));
+			}
+			break;
+		}
 	case pDict:
 		{
 			boost::shared_ptr<pdfobjects::CDict> dict = _prop->getSmartCObjectPtr<pdfobjects::CDict>(_prop);
@@ -212,13 +224,14 @@ void AnalyzeItem::loadProperty()
 				addChild(item);
 				item->setText(0,QString(names[i].c_str()));
 			}
+			break;
 		}
 	case pRef:
 		{
 			PdfProperty p = utils::getReferencedObject(_prop);
 			AnalyzeItem * item = new AnalyzeItem(this, p);
 			addChild(item);
-			item->setText(0,"Referenced");
+			item->setText(0,"Reference");
 			break;
 		}
 		//TODO
