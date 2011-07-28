@@ -79,6 +79,7 @@ public:
   virtual void saveState(GfxState *state);
   virtual void restoreState(GfxState *state);
 
+  SplashFont * getFontById(GfxFont * gfxFont);
   //----- update graphics state
   virtual void updateAll(GfxState *state);
   virtual void updateCTM(GfxState *state, double m11, double m12,
@@ -215,6 +216,7 @@ private:
 			     Guchar *alphaLine);
   static GBool maskedImageSrc(void *data, SplashColorPtr line,
 			      Guchar *alphaLine);
+ 
 
   SplashColorMode colorMode;
   int bitmapRowPad;

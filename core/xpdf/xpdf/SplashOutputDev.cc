@@ -959,7 +959,18 @@ void SplashOutputDev::updateStrokeOpacity(GfxState *state) {
 void SplashOutputDev::updateFont(GfxState *state) {
   needFontUpdate = gTrue;
 }
-
+SplashFont * SplashOutputDev::getFontById(GfxFont * gfxFont)
+{
+	SplashOutFontFileID *id;
+	id = new SplashOutFontFileID(gfxFont->getID());
+	SplashFontFile *fontFile = fontEngine->getFontFile(id);
+	delete id;
+	if (!fontFile )
+		return NULL;
+	SplashCoord coord[] = {1,0,0,1,0,0};
+	SplashFont * fnt = fontEngine->getFont(fontFile,coord,coord);
+	return fnt;
+}
 void SplashOutputDev::doUpdateFont(GfxState *state) {
   const GfxFont *gfxFont;
   GfxFontType fontType;

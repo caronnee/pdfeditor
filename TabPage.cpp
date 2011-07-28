@@ -43,7 +43,9 @@
 #include "openpdf.h"
 
 #include <QProgressBar>
+#include<xpdf/xpdf/SplashOutputDev.h>
 //#include <kernel/carray.h>
+
 
 //operatory, ktore musim zaklonovat, ked chcem pohnut textom
 #define ZOOM_AFTER_HACK 4
@@ -2046,28 +2048,28 @@ void TabPage::JustDraw()
 #include <cmath>
 void TabPage::resizeEvent(QResizeEvent * event)
 {
-	_allowResize++;
-	if (_allowResize< ZOOM_AFTER_HACK)
-		return;
-	_allowResize = ZOOM_AFTER_HACK;
-	//this->resizeEvent(event);
-	float ratio = event->size().width();
-	ratio /= event->oldSize().width();
-	int ratioInt;
-	if (ratio < 1)
-		ratioInt = ceil(ui.zoom->itemData(ui.zoom->currentIndex()).toInt()*ratio);
-	else 
-		ratioInt = floor(ui.zoom->itemData(ui.zoom->currentIndex()).toInt()*ratio);
-	if (ratioInt ==1)
-		return;
-	QVariant v(ratioInt);
-	int index = ui.zoom->findData(v);
-	if ( index == -1)
-	{
-		index = ui.zoom->count();
-		ui.zoom->addItem( QString( "Custom (" ) +v.toString() +")",v);
-	}
-	ui.zoom->setCurrentIndex(index);
+	//_allowResize++;
+	//if (_allowResize< ZOOM_AFTER_HACK)
+	//	return;
+	//_allowResize = ZOOM_AFTER_HACK;
+	////this->resizeEvent(event);
+	//float ratio = event->size().width();
+	//ratio /= event->oldSize().width();
+	//int ratioInt;
+	//if (ratio < 1)
+	//	ratioInt = ceil(ui.zoom->itemData(ui.zoom->currentIndex()).toInt()*ratio);
+	//else 
+	//	ratioInt = floor(ui.zoom->itemData(ui.zoom->currentIndex()).toInt()*ratio);
+	//if (ratioInt ==1)
+	//	return;
+	//QVariant v(ratioInt);
+	//int index = ui.zoom->findData(v);
+	//if ( index == -1)
+	//{
+	//	index = ui.zoom->count();
+	//	ui.zoom->addItem( QString( "Custom (" ) +v.toString() +")",v);
+	//}
+	//ui.zoom->setCurrentIndex(index);
 }
 void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
 {
@@ -2780,12 +2782,15 @@ std::string TabPage::checkCode(QString s, std::string fontName)
 			break;
 	}
 	assert(font);
+	//TODO ak je truetype font, nepodporujeme ->return
 	for (int i = 0; i< s.size(); i++)
 	{
 		Unicode u = s[i].unicode();
 		char c = font->getCodeFromUnicode(&u,1);
 		double temp[] = {1,0,0,1,0,0};
-		SplashFont * fnt = splash.getFont(font->getName(),temp);
+		SplashFont * fnt = splash.getFontById(font);
+		if (!fnt)
+			fnt = splash.getFont(font->getName(),temp);
 		SplashGlyphBitmap tBitmap;
 		fnt->getGlyph(c,0,0,&tBitmap);
 		if (tBitmap.w == 0)

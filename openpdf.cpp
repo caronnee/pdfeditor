@@ -42,10 +42,13 @@ OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeD
 	char name[256];
 	DWORD size = sizeof(name);
 	GetUserNameA(name,&size);
-	_author = name;
+
 #else
-	assert(false); //TODO unix
+	name = fopen("whoami", "r");
+	fgets(text, sizeof(text), name);
+	fclose(name);
 #endif
+	_author = name;
 #if _DEBUG
 	TabPage * page = new TabPage(this,"./zadani.pdf");
 	this->addTab(page,"test");

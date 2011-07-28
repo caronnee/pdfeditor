@@ -128,7 +128,7 @@ void FontWidget::addFont(PdfOp op)
 	float size = utils::getValueFromSimple<CReal>(operands[1]);
 	QVariant q(size);
 	int index  = ui.fontsize->findData(q); //TODO radsej toString
-	if (index)
+	if (index ==-1)
 	{
 		ui.fontsize->insertItem(0,q.toString(), q);
 		index = ui.fontsize->findData(q);
@@ -308,6 +308,7 @@ void FontWidget::createFromMulti( std::vector<PdfOp>& operators )
 void FontWidget::clearTempFonts()
 {
 	ui.fonts->clear();
+	_fonts.clear();
 	//QVariant q("Select font from operator"); 
 	//ui.fonts->insertItem(ui.fonts->count(),q.toString(),q); //Qvariant?
 
