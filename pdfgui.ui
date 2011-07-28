@@ -935,6 +935,9 @@
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -961,6 +964,9 @@
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -1033,6 +1039,9 @@
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -1061,7 +1070,7 @@
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
          <attribute name="buttonGroup">
-          <string>mainGroup</string>
+          <string>subGroup</string>
          </attribute>
         </widget>
        </item>
@@ -1120,6 +1129,9 @@
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -1146,6 +1158,9 @@
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -1172,6 +1187,9 @@
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -1195,6 +1213,9 @@
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -1221,6 +1242,9 @@
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
+         <attribute name="buttonGroup">
+          <string>subGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>

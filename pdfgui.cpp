@@ -47,7 +47,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.saveEncodedButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(saveEncoded()));
 	connect( this->ui.viewButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeView()));
 	connect( this->ui.exportButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(getText()));
-
+	connect( this->ui.insertImageButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeInsertImage()));
 	connect( this->ui.analyzeButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(initAnalyze()));
 	connect( this->ui.lastOpenedButton, SIGNAL(pressed()), this, SLOT(lastOpenedPdfs()));
 	connect( this->ui.opSelect, SIGNAL(pressed()), this->ui.openedPdfs,SLOT(setModeOperator()));
@@ -83,8 +83,6 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.openedPdfs, SIGNAL(OpenSuccess(QString)), this, SLOT(appendToLast(QString)));
 	connect( this->ui.highlightButton_2, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setHighlighCommentText()));
 	this->ui.openedPdfs->setMode(ModeDoNothing);
-	//connect( this->ui.highlightButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(highlightSelected()));
-	//connect( this->ui.insertAnotation,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeInsertComment()));
 	//load settings
 	ui.color->setColor(QColor(255,0,0,50));
 	ui.hcolor->setColor(QColor(0,255,0));

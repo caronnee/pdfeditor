@@ -338,6 +338,7 @@ bool PermanentMode(Mode mode)
 		mode == ModeInsertText ||
 		mode == ModeSelectText ||
 		mode == ModeSelectImage ||
+		mode == ModeInsertImage ||
 		mode == ModeOperatorSelect ;
 }
 void OpenPdf::setMode( Mode mode )

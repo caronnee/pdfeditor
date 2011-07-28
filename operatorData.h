@@ -31,7 +31,7 @@ public:
 	void set(float x,double &place);
 	int letters(double x);
 	double position(int letters);
-	void setMark(float x, bool beg);
+
 	void setBegin(float x);
 	void setEnd(float x);
 	bool operator<(const OperatorData & oper); //zoradime podla y-osi

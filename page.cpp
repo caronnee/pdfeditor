@@ -178,7 +178,9 @@ void DisplayPage::fillRect( int x1, int y1, int x2, int y2, const QColor color)
 }
 void DisplayPage::setImg() //again st from image, for removing highligh and so
 {
+#ifdef _DEBUG
 	fillRect(_interactive,QColor(0,255, 0, 50));
+#endif // _DEBUG
 	this->adjustSize();
 	_size = this->pixmap()->size();
 }

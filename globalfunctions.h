@@ -2,6 +2,7 @@
 #define __GLOBAL_F__
 
 #include <cmath>
+#include "kernel/displayparams.h"
 //TODO asi by t mohlo byt vacsie, na viac desatinnych miest
 #define PI 3.14
 
@@ -20,6 +21,8 @@ void rotatePosition( T xin, T yin, T& xout, T &yout, int angle )
 	xout = s*cos(toRadians(angle));
 	yout = s*sin(toRadians(angle));
 };
+void rotatePdf( pdfobjects::DisplayParams& displayparams, double& x,double& y, bool toUpPosition);
+
 //TODO highlight m underline, strikeout - ukazat len komentare
 #define ANNOTS(XX) \
 	XX("Text", Text) \

@@ -22,11 +22,12 @@ InsertImage::InsertImage( QWidget * parent) : QWidget(parent)
 	ui.setupUi(this);
 	connect(this->ui.rotation, SIGNAL(sliderMoved(int)), this, SLOT(showAngleToolTip(int)));
 }
+
 void InsertImage::setSize(float w,float h)
 {
 	this->ui.imageChooseFrame->show();
-	ui.sizeX->setValue(w);
-	ui.sizeY->setValue(h);
+	ui.sizeX->setValue(fabs(w));
+	ui.sizeY->setValue(fabs(h));
 }
 void InsertImage::setPosition(float pdfX,float pdfY, float scale)
 {
@@ -123,20 +124,18 @@ void InsertImage::apply()
 	float scaleY = (float)ui.scaleY->value()/(100.0f); //POCET KOMPONENT
 	//mame maticy translacie & scale ( mozeme to dat dokopy))
 	PdfOperator::Operands posOperands;
-	double cs = cos(toRadians(ui.rotation->value())) * scaleX;
-	double sn = sin(toRadians(ui.rotation->value())) * scaleY;
 	if (create)
 	{//translation rotation scale
 		q->push_back(createOperatorTranslation(ui.positionX->value(),ui.positionY->value()-pixH ),getLastOperator(q));
 		q->push_back(createOperatorRotation(toRadians(ui.rotation->value() )),getLastOperator(q));
-		q->push_back(createOperatorScale(pixW,pixH ),getLastOperator(q));
+		q->push_back(createOperatorScale(pixW*scaleX,pixH*scaleY ),getLastOperator(q));
 	}
 	else
 	{
 		q->push_back(_invertCm,getLastOperator(q));
 		q->push_back(createOperatorTranslation(0,0),getLastOperator(q));
 		q->push_back(createOperatorRotation(toRadians(ui.rotation->value())),getLastOperator(q));
-		q->push_back(createOperatorScale(pixW*_scale,pixH*_scale ),getLastOperator(q));
+		q->push_back(createOperatorScale(pixW*_scale*scaleX,pixH*_scale*scaleY ),getLastOperator(q));
 	}
 	//vyhod alpha channel	
 	q->push_back(biOp,getLastOperator(q));

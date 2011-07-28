@@ -152,11 +152,10 @@ private: //variables
 	void fillCoordinates(std::vector<float>& coordinates, float * dim);
 	void initRevisions();
 	PdfOperator::Iterator findTdAssOp(PdfOperator::Iterator iter);
-	void rotatePdf(int angle, double& x,double& y,bool fromPixMap);
 	//float findDistance(std::string s,TextData::iterator textIter);
 	void SetNextPageRotate();
 	/* vytvorit textovy list */
-	void searchPrev(QString srch);
+	
 	bool performSearch(QString srch, bool forw);
 	void getSelected(int x , int y, Ops ops);
 	void toPdfPos(int x, int y, double & x1, double &y1);

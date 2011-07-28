@@ -4,6 +4,7 @@
 #include "kernel/cobjectsimple.h"
 #include "kernel/ccontentstream.h"
 #include "kernel/displayparams.h"
+#include "globalfunctions.h"
 
 using namespace pdfobjects;
 
@@ -20,22 +21,14 @@ OperatorData::OperatorData(PdfOp op, DisplayParams& displayParams) : _begin(0), 
 	_op->getFontText(test);
 	_text = QString::fromStdWString(test); //TODO pozor na leak
 	libs::Rectangle r = _op->getBBox();
-	int pAngle = displayParams.rotate;
-	if( pAngle<0 )
-		pAngle*=-1;
-	if (pAngle%180 == 90)
-	{
-		_begin = min<double>(r.yleft, r.yright);
-		_end = max<double>(r.yleft, r.yright);
-		_ymin = min<float>(r.xleft, r.xright);
-		_ymax = max<float>(r.xleft, r.xright);
-	}else
-	{
-		_ymin = min<double>(r.yleft, r.yright);
-		_ymax = max<double>(r.yleft, r.yright);
-		_begin = min<float>(r.xleft, r.xright);
-		_end = max<float>(r.xleft, r.xright);
-	}
+
+	_ymin = min<double>(r.yleft, r.yright);
+	_ymax = max<double>(r.yleft, r.yright);
+	_begin = min<float>(r.xleft, r.xright);
+	_end = max<float>(r.xleft, r.xright);
+	rotatePdf(displayParams,_begin,_ymin,true);
+	rotatePdf(displayParams,_end,_ymax,true);
+
 	_origX = _begin;
 	_origX2 = _end; 
 	_charSpace = _op->getOper("Tc",0,-1);
@@ -142,13 +135,7 @@ double OperatorData::position(int letters)
 	assert(place < _origX2+_charSpace+1.0f);
 	return place;*/
 }
-void OperatorData::setMark(float x, bool beg)
-{
-	if (beg)
-		setBegin(x);
-	else
-		setEnd(x);
-}
+
 
 void OperatorData::setBegin(float x)
 {
@@ -160,11 +147,11 @@ void OperatorData::setEnd(float x)
 }
 bool OperatorData::operator<(const OperatorData & oper) //zoradime podla y-osi
 {
-	BBox b = oper._op->getBBox();
+	//BBox b = oper._op->getBBox();
 	//cim vyssie je y, tym vyssie je na obrazovke, t.j. ty to bude prvsie
 	//ak je rozdiel moc maly v y osi, si na jednej lajne
 	bool boo;
-	bool ret = forward( min(b.xleft,b.xright), max(b.yleft,b.yright),boo);
+	bool ret = forward( oper._origX , oper._ymax,boo);
 	if (boo)
 		return _id < oper._id;
 	return ret;
@@ -172,15 +159,14 @@ bool OperatorData::operator<(const OperatorData & oper) //zoradime podla y-osi
 bool OperatorData::forward(double x, double y, bool& eq)const
 {
 	eq  = false;
-	BBox a = _op->getBBox();
-	float maxy = max(a.yleft, a.yright); //najvyssia hodnota -> najnizie
+	float maxy = _ymax; //najvyssia hodnota -> najnizie
 
 	if (fabs(maxy - y) > 0.5f) //rozhodni podla y osi, cim mensi, tym blizsie
 	{
 		return maxy - y < 0;//pojde dopredy ak toto je vyssie ako y, ktore sme dostali
 	}
-	maxy = min(a.xleft, a.xright);
-	if (fabs(maxy - x))
+	maxy = _origX;
+	if (fabs(maxy - x) < 1e-3)
 		return eq = true;
 	return maxy < x;
 }

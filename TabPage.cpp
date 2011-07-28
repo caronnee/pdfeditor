@@ -67,7 +67,7 @@ void TabPage::handleBookmark(QTreeWidgetItem* item, int) //nezaujima nas stlpec
 	ui.zoom->setCurrentIndex(index);
 	double x = b->getX();
 	double y = b->getY();
-	rotatePdf(_page->getRotation(), x,y,false);
+	rotatePdf(displayparams, x,y,false);
 	this->ui.scrollArea->ensureVisible(x,y);
 }
 
@@ -152,6 +152,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 		this->ui.zoom->addItem( s.toString()+" %",s);
 	}
 
+	connect(this->ui.commit, SIGNAL(pressed()), this, SLOT(commitRevision()));
 	connect( this->ui.pageInfo, SIGNAL(returnPressed()),this, SLOT(setPageFromInfo()));
 	connect (this->ui.firstPage, SIGNAL(pressed()), this, SLOT(setFirstPage()));
 	connect (this->ui.lastPage, SIGNAL(pressed()), this, SLOT(setLastPage()));
@@ -291,7 +292,7 @@ void TabPage::raiseChangeSelectedImage()
 	double y = (float)displayparams.DEFAULT_PAGE_RY;
 	y-= (min(b.yleft,b.yright))*scaleY;
 	//uz mame bbox
-	rotatePdf(_page->getRotation(),x,y,false);
+	rotatePdf(displayparams,x,y,false);
 	_image->setPosition(x,y,72.0f/displayparams.vDpi);
 	_image->setSize(abs(b.xleft-b.xright), abs(b.xleft-b.xright));
 	emit addHistory(QString("Raising image change at position ") + QVariant(abs(b.xleft-b.xright)).toString() + " " + QVariant(abs(b.xleft-b.xright)).toString() + "\n");
@@ -330,13 +331,10 @@ void TabPage::deleteImage(QPoint point)
 }
 void TabPage::raiseInsertImage(QRect rect)
 {
-	double x = rect.x(), y=rect.y();
-	/*double x = rect.x()*72.0f/displayparams.vDpi,
-	y = (float)displayparams.DEFAULT_PAGE_RY-rect.y()*72.0f/displayparams.vDpi;*/
-	rotatePdf(_page->getRotation(), x, y, true);
-	y = displayparams.DEFAULT_PAGE_RY - y;
-	//_image->setPosition(x,y,72.0f/displayparams.vDpi);
-	_image->setSize(rect.width()*72.0f/displayparams.vDpi, rect.height()*72.0f/displayparams.vDpi);
+	double w=rect.width()*72.0f/displayparams.vDpi,h =rect.height()*72.0f/displayparams.vDpi;
+	//::rotate(displayparams.rotate,w,h);
+//	_image->setRotation(displayparams.rotate);
+	_image->setSize(w,h);
 	_image->show();
 }
 void TabPage::zoom( int zoomscale )
@@ -363,14 +361,14 @@ void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 	{
 		double x = iter->GetPreviousStop();
 		double y = iter->_ymax;
-		rotatePdf(_page->getRotation(),x,y,true);
+		rotatePdf(displayparams,x,y,true);
 		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
 		coordinates.push_back(x);
 		coordinates.push_back(y);
 
 		x = iter->GetNextStop();
 		y = iter->_ymax;
-		rotatePdf(_page->getRotation(),x,y,true);
+		rotatePdf(displayparams,x,y,true);
 		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
 		coordinates.push_back(x);
 		coordinates.push_back(y);
@@ -378,7 +376,7 @@ void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 
 		x = iter->GetPreviousStop();
 		y = iter->_ymin;
-		rotatePdf(_page->getRotation(),x,y,true);
+		rotatePdf(displayparams,x,y,true);
 		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
 		coordinates.push_back(x);
 		coordinates.push_back(y); 
@@ -386,7 +384,7 @@ void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 
 		x = iter->GetNextStop();
 		y = iter->_ymin;
-		rotatePdf(_page->getRotation(),x,y,true);
+		rotatePdf(displayparams,x,y,true);
 		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
 		coordinates.push_back(x);
 		coordinates.push_back(y); 
@@ -996,7 +994,7 @@ void TabPage::raiseChangeSelectedText()
 	float h = sTextIt->_op->getFontHeight()*sTextIt->_width;//TODO fontmatrix, fontBBox
 	
 	double ret, dummy; //TODO conevrt page rotation!!
-	//rotatePdf(_page->getRotation(),pos,ret,true);
+	//rotatePdf(displayparams,pos,ret,true);
 	displayparams.convertPixmapPosToPdfPos(sTextIt->_origX, sTextIt->_ymin, dummy, ret);//TODO font matrix
 	double pos = sTextIt->GetPreviousStop();
 
@@ -1017,7 +1015,7 @@ void TabPage::raiseAnnotation(QPoint point)//raise cpmment annotation
 {
 	//_mode = ModeEmitPosition;
 	double x=point.x(),y=point.y();
-	rotatePdf(_page->getRotation() ,x,y,true);
+	rotatePdf(displayparams ,x,y,true);
 	//displayparams.convertPixmapPosToPdfPos(point.x(), point.y(),x,y);
 	//float xdif = displayparams.vDpi/72;
 	//float ydif = displayparams.hDpi/72;
@@ -1031,7 +1029,7 @@ void TabPage::raiseAnnotation(QPoint point)//raise cpmment annotation
 
 void TabPage::createList()
 {
-	emit addHistory("Recreating text list\n");
+	emit addHistory("Recreating text list");
 	_textList.clear();
 	//get all pdf text operators in list
 	Ops ops;
@@ -1070,6 +1068,17 @@ void TabPage::createList()
 	//sort list
 	_textList.sort();
 	sTextIt = sTextItEnd = sTextMarker = _textList.begin();
+#ifdef _DEBUG
+	TextData::iterator iter = _textList.begin();
+	TextData::iterator iter2 = _textList.begin();
+	iter2++;
+	while ( iter2!= _textList.end())
+	{
+		*iter < *iter2;
+		iter++;
+		iter2++;
+	}
+#endif // _DEBUG
 }
 void TabPage::raiseInsertText(QPoint point)
 {
@@ -1098,7 +1107,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 		{
 			double x = point.x(),y = point.y();
 			displayparams.convertPixmapPosToPdfPos(point.x(),point.y(),x,y);
-			//rotatePdf(_page->getRotation(),x,y,false);//TODO check
+			//rotatePdf(displayparams,x,y,false);//TODO check
 			_font->addFont(getPreviousFontInPosition(libs::Point(x,y)));
 			//find last TM
 			float w[2];
@@ -1144,7 +1153,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			double x = point.x();
 			double y = point.y();//jelikoz to ide priamo do dictionary, musim prejst cez params.frompdf :-/
 			displayparams.convertPixmapPosToPdfPos(x,y,x,y);
-			rotatePdf(_page->getRotation(),x,y,true);
+			rotatePdf(displayparams,x,y,true);
 			insertAnnotation(_annots.back());
 			_page->getAllAnnotations(_annots);
 			_cmts->addLink(_annots.back(), _page->getDictionary()->getIndiRef(),x,y);
@@ -1162,7 +1171,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			Ops ops;
 			_mousePos = point;
 			double px = point.x(), py=point.y();
-			//rotatePdf(_page->getRotation(),px,py,true);
+			//rotatePdf(displayparams,px,py,true);
 			//HACK - px, py su teraz v PDF poziciach
 			//px, py musime ale zmenit vzhladom na to,ze sa u inline neberie do uvahy displayparams
 
@@ -1321,7 +1330,7 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 		{
 			int index = _labelPage->deleteAnnotation(point);
 			if (index <0 )
-				return;
+				break;
 			_page->delAnnotation(_annots[index]);
 			_page->getAllAnnotations(_annots);
 			redraw();
@@ -1346,7 +1355,7 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			libs::Point p;
 			p.x = r.x();
 			p.y = r.y();
-			rotatePdf(_page->getPagePosition(), p.x, p.y,true);
+			//rotatePdf(displayparams, p.x, p.y,true);
 			displayparams.convertPixmapPosToPdfPos(p.x,p.y,p.x,p.y);
 			_image->setPosition(p.x,p.y, displayparams.vDpi/72);
 			raiseInsertImage(r);
@@ -1364,7 +1373,7 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			_parent->setMode(ModeImagePartCopied);
 
 			operationDone();
-			return;
+			break;
 		}
 	case ModeImageSelected:
 		{
@@ -1382,7 +1391,33 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			//converuje podla matice
 			double pomx =x, pomy =y;
 			x = invert[0] * pomx + invert[2] * pomy;
-			y = invert[1] * pomx + invert[3] * pomy;
+			y = invert[1] * pomx + invert[3] * pomy;//ROTATE
+			switch(_page->getRotation())
+			{
+			case 90:
+				{
+					double xtmp = x;
+					x = -y;
+					y = xtmp;
+				}
+			case 180:
+				{
+					double xtmp = x;
+					x = -x;
+					y = -y;
+					break;
+				}
+			case -90:
+			case 270:
+				{
+					double xtmp = x;
+					x = y;
+					y = -xtmp;
+					break;
+				}
+			default:
+				break;
+			}
 			PdfOp nw= createOperatorTranslation(x, y);//TODO zistit invertnu CM(bez poslednych POS suradnic)
 			PdfOp prev = createOperatorTranslation(-x, -y);
 			_selectedImage->getContentStream()->replaceOperator(_selectedImage,nw);
@@ -1400,10 +1435,10 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 }
 void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit mouseMove
 {
-	double px=x,py=y;
+
 	//najdi prvy operator, na ktory bolo kliknute
 	Ops ops;
-	_page->getObjectsAtPosition(ops, libs::Point(px,py)); //zaplnili sme operator
+	_page->getObjectsAtPosition(ops, libs::Point(x,y)); //zaplnili sme operator
 	//zistime, ze je to text
 	std::string n;
 	if (ops.empty())
@@ -1422,11 +1457,13 @@ void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit 
 #if _DEBUG
 	std::string m;
 	op->getStringRepresentation(m);
-#endif
 	DEBUGLINE("Operator found");
+#endif
 	sTextIt = _textList.begin();
 	setTextData(sTextIt,_textList.end(),op);
 	sTextIt->clear();
+	double px=x,py=y;
+	rotatePdf(displayparams,px,py,true);
 	sTextIt->setBegin(x);//zarovnane na pismenko
 	sTextMarker = sTextItEnd = sTextIt;
 }
@@ -1443,7 +1480,7 @@ void TabPage::setTextData(TextData::iterator & it, TextData::iterator end,shared
 void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka ser space
 {
 	double x = point.x(),y = point.y();
-	//rotatePdf(_page->getRotation(),x,y,true);
+	//rotatePdf(displayparams,x,y,true);
 	if (!_dataReady) //prvykrat, co sme dotkli nejakeho operatora
 	{
 		_mousePos = point;
@@ -1466,14 +1503,15 @@ void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka s
 	move->clear();
 	double xxPoint = point.x(),yyPoint=point.y();
 	double xxOrig = _mousePos.x(),yyOrig=_mousePos.y();
-	rotatePdf(_page->getRotation(),xxPoint,yyPoint,true);
-	rotatePdf(_page->getRotation(),xxOrig,yyOrig,true);
+	rotatePdf(displayparams,xxPoint,yyPoint,true);
+	rotatePdf(displayparams,xxOrig,yyOrig,true);
 
 	if ( *move < s)
 	{
 		while (move->_op!=s._op)
 		{
 			move++;
+			assert(move!= _textList.end());
 			move->clear();
 		}
 	}
@@ -1525,14 +1563,13 @@ void TabPage::highlight()
 	{
 		x1= first->GetPreviousStop();
 		y1 = first->_ymin;
-		//rotatePdf(_page->getRotation(),x1,y1,false);
+		//rotatePdf(displayparams,x1,y1,false);
 		x2 = first->GetNextStop();
 		y2 = first->_ymax;
-		rotatePdf(-_page->getRotation(),x1,y1,false);
-		rotatePdf(-_page->getRotation(),x2,y2,false);
+		rotatePdf(displayparams,x1,y1,false);
+		rotatePdf(displayparams,x2,y2,false);
 		QRect r(min(x1,x2),min(y1,y2), fabs(x2-x1),fabs(y1-y2));
-//		if (r.width() > first->_charSpace)
-			region.append(r);
+		region.append(r);
 		if (first == sTextItEnd)
 		{
 			this->ui.scrollArea->ensureVisible(x2,y2);
@@ -1600,7 +1637,7 @@ void TabPage::getPreviousTmInPosition( libs::Point p, float* size )
 {
 	double x = p.x;
 	double y = p.y;
-	//rotatePdf(_page->getRotation(),x,y,false);//TODO kontrola
+	//rotatePdf(displayparams,x,y,false);//TODO kontrola
 	TextData::iterator iter = _textList.begin();
 	TextData::iterator last = iter;
 	float dist = 10e38;
@@ -1666,7 +1703,7 @@ PdfOp TabPage::getPreviousFontInPosition(libs::Point pdfPos)//iba pre textove ve
 	double y = pdfPos.y;//toto sa vola  parametrom pozicie, kam chceme insertnut text
 	{
 		displayparams.convertPdfPosToPixmapPos(pdfPos.x,pdfPos.y,x,y);
-		rotatePdf(_page->getRotation(),x,y,false);//TODO kontrola
+		rotatePdf(displayparams,x,y,false);//TODO kontrola
 	}
 	TextData::iterator iter = _textList.begin();
 	TextData::iterator last = iter;
@@ -1721,7 +1758,7 @@ void TabPage::inDirection(TextData::iterator& iter, bool forward)
 void TabPage::getAtPosition(Ops& ops, int x, int y )
 {
 	double px=x, py=y;
-	rotatePdf(_page->getRotation(),px,py,true);
+	rotatePdf(displayparams,px,py,true);
 	//find operattors
 	_page->getObjectsAtPosition(ops, libs::Point(px,py));
 }
@@ -1746,45 +1783,12 @@ void TabPage::toPixmapPos(double x1, double y1, int & x, int &y)
 	y = y2;
 }
 
-void TabPage::rotatePdf(int angle, double& x,double& y, bool fromPixmap) //dostanem pozcie ake su v pdfku
-{
-	angle = (angle + 360)%360;
-	double par[] = { displayparams.vDpi/72.0f, displayparams.hDpi/72.0f};
-	double resx = DisplayParams::DEFAULT_PAGE_RX*par[0];
-	double resy = DisplayParams::DEFAULT_PAGE_RY*par[1];
-
-	::rotate(angle,resx,resy);
-	if (!fromPixmap)
-		::rotate(angle,x,y);
-	switch (angle/90)
-	{
-	case 3:
-	case 1: //musime menit X os
-		{
-
-			float oY = fabs(x);
-			y = fabs(resx) - fabs(x);
-			x = fabs(resy) - fabs(oY);
-			break;
-		}
-	case 2:
-		//x = fabs(resx) - fabs(x);
-		//y = fabs(resy) - fabs(y);
-		break;
-	default:
-		break;
-	}
-	if (fromPixmap)
-		::rotate(angle,x,y);
-	x = fabs(x);
-	y = fabs(y);
-}
 void TabPage::showClicked(int x, int y)
 {
 	double px=x, py=y;
 	//convert
 	//toPdfPos(x,y, px, py);
-	//rotatePdf(_page->getRotation(),px,py,true);
+	//rotatePdf(displayparams,px,py,true);
 
 	Ops ops;
 	_page->getObjectsAtPosition(ops, libs::Point(px,py));
@@ -1804,8 +1808,8 @@ void TabPage::showClicked(int x, int y)
 		libs::Rectangle b = ops[i]->getBBox();
 
 		QColor color(55, 55, 200,100);
-		//rotatePdf(_page->getRotation(),b.xleft,b.yleft,false);
-		//rotatePdf(_page->getRotation(),b.xright,b.yright,false);
+		//rotatePdf(displayparams,b.xleft,b.yleft,false);
+		//rotatePdf(displayparams,b.xright,b.yright,false);
 		_labelPage->fillRect( b.xleft, b.yleft, b.xright, b.yright, color );
 		emit addHistory(QString("Selected operator ") + s.c_str() +"\n");
 	}
@@ -1989,7 +1993,6 @@ void TabPage::insertImage(PdfOp op) //positions
 	Ops ops;
 	ops.push_back(op);
 	_page->addContentStreamToBack(ops);
-//redraw sa spravi po kazdom closnuti image widetu
 }
 void TabPage::insertPageRangeFromExisting()
 { 
@@ -2193,8 +2196,12 @@ void TabPage::initRevision(int revision) //snad su revizie od nuly:-/
 
 void TabPage::rotate(int angle) //rotovanie pages
 {
-	//std::cout << "Rotating" << angle << std::endl;
-	_page->setRotation(_page->getRotation()+angle);
+	angle = _page->getRotation()+angle;
+	if (angle < 0)
+		angle += 360;
+	if (angle > 360)
+		angle %=360;
+	_page->setRotation(angle);
 	displayparams.rotate = _page->getRotation();
 	emit addHistory("Page rotated\n");
 	redraw();
@@ -2467,8 +2474,8 @@ QRect TabPage::getRectangle(BBox b)
 	double x1=b.xleft,x2=b.xright,y1=b.yleft,y2=b.yright;
 	//displayparams.convertPdfPosToPixmapPos( b.xleft, b.yleft, x1,y1);
 	//displayparams.convertPdfPosToPixmapPos( b.xright, b.yright, x2,y2);
-	rotatePdf(_page->getRotation(),x1,y1,false);
-	rotatePdf(_page->getRotation(),x2,y2,false);
+	//rotatePdf(displayparams,x1,y1,false);
+	//rotatePdf(displayparams,x2,y2,false);
 	QRect r(QPoint(min(x1,x2),min(y1,y2)),QPoint(max(x1,x2),max(y1,y2)));
 	return r;
 }
@@ -2508,7 +2515,7 @@ void TabPage::changeSelectedText(PdfOp insertedText) //vsetko zosane na svojom m
 	//const double * fMatrix = sTextIt->_op->getCurrentFont()->getFontBBox();
 	//double y = displayparams.DEFAULT_PAGE_RY - sTextIt->_ymax/corr + fMatrix[3]*h ; //TODO toto nemusi byt vyska BBoxu
 	double pos = sTextIt->GetPreviousStop();
-	//rotatePdf(_page->getRotation(),pos,y,true);
+	//rotatePdf(displayparams,pos,y,true);
 	//_font->setPosition(pos,y); //pretoze toto je v default user space
 	//rozdelime na dva pripady - pokial je to roznake a pokial je zaciatok erozny od konca
 	if ( sTextIt==sTextItEnd ) //TODO co ak je s3 prazdne? -> Compact?:)
@@ -2673,88 +2680,7 @@ QString revert(QString s)
 		rev += s[i];
 	return rev;
 }
-void TabPage::searchPrev(QString srch)
-{
-	_searchEngine.setPattern(revert(srch)); //vytvor strom, ktory bude hladat to slovo
-	for(int i = 0; i< _pdf->getPageCount(); i++)
-	{
-		//vysviet prve, ktore najdes
-		TextData::iterator iter = _textList.end();
-		iter--;
-		if (_selected)
-		{
-			iter = sTextIt;//nic nemen v hladacom engine
-		}
-		else
-		{
-			std::wstring w;
-			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
-			txt->getFontText(w);
-			_searchEngine.setText(revert(QString::fromStdWString(w)));
-		}
-		iter->clear();
-		float prev = iter->_begin;
-		while (iter != _textList.end())
-		{
-			switch (_searchEngine.search())
-			{
-			case Tree::Next:
-				{
-					if (iter == _textList.begin())
-						goto NextPage;
-					iter--;
-					shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
-					float dx = txt->getWidth(' ');
-					if (fabs(prev - iter->_end) > dx ) //from which space?
-						_searchEngine.acceptSpace();
-					prev = iter->_begin;
-					break;
-				}
-			case Tree::Found:
-				{
-					prev = iter->_end; 
-					_labelPage->unsetImg();
-					double a, b;
-					//ak je 
-					iter->setBegin(iter->position(iter->_text.size() - _searchEngine._end));
-					sTextItEnd = iter;
-					for ( int i = 0; i < _searchEngine._tokens; i++)
-					{
-						iter++;
-						iter->clear();
-					}
-					sTextIt = iter;
-					b = iter->position(iter->_text.size() - _searchEngine._begin); 
-					//iter->setEnd(a);
-					iter->setEnd(b);
-					_selected = true; 
-					highlight();
-					return;
-				}
-			default:
-				{
-					throw "Unexpected t->search() token";
-				}
-			}
-			std::wstring w;
-			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
-			txt->getFontText(w);
-			_searchEngine.setText(revert(QString::fromStdWString(w)));
-		}
-		//next page, netreba davat do splashu
-NextPage:
-		if (_pdf->getPagePosition(_page) == 1)
-			_pdf->getPage(_pdf->getPageCount());
-		else
-			_page = _pdf->getPrevPage(_page);
-		//nastav nove _textbox, pretoze sme stejne v textovom rezime
-	}
-	QMessageBox::warning(this, tr("Not found"),
-		tr("String cannot be found"),
-		QMessageBox::Ok,
-		QMessageBox::Ok);
-	//set from th beginning
-}
+
 #include "splash/SplashGlyphBitmap.h"
 #include "splash/SplashFont.h"
 
@@ -2792,6 +2718,7 @@ std::string TabPage::checkCode(QString s, std::string fontName)
 		if (!fnt)
 			fnt = splash.getFont(font->getName(),temp);
 		SplashGlyphBitmap tBitmap;
+		assert(fnt);
 		fnt->getGlyph(c,0,0,&tBitmap);
 		if (tBitmap.w == 0)
 			raiseWarning = true;
@@ -3541,7 +3468,7 @@ void TabPage::handleLink( int level )
 	if(index >= ui.zoom->count())
 		index = ui.zoom->count()-1;
 	ui.zoom->setCurrentIndex(index);
-	rotatePdf(_page->getRotation(),x,y,false);
+	rotatePdf(displayparams,x,y,false);
 	this->ui.scrollArea->ensureVisible(x,y);
 	return;
 }
