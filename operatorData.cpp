@@ -20,10 +20,22 @@ OperatorData::OperatorData(PdfOp op, DisplayParams& displayParams) : _begin(0), 
 	_op->getFontText(test);
 	_text = QString::fromStdWString(test); //TODO pozor na leak
 	libs::Rectangle r = _op->getBBox();
-	_ymin = min<double>(r.yleft, r.yright);
-	_ymax = max<double>(r.yleft, r.yright);
-	_begin = min<float>(r.xleft, r.xright);
-	_end = max<float>(r.xleft, r.xright);
+	int pAngle = displayParams.rotate;
+	if( pAngle<0 )
+		pAngle*=-1;
+	if (pAngle%180 == 90)
+	{
+		_begin = min<double>(r.yleft, r.yright);
+		_end = max<double>(r.yleft, r.yright);
+		_ymin = min<float>(r.xleft, r.xright);
+		_ymax = max<float>(r.xleft, r.xright);
+	}else
+	{
+		_ymin = min<double>(r.yleft, r.yright);
+		_ymax = max<double>(r.yleft, r.yright);
+		_begin = min<float>(r.xleft, r.xright);
+		_end = max<float>(r.xleft, r.xright);
+	}
 	_origX = _begin;
 	_origX2 = _end; 
 	_charSpace = _op->getOper("Tc",0,-1);

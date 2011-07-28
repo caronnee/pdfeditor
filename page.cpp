@@ -228,8 +228,6 @@ void DisplayPage::mouseMoveEvent(QMouseEvent * event)
 #endif // _DEBUG
 			diff = _origRect - diff;
 			_rect.moveTo(diff);
-			if(diff.y()>300)
-				assert(false);
 			update();
 		}
 		if ( _mode == ModeTrackDrawingRect )

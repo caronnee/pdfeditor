@@ -1094,16 +1094,16 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 		break;
 	case ModeFindLastFont:
 		{
-			double x =  point.x(),y = point.y();
+			double x = point.x(),y = point.y();
 			displayparams.convertPixmapPosToPdfPos(point.x(),point.y(),x,y);
-			rotatePdf(_page->getRotation(),x,y,false);
+			//rotatePdf(_page->getRotation(),x,y,false);//TODO check
 			_font->addFont(getPreviousFontInPosition(libs::Point(x,y)));
 			//find last TM
 			float w[2];
 			getPreviousTmInPosition(libs::Point(x,y),w);
 			_font->addTm(w[0],w[1]);
 			_font->show();
-			emit addHistory("Font was selected\n");
+			emit addHistory("Font was selected");
 			break;
 		}
 	case ModeChangeAnntation:
@@ -1151,7 +1151,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 #ifdef _DEBUG
 			_annots.back()->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
-			emit addHistory("Position was selected\n");
+			emit addHistory("Position was selected");
 			break;
 		}
 	case ModeImageSelected:
@@ -1160,7 +1160,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			Ops ops;
 			_mousePos = point;
 			double px = point.x(), py=point.y();
-			rotatePdf(_page->getRotation(),px,py,true);
+			//rotatePdf(_page->getRotation(),px,py,true);
 			//HACK - px, py su teraz v PDF poziciach
 			//px, py musime ale zmenit vzhladom na to,ze sa u inline neberie do uvahy displayparams
 
@@ -1177,13 +1177,13 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 					QRect convertedRect = getRectangle(bbox);//PODIVNE
 					_labelPage->drawAndTrackRectangle(convertedRect);
 					_parent->setMode(ModeImageSelected);
-					emit addHistory("Image was selected\n");
+					emit addHistory("Image was selected");
 					break;
 				}
 				ops.pop_back();
 			}
 			if (ops.empty())
-				emit addHistory("No inline image found\n");
+				emit addHistory("No inline image found");
 			break;
 		}
 	case ModeHighlighComment:
@@ -1401,7 +1401,7 @@ void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit 
 	double px=x,py=y;
 	//najdi prvy operator, na ktory bolo kliknute
 	Ops ops;
-	getAtPosition(ops,px,py); //zaplnili sme operator
+	_page->getObjectsAtPosition(ops, libs::Point(px,py)); //zaplnili sme operator
 	//zistime, ze je to text
 	std::string n;
 	if (ops.empty())
@@ -1441,7 +1441,7 @@ void TabPage::setTextData(TextData::iterator & it, TextData::iterator end,shared
 void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka ser space
 {
 	double x = point.x(),y = point.y();
-	rotatePdf(_page->getRotation(),x,y,true);
+	//rotatePdf(_page->getRotation(),x,y,true);
 	if (!_dataReady) //prvykrat, co sme dotkli nejakeho operatora
 	{
 		_mousePos = point;
@@ -1450,7 +1450,7 @@ void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka s
 		return;
 	}//sTextIt
 	Ops ops;
-	getAtPosition(ops,x,y);
+	_page->getObjectsAtPosition(ops, libs::Point(x,y));
 	if (ops.empty())
 		return;
 	bool found;
@@ -1462,8 +1462,8 @@ void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka s
 	double xEnd;
 	TextData::iterator move = sTextMarker;
 	move->clear();
-	double xxPoint =  point.x(),yyPoint=point.y();
-	double xxOrig =  _mousePos.x(),yyOrig=_mousePos.y();
+	double xxPoint = point.x(),yyPoint=point.y();
+	double xxOrig = _mousePos.x(),yyOrig=_mousePos.y();
 	rotatePdf(_page->getRotation(),xxPoint,yyPoint,true);
 	rotatePdf(_page->getRotation(),xxOrig,yyOrig,true);
 
@@ -1523,10 +1523,11 @@ void TabPage::highlight()
 	{
 		x1= first->GetPreviousStop();
 		y1 = first->_ymin;
-		rotatePdf(_page->getRotation(),x1,y1,false);
+		//rotatePdf(_page->getRotation(),x1,y1,false);
 		x2 = first->GetNextStop();
 		y2 = first->_ymax;
-		rotatePdf(_page->getRotation(),x2,y2,false);
+		rotatePdf(-_page->getRotation(),x1,y1,false);
+		rotatePdf(-_page->getRotation(),x2,y2,false);
 		QRect r(min(x1,x2),min(y1,y2), fabs(x2-x1),fabs(y1-y2));
 //		if (r.width() > first->_charSpace)
 			region.append(r);
@@ -1755,15 +1756,18 @@ void TabPage::rotatePdf(int angle, double& x,double& y, bool fromPixmap) //dosta
 		::rotate(angle,x,y);
 	switch (angle/90)
 	{
-	case 1: //musime menit X os
-		x = fabs(resx) - fabs(x);
-		break;
-	case 2:
-		x = fabs(resx) - fabs(x);
-		y = fabs(resy) - fabs(y);
-		break;
 	case 3:
-		y = fabs(resy) - fabs(y);
+	case 1: //musime menit X os
+		{
+
+			float oY = fabs(x);
+			y = fabs(resx) - fabs(x);
+			x = fabs(resy) - fabs(oY);
+			break;
+		}
+	case 2:
+		//x = fabs(resx) - fabs(x);
+		//y = fabs(resy) - fabs(y);
 		break;
 	default:
 		break;
@@ -1778,7 +1782,7 @@ void TabPage::showClicked(int x, int y)
 	double px=x, py=y;
 	//convert
 	//toPdfPos(x,y, px, py);
-	rotatePdf(_page->getRotation(),px,py,true);
+	//rotatePdf(_page->getRotation(),px,py,true);
 
 	Ops ops;
 	_page->getObjectsAtPosition(ops, libs::Point(px,py));
@@ -1798,8 +1802,8 @@ void TabPage::showClicked(int x, int y)
 		libs::Rectangle b = ops[i]->getBBox();
 
 		QColor color(55, 55, 200,100);
-		rotatePdf(_page->getRotation(),b.xleft,b.yleft,false);
-		rotatePdf(_page->getRotation(),b.xright,b.yright,false);
+		//rotatePdf(_page->getRotation(),b.xleft,b.yleft,false);
+		//rotatePdf(_page->getRotation(),b.xright,b.yright,false);
 		_labelPage->fillRect( b.xleft, b.yleft, b.xright, b.yright, color );
 		emit addHistory(QString("Selected operator ") + s.c_str() +"\n");
 	}
