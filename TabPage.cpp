@@ -350,7 +350,7 @@ void TabPage::zoom( int zoomscale )
 	float dpiy =_labelPage->logicalDpiY();
 	displayparams.hDpi = dpix * scale;
 	displayparams.vDpi = dpiy * scale;
-	emit addHistory( QString("Rezoomed to ") + QVariant(scale).toString() + "\n" );
+	emit addHistory( QString("Rezoomed to ") + QVariant(scale).toString() );
 	clearSelected();
 	redraw();
 }

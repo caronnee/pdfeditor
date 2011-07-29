@@ -180,6 +180,8 @@ void DisplayPage::setImg() //again st from image, for removing highligh and so
 {
 #ifdef _DEBUG
 	fillRect(_interactive,QColor(0,255, 0, 50));
+#else 
+	fillRect(QList<QRect>(),QColor(0,255, 0, 50));
 #endif // _DEBUG
 	this->adjustSize();
 	_size = this->pixmap()->size();
