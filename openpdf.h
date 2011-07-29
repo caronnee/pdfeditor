@@ -34,7 +34,6 @@ public:
 signals:
 	void ModeChangedSignal(HelptextIcon);
 public slots:
-	void about();
 	void initAnalyze();
 	void search(QString s, bool v);
 	void deleteSelectedText();

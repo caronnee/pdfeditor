@@ -44,8 +44,7 @@
 
 #include <QProgressBar>
 #include<xpdf/xpdf/SplashOutputDev.h>
-//#include <kernel/carray.h>
-
+#include "ui_aboutDialog.h"
 
 //operatory, ktore musim zaklonovat, ked chcem pohnut textom
 #define ZOOM_AFTER_HACK 4
@@ -119,7 +118,7 @@ bool TabPage::containsOperator(std::string wanted)
 }
 static SplashColor paperColor = {0xff,0xff,0xff};
 
-TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),_allowResize(0),splash (splashModeBGR8, 4, gFalse, paperColor)
+TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),_allowResize(0),splash (splashModeBGR8, 4, gFalse, paperColor),aboutDialog(this)
 {
 	_pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 	debug::changeDebugLevel(10000);
@@ -139,7 +138,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	_labelPage = new DisplayPage(this);
 	_cmts = new Comments(_parent->Author());
 	_cmts->setHColor(_parent->getHColor());
-
+	aboutDialogUI.setupUi(&aboutDialog);
 	_image = new InsertImage(NULL);
 	this->ui.scrollArea->setWidget(_labelPage);	
 	//this->ui.scrollArea->set
@@ -151,6 +150,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 		QVariant s(i);
 		this->ui.zoom->addItem( s.toString()+" %",s);
 	}
+	connect(this->ui.documentInfo, SIGNAL(pressed()), this, SLOT(about()));
 
 	connect(this->ui.commit, SIGNAL(pressed()), this, SLOT(commitRevision()));
 	connect( this->ui.pageInfo, SIGNAL(returnPressed()),this, SLOT(setPageFromInfo()));
@@ -238,6 +238,49 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	_parent->setMode(oldMode);
 	//search("oftwar",true);
 	//changeSelectedText();
+}
+void TabPage::about()
+{
+	//naplnime metadatom
+	aboutDialogUI.info->clear();
+	QString message("FullPath: ");
+	message += _name;
+	message += "\n\n";
+	//bookmarky
+	message += "Contains bookmarks: ";
+	if (_pdf->getDictionary()->containsProperty("Outlines"))
+	{
+		message += "Yes, number od top-level items: ";
+		shared_ptr<CDict> dict = _pdf->getDictionary()->getProperty<CDict>("Outlines");
+		QVariant v(utils::getIntFromDict("Count",dict));
+		message += v.toString();
+	}
+	else
+		message += "No";
+	message += "\n\n";
+	//informacie z metadat,
+	if (_pdf->getDictionary()->containsProperty("Metadata"))
+	{
+		message += "Contains metadata:";
+		shared_ptr<CDict> dict = _pdf->getDictionary()->getProperty<CDict>("MetaData");
+		std::vector<std::string> conts;
+		dict->getAllPropertyNames(conts);
+		for ( int i = 0; i< conts.size(); i++)
+		{
+			message += QString("\t") + conts[i].c_str();
+			std::string val;
+			dict->getProperty(conts[i])->getStringRepresentation(val);
+			message += val.c_str();
+			message += "\n";
+		}
+	}
+	else
+		message += "No metadata\n\n";
+	//pocet revizii
+	message += "Number of revision :";
+	message +=QVariant(_pdf->getRevisionsCount()).toString();
+	aboutDialogUI.info->setText(message);
+	aboutDialog.exec();
 }
 void TabPage::showAnnotation(int level)
 {
@@ -3573,11 +3616,11 @@ void TabPage::initAnalyze()
 {
 	if (this->ui.analyzeTree->topLevelItemCount()!=0)
 		return; //was initialized. TODO - inicializovat znova?
-	emit addHistory("Tree for analyzation loaded\n");
+	emit addHistory("Tree for analyzation loaded");
 	QStringList list;
 	list << "Name" << "Type" << "Value" << "Reference";
 	this->ui.analyzeTree->setHeaderLabels(list);
-	this->ui.analyzeTree->setColumnCount(4); //name type value, indirect prop
+	//this->ui.analyzeTree->setColumnCount(4); //name type value, indirect prop
 	AnalyzeItem * b = new AnalyzeItem(this->ui.analyzeTree, _pdf->getDictionary());
 	this->ui.analyzeTree->addTopLevelItem(b);
 	b->setText(0,"DocCatalog");

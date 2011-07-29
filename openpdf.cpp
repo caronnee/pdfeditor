@@ -193,8 +193,8 @@ void OpenPdf::saveAs()
 
 void OpenPdf::open(QString name)
 {
-	TabPage * page;
-#ifndef _DEBUG
+	TabPage * page = NULL;
+#if _DEBUG
 	try
 #endif
 	{
@@ -218,29 +218,25 @@ void OpenPdf::open(QString name)
 		assert(page->checkLinearization());
 		setCurrentIndex(count() -1);
 	}
-#ifndef _DEBUG
+#if _DEBUG
 	catch (PdfOpenException e)
 	{
 		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
-		delete page;
 
 	}
 	catch (PdfException e)
 	{
 		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
-		delete page;
 
 	//	return;
 	}
 	catch (PermissionException)
 	{
 		QMessageBox::warning(this, "Encrypted document",QString("Unable to open file ( it is ecnrypted )") , QMessageBox::Ok, QMessageBox::Ok);
-		delete page;
 	}
 	catch (std::exception e)
 	{
 		QMessageBox::warning(this, "Unexpected exception",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
-		delete page;
 	}
 #endif // _DEBUG
 
@@ -279,10 +275,6 @@ void OpenPdf::pageUp()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->pageUp();
-}
-void OpenPdf::about()
-{
-	
 }
 void OpenPdf::pageDown()
 {

@@ -56,6 +56,20 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QToolButton" name="documentInfo">
+        <property name="toolTip">
+         <string>Information about opened PDF document</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="pdf.qrc">
+          <normaloff>:/images/about.png</normaloff>:/images/about.png</iconset>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -305,7 +319,6 @@
       <property name="mouseTracking">
        <bool>true</bool>
       </property>
-      <zorder>widget</zorder>
      </widget>
     </widget>
    </item>

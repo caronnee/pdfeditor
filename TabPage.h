@@ -43,6 +43,7 @@ using namespace pdfobjects;
 
 
 #include "operatorData.h"
+#include "ui_aboutDialog.h"
 
 typedef std::list<OperatorData> TextData;
 
@@ -135,7 +136,6 @@ private: //variables
 	QRegion _region;
 	QString _name; //name of the file to be opened
 	FontWidget * _font;	
-	//PdfOp _workingOp;
 	IsType typeChecker;
 	pdfobjects::DisplayParams displayparams;	
 	boost::shared_ptr<pdfobjects::CPdf> _pdf;
@@ -146,6 +146,9 @@ private: //variables
 	bool _dataReady; //pouzivane vseobecne, kedy sa to hodi
 	bool _selected;
 	PdfOp _selectedImage;
+
+	Ui::AboutDialog aboutDialogUI;
+	QDialog aboutDialog;
 
 	CPage::Annotations _annots;
 	DisplayPage * _labelPage;
@@ -304,9 +307,6 @@ private slots:
 
 	/// Saves revision-specific pdf to new pdf
 	void exportRevision();
-
-
-
 	void loadBookmark( QTreeWidgetItem * item );
 	void insertTextAnnot(PdfAnnot a);
 	void findLastFontMode();
@@ -344,7 +344,7 @@ public slots:
 	void setFirstPage();
 	void setLastPage();
 	void setPageFromInfo();
-
+	void about();
 public:
 	void resizeEvent(QResizeEvent * event);
 

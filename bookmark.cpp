@@ -135,7 +135,11 @@ void AnalyzeItem::Init()
 		break;
 	case pInt:
 		setText(1, "Integer");
-		setText(2, QString(utils::getValueFromSimple<CInt>(_prop)));
+		setText(2, QVariant(utils::getValueFromSimple<CInt>(_prop)).toString());
+		break;
+	case pBool:
+		setText(1, "Boolean");
+		setText(2, QVariant(utils::getValueFromSimple<CBool>(_prop)).toString());
 		break;
 	default:
 		setText(1,"Operator");//TODO nejaky popisok loadujuci sa zo suboru

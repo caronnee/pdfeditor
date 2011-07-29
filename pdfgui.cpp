@@ -41,22 +41,21 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect(this->ui.searchButton, SIGNAL(pressed()), _search, SLOT(show()));
 
 //////////////////////////////////MENU////////////////////////////////////////
-	connect( this->ui.actionOpen, SIGNAL(activated()), this->ui.openedPdfs, SLOT(openAnotherPdf()));
-	connect( this->ui.actionAbout, SIGNAL(activated()), this->ui.openedPdfs, SLOT(about()));
-	connect( this->ui.actionPage_down, SIGNAL(activated()), this->ui.openedPdfs, SLOT(pageDown()));
-	connect( this->ui.actionPage_up, SIGNAL(activated()), this->ui.openedPdfs, SLOT(pageUp()));
-	connect( this->ui.actionRotate_left, SIGNAL(activated()), this->ui.openedPdfs, SLOT(rotate()));
-	connect( this->ui.actionRotate_right, SIGNAL(activated()), this->ui.openedPdfs, SLOT(derotate()));
-	connect( this->ui.actionDelete_Page, SIGNAL(activated()), this->ui.openedPdfs, SLOT(deletePage()));
-	connect( this->ui.actionAnalyze, SIGNAL(activated()), this->ui.openedPdfs, SLOT(analyze()));
-	connect( this->ui.actionAdd_page, SIGNAL(activated()), this->ui.openedPdfs, SLOT(insertEmpty()));
-	connect( this->ui.actionExport_text, SIGNAL(activated()), this->ui.openedPdfs, SLOT(getText()));
-	connect( this->ui.actionSave, SIGNAL(activated()), this->ui.openedPdfs, SLOT(save()));
-	connect( this->ui.actionSaveCopy, SIGNAL(activated()), this->ui.openedPdfs, SLOT(saveAs()));
+	connect( this->ui.actionOpen, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(openAnotherPdf()));
+	connect( this->ui.actionAbout, SIGNAL(triggered()), &aboutDialog, SLOT(open()));
+	connect( this->ui.actionPage_down, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(pageDown()));
+	connect( this->ui.actionPage_up, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(pageUp()));
+	connect( this->ui.actionRotate_left, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(rotate()));
+	connect( this->ui.actionRotate_right, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(derotate()));
+	connect( this->ui.actionDelete_Page, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(deletePage()));
+	connect( this->ui.actionAnalyze, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(initAnalyze()));
+	connect( this->ui.actionAdd_page, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(insertEmpty()));
+	connect( this->ui.actionExport_text, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(getText()));
+	connect( this->ui.actionSave, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(save()));
+	connect( this->ui.actionSaveCopy, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(saveAs()));
 
 //////////////////////////////////////////////////////////////////////////
 
-	//connect(this->ui.aboutButton, SIGNAL(pressed()), &aboutDialog, SLOT(open()) );
 	connect( this->ui.debugButton, SIGNAL(pressed()), &_debugWidget, SLOT(show()));
 	connect( this->ui.searchButton, SIGNAL(pressed()), _search, SLOT(show()));
 //	connect( this->ui.openButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(openAnotherPdf()));
