@@ -999,6 +999,7 @@
      </property>
      <addaction name="actionRotate_left"/>
      <addaction name="actionRotate_right"/>
+     <addaction name="actionFullScreen"/>
     </widget>
     <widget class="QMenu" name="menuPages">
      <property name="title">
@@ -1027,6 +1028,7 @@
     <addaction name="menuView"/>
     <addaction name="actionAnalyze"/>
     <addaction name="actionExport_text"/>
+    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -1143,6 +1145,19 @@
    </property>
    <property name="text">
     <string>Add page</string>
+   </property>
+  </action>
+  <action name="actionFullScreen">
+   <property name="text">
+    <string>FullScreen</string>
+   </property>
+   <property name="shortcut">
+    <string>F11</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
    </property>
   </action>
  </widget>

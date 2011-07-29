@@ -122,6 +122,7 @@ class TabPage : public QWidget
 	Q_OBJECT
 
 private: //variables
+	int _locked;
 	SplashOutputDev splash;
 	int _acceptedType;
 	OpenPdf * _parent;
@@ -345,9 +346,10 @@ public slots:
 	void setLastPage();
 	void setPageFromInfo();
 	void about();
+	void addZoom();
+	void minusZoom();
 public:
 	void resizeEvent(QResizeEvent * event);
-
 };
 
 #endif

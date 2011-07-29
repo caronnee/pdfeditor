@@ -276,6 +276,7 @@ void OpenPdf::pageUp()
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->pageUp();
 }
+
 void OpenPdf::pageDown()
 {
 	/*timer.setSingleShot(false);

@@ -100,9 +100,11 @@ public slots:
 	QColor getColor();
 	QColor getHColor();
 	void setModeInsertLinkAnotation();
+
 signals:
 	void OpenSuccess(QString);
 public:
 	std::string Author()const;
+
 	//void resizeEvent(QResizeEvent *event);
 };

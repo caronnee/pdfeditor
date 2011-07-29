@@ -41,6 +41,9 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect(this->ui.searchButton, SIGNAL(pressed()), _search, SLOT(show()));
 
 //////////////////////////////////MENU////////////////////////////////////////
+
+	connect( this->ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
+	connect( this->ui.actionFullScreen, SIGNAL(triggered()), this, SLOT(showFullScreened()) );
 	connect( this->ui.actionOpen, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(openAnotherPdf()));
 	connect( this->ui.actionAbout, SIGNAL(triggered()), &aboutDialog, SLOT(open()));
 	connect( this->ui.actionPage_down, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(pageDown()));
@@ -146,6 +149,13 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	}
 	//--------------------
 	fclose(f);
+}
+void pdfGui::showFullScreened()
+{
+	if (isFullScreen())
+		showNormal();
+	else
+		showFullScreen();
 }
 void pdfGui::closeEvent( QCloseEvent *event )
 {

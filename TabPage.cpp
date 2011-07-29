@@ -118,7 +118,7 @@ bool TabPage::containsOperator(std::string wanted)
 }
 static SplashColor paperColor = {0xff,0xff,0xff};
 
-TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),_allowResize(0),splash (splashModeBGR8, 4, gFalse, paperColor),aboutDialog(this)
+TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),_allowResize(0),splash (splashModeBGR8, 4, gFalse, paperColor),aboutDialog(this),_locked(0)
 {
 	_pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 	debug::changeDebugLevel(10000);
@@ -151,7 +151,8 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 		this->ui.zoom->addItem( s.toString()+" %",s);
 	}
 	connect(this->ui.documentInfo, SIGNAL(pressed()), this, SLOT(about()));
-
+	connect(this->ui.plusZoom, SIGNAL(pressed()), this, SLOT(addZoom()) );
+	connect(this->ui.minusZoom, SIGNAL(pressed()), this, SLOT(minusZoom()) );
 	connect(this->ui.commit, SIGNAL(pressed()), this, SLOT(commitRevision()));
 	connect( this->ui.pageInfo, SIGNAL(returnPressed()),this, SLOT(setPageFromInfo()));
 	connect (this->ui.firstPage, SIGNAL(pressed()), this, SLOT(setFirstPage()));
@@ -2072,8 +2073,6 @@ void TabPage::redraw()
 }
 void TabPage::JustDraw()
 {
-	
-
 	/*Ops oTest;
 	page->getObjectsAtPosition(oTest,libs::Point(229,619));*/
 	// display it = create internal splash bitmap
@@ -3661,4 +3660,31 @@ void TabPage::setPageFromInfo()
 	_page = _pdf->getPage(pos);
 	redraw();
 	updatePageInfoBar();
+}
+
+void TabPage::addZoom()
+{
+	if (_locked)
+		return;
+	_locked++;
+	this->ui.plusZoom->setEnabled(false);
+	int index = ui.zoom->currentIndex();
+	index++;
+	ui.zoom->setCurrentIndex(index);
+	this->ui.plusZoom->setEnabled(true);
+	_locked--;
+}
+
+void TabPage::minusZoom()
+{
+	if (_locked)
+		return;
+	//disable button
+	_locked++;
+	this->ui.minusZoom->setEnabled(false);
+	int index = ui.zoom->currentIndex();
+	index--;
+	ui.zoom->setCurrentIndex(index);
+	this->ui.minusZoom->setEnabled(true);
+	_locked--;
 }
