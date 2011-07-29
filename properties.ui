@@ -136,10 +136,7 @@
         <property name="locale">
          <locale language="English" country="UnitedStates"/>
         </property>
-        <property name="text">
-         <string notr="true"/>
-        </property>
-        <property name="placeholderText">
+        <property name="placeholderText" stdset="0">
          <string notr="true"/>
         </property>
        </widget>
