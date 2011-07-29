@@ -2,7 +2,7 @@
 #include "TabPage.h"
 #include "globalfunctions.h"
 #include "typedefs.h"
-
+#include <ctype.h>
 //created files
 #include "insertpagerange.h"
 #include "tree.h"
@@ -1921,8 +1921,14 @@ void TabPage::getBookMarks()
 		Bookmark * b = new Bookmark(ui.tree);
 		setTree(outline[i],b); //TODO if "first" -> bude dam dalsia sekcia,add "dummy child"
 		this->ui.tree->addTopLevelItem(b);
+#ifdef _DEBUG
+		std::string outText;
+		outline[i]->getStringRepresentation(outText);
+#endif // _DEBUG//utils::getStringFromDict (ip, "Title");
 		std::string name = utils::getStringFromDict(outline[i],"Title");
-		QVariant v(name.c_str());
+		QString nm = QString::fromStdString(name);
+		nm = nm.trimmed();
+		QVariant v(nm);
 		b->setText(0,v.toString());
 		this->ui.progressBar->setValue(i);
 	}
@@ -2970,9 +2976,8 @@ void TabPage::replaceSelectedText(QString by)
 void TabPage::eraseSelectedText()
 {
 	if (!_selected)
-	{
 		return; //staci iba vymazat a vhodne pridat operator \Td
-	}
+
 	float corr = 72.0f/displayparams.vDpi;
 	if (sTextIt == sTextItEnd)
 	{
@@ -2985,6 +2990,8 @@ void TabPage::eraseSelectedText()
 			PdfOperator::Operands operands;
 			std::string e = checkCode(s[2],sTextIt->_op->getFontName());
 			//s[2].toStdString();
+			if(e.empty())
+				return;
 			operands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(e)));
 			PdfOp op = createOperator("Tj",operands); //stejny operator, stejny fot
 			dist = sTextIt->GetNextStop() - sTextIt->_origX;
@@ -3008,6 +3015,10 @@ void TabPage::eraseSelectedText()
 	distX2 *=corr;
 	//najskor musim deletnut tie, ktore urcite nechceme, v dalsom kuse kodu robim replace a nema sa to rado
 	TextData::iterator it = sTextIt;
+	std::string n1 = checkCode(s1,sTextIt->_op->getFontName());
+	std::string n2 = checkCode(s3,sTextIt->_op->getFontName());
+	if ((n1.empty() && !s1.empty())|| (n2.empty()&& !s3.empty()) )
+		return;
 	it++;
 	while (true)
 	{
@@ -3025,7 +3036,7 @@ void TabPage::eraseSelectedText()
 		assert(s3=="");
 		//		PdfOp td = FontWidget::createTranslationTd(distX1,0);
 		//		sTextIt->_op->getContentStream()->insertOperator( sTextIt->_op,td);
-		sTextIt->replaceAllText(checkCode(s1,sTextIt->_op->getFontName())); // povodny operator bude nezmeneny az na to , ze mu
+		sTextIt->replaceAllText(n1); // povodny operator bude nezmeneny az na to , ze mu
 		//td = FontWidget::createTranslationTd(-distX1,0);
 		//insertBefore( td, sTextIt->_op);
 	}
@@ -3035,7 +3046,7 @@ void TabPage::eraseSelectedText()
 		PdfOp op = FontWidget::createTranslationTd(-distX2,0);
 		sTextItEnd->_op->getContentStream()->insertOperator(sTextItEnd->_op,op);
 		op = FontWidget::createTranslationTd(distX2,0);
-		sTextItEnd->replaceAllText(checkCode(s3,sTextIt->_op->getFontName()));
+		sTextItEnd->replaceAllText(n2);
 		insertBefore(op, sTextItEnd->_op);
 	}
 	_selected = false;
@@ -3425,6 +3436,8 @@ void TabPage::loadBookmark( QTreeWidgetItem * item )
 		n = new Bookmark(b);
 		setTree(dict,n); //b ako parent
 		b->addSubsection(n);
+		QString nm = QString::fromStdString (utils::getStringFromDict("Title",dict));
+		nm = nm.trimmed();
 		n->setText(0,utils::getStringFromDict("Title",dict).c_str());
 		p = utils::getReferencedObject( dict->getProperty("Next"));
 		dict = p->getSmartCObjectPtr<CDict>(p);

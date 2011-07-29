@@ -21,13 +21,13 @@ OperatorData::OperatorData(PdfOp op, DisplayParams& displayParams) : _begin(0), 
 	_op->getFontText(test);
 	_text = QString::fromStdWString(test); //TODO pozor na leak
 	libs::Rectangle r = _op->getBBox();
+	rotatePdf(displayParams,r.xleft,r.yleft,true);
+	rotatePdf(displayParams,r.xright,r.yright,true);
 
 	_ymin = min<double>(r.yleft, r.yright);
 	_ymax = max<double>(r.yleft, r.yright);
 	_begin = min<float>(r.xleft, r.xright);
 	_end = max<float>(r.xleft, r.xright);
-	rotatePdf(displayParams,_begin,_ymin,true);
-	rotatePdf(displayParams,_end,_ymax,true);
 
 	_origX = _begin;
 	_origX2 = _end; 
@@ -51,6 +51,7 @@ OperatorData::OperatorData(PdfOp op, DisplayParams& displayParams) : _begin(0), 
 		i++;
 		bool ok = false;
 		libs::Point p = _op->getPosition(i,ok);
+		rotate(displayParams.rotate, p.x,p.y);
 		if (!ok)
 			break;
 		_letters.push_back( _letters.back() + p.x*displayParams.vDpi/72); //kde zacina tato pozicia, nezaujima nas y

@@ -230,6 +230,8 @@ std::string makeHexString(Iter it, Iter end)
 		snprintf(hexstr, sizeof(hexstr), "%02x", (unsigned)(*it)&0xff);
 		tmp+=hexstr;
 	}
+	if(tmp[0]==(char)0xfe)
+		assert(false);
 	return tmp;
 }
 
