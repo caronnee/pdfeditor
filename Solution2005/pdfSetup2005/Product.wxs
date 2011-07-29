@@ -38,9 +38,8 @@
             <File Id="imgUppage.png" Name="uppage.png"  />
             <File Id="imgView.png" Name="view.png"  />
             <File Id="imgZoom" Name="zoom.png"  />
-            <File Id="imgDecrypt_icon" Name="decrypt_icon.jpg"  />
-            <File Id="imgOperator" Name="operator.jpg"  />
-            <File Id="imgUnknown" Name="unknown.jpg"  />
+            <File Id="imgDecrypt_icon" Name="decrypt_icon.png"  />
+            <File Id="imgOperator" Name="operator.png"  />
             <File Id="imgAddPage" Name="addpage.png" />
           </Component>
         </Directory>

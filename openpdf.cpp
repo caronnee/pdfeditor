@@ -193,11 +193,12 @@ void OpenPdf::saveAs()
 
 void OpenPdf::open(QString name)
 {
+	TabPage * page;
 #ifndef _DEBUG
 	try
 #endif
 	{
-		TabPage * page = new TabPage(this, name);
+		page = new TabPage(this, name);
 		this->addTab(page,name);
 		emit OpenSuccess(name);
 		setCurrentIndex(count() -1);

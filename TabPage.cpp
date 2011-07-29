@@ -3015,9 +3015,11 @@ void TabPage::eraseSelectedText()
 	distX2 *=corr;
 	//najskor musim deletnut tie, ktore urcite nechceme, v dalsom kuse kodu robim replace a nema sa to rado
 	TextData::iterator it = sTextIt;
+	QString s1,s2,s3;
+
 	std::string n1 = checkCode(s1,sTextIt->_op->getFontName());
 	std::string n2 = checkCode(s3,sTextIt->_op->getFontName());
-	if ((n1.empty() && !s1.empty())|| (n2.empty()&& !s3.empty()) )
+	if ((n1.empty() && !s1.isEmpty())|| (n2.empty()&& !s3.isEmpty()) )
 		return;
 	it++;
 	while (true)
@@ -3029,7 +3031,6 @@ void TabPage::eraseSelectedText()
 		it++;
 	}
 
-	QString s1,s2,s3;
 	{
 		//uchovame to, co z praveho operatoru zostalo
 		sTextIt->split(s1,s2,s3); //splitneme

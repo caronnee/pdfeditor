@@ -4,6 +4,7 @@
 #include <QtGui/QMainWindow>
 #include <QCloseEvent>
 #include <QDialog>
+#include "Search.h"
 
 #include "openpdf.h"
 #include "ui_pdfgui.h"
@@ -20,6 +21,7 @@
 #undef NO_CMAP
 
 #include "ui_aboutDialog.h"
+#include "ui_debugFrame.h"
 
 class pdfGui : public QMainWindow
 {
@@ -29,7 +31,9 @@ class pdfGui : public QMainWindow
 
 	QShortcut * _searchShortCut;
 	QDialog aboutDialog;
+	QWidget _debugWidget;
 	Ui::AboutDialog aboutDialogUI;
+	Ui::DebugFrame _debugFrame;
 public:
 	pdfGui(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~pdfGui();

@@ -20,7 +20,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Pdf editor v1.17</string>
+   <string>Pdf editor v1.19</string>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -175,41 +175,6 @@
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="contentButton">
-         <property name="minimumSize">
-          <size>
-           <width>60</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>show pdf manipulation operations</string>
-         </property>
-         <property name="text">
-          <string>O&amp;perations </string>
-         </property>
-         <property name="icon">
-          <iconset resource="pdf.qrc">
-           <normaloff>:/images/content.png</normaloff>:/images/content.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-         <attribute name="buttonGroup">
-          <string>mainGroup</string>
-         </attribute>
         </widget>
        </item>
        <item>
@@ -414,9 +379,6 @@
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
-         <attribute name="buttonGroup">
-          <string>mainGroup</string>
-         </attribute>
         </widget>
        </item>
        <item>
@@ -507,183 +469,6 @@
           <property name="margin">
            <number>0</number>
           </property>
-          <item>
-           <widget class="QToolButton" name="derotateButton">
-            <property name="toolTip">
-             <string>rotate page left</string>
-            </property>
-            <property name="text">
-             <string>Rotate left</string>
-            </property>
-            <property name="icon">
-             <iconset resource="pdf.qrc">
-              <normaloff>:/images/derotate.png</normaloff>:/images/derotate.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextUnderIcon</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="rotateButton">
-            <property name="toolTip">
-             <string>rotate page right</string>
-            </property>
-            <property name="text">
-             <string>Rotate right</string>
-            </property>
-            <property name="icon">
-             <iconset resource="pdf.qrc">
-              <normaloff>:/images/rotate.png</normaloff>:/images/rotate.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextUnderIcon</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="insertEmpty">
-            <property name="toolTip">
-             <string>add empty page</string>
-            </property>
-            <property name="text">
-             <string>Add page</string>
-            </property>
-            <property name="icon">
-             <iconset resource="pdf.qrc">
-              <normaloff>:/images/addpage.png</normaloff>:/images/addpage.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextUnderIcon</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="pageUp">
-            <property name="toolTip">
-             <string>move page up</string>
-            </property>
-            <property name="text">
-             <string>Page up</string>
-            </property>
-            <property name="icon">
-             <iconset resource="pdf.qrc">
-              <normaloff>:/images/uppage.png</normaloff>:/images/uppage.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextUnderIcon</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="pageDown">
-            <property name="toolTip">
-             <string>move page down</string>
-            </property>
-            <property name="text">
-             <string>Page down</string>
-            </property>
-            <property name="icon">
-             <iconset resource="pdf.qrc">
-              <normaloff>:/images/downpage.png</normaloff>:/images/downpage.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextUnderIcon</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="deletePage">
-            <property name="toolTip">
-             <string>delete page</string>
-            </property>
-            <property name="text">
-             <string>Delete page</string>
-            </property>
-            <property name="icon">
-             <iconset resource="pdf.qrc">
-              <normaloff>:/images/deletepage.png</normaloff>:/images/deletepage.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextUnderIcon</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="exportButton">
-            <property name="toolTip">
-             <string>export text</string>
-            </property>
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>Export text</string>
-            </property>
-            <property name="icon">
-             <iconset resource="pdf.qrc">
-              <normaloff>:/images/TextConvert.png</normaloff>:/images/TextConvert.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextUnderIcon</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
          </layout>
         </widget>
        </item>
@@ -871,12 +656,22 @@
         </widget>
        </item>
        <item>
-        <widget class="Search" name="search" native="true">
-         <property name="minimumSize">
+        <widget class="QToolButton" name="searchButton">
+         <property name="text">
+          <string>Search</string>
+         </property>
+         <property name="icon">
+          <iconset resource="pdf.qrc">
+           <normaloff>:/images/search.png</normaloff>:/images/search.png</iconset>
+         </property>
+         <property name="iconSize">
           <size>
-           <width>200</width>
-           <height>0</height>
+           <width>32</width>
+           <height>32</height>
           </size>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
         </widget>
        </item>
@@ -1264,129 +1059,6 @@
      </widget>
     </item>
     <item>
-     <widget class="QFrame" name="debugFrame">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
-       <item>
-        <widget class="QToolButton" name="analyzeButton">
-         <property name="toolTip">
-          <string>create analyze tree</string>
-         </property>
-         <property name="text">
-          <string>Analyze!</string>
-         </property>
-         <property name="icon">
-          <iconset resource="pdf.qrc">
-           <normaloff>:/images/analyze.png</normaloff>:/images/analyze.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="refreshButton">
-         <property name="toolTip">
-          <string>redraw page</string>
-         </property>
-         <property name="text">
-          <string>Refresh</string>
-         </property>
-         <property name="icon">
-          <iconset resource="pdf.qrc">
-           <normaloff>:/images/refresh.png</normaloff>:/images/refresh.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="opSelect">
-         <property name="toolTip">
-          <string>select operators</string>
-         </property>
-         <property name="text">
-          <string>Operators</string>
-         </property>
-         <property name="icon">
-          <iconset resource="pdf.qrc">
-           <normaloff>:/images/operator.png</normaloff>:/images/operator.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="saveEncodedButton">
-         <property name="toolTip">
-          <string>save decoded</string>
-         </property>
-         <property name="text">
-          <string>&amp;Decode</string>
-         </property>
-         <property name="icon">
-          <iconset resource="pdf.qrc">
-           <normaloff>:/images/decrypt_icon.png</normaloff>:/images/decrypt_icon.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_6">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
      <widget class="QFrame" name="settingFrame">
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
@@ -1395,6 +1067,129 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QFrame" name="debugFrame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QToolButton" name="analyzeButton">
+            <property name="toolTip">
+             <string>create analyze tree</string>
+            </property>
+            <property name="text">
+             <string>Analyze!</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/analyze.png</normaloff>:/images/analyze.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="refreshButton">
+            <property name="toolTip">
+             <string>redraw page</string>
+            </property>
+            <property name="text">
+             <string>Refresh</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/refresh.png</normaloff>:/images/refresh.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="opSelect">
+            <property name="toolTip">
+             <string>select operators</string>
+            </property>
+            <property name="text">
+             <string>Operators</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/operator.png</normaloff>:/images/operator.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="saveEncodedButton">
+            <property name="toolTip">
+             <string>save decoded</string>
+            </property>
+            <property name="text">
+             <string>&amp;Decode</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/decrypt_icon.png</normaloff>:/images/decrypt_icon.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
@@ -1466,9 +1261,169 @@
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>878</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuView">
+     <property name="title">
+      <string>View</string>
+     </property>
+     <addaction name="actionRotate_left"/>
+     <addaction name="actionRotate_right"/>
+    </widget>
+    <widget class="QMenu" name="menuPages">
+     <property name="title">
+      <string>Pages</string>
+     </property>
+     <addaction name="actionPage_up"/>
+     <addaction name="actionPage_down"/>
+     <addaction name="actionDelete_Page"/>
+     <addaction name="actionAdd_page"/>
+    </widget>
+    <widget class="QMenu" name="menuOpen_recent">
+     <property name="title">
+      <string>Open recent</string>
+     </property>
+     <property name="icon">
+      <iconset resource="pdf.qrc">
+       <normaloff>:/images/open.png</normaloff>:/images/open.png</iconset>
+     </property>
+     <addaction name="separator"/>
+    </widget>
+    <addaction name="actionOpen"/>
+    <addaction name="menuOpen_recent"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSaveCopy"/>
+    <addaction name="menuPages"/>
+    <addaction name="menuView"/>
+    <addaction name="actionAnalyze"/>
+    <addaction name="actionExport_text"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuAbout"/>
+  </widget>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="pdf.qrc">
+     <normaloff>:/images/open.png</normaloff>:/images/open.png</iconset>
+   </property>
    <property name="text">
     <string>Open</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="pdf.qrc">
+     <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionSaveCopy">
+   <property name="icon">
+    <iconset resource="pdf.qrc">
+     <normaloff>:/images/savecopy.png</normaloff>:/images/savecopy.png</iconset>
+   </property>
+   <property name="text">
+    <string>SaveCopy</string>
+   </property>
+  </action>
+  <action name="actionAnalyze">
+   <property name="icon">
+    <iconset resource="pdf.qrc">
+     <normaloff>:/images/analyze.png</normaloff>:/images/analyze.png</iconset>
+   </property>
+   <property name="text">
+    <string>Analyze</string>
+   </property>
+  </action>
+  <action name="actionRotate_left">
+   <property name="icon">
+    <iconset resource="pdf.qrc">
+     <normaloff>:/images/derotate.png</normaloff>:/images/derotate.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rotate left</string>
+   </property>
+  </action>
+  <action name="actionRotate_right">
+   <property name="icon">
+    <iconset resource="pdf.qrc">
+     <normaloff>:/images/rotate.png</normaloff>:/images/rotate.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rotate right</string>
+   </property>
+  </action>
+  <action name="actionPage_up">
+   <property name="icon">
+    <iconset resource="pdf.qrc">
+     <normaloff>:/images/uppage.png</normaloff>:/images/uppage.png</iconset>
+   </property>
+   <property name="text">
+    <string>Page up</string>
+   </property>
+  </action>
+  <action name="actionPage_down">
+   <property name="icon">
+    <iconset resource="pdf.qrc">
+     <normaloff>:/images/downpage.png</normaloff>:/images/downpage.png</iconset>
+   </property>
+   <property name="text">
+    <string>Page down</string>
+   </property>
+  </action>
+  <action name="actionDelete_Page">
+   <property name="icon">
+    <iconset resource="pdf.qrc">
+     <normaloff>:/images/deletepage.png</normaloff>:/images/deletepage.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete page</string>
+   </property>
+  </action>
+  <action name="actionExport_text">
+   <property name="icon">
+    <iconset resource="pdf.qrc">
+     <normaloff>:/images/TextConvert.png</normaloff>:/images/TextConvert.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export text</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="pdf.qrc">
+     <normaloff>:/images/about.png</normaloff>:/images/about.png</iconset>
+   </property>
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionAdd_page">
+   <property name="icon">
+    <iconset resource="pdf.qrc">
+     <normaloff>:/images/addpage.png</normaloff>:/images/addpage.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add page</string>
    </property>
   </action>
  </widget>
@@ -1499,12 +1454,6 @@
     <slot>print()</slot>
    </slots>
   </customwidget>
-  <customwidget>
-   <class>Search</class>
-   <extends>QWidget</extends>
-   <header location="global">Search.h</header>
-   <container>1</container>
-  </customwidget>
  </customwidgets>
  <resources>
   <include location="pdf.qrc"/>
@@ -1523,22 +1472,6 @@
     <hint type="destinationlabel">
      <x>221</x>
      <y>269</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>contentButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>contentFrame</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>259</x>
-     <y>37</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>438</x>
-     <y>100</y>
     </hint>
    </hints>
   </connection>
@@ -1603,22 +1536,6 @@
     <hint type="destinationlabel">
      <x>438</x>
      <y>387</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>debugButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>debugFrame</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>525</x>
-     <y>37</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>438</x>
-     <y>324</y>
     </hint>
    </hints>
   </connection>

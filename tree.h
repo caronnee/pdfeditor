@@ -128,15 +128,12 @@ public:
 			delete t; //TODO check
 		}
 	}
-	Tree() 
-	{ 
-		_position = -1;
-		_root= NULL;
-		_actual = NULL;
-		_begin = 0;
-		_end = 0;
-		_tokens = -1;
-	}
+	Tree() : _regexp(false),_position (-1),_root(NULL),
+		_actual (NULL),
+		_begin (0),
+		_end (0),
+		_tokens(-1)
+	{}
 	~Tree() { Clear(); }
 	void setPattern(QString pattern)
 	{
@@ -161,8 +158,15 @@ public:
 	bool checkPattern() { return true; } //TODO dorobit na checkovanie, ci je to v spravnom tvare, tabulka pre preddefinovanie, kam sa ma skocit
 
 private:
+	bool _regexp;
 	void setAccept(QString pattern, int & i)
 	{
+		if (!_regexp)
+		{
+			_actual = new Accept(pattern[i],_root);
+			i++;
+			return;
+		}
 		if (pattern[i] == QChar('*'))
 		{
 			_actual = new AcceptRange(pattern[0],0,~0,_root);

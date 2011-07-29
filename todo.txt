@@ -171,16 +171,18 @@ FIXED export text nerozoznava dobre medzery
 FIXED delete potrebuje TD pred operator
 FIXED -- change annotation
 FIXED -- samostatny dialog pre highlight a pre comment ( highlihgt zmenit len farbu a text, comment zmenit iva text)
-
+WONT FIX-- check linearization
+FIXED -- pri loadovani pridat progress bar
+FIXED -- tooltips pre buttony
+----------------------BUGS---------------------
+-- pri hladani pridat progress bar
 -- vyhladaj cele slovo, vyhladaj ignore-case, volby
 -- search novy thread ( pre zastavenie);
 -- loader na finish -> hide, on init->hide, on save
 -- skin pre fontwidget, image a anotacie - pohybovatelna bublina
 -- samostatna obrazovka na settings
--- check linearization
--- pri hladani pridat progress bar
--- pri loadovani pridat progress bar
--- tooltips pre buttony
--------------------------------------------
 -- insert rotovaneho obrazka- rotuje sa okolo pociatku, nevyzera to dobre. Malo by sa zorotovat do boxu
 QT single application + otvarat vsetko v tomto jednom
+vyhladava len cele slova (Page 1)
+vklada v Algebra PDF 3 riadky nizsie
+regularne vyrazy
