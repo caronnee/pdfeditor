@@ -22,6 +22,9 @@
 
 #include "ui_aboutDialog.h"
 #include "ui_debugFrame.h"
+#include "ui_textFrame.h"
+#include "ui_imageFrame.h"
+#include "ui_annotationFrame.h"
 
 class pdfGui : public QMainWindow
 {
@@ -31,14 +34,23 @@ class pdfGui : public QMainWindow
 
 	QShortcut * _searchShortCut;
 	QDialog aboutDialog;
-	QWidget _debugWidget;
 	Ui::AboutDialog aboutDialogUI;
+
+	QWidget _debugWidget;
 	Ui::DebugFrame _debugFrame;
+
+	QWidget _annotationFrame;
+	Ui::AnnotationFrame _annotationFrameUI;
+
+	QWidget _imageFrame;
+	Ui::ImageFrame _imageFrameUI;
+
+	QWidget _textFrame;
+	Ui::TextFrame _textFrameUI;
 public:
 	pdfGui(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~pdfGui();
 	void closeEvent( QCloseEvent *event );
-	
 
 private:
 	Search * _search;

@@ -1019,6 +1019,8 @@ void TabPage::insertAnnotation(PdfAnnot a)
 //}
 void TabPage::raiseChangeSelectedText()
 {
+	if (!_selected)
+		return;
 	QString s,s1,s2,s3;
 	TextData::iterator it = sTextIt;
 	sTextIt->split(s1,s,s3);
@@ -1073,6 +1075,7 @@ void TabPage::raiseAnnotation(QPoint point)//raise cpmment annotation
 
 void TabPage::createList()
 {
+	
 	emit addHistory("Recreating text list");
 	_textList.clear();
 	//get all pdf text operators in list

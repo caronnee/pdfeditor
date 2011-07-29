@@ -314,9 +314,14 @@ void FontWidget::clearTempFonts()
 
 	CPage::FontList fontList;
 	CPageFonts::SystemFontList flist = CPageFonts::getSystemFonts();
-	for ( CPageFonts::SystemFontList::iterator i = flist.begin(); i != flist.end(); i++ )
-	{
-		addFont(*i,*i); //TODO zrusit a pridat do fontu, ktory si to moze naloadovat sam
+	CPageFonts::SystemFontList::iterator it = flist.begin();
+	while( it != flist.end() )
+	{//okrem posledneho, Zapfdings blbe pri zmene
+		std::string name =*it;
+		it++;
+		if (it ==flist.end())
+			break;
+		addFont(name,name); //TODO zrusit a pridat do fontu, ktory si to moze naloadovat sam
 	}
 	//_fonts.push_back(name);
 }

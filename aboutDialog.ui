@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>About Pdf Editor</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -19,7 +19,7 @@
      <property name="text">
       <string>Pdf Editor v1.12
 
- Created by peva 
+ Created by Eva Peskova 
 
 peva@matfyz.cz</string>
      </property>
