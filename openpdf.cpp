@@ -9,6 +9,11 @@
 #include <Windows.h>
 #endif // _WIN32
 
+void OpenPdf::stopSearch()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->stopSearch();
+}
 void OpenPdf::setModeOperator()
 {
 	setMode(ModeOperatorSelect);

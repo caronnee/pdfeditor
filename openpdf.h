@@ -86,6 +86,7 @@ public slots:
 
 	//inserts empty page
 	void insertEmpty();
+	void stopSearch();
 
 	///print a page
 	void print();
@@ -105,6 +106,5 @@ signals:
 	void OpenSuccess(QString);
 public:
 	std::string Author()const;
-
 	//void resizeEvent(QResizeEvent *event);
 };

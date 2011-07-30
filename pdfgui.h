@@ -26,6 +26,22 @@
 #include "ui_imageFrame.h"
 #include "ui_annotationFrame.h"
 
+class QCloseWidget : public QWidget
+{
+	Q_OBJECT
+
+public: 
+	QCloseWidget(QWidget * parent) : QWidget(parent,Qt::Window) {}
+
+signals:
+	void WidgetClosedSignal();
+protected:
+	virtual void closeEvent(QCloseEvent * event)
+	{
+		emit WidgetClosedSignal();
+	}
+};
+
 class pdfGui : public QMainWindow
 {
 	Q_OBJECT
@@ -36,16 +52,16 @@ class pdfGui : public QMainWindow
 	QDialog aboutDialog;
 	Ui::AboutDialog aboutDialogUI;
 
-	QWidget _debugWidget;
-	Ui::DebugFrame _debugFrame;
+	QCloseWidget _debugFrame;
+	Ui::DebugFrame _debugFrameUI;
 
-	QWidget _annotationFrame;
+	QCloseWidget _annotationFrame;
 	Ui::AnnotationFrame _annotationFrameUI;
 
-	QWidget _imageFrame;
+	QCloseWidget _imageFrame;
 	Ui::ImageFrame _imageFrameUI;
 
-	QWidget _textFrame;
+	QCloseWidget _textFrame;
 	Ui::TextFrame _textFrameUI;
 public:
 	pdfGui(QWidget *parent = 0, Qt::WFlags flags = 0);

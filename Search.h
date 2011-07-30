@@ -12,9 +12,6 @@ class Search : public QWidget
 	Q_OBJECT
 
 	Ui::Search ui;
-	bool _ignoreCase;
-	bool _wholeWord;
-	bool _regexp;
 
 	int getFlags();
 public:
@@ -25,9 +22,11 @@ public slots:
 	void next();
 	void prev();
 	void replace();
+	void stop();
 signals:
 	void replaceTextSignal(QString a1,QString a2);
 	void search(QString,int); //flags
+	void stopSignal();
 };
 
 #endif

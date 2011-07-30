@@ -10,7 +10,7 @@
 #include <QWidget>
 
 pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags) 
-	: QMainWindow(parent, flags), init()
+: QMainWindow(parent, flags),_textFrame(this), _imageFrame(this), _annotationFrame(this), _debugFrame(this), init()
 {
 	init.fontDir = ".";
 	int argc = 0;
@@ -35,7 +35,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	_imageFrameUI.setupUi(&_imageFrame);
 	_imageFrame.hide();
 
-	_debugFrame.setupUi(&_debugWidget);
+	_debugFrameUI.setupUi(&_debugFrame);
 
 	ui.settingFrame->hide();
 	aboutDialogUI.setupUi(&aboutDialog);
@@ -43,9 +43,10 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	_search = new Search(this);//neptraia k tomuto mimiokienku
 	_searchShortCut = new QShortcut(QKeySequence(tr("Ctrl+F", "Find texts")),this);
 
+	connect(_search, SIGNAL(stopSignal()), this->ui.openedPdfs, SLOT(stopSearch()));
 	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(show())); //TODO showYourself
 	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(raise()));
-	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(activateWindow()));
+	//connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(activateWindow()));
 
 //////////////////////////////////MENU////////////////////////////////////////
 
@@ -67,18 +68,18 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 
 //////////////////////////////////////////////////////////////////////////
 
-	connect( this->ui.debugButton, SIGNAL(pressed()), &_debugWidget, SLOT(show()));
+	connect( this->ui.debugButton, SIGNAL(pressed()), &_debugFrame, SLOT(show()));
 	connect( _textFrameUI.searchButton, SIGNAL(pressed()), _search, SLOT(show()));
 //	connect( this->ui.openButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(openAnotherPdf()));
 //	connect( this->ui.saveButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(save()));
 //	connect( this->ui.saveAsButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(saveAs()));
-	connect( _debugFrame.saveEncodedButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(saveEncoded()));
+	connect( _debugFrameUI.saveEncodedButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(saveEncoded()));
 	connect( this->ui.viewButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeView()));
 //	connect( this->ui.exportButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(getText()));
 	connect( _imageFrameUI.insertImageButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeInsertImage()));
-	connect( _debugFrame.analyzeButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(initAnalyze()));
+	connect( _debugFrameUI.analyzeButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(initAnalyze()));
 //	connect( this->ui.lastOpenedButton, SIGNAL(pressed()), this, SLOT(lastOpenedPdfs()));
-	connect( _debugFrame.opSelect, SIGNAL(pressed()), this->ui.openedPdfs,SLOT(setModeOperator()));
+	connect( _debugFrameUI.opSelect, SIGNAL(pressed()), this->ui.openedPdfs,SLOT(setModeOperator()));
 	//connect( this->ui.rotateButton, SIGNAL(pressed()), this->ui.openedPdfs,SLOT(rotate()));
 	//connect( this->ui.derotateButton, SIGNAL(pressed()), this->ui.openedPdfs,SLOT(derotate()));
 	connect( _textFrameUI.insertTextButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeInsertText()));
@@ -102,7 +103,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.openedPdfs, SIGNAL(ModeChangedSignal(HelptextIcon)), this,SLOT(handleModeChange(HelptextIcon)));
 	connect( _annotationFrameUI.highlightButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setHighlighCommentText()));
 
-	connect( _debugFrame.refreshButton, SIGNAL(pressed()), ui.openedPdfs, SLOT(redraw()));
+	connect( _debugFrameUI.refreshButton, SIGNAL(pressed()), ui.openedPdfs, SLOT(redraw()));
 //	connect( this->ui.pageUp, SIGNAL(pressed()), ui.openedPdfs, SLOT(pageUp()));
 //	connect( this->ui.pageDown, SIGNAL(pressed()), ui.openedPdfs, SLOT(pageDown()));
 //	connect( this->ui.insertEmpty, SIGNAL(pressed()), ui.openedPdfs, SLOT(insertEmpty()));
@@ -116,6 +117,12 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect(this->ui.imageButton, SIGNAL(toggled(bool)), &_imageFrame, SLOT(setVisible(bool)));
 	connect(this->ui.annotationButton, SIGNAL(toggled(bool)), &_annotationFrame, SLOT(setVisible(bool)));
 	connect( this->ui.openedPdfs, SIGNAL(currentChanged(int)), this, SLOT(disableMainPanel(int)));
+
+	//connect na vsetky zatvaratekne veci
+	connect(&_textFrame, SIGNAL(WidgetClosedSignal()), this->ui.viewButton, SLOT(click()));
+	connect(&_imageFrame, SIGNAL(WidgetClosedSignal()), this->ui.viewButton, SLOT(click()));
+	connect(&_annotationFrame, SIGNAL(WidgetClosedSignal()), this->ui.viewButton, SLOT(click()));
+	connect(&_debugFrame, SIGNAL(WidgetClosedSignal()), this->ui.viewButton, SLOT(click()));
 
 	disableMainPanel(0);
 	//////////////////////////////////////////////////////////////////////////
@@ -180,7 +187,7 @@ void pdfGui::showFullScreened()
 void pdfGui::closeEvent( QCloseEvent *event )
 {
 	_search->close();
-	_debugWidget.close();
+	_debugFrame.close();
 	_textFrame.close();
 	_imageFrame.close();
 	_annotationFrame.close();

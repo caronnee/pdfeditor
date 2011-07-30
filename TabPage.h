@@ -122,7 +122,8 @@ class TabPage : public QWidget
 	Q_OBJECT
 
 private: //variables
-	int _locked;
+	QThread * _thread;
+	int _stop;
 	SplashOutputDev splash;
 	int _acceptedType;
 	OpenPdf * _parent;
@@ -160,7 +161,6 @@ private: //variables
 	void SetNextPageRotate();
 	/* vytvorit textovy list */
 	
-	bool performSearch(QString srch, bool forw);
 	void getSelected(int x , int y, Ops ops);
 	void toPdfPos(int x, int y, double & x1, double &y1);
 	void toPixmapPos(double x1, double y1, int & x, int & y);
@@ -168,6 +168,7 @@ private: //variables
 	void setSelected(TextData::iterator& first, TextData::iterator& last);
 	void showAnnotation();
 public:
+	bool performSearch(QString srch, bool forw);
 	bool _changed;
 	int _allowResize;
 	//static std::string SupportedAnnotations[] = { ANNOTS(CREATE_ARRAY) };
@@ -259,7 +260,6 @@ public slots:
 	//void deleteAnnotation(QPoint);
 	void search(QString text,int flags);
 	void handleBookmark(QTreeWidgetItem* item, int);
-	void highlight(); //nesprav nic, pretoze to bude robit mouseMove
 //	void removeObjects();
 	void clicked(QPoint point);
 //	void updateSelectedRect( std::vector<shared_ptr<PdfOperator> > oops);
@@ -338,6 +338,7 @@ private:
 	pdfobjects::IndiRef createAppearanceComment(float *dim);
 	PdfOp getValidTextOp( Ops& ops, bool & found);
 public slots:
+	DisplayParams getDisplayParams();
 	void copyTextToClipBoard();
 	void operationDone();
 	void initAnalyze();
@@ -348,8 +349,12 @@ public slots:
 	void about();
 	void addZoom();
 	void minusZoom();
+	void stopSearch();
+	void reportSearchResult();
 public:
 	void resizeEvent(QResizeEvent * event);
+	void highlight(); //nesprav nic, pretoze to bude robit mouseMove
+
 };
 
 #endif

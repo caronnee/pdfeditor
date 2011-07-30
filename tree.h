@@ -138,6 +138,9 @@ public:
 	{
 		Clear(); //TODO checkovat, ci tam ten pattern uz nahodou nie je, takze netreba clear
 		assert(!pattern.isEmpty()); //TODO validate
+		pattern = pattern.trimmed();
+		if (_wholeWord)
+			pattern += " ";
 		if (!_caseSensitive)
 			pattern = pattern.toLower();
 		Accept * prev = NULL;

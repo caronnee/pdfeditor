@@ -1,14 +1,21 @@
 #include "Search.h"
 #include <string.h>
 
-Search::Search(QWidget * parent) : QWidget(parent, Qt::Window),_ignoreCase(false),_wholeWord(false),_regexp(false)
+Search::Search(QWidget * parent) : QWidget(parent, Qt::Window)
 {
 	ui.setupUi(this);
+#if 1
+	ui.wholeWord->hide();
+#endif
+	connect(this->ui.stopButton, SIGNAL(pressed()), this, SLOT(stop()));
 	connect(this->ui.text, SIGNAL(returnPressed()),this, SLOT(next()));
 	connect(this->ui.nextButton, SIGNAL(pressed()),this, SLOT(next()));
 	connect(this->ui.prevButton, SIGNAL(pressed()),this, SLOT(prev()));
 }
-
+void Search::stop()
+{
+	emit stopSignal();
+}
 void Search::showEvent ( QShowEvent * event )
 {
 	this->ui.text->setFocus();

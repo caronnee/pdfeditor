@@ -159,7 +159,7 @@ struct Cm
 };
 void InsertImage::getInvertMatrix( PdfOp ii, double * act, double * res )
 {
-	DisplayParams params;
+	DisplayParams params = emit NeedDisplayParamsSignal();
 	PDFRectangle pdfRect ( params.pageRect.xleft, params.pageRect.yleft, params.pageRect.xright, params.pageRect.yright );
 	GfxState state(params.hDpi, params.vDpi, &pdfRect, params.rotate, params.upsideDown );
 PdfOperator::Iterator iter = PdfOperator::getIterator(ii);
@@ -232,7 +232,7 @@ void InsertImage::setImage(PdfOp ii, double scale)
 	//najdeme inverznu maticu
 	Cm c;
 	double actual[6];
-	InsertImage::getInvertMatrix(ii,actual, c.matrix);
+	getInvertMatrix(ii,actual, c.matrix);
 	PdfOperator::Operands operands;
 	for ( int i =0; i<6; i++)
 		operands.push_back(shared_ptr<IProperty>(CRealFactory::getInstance(c.matrix[i])));

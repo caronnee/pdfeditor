@@ -33,6 +33,7 @@
 #include <QShortcut>
 #include <QVariant>
 #include "ui_convertPageRange.h"
+#include <qthread.h>
 
 //PDF
 #include <kernel/pdfoperators.h>
@@ -43,11 +44,31 @@
 #include "openpdf.h"
 
 #include <QProgressBar>
-#include<xpdf/xpdf/SplashOutputDev.h>
+#include <xpdf/xpdf/SplashOutputDev.h>
 #include "ui_aboutDialog.h"
 
+class MyThread : public QThread
+{
+	TabPage * _shared;
+	QString _str;
+	int _flags;
+public:
+	void set(TabPage * pg, QString str, int fl)
+	{ 
+		_shared = pg;
+		_str = str;
+		_flags = fl; 
+	}
+	void run()
+	{
+		if (_shared->performSearch(_str, _flags & SearchForward))
+			_shared->highlight();
+		_shared->show();
+	}
+};
 //operatory, ktore musim zaklonovat, ked chcem pohnut textom
 #define ZOOM_AFTER_HACK 4
+
 std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","cs", "SC","SCN", "sc","scn", "G","g","RG","rg","k","K","Tc","Tw", "Tz", "TL", "Tf","Tr","Ts","Td","TD","Tm","T*" };
 
 void TabPage::handleBookmark(QTreeWidgetItem* item, int) //nezaujima nas stlpec
@@ -118,9 +139,10 @@ bool TabPage::containsOperator(std::string wanted)
 }
 static SplashColor paperColor = {0xff,0xff,0xff};
 
-TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),_allowResize(0),splash (splashModeBGR8, 4, gFalse, paperColor),aboutDialog(this),_locked(0)
+TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),_allowResize(0),splash (splashModeBGR8, 4, gFalse, paperColor),aboutDialog(this),_stop(0)
 {
 	_pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
+	_thread = new MyThread();
 	debug::changeDebugLevel(10000);
 	_page = boost::shared_ptr<pdfobjects::CPage> (_pdf->getPage(1)); //or set from last
 	if (containsOperator("TJ"))
@@ -150,6 +172,9 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 		QVariant s(i);
 		this->ui.zoom->addItem( s.toString()+" %",s);
 	}
+	//////////////////////////////////////THREAD////////////////////////////////////
+	connect( _thread, SIGNAL(finished()), this, SLOT(reportSearchResult()));
+	//////////////////////////////////////////////////////////////////////////
 	connect(this->ui.documentInfo, SIGNAL(pressed()), this, SLOT(about()));
 	connect(this->ui.plusZoom, SIGNAL(pressed()), this, SLOT(addZoom()) );
 // 	connect(this->ui.minusZoom, SIGNAL(pressed()), this, SLOT(minusZoom()) );
@@ -212,6 +237,8 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	connect( _image, SIGNAL(ImageClosedSignal()),this,SLOT(operationDone()));
 	connect( _image, SIGNAL(insertImage(PdfOp)),this,SLOT(insertImage(PdfOp)));
 	connect( _image, SIGNAL(changeImage(PdfOp)),this,SLOT(changeSelectedImage(PdfOp)));
+	connect( _image, SIGNAL(NeedDisplayParamsSignal()),this,SLOT(getDisplayParams()));
+
 	connect( _cmts,SIGNAL(annotationTextMarkup(PdfAnnot)),this,SLOT(insertTextMarkup(PdfAnnot)));
 
 	///////////////////////////BOOKMARKS///////////////////////////////////////////////
@@ -1437,37 +1464,12 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			//get invert matrix & get actual matrix
 			double invert[6];
 			double actual[6];
-			InsertImage::getInvertMatrix(img,actual, invert);
-			//converuje podla matice
+			_image->getInvertMatrix(img,actual, invert);
+			//convertuje podla matice
 			double pomx =x, pomy =y;
 			x = invert[0] * pomx + invert[2] * pomy;
 			y = invert[1] * pomx + invert[3] * pomy;//ROTATE
-			switch(_page->getRotation())
-			{
-			case 90:
-				{
-					double xtmp = x;
-					x = -y;
-					y = xtmp;
-				}
-			case 180:
-				{
-					double xtmp = x;
-					x = -x;
-					y = -y;
-					break;
-				}
-			case -90:
-			case 270:
-				{
-					double xtmp = x;
-					x = y;
-					y = -xtmp;
-					break;
-				}
-			default:
-				break;
-			}
+			::rotate(_page->getRotation(),x,y);	
 			PdfOp nw= createOperatorTranslation(x, y);//TODO zistit invertnu CM(bez poslednych POS suradnic)
 			PdfOp prev = createOperatorTranslation(-x, -y);
 			_selectedImage->getContentStream()->replaceOperator(_selectedImage,nw);
@@ -2214,7 +2216,9 @@ void TabPage::savePdf(char * name)
 }
 TabPage::~TabPage(void)	
 {
-
+	if (_thread->isRunning())
+		_thread->terminate();
+	delete _thread;
 }
 
 ///---private--------
@@ -2723,12 +2727,19 @@ void TabPage::setSelected(TextData::iterator& first, TextData::iterator& last)
 	}
 }
 //slot
+void TabPage::stopSearch()
+{
+	_stop = true;
+}
+
 void TabPage::search(QString srch, int flags)
 {
+	assert(!_thread->isRunning());
+	_stop = false;
+	MyThread * m = (MyThread *) _thread;
+	m->set(this,srch,flags);
 	_searchEngine.setFlags(flags);
-	if (performSearch(srch, flags & SearchForward))
-		highlight();
-	this->show();
+	m->start();
 }
 QString revert(QString s)
 {
@@ -2796,7 +2807,7 @@ std::string TabPage::checkCode(QString s, std::string fontName)
 bool TabPage::performSearch( QString srch, bool forw )
 {
 	QString s; //TODO do threadu
-	for(int i = 0; i< _pdf->getPageCount(); i++)
+	for(int i = 0; i< _pdf->getPageCount()&&!_stop; i++)
 	{
 		TextData::iterator iter;
 		if (_textList.size() == 0)
@@ -2912,11 +2923,6 @@ NextPage:
 		redraw();
 		//nastav nove _textbox, pretoze sme stejne v textovom rezime
 	}
-	QMessageBox::warning(this, tr("Not found"),
-		tr("String cannot be found"),
-		QMessageBox::Ok,
-		QMessageBox::Ok);
-	//set from th beginning
 	return false;
 }
 PdfOperator::Iterator TabPage::findTdAssOp(PdfOperator::Iterator iter)
@@ -3681,27 +3687,36 @@ void TabPage::setPageFromInfo()
 
 void TabPage::addZoom()
 {
-	if (_locked)
-		return;
-	_locked++;
 	this->ui.plusZoom->setEnabled(false);
 	int index = ui.zoom->currentIndex();
 	index++;
 	ui.zoom->setCurrentIndex(index);
 	this->ui.plusZoom->setEnabled(true);
-	_locked--;
 }
 
 void TabPage::minusZoom()
 {
-	if (_locked)
-		return;
-	//disable button
-	_locked++;
 	this->ui.minusZoom->setEnabled(false);
 	int index = ui.zoom->currentIndex();
 	index--;
 	ui.zoom->setCurrentIndex(index);
 	this->ui.minusZoom->setEnabled(true);
-	_locked--;
+}
+
+pdfobjects::DisplayParams TabPage::getDisplayParams()
+{
+	DisplayParams d = displayparams;
+	d.pageRect = _page->getMediabox();
+	return d;
+}
+
+void TabPage::reportSearchResult()
+{
+	if (_selected)
+		return;// nasiel, vsetko je OK
+	if (_stop)
+		QMessageBox::warning(this,"Stopped","Searching was stopped");
+	else
+		QMessageBox::warning(this,"Not found","String was not found");
+
 }

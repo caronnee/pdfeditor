@@ -8,6 +8,7 @@
 #include <kernel/pdfoperators.h>
 #include <xpdf/xpdf/GfxState.h>
 #include "typedefs.h"
+#include "kernel/displayparams.h"
 
 class InsertImage : public QWidget
 {
@@ -26,7 +27,7 @@ protected:
 public:
 	InsertImage(QWidget * parent);
 	void setImage(PdfOp image, double scale);//TODO x,y
-	static void getInvertMatrix(PdfOp op, double * act, double * res);
+	void getInvertMatrix(PdfOp op, double * act, double * res);
 public slots:
 	void apply();
 	//void rotationCm(int angle);
@@ -38,6 +39,7 @@ signals:
 	void insertImage(PdfOp op); //jake casti
 	void changeImage(PdfOp q);
 	void ImageClosedSignal();
+	pdfobjects::DisplayParams NeedDisplayParamsSignal();
 };
 #endif
 
