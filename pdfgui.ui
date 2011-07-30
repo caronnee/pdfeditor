@@ -697,6 +697,5 @@
  </connections>
  <buttongroups>
   <buttongroup name="mainGroup"/>
-  <buttongroup name="subGroup"/>
  </buttongroups>
 </ui>

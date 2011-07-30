@@ -152,8 +152,8 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	}
 	connect(this->ui.documentInfo, SIGNAL(pressed()), this, SLOT(about()));
 	connect(this->ui.plusZoom, SIGNAL(pressed()), this, SLOT(addZoom()) );
-	connect(this->ui.minusZoom, SIGNAL(pressed()), this, SLOT(minusZoom()) );
-	connect(this->ui.commit, SIGNAL(pressed()), this, SLOT(commitRevision()));
+// 	connect(this->ui.minusZoom, SIGNAL(pressed()), this, SLOT(minusZoom()) );
+// 	connect(this->ui.commit, SIGNAL(pressed()), this, SLOT(commitRevision()));
 	connect( this->ui.pageInfo, SIGNAL(returnPressed()),this, SLOT(setPageFromInfo()));
 	connect (this->ui.firstPage, SIGNAL(pressed()), this, SLOT(setFirstPage()));
 	connect (this->ui.lastPage, SIGNAL(pressed()), this, SLOT(setLastPage()));
