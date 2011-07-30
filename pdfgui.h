@@ -62,6 +62,7 @@ public slots:
 	void appendToLast( QString s );
 	void handleModeChange( HelptextIcon s );
 	void showFullScreened();
+	void disableMainPanel( int );
 };
 
 #endif // PDFGUI_H

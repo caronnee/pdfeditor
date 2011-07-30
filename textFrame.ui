@@ -32,6 +32,9 @@
        <height>32</height>
       </size>
      </property>
+     <property name="shortcut">
+      <string>S</string>
+     </property>
      <property name="checkable">
       <bool>true</bool>
      </property>
@@ -41,6 +44,9 @@
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
+     <attribute name="buttonGroup">
+      <string>buttonGroup</string>
+     </attribute>
     </widget>
    </item>
    <item>
@@ -61,12 +67,18 @@
        <height>32</height>
       </size>
      </property>
+     <property name="shortcut">
+      <string>I</string>
+     </property>
      <property name="checkable">
       <bool>true</bool>
      </property>
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
+     <attribute name="buttonGroup">
+      <string>buttonGroup</string>
+     </attribute>
     </widget>
    </item>
    <item>
@@ -86,6 +98,9 @@
        <width>32</width>
        <height>32</height>
       </size>
+     </property>
+     <property name="shortcut">
+      <string>C</string>
      </property>
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -110,6 +125,9 @@
        <height>32</height>
       </size>
      </property>
+     <property name="shortcut">
+      <string>D</string>
+     </property>
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
@@ -132,6 +150,9 @@
        <width>32</width>
        <height>32</height>
       </size>
+     </property>
+     <property name="shortcut">
+      <string>E</string>
      </property>
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -156,6 +177,9 @@
        <height>32</height>
       </size>
      </property>
+     <property name="shortcut">
+      <string>H</string>
+     </property>
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
@@ -176,6 +200,9 @@
        <height>32</height>
       </size>
      </property>
+     <property name="shortcut">
+      <string>S</string>
+     </property>
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
@@ -187,4 +214,7 @@
   <include location="pdf.qrc"/>
  </resources>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>

@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QChar>
+#include "typedefs.h"
 
 //class pre strom rozhodujuci o tom, ci je dane slovo v PDF
 //toto by mohlo byt virtual
@@ -108,9 +109,10 @@ class Tree
 	Accept * _root;
 	QString _search;
 	size_t _position;
+
 public:
 	int _begin;
-	int _end; //poradie v tokenu, pretoze sa mi to naramne hodi:)
+	int _end; //poradie v tokenu
 	int _tokens;
 
 public:
@@ -128,18 +130,16 @@ public:
 			delete t; //TODO check
 		}
 	}
-	Tree() : _regexp(false),_position (-1),_root(NULL),
-		_actual (NULL),
-		_begin (0),
-		_end (0),
-		_tokens(-1)
+	Tree() : _regexp(false),_position (-1),_root(NULL),_caseSensitive(false),_wholeWord(false),
+		_actual (NULL),_begin (0),_end (0),_tokens(-1)
 	{}
 	~Tree() { Clear(); }
 	void setPattern(QString pattern)
 	{
 		Clear(); //TODO checkovat, ci tam ten pattern uz nahodou nie je, takze netreba clear
-		if (pattern.isEmpty()||(pattern[0] == '\\' && pattern.length() ==1))
-			throw "Wrong pattern input";
+		assert(!pattern.isEmpty()); //TODO validate
+		if (!_caseSensitive)
+			pattern = pattern.toLower();
 		Accept * prev = NULL;
 		int i = 0;
 		setAccept(pattern,i);
@@ -159,6 +159,8 @@ public:
 
 private:
 	bool _regexp;
+	bool _caseSensitive;
+	bool _wholeWord;
 	void setAccept(QString pattern, int & i)
 	{
 		if (!_regexp)
@@ -200,20 +202,17 @@ public:
 	void setText(QString text)
 	{
 		_tokens++;
+		if (!_caseSensitive)
+			text = text.toLower();
 		_search = text;
 	}
 	//ak je tj operator s whitespacom ->"test    test", "test \t test"
 	//search - ..test -> .test OK
 	//search - xx..test -> xx.text -> xx.(.)x
 
-	void acceptSpace()
-	{
-		_actual = _actual->accept(' ');
-		_position =-1;
-	}
 	TreeTokens search()
 	{
-		_position++; //pre polracujuce veci
+		_position++; //pre pokracujuce veci
 		//stejne toho nedostane vela a bude to brat po tokenoch
 		for (; _position< _search.length();  _position++)
 		{
@@ -233,5 +232,14 @@ public:
 		_position = -1;
 		return Tree::Next;
 	}
+
+	void setFlags( int flags ) 
+	{
+		_caseSensitive = flags & SearchCaseSensitive;
+		_wholeWord = flags & SearchWholeWords;
+		_regexp = flags & SearchRegexp;
+	}
+
+
 };
 #endif  // __TREE__

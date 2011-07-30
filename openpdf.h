@@ -35,7 +35,7 @@ signals:
 	void ModeChangedSignal(HelptextIcon);
 public slots:
 	void initAnalyze();
-	void search(QString s, bool v);
+	void search(QString s, int flags);
 	void deleteSelectedText();
 	void eraseSelectedText();
 	void changeSelectedText();

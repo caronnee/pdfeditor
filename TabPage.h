@@ -257,7 +257,7 @@ public slots:
 	
 	void insertAnnotation(PdfAnnot a);
 	//void deleteAnnotation(QPoint);
-	void search(QString text,bool forw);
+	void search(QString text,int flags);
 	void handleBookmark(QTreeWidgetItem* item, int);
 	void highlight(); //nesprav nic, pretoze to bude robit mouseMove
 //	void removeObjects();

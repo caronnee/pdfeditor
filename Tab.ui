@@ -7,14 +7,30 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>582</height>
+    <height>533</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Viewer</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
-   <item row="1" column="0" colspan="2">
+  <layout class="QGridLayout" name="TabLayout" rowstretch="0,0,0,0,0">
+   <item row="4" column="0" colspan="2">
+    <widget class="QProgressBar" name="progressBar">
+     <property name="value">
+      <number>0</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="textDirection">
+      <enum>QProgressBar::TopToBottom</enum>
+     </property>
+     <property name="format">
+      <string>Work done%p%</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
     <widget class="QGroupBox" name="displayManipulation">
      <property name="title">
       <string>Display manipulation</string>
@@ -38,12 +54,6 @@
       </item>
       <item>
        <widget class="QToolButton" name="commitButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="toolTip">
          <string>creates new revision</string>
         </property>
@@ -67,12 +77,6 @@
       </item>
       <item>
        <widget class="QToolButton" name="branchRevision">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="toolTip">
          <string>saves this revision to another file</string>
         </property>
@@ -90,7 +94,7 @@
          </size>
         </property>
         <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextUnderIcon</enum>
+         <enum>Qt::ToolButtonIconOnly</enum>
         </property>
        </widget>
       </item>
@@ -251,73 +255,150 @@
      </layout>
     </widget>
    </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="QProgressBar" name="progressBar">
-     <property name="value">
-      <number>0</number>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="textDirection">
-      <enum>QProgressBar::TopToBottom</enum>
-     </property>
-     <property name="format">
-      <string>Work done%p%</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QScrollArea" name="scrollArea">
-     <property name="mouseTracking">
-      <bool>true</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <widget class="QWidget" name="content">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>140</y>
-        <width>429</width>
-        <height>177</height>
-       </rect>
-      </property>
-      <property name="mouseTracking">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QFrame" name="frame">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="1" column="1">
-       <widget class="QPushButton" name="showBookmark">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+   <item row="1" column="0">
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QSplitter" name="splitter_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>20</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>Show/hide bookmarks</string>
-        </property>
-        <property name="text">
-         <string>B
+        <widget class="QFrame" name="frame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0">
+          <item row="0" column="2" rowspan="4">
+           <widget class="QTreeWidget" name="analyzeTree">
+            <column>
+             <property name="text">
+              <string notr="true">1</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+          <item row="0" column="4" rowspan="4">
+           <widget class="QTreeWidget" name="tree">
+            <property name="showDropIndicator" stdset="0">
+             <bool>false</bool>
+            </property>
+            <property name="rootIsDecorated">
+             <bool>true</bool>
+            </property>
+            <column>
+             <property name="text">
+              <string notr="true">1</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+          <item row="0" column="3" rowspan="4">
+           <widget class="QTextEdit" name="historyText">
+            <property name="documentTitle">
+             <string>History</string>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="historyButton">
+            <property name="maximumSize">
+             <size>
+              <width>20</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>H
+i
+s
+t
+o
+r
+y</string>
+            </property>
+            <property name="shortcut">
+             <string>Ctrl+H</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QPushButton" name="showAnalyzeButton">
+            <property name="maximumSize">
+             <size>
+              <width>20</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Analyze pdf document</string>
+            </property>
+            <property name="text">
+             <string>A
+n
+a
+l
+y
+z
+e</string>
+            </property>
+            <property name="shortcut">
+             <string>Ctrl+A</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="default">
+             <bool>true</bool>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="showBookmark">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>20</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Show/hide bookmarks</string>
+            </property>
+            <property name="text">
+             <string>B
 o
 o
 k
@@ -326,147 +407,45 @@ a
 r
 k
 s</string>
-        </property>
-        <property name="shortcut">
-         <string>Ctrl+B</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="default">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2" rowspan="4">
-       <widget class="QTextEdit" name="historyText">
-        <property name="maximumSize">
-         <size>
-          <width>200</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="documentTitle">
-         <string>History</string>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3" rowspan="4">
-       <widget class="QTreeWidget" name="analyzeTree">
-        <column>
-         <property name="text">
-          <string notr="true">1</string>
+            </property>
+            <property name="shortcut">
+             <string>Ctrl+B</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="default">
+             <bool>true</bool>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="mouseTracking">
+          <bool>true</bool>
          </property>
-        </column>
-       </widget>
-      </item>
-      <item row="1" column="4" rowspan="4">
-       <widget class="QTreeWidget" name="tree">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="showDropIndicator" stdset="0">
-         <bool>false</bool>
-        </property>
-        <property name="rootIsDecorated">
-         <bool>true</bool>
-        </property>
-        <column>
-         <property name="text">
-          <string notr="true">1</string>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
-        </column>
+         <widget class="QWidget" name="content">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>103</y>
+            <width>429</width>
+            <height>177</height>
+           </rect>
+          </property>
+          <property name="mouseTracking">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </widget>
        </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QPushButton" name="showAnalyzeButton">
-        <property name="maximumSize">
-         <size>
-          <width>20</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>Analyze pdf document</string>
-        </property>
-        <property name="text">
-         <string>A
-n
-a
-l
-y
-z
-e</string>
-        </property>
-        <property name="shortcut">
-         <string>Ctrl+A</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="default">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QPushButton" name="historyButton">
-        <property name="maximumSize">
-         <size>
-          <width>20</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>H
-i
-s
-t
-o
-r
-y</string>
-        </property>
-        <property name="shortcut">
-         <string>Ctrl+H</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </widget>
@@ -497,12 +476,12 @@ y</string>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>56</x>
-     <y>325</y>
+     <x>37</x>
+     <y>374</y>
     </hint>
     <hint type="destinationlabel">
-     <x>111</x>
-     <y>264</y>
+     <x>89</x>
+     <y>307</y>
     </hint>
    </hints>
   </connection>
@@ -513,12 +492,12 @@ y</string>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>28</x>
-     <y>143</y>
+     <x>37</x>
+     <y>151</y>
     </hint>
     <hint type="destinationlabel">
-     <x>243</x>
-     <y>270</y>
+     <x>257</x>
+     <y>307</y>
     </hint>
    </hints>
   </connection>
@@ -529,12 +508,12 @@ y</string>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>28</x>
-     <y>261</y>
+     <x>37</x>
+     <y>269</y>
     </hint>
     <hint type="destinationlabel">
-     <x>116</x>
-     <y>270</y>
+     <x>166</x>
+     <y>307</y>
     </hint>
    </hints>
   </connection>

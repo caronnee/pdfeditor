@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>images/stop.png</file>
     <file>images/commit.png</file>
     <file>images/export.png</file>
     <file>images/lastPage.png</file>

@@ -153,7 +153,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	connect(this->ui.documentInfo, SIGNAL(pressed()), this, SLOT(about()));
 	connect(this->ui.plusZoom, SIGNAL(pressed()), this, SLOT(addZoom()) );
 // 	connect(this->ui.minusZoom, SIGNAL(pressed()), this, SLOT(minusZoom()) );
-// 	connect(this->ui.commit, SIGNAL(pressed()), this, SLOT(commitRevision()));
+ 	connect(this->ui.commitButton, SIGNAL(pressed()), this, SLOT(commitRevision()));
 	connect( this->ui.pageInfo, SIGNAL(returnPressed()),this, SLOT(setPageFromInfo()));
 	connect (this->ui.firstPage, SIGNAL(pressed()), this, SLOT(setFirstPage()));
 	connect (this->ui.lastPage, SIGNAL(pressed()), this, SLOT(setLastPage()));
@@ -1130,7 +1130,10 @@ void TabPage::createList()
 void TabPage::raiseInsertText(QPoint point)
 {
 	double x,y;
-	displayparams.convertPixmapPosToPdfPos(point.x(), point.y(), x, y); //TODO upravit aby to neblblo
+	DisplayParams d = displayparams;
+	d.pageRect = _page->getMediabox();
+	d.convertPixmapPosToPdfPos(point.x(), point.y(), x, y); //TODO upravit aby to neblblo
+	//Musime skontrolovat exte aky mediapage pouziva
 	//toPdfPos(point.x(),point.y(),x,y);
 	////do povodneho stavu .. hotfix
 	//x/=displayparams.vDpi/72;
@@ -2072,6 +2075,7 @@ void TabPage::deletePage()
 void TabPage::redraw()
 {
 	JustDraw();
+	_selected = false;
 	createList();//TODO only in right mode
 }
 void TabPage::JustDraw()
@@ -2719,10 +2723,12 @@ void TabPage::setSelected(TextData::iterator& first, TextData::iterator& last)
 	}
 }
 //slot
-void TabPage::search(QString srch, bool forw)
+void TabPage::search(QString srch, int flags)
 {
-	if (performSearch(srch, forw))
+	_searchEngine.setFlags(flags);
+	if (performSearch(srch, flags & SearchForward))
 		highlight();
+	this->show();
 }
 QString revert(QString s)
 {
@@ -2848,7 +2854,10 @@ bool TabPage::performSearch( QString srch, bool forw )
 						iter->setEnd(iter->position(_searchEngine._end));
 					else
 						iter->setBegin(iter->position(iter->_text.size() - _searchEngine._end-1));
-					sTextItEnd = iter;
+					if (forw)
+						sTextItEnd = iter;
+					else
+						sTextIt= iter;
 					for ( int i = 0; i < _searchEngine._tokens; i++)
 					{
 						if (forw)
@@ -2857,11 +2866,16 @@ bool TabPage::performSearch( QString srch, bool forw )
 							iter++;
 						iter->clear();
 					}
-					sTextIt = iter;
 					if (forw)
+					{
+						sTextIt = iter;
 						iter->setBegin(iter->position(_searchEngine._begin));
+					}
 					else
+					{
+						sTextItEnd = iter;
 						iter->setEnd(iter->position(iter->_text.size() - _searchEngine._begin-1));
+					}
 					_selected = true; 
 					emit addHistory("Found occurrence of word \"" +srch+"\" on page " + QVariant(_pdf->getPagePosition(_page)).toString());
 					return true;

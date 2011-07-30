@@ -7,6 +7,7 @@
 #include <QShortcut>
 #include "pdfgui.h"
 #include "typedefs.h"
+#include <QWidget>
 
 pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags) 
 	: QMainWindow(parent, flags), init()
@@ -39,19 +40,18 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	ui.settingFrame->hide();
 	aboutDialogUI.setupUi(&aboutDialog);
 
-	_search = new Search(NULL);//neptraia k tomuto mimiokienku
+	_search = new Search(this);//neptraia k tomuto mimiokienku
 	_searchShortCut = new QShortcut(QKeySequence(tr("Ctrl+F", "Find texts")),this);
 
-	connect(_search, SIGNAL(search(QString,bool)),this->ui.openedPdfs,SLOT(search(QString,bool)));
-	//QObject::connect(_search, SIGNAL(replaceTextSignal(QString,QString)),this,SLOT(replaceText(QString,QString)));
-	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(show()));
+	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(show())); //TODO showYourself
+	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(raise()));
+	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(activateWindow()));
 
 //////////////////////////////////MENU////////////////////////////////////////
 
 	connect( this->ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
 	connect( this->ui.actionFullScreen, SIGNAL(triggered()), this, SLOT(showFullScreened()) );
 	connect( this->ui.actionOpen, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(openAnotherPdf()));
-	connect( this->ui.actionOpen, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(show()));
 
 	connect( this->ui.actionAbout, SIGNAL(triggered()), &aboutDialog, SLOT(open()));
 	connect( this->ui.actionPage_down, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(pageDown()));
@@ -88,7 +88,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( _textFrameUI.highlightButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(highlightSelected()));
 	connect( _textFrameUI.selectTextButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeSelectText()));
 	
-	connect( _search, SIGNAL(search(QString,bool)),this->ui.openedPdfs, SLOT(search(QString, bool)));
+	connect( _search, SIGNAL(search(QString,int)),this->ui.openedPdfs, SLOT(search(QString, int)));
 	connect( _imageFrameUI.selectImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeSelectImage()));
 	connect( _imageFrameUI.deleteImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(deleteSelectedImage()));
 	connect( _imageFrameUI.changeImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(changeSelectedImage()));
@@ -111,7 +111,14 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.hcolor, SIGNAL(ValueChangedSignal(QColor)), ui.openedPdfs, SLOT(setHColor(QColor)));
 	connect( this->ui.color, SIGNAL(ValueChangedSignal(QColor)), ui.openedPdfs, SLOT(setColor(QColor)));
 	connect( this->ui.openedPdfs, SIGNAL(OpenSuccess(QString)), this, SLOT(appendToLast(QString)));
-	
+	////////////////////////////////////////VISIBILITY connect//////////////////////////////////
+	connect(this->ui.textButton, SIGNAL(toggled(bool)), &_textFrame, SLOT(setVisible(bool)));
+	connect(this->ui.imageButton, SIGNAL(toggled(bool)), &_imageFrame, SLOT(setVisible(bool)));
+	connect(this->ui.annotationButton, SIGNAL(toggled(bool)), &_annotationFrame, SLOT(setVisible(bool)));
+	connect( this->ui.openedPdfs, SIGNAL(currentChanged(int)), this, SLOT(disableMainPanel(int)));
+
+	disableMainPanel(0);
+	//////////////////////////////////////////////////////////////////////////
 	this->ui.openedPdfs->setMode(ModeDoNothing);
 	//load settings
 	ui.color->setColor(QColor(255,0,0,50));
@@ -174,6 +181,9 @@ void pdfGui::closeEvent( QCloseEvent *event )
 {
 	_search->close();
 	_debugWidget.close();
+	_textFrame.close();
+	_imageFrame.close();
+	_annotationFrame.close();
 
 	FILE * f = fopen("config","w");
 	if (!f)
@@ -231,4 +241,10 @@ void pdfGui::handleModeChange( HelptextIcon str )
 {
 	this->ui.Help->setText(str.helpText);
 	this->ui.actualButton->setIcon(QIcon(QString(":images/")+str.icon));
+}
+
+void pdfGui::disableMainPanel( int )
+{
+	bool enable = this->ui.openedPdfs->count()>0;
+	this->ui.fileFrame->setEnabled(enable);
 }

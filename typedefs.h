@@ -50,6 +50,15 @@ enum PageDrawMode
 	ModeTrackDrawingRect
 };
 
+
+enum SearchFlags
+{
+	SearchForward = 1,
+	SearchCaseSensitive = 2,
+	SearchWholeWords = 4,
+	SearchRegexp = 8
+};
+
 typedef boost::shared_ptr<pdfobjects::CAnnotation> PdfAnnot;
 typedef boost::shared_ptr<pdfobjects::CPdf> PdfInstance;
 typedef boost::shared_ptr<pdfobjects::IProperty> PdfProperty;

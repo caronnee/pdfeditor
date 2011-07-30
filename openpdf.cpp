@@ -55,7 +55,7 @@ OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeD
 #endif
 	setModeDefault(); //default mode
 }
-void OpenPdf::search(QString s, bool v)
+void OpenPdf::search(QString s, int v)
 {
 	if (s.isEmpty())
 	{
