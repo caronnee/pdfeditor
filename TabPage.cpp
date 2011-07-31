@@ -1658,47 +1658,47 @@ void TabPage::highlight()
 void TabPage::moveText(int difX, int difY) //on mouse event, called on mouse realease
 {
 	//for each selected operator, move it accrding to position
-	if (!_selected) //spravne nastavene 
-		return;
-	//ostran z listu
-	TextData::iterator first = sTextIt; 
-	TextData::iterator last = sTextItEnd; 
-	bool forw = (*sTextIt) < (*sTextItEnd);
-	if (!forw)
-	{
-		first = sTextItEnd;
-		last = sTextIt;
-	}
-	QString s1,s2,s3,s4;
-	//problem je, e to moze by tiez cast - jedna sa len o prve a posledne. To zmazeme, ponechame cast a insterime znova
-	_selected = false;
-	if (first==last)
-	{ //sprav to same len s jednym iteratorom
-		//treba ho rozdelit na niekolko operatorov. Jelikoz je to jeden, tak na tri
-		double b = first->_begin;
-		double e = first->_end;
-		first->replaceAllText(checkCode(s1,first->_op->getFontName())); //netreba nic mazat, je prave jedno
-		createAddMoveString(first->_op,e+difX,first->_ymax+difY,s3);
-		createAddMoveString(first->_op,b+difX,first->_ymax+difY,s2);
-		return;
-	}
-	first->split(s1,s2,s3);	//zajima nas iba s2 -> od begin po end, s3 bude prazdna
-	float x = first->_begin , y=first->_ymax;
-	first->replaceAllText(checkCode(s1,first->_op->getFontName())); //tuto sa to pomeni
-	last->replaceAllText(checkCode(s3,first->_op->getFontName()));
-	last->split(s1,s3,s4); //last je end
-	createAddMoveString(first->_op,last->_begin+difX,last->_ymax+y,s2);
-	while (first!=last)
-	{
-		PdfOp o = FontWidget::createTranslationTd(x+difX, y+difY);
-		insertBefore(o, last->_op);
-		last--;
-		x = last->_begin;
-		y = last->_ymax;
-	}
-	createAddMoveString(first->_op,first->_begin+difX,first->_ymax+y,s2);
+	//if (!_selected) //spravne nastavene 
+	//	return;
+	////ostran z listu
+	//TextData::iterator first = sTextIt; 
+	//TextData::iterator last = sTextItEnd; 
+	//bool forw = (*sTextIt) < (*sTextItEnd);
+	//if (!forw)
+	//{
+	//	first = sTextItEnd;
+	//	last = sTextIt;
+	//}
+	//QString s1,s2,s3,s4;
+	////problem je, e to moze by tiez cast - jedna sa len o prve a posledne. To zmazeme, ponechame cast a insterime znova
+	//_selected = false;
+	//if (first==last)
+	//{ //sprav to same len s jednym iteratorom
+	//	//treba ho rozdelit na niekolko operatorov. Jelikoz je to jeden, tak na tri
+	//	double b = first->_begin;
+	//	double e = first->_end;
+	//	first->replaceAllText(checkCode(s1,first->_op->getFontName())); //netreba nic mazat, je prave jedno
+	//	createAddMoveString(first->_op,e+difX,first->_ymax+difY,s3);
+	//	createAddMoveString(first->_op,b+difX,first->_ymax+difY,s2);
+	//	return;
+	//}
+	//first->split(s1,s2,s3);	//zajima nas iba s2 -> od begin po end, s3 bude prazdna
+	//float x = first->_begin , y=first->_ymax;
+	//first->replaceAllText(checkCode(s1,first->_op->getFontName())); //tuto sa to pomeni
+	//last->replaceAllText(checkCode(s3,first->_op->getFontName()));
+	//last->split(s1,s3,s4); //last je end
+	//createAddMoveString(first->_op,last->_begin+difX,last->_ymax+y,s2);
+	//while (first!=last)
+	//{
+	//	PdfOp o = FontWidget::createTranslationTd(x+difX, y+difY);
+	//	insertBefore(o, last->_op);
+	//	last--;
+	//	x = last->_begin;
+	//	y = last->_ymax;
+	//}
+	//createAddMoveString(first->_op,first->_begin+difX,first->_ymax+y,s2);
 
-	_textList.sort();
+	//_textList.sort();
 }
 void TabPage::insertBefore(PdfOp op, PdfOp before)
 {
@@ -3046,31 +3046,31 @@ End:
 }
 void TabPage::replaceSelectedText(QString by)
 {
-	TextData::iterator first, last;
-	setSelected(first, last);
-	//delete the part
-	if (first != last)
-	{
-		//ak nie su stejne, stejne to zopakuj len pre prve a zvysok zmaz
-		QString s[3];
-		TextData::iterator i1,i2;
-		setSelected(i1,i2);
-		i1->split(s[0],s[1],s[2]);
-		i1->replaceAllText(checkCode(s[0]+s[1]+by,first->_op->getFontName()));
-		i1++;
-		TextData::iterator it = i1;
-		for(; i1!=i2; i1++ )
-		{
-			i1->_op->getContentStream()->deleteOperator(i1->_op,true);
-		}//ten dalsi bude mat asi spravne maticu, jelikoz je to tj-bud bude pokracovat -OK alebo vlastnu - OK
-		createList();
-		return;
-	}
-	//zaciatok aj koniec je stejny
-	QString s[3];//iba s1 mame vymazat
-	first->split(s[0],s[1],s[2]);
-	first->replaceAllText(checkCode(s[0]+by+s[2],sTextIt->_op->getFontName()));
-	//ostatne sa posunu, ak si v stejnom tj-> posunu sa s vlozenim. Ok nie su, maju maticu
+	//TextData::iterator first, last;
+	//setSelected(first, last);
+	////delete the part
+	//if (first != last)
+	//{
+	//	//ak nie su stejne, stejne to zopakuj len pre prve a zvysok zmaz
+	//	QString s[3];
+	//	TextData::iterator i1,i2;
+	//	setSelected(i1,i2);
+	//	i1->split(s[0],s[1],s[2]);
+	//	i1->replaceAllText(checkCode(s[0]+s[1]+by,first->_op->getFontName()));
+	//	i1++;
+	//	TextData::iterator it = i1;
+	//	for(; i1!=i2; i1++ )
+	//	{
+	//		i1->_op->getContentStream()->deleteOperator(i1->_op,true);
+	//	}//ten dalsi bude mat asi spravne maticu, jelikoz je to tj-bud bude pokracovat -OK alebo vlastnu - OK
+	//	createList();
+	//	return;
+	//}
+	////zaciatok aj koniec je stejny
+	//QString s[3];//iba s1 mame vymazat
+	//first->split(s[0],s[1],s[2]);
+	//first->replaceAllText(checkCode(s[0]+by+s[2],sTextIt->_op->getFontName()));
+	////ostatne sa posunu, ak si v stejnom tj-> posunu sa s vlozenim. Ok nie su, maju maticu
 }
 void TabPage::eraseSelectedText()
 {

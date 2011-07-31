@@ -38,6 +38,6 @@ public:
 	bool forward (double x, double y, bool & eq)const;
 	//split odla toho, ako sme to vysvietili
 	void split(QString& split1, QString& split2, QString& split3);
-	void replaceAllText(std::string s);
+	//void replaceAllText(std::string s);
 	~OperatorData();
 };

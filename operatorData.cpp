@@ -19,11 +19,6 @@ OperatorData::OperatorData(PdfOp op, DisplayParams& displayParams) : _begin(0), 
 	std::string tmp;
 	std::wstring test;
 	_op = boost::dynamic_pointer_cast<TextSimpleOperator>(op);
-	if (!_op->getCurrentFont())
-	{
-		QMessageBox::warning(NULL,"WEIRD!","This text operator does not have font enabled.\n Skipping."); //s trochou stastie bbox bde desne maly
-		return;
-	}
 	_op->getFontText(test);
 	_text = QString::fromStdWString(test); //TODO pozor na leak
 	libs::Rectangle r = _op->getBBox();
@@ -190,13 +185,13 @@ void OperatorData::split(QString & split1, QString& split2, QString& split3)
 	split2= s.mid(part1, part2-part1);
 	split3= s.mid(part2);
 }
-void OperatorData::replaceAllText( std::string s )
-{
-	PdfOperator::Operands ops;
-	ops.push_back(boost::shared_ptr<IProperty>(new CString(s)));
-	PdfTextOperator p = boost::dynamic_pointer_cast<TextSimpleOperator>(createOperator("Tj",ops));
-	_op->getContentStream()->replaceOperator(_op,p);
-	_op = p;
-	_text = QString::fromStdString(s); //TODO make visible that now this is invalid
-	clear();
-}
+//void OperatorData::replaceAllText( std::string s )
+//{
+//	PdfOperator::Operands ops;
+//	ops.push_back(boost::shared_ptr<IProperty>(new CString(s)));
+//	PdfTextOperator p = boost::dynamic_pointer_cast<TextSimpleOperator>(createOperator("Tj",ops));
+//	_op->getContentStream()->replaceOperator(_op,p);
+//	_op = p;
+//	_text = QString::fromStdString(s); //TODO make visible that now this is invalid
+//	clear();
+//}
