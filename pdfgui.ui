@@ -20,7 +20,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Pdf editor v1.24</string>
+   <string>Pdf editor v1.25</string>
   </property>
   <property name="windowIcon">
    <iconset resource="pdf.qrc">

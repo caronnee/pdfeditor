@@ -278,6 +278,8 @@ void TabPage::setState()
 		message+="Read-only document\n";
 	if (containsOperator("TJ"))
 		message += "Contains unsupported TJ operator. Text may not work properly\n"; 
+	if (_pdf->getRevisionsCount()!= this->ui.revision->currentIndex()+1)
+		message = "Revision is not actual";
 	if (!message.isEmpty())
 		emit SetStateSignal(message);
 }
@@ -374,8 +376,9 @@ void TabPage::highLightAnnSelected()
 	if (!_selected)
 		return;//TODO musi byt tie non-empty
 	_cmts->setIndex(AHighlight);
+	_cmts->setHColor(_parent->getHColor());
 	_cmts->insertMarkup();
-	emit ("Inserted highlight annotation withou comment");
+	emit ("Inserted highlight annotation without comment");
 }
 void TabPage::raiseChangeSelectedImage()
 {
@@ -2308,6 +2311,7 @@ void TabPage::initRevision(int revision) //snad su revizie od nuly:-/
 	_page = _pdf->getPage(pos);
 	if (pos > _pdf->getPageCount())
 		pos = _pdf->getPageCount();
+	setState();
 	redraw();
 }
 
