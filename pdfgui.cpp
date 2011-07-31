@@ -43,6 +43,9 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	_search = new Search(this);//neptraia k tomuto mimiokienku
 	_searchShortCut = new QShortcut(QKeySequence(tr("Ctrl+F", "Find texts")),this);
 
+	connect(this->ui.openedPdfs, SIGNAL(GetActualHColorSignal()), this->ui.hcolor, SLOT(getColor()));
+	connect(this->ui.openedPdfs, SIGNAL(GetActualColorSignal()), this->ui.color, SLOT(getColor()));
+
 	connect(_search, SIGNAL(stopSignal()), this->ui.openedPdfs, SLOT(stopSearch()));
 	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(show())); //TODO showYourself
 	connect(_searchShortCut, SIGNAL(activated()), _search, SLOT(raise()));

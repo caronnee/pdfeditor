@@ -61,14 +61,14 @@ OperatorData::OperatorData(PdfOp op, DisplayParams& displayParams) : _begin(0), 
 OperatorData::~OperatorData()
 {
 }
-float OperatorData::GetPreviousStop()
+float OperatorData::getPreviousStop()
 {
 	int l = letters(_begin);//pretoze to nemuzi byt nastavene presne na begin a letter vypluje najblizsiu DALSIU zastavku
 	if (l < 0)
 		return this->_origX;
 	return position(l);
 }
-float OperatorData::GetNextStop()
+float OperatorData::getNextStop()
 {
 	int l = letters(_end);
 	l++;
@@ -176,9 +176,9 @@ void OperatorData::split(QString & split1, QString& split2, QString& split3)
 {
 	QString s = _text;
 	BBox a = _op->getBBox();
-	int part1 = letters(GetPreviousStop());
+	int part1 = letters(getPreviousStop());
 	assert(part1>=0);
-	int part2 = letters(GetNextStop());
+	int part2 = letters(getNextStop());
 	assert(part2<= s.size()+1);
 	split1= s.mid(0,part1);
 	split2= s.mid(part1, part2-part1);

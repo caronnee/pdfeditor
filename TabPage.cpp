@@ -295,7 +295,7 @@ void TabPage::about()
 		dict->getAllPropertyNames(conts);
 		for ( int i = 0; i< conts.size(); i++)
 		{
-			message += QString("\t") + conts[i].c_str();
+			message += conts[i].c_str();
 			std::string val;
 			dict->getProperty(conts[i])->getStringRepresentation(val);
 			message += val.c_str();
@@ -434,14 +434,14 @@ void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 	TextData::iterator iter = sTextIt;
 	while (true)
 	{
-		double x = iter->GetPreviousStop();
+		double x = iter->getPreviousStop();
 		double y = iter->_ymax;
 		rotatePdf(displayparams,x,y,true);
 		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
 		coordinates.push_back(x);
 		coordinates.push_back(y);
 
-		x = iter->GetNextStop();
+		x = iter->getNextStop();
 		y = iter->_ymax;
 		rotatePdf(displayparams,x,y,true);
 		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
@@ -449,7 +449,7 @@ void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 		coordinates.push_back(y);
 		dim[1] = min(dim[1],y);
 
-		x = iter->GetPreviousStop();
+		x = iter->getPreviousStop();
 		y = iter->_ymin;
 		rotatePdf(displayparams,x,y,true);
 		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
@@ -457,7 +457,7 @@ void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 		coordinates.push_back(y); 
 		dim[0] = min(dim[0],x);
 
-		x = iter->GetNextStop();
+		x = iter->getNextStop();
 		y = iter->_ymin;
 		rotatePdf(displayparams,x,y,true);
 		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
@@ -1073,7 +1073,7 @@ void TabPage::raiseChangeSelectedText()
 	double ret, dummy; //TODO conevrt page rotation!!
 	//rotatePdf(displayparams,pos,ret,true);
 	displayparams.convertPixmapPosToPdfPos(sTextIt->_origX, sTextIt->_ymin, dummy, ret);//TODO font matrix
-	double pos = sTextIt->GetPreviousStop();
+	double pos = sTextIt->getPreviousStop();
 
 	const double * fMatrix = sTextIt->_op->getCurrentFont()->getFontBBox();
 	ret -= fMatrix[3]*h ; //TODO toto nemusi byt vyska BBoxu
@@ -1617,10 +1617,10 @@ void TabPage::highlight()
 	assert(region.isEmpty());
 	while (true)
 	{
-		x1= first->GetPreviousStop();
+		x1= first->getPreviousStop();
 		y1 = first->_ymin;
 		//rotatePdf(displayparams,x1,y1,false);
-		x2 = first->GetNextStop();
+		x2 = first->getNextStop();
 		y2 = first->_ymax;
 		rotatePdf(displayparams,x1,y1,false);
 		rotatePdf(displayparams,x2,y2,false);
@@ -2515,8 +2515,10 @@ void TabPage::showAnnotation()
 
 			//dostat annotacny rectangle
 			//musime rucne parametre pre annotation reprezentovat, pretoe to NEMA bbox, ale priano to sisame z dictionary
-			displayparams.convertPdfPosToPixmapPos(coor[0],coor[1],coor[0],coor[1]);
-			displayparams.convertPdfPosToPixmapPos(coor[2],coor[3],coor[2],coor[3]);
+			DisplayParams dTemp = displayparams;
+			dTemp.pageRect = _page->getMediabox();
+			dTemp.convertPdfPosToPixmapPos(coor[0],coor[1],coor[0],coor[1]);
+			dTemp.convertPdfPosToPixmapPos(coor[2],coor[3],coor[2],coor[3]);
 			b = BBox(coor[0],coor[1],coor[2], coor[3]);
 		}
 		QRect convertedRect = getRectangle(b);//PODIVNE
@@ -2577,7 +2579,7 @@ void TabPage::changeSelectedText(PdfOp insertedText) //vsetko zosane na svojom m
 	//float h = sTextIt->_op->getFontHeight();
 	//const double * fMatrix = sTextIt->_op->getCurrentFont()->getFontBBox();
 	//double y = displayparams.DEFAULT_PAGE_RY - sTextIt->_ymax/corr + fMatrix[3]*h ; //TODO toto nemusi byt vyska BBoxu
-	double pos = sTextIt->GetPreviousStop();
+	double pos = sTextIt->getPreviousStop();
 	//rotatePdf(displayparams,pos,y,true);
 	//_font->setPosition(pos,y); //pretoze toto je v default user space
 	//rozdelime na dva pripady - pokial je to roznake a pokial je zaciatok erozny od konca
@@ -2595,9 +2597,9 @@ void TabPage::changeSelectedText(PdfOp insertedText) //vsetko zosane na svojom m
 	operands.clear();
 	TextData::iterator it = sTextIt;
 	it->split(s1,s2,s3);
-	float dist = it->GetPreviousStop() - it->_origX/* - sTextItEnd->_charSpace*/;
+	float dist = it->getPreviousStop() - it->_origX/* - sTextItEnd->_charSpace*/;
 	dist*= corr;
-	float dx=sTextIt->GetPreviousStop() - sTextIt->_origX;
+	float dx=sTextIt->getPreviousStop() - sTextIt->_origX;
 	float dy=0;
 	dx*=corr;
 	assert(s3==""); //namiesto prveho TD bude 
@@ -2635,7 +2637,7 @@ void TabPage::changeSelectedText(PdfOp insertedText) //vsetko zosane na svojom m
 		sTextItEnd->split(s1,s2,s3);
 		assert(s1=="");
 		operands.clear();
-		dist = lastX - sTextItEnd->GetPreviousStop()/*-sTextItEnd->_charSpace*/;
+		dist = lastX - sTextItEnd->getPreviousStop()/*-sTextItEnd->_charSpace*/;
 		dist /= corr;
 		operands.push_back(PdfProperty(CRealFactory::getInstance(dist)));
 		operands.push_back(PdfProperty(CRealFactory::getInstance(0)));
@@ -2963,7 +2965,7 @@ void TabPage::deleteSelectedText() //sucasne zarovna
 	_selected = false;
 	//PdfOp op = createOperator("Tj",operand);
 	sTextIt->_op->setSubPartExclusive(sTextIt->letters(sTextIt->_begin), sTextIt->letters(sTextIt->_end));
-	float distX = -sTextIt->GetNextStop() + sTextItEnd->GetPreviousStop(); //nesmie byt fabs!! 
+	float distX = -sTextIt->getNextStop() + sTextItEnd->getPreviousStop(); //nesmie byt fabs!! 
 	float distY =  sTextIt->_ymax - sTextItEnd->_ymax;
 	if (sTextIt == sTextItEnd)
 	{
@@ -2977,14 +2979,14 @@ void TabPage::deleteSelectedText() //sucasne zarovna
 	}
 
 	/////////////////////////////////MANY OPERATORS///////////
-	distX =  sTextIt->GetPreviousStop() - sTextIt->_origX2;
+	distX =  sTextIt->getPreviousStop() - sTextIt->_origX2;
 	distX/= displayparams.vDpi/72;
 	distY =  sTextIt->_ymin - sTextItEnd->_ymin;
 	distY /= displayparams.hDpi/72;
 	op = FontWidget::createTranslationTd(distX, 0);
 	sTextIt->_op->getContentStream()->insertOperator(sTextIt->_op, op);
 
-	distX =  sTextIt->_origX2 - sTextItEnd->GetNextStop();
+	distX =  sTextIt->_origX2 - sTextItEnd->getNextStop();
 	distX /= displayparams.vDpi/72;
 	distY =  sTextIt->_ymin - sTextItEnd->_ymin;
 	distY /= displayparams.hDpi/72;
@@ -3002,7 +3004,7 @@ void TabPage::deleteSelectedText() //sucasne zarovna
 	assert(sTextIt == sTextItEnd);
 	/*sTextIt->split(s[0],s[1],s[2]);
 	assert(s[0]=="");*/
-	distX = sTextItEnd->_origX - sTextItEnd->GetNextStop();
+	distX = sTextItEnd->_origX - sTextItEnd->getNextStop();
 	distX /= displayparams.vDpi/72;
 	{
 		PdfOp op2 = FontWidget::createTranslationTd(distX,0);
@@ -3059,40 +3061,50 @@ void TabPage::eraseSelectedText()
 		float dist;
 		if (!s[2].isEmpty()) //s2 not empty-> nejaky operator zostava potom 
 		{
-			PdfOperator::Operands operands;
-			std::string e = checkCode(s[2],sTextIt->_op->getFontName());
-			//s[2].toStdString();
-			if(e.empty())
-				return;
-			operands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(e)));
-			PdfOp op = createOperator("Tj",operands); //stejny operator, stejny fot
-			dist = sTextIt->GetNextStop() - sTextIt->_origX;
+			PdfOp tClone = sTextIt->_op;
+			tClone = tClone->clone();
+			shared_ptr<TextSimpleOperator> textClone= boost::dynamic_pointer_cast<TextSimpleOperator>(tClone);
+			
+			//PdfOperator::Operands operands;
+			//std::string e = checkCode(s[2],sTextIt->_op->getFontName());
+			////s[2].toStdString();
+			//if(e.empty())
+			//	return;
+			//operands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(e)));
+			//PdfOp op = createOperator("Tj",operands); //stejny operator, stejny fot
+			dist = sTextIt->getNextStop() - sTextIt->_origX;
 			dist*=corr;
 			PdfOp optd = FontWidget::createTranslationTd(-dist,0);
 			//dist *= 72.0f/displayparams.hDpi;
 			sTextIt->_op->getContentStream()->insertOperator(PdfOperator::getIterator(sTextIt->_op),optd);
-			sTextIt->_op->getContentStream()->insertOperator(PdfOperator::getIterator(sTextIt->_op),op);
+			sTextIt->_op->getContentStream()->insertOperator(PdfOperator::getIterator(sTextIt->_op),textClone);
+			
+			textClone->setFontData(sTextIt->_op->getCurrentFont());
+			textClone->setSubPartExclusive(0,sTextIt->letters(sTextIt->getNextStop())-1);
+
 			optd = FontWidget::createTranslationTd(dist,0);
-			sTextIt->replaceAllText(checkCode(s[0],sTextIt->_op->getFontName()));
+			int letters = sTextIt->letters(sTextIt->getPreviousStop());
+			sTextIt->_op->setSubPartExclusive(letters,-1);//pre istotu
 			sTextIt->_op->getContentStream()->insertOperator(PdfOperator::getIterator(sTextIt->_op),optd);
 		}
 		else
-			sTextIt->replaceAllText(checkCode(s[0],sTextIt->_op->getFontName()));
-
+		{
+			int letters = sTextIt->letters(sTextIt->getPreviousStop());
+			sTextIt->_op->setSubPartExclusive(letters,-1);
+		}
 		emit addHistory("Text erased\n");
+		_selected = false;
 		return;
 	}
 	//	float distX1 =0;// -sTextIt->GetPreviousStop() + sTextIt->_origX2;//kolko sme zmazali
-	float distX2 = sTextItEnd->GetNextStop() - sTextItEnd->GetPreviousStop()/*-sTextItEnd->_charSpace*/;
+	float distX2 = sTextItEnd->getNextStop() - sTextItEnd->getPreviousStop()/*-sTextItEnd->_charSpace*/;
 	distX2 *=corr;
 	//najskor musim deletnut tie, ktore urcite nechceme, v dalsom kuse kodu robim replace a nema sa to rado
 	TextData::iterator it = sTextIt;
-	QString s1,s2,s3;
-// REPLACE SUBEXPLUSIVE
-	std::string n1 = checkCode(s1,sTextIt->_op->getFontName());
-	std::string n2 = checkCode(s3,sTextIt->_op->getFontName());
-	if ((n1.empty() && !s1.isEmpty())|| (n2.empty()&& !s3.isEmpty()) )
-		return;
+	//std::string n1 = checkCode(s1,sTextIt->_op->getFontName());
+	//std::string n2 = checkCode(s3,sTextIt->_op->getFontName());
+	//if ((n1.empty() && !s1.isEmpty())|| (n2.empty()&& !s3.isEmpty()) )
+	//	return;
 	it++;
 	while (true)
 	{
@@ -3105,21 +3117,27 @@ void TabPage::eraseSelectedText()
 
 	{
 		//uchovame to, co z praveho operatoru zostalo
+#ifdef _DEBUG
+		QString s1,s2,s3;
 		sTextIt->split(s1,s2,s3); //splitneme
 		assert(s3=="");
-		//		PdfOp td = FontWidget::createTranslationTd(distX1,0);
-		//		sTextIt->_op->getContentStream()->insertOperator( sTextIt->_op,td);
-		sTextIt->replaceAllText(n1); // povodny operator bude nezmeneny az na to , ze mu
-		//td = FontWidget::createTranslationTd(-distX1,0);
-		//insertBefore( td, sTextIt->_op);
+#endif // _DEBUG
+		//sTextIt->replaceAllText(n1);
+		int index = sTextIt->letters(sTextIt->getPreviousStop());
+		sTextIt->_op->setSubPartExclusive(index,-1);
 	}
 	{
+#ifdef _DEBUG
+		QString s1,s2,s3;
 		sTextItEnd->split(s1,s2,s3);
 		assert(s1 == "");
+#endif // _DEBUG
 		PdfOp op = FontWidget::createTranslationTd(-distX2,0);
 		sTextItEnd->_op->getContentStream()->insertOperator(sTextItEnd->_op,op);
 		op = FontWidget::createTranslationTd(distX2,0);
-		sTextItEnd->replaceAllText(n2);
+		int index  = sTextItEnd->letters(sTextItEnd->getNextStop());
+		//sTextItEnd->replaceAllText(n2);
+		sTextItEnd->_op->setSubPartExclusive(0,index-1);
 		insertBefore(op, sTextItEnd->_op);
 	}
 	_selected = false;
@@ -3553,7 +3571,10 @@ void TabPage::handleLink( int level )
 		index = 0;
 	if(index >= ui.zoom->count())
 		index = ui.zoom->count()-1;
-	ui.zoom->setCurrentIndex(index);
+	if (index == ui.zoom->currentIndex())
+		redraw();
+	else
+		ui.zoom->setCurrentIndex(index);
 	rotatePdf(displayparams,x,y,false);
 	this->ui.scrollArea->ensureVisible(x,y);
 	return;

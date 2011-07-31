@@ -257,7 +257,7 @@ void DisplayPage::mouseReleaseEvent(QMouseEvent * event)
 //	event->ignore(); //posun to parentovi
 	if (event->button() == Qt::LeftButton)
 		emit MouseReleased(event->pos()); //:)
-	if (event->button() == Qt::MidButton)
+	if (event->button() == Qt::LeftButton)
 	{
 		QPoint p = event->pos();
 		for ( int i =0; i< _interactive.size();i++)
@@ -273,7 +273,8 @@ void DisplayPage::mouseReleaseEvent(QMouseEvent * event)
 
 void DisplayPage::addPlace( QRect r )
 {
-	_interactive.push_back(r);
+	_interactive.append(r);
+	assert(_interactive.back() == r);
 	//FIXME zotriedit pre lepsi pristup
 	//ukaz
 }

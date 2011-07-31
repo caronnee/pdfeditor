@@ -34,5 +34,6 @@ signals:
 		//}
 		void setColor(QColor color);
 		QColor getColor();
+		void valueChanged(int);
 };
 #endif

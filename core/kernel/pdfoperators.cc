@@ -502,6 +502,8 @@ void TextSimpleOperator::setSubPartExclusive( int begin, int end )
 	double dx, dy, originX, originY;
 	char * p=raw.getCString();
 	int cycles = 0;
+	if (end <0)
+		end = raw.getLength();
 	while(len>0)
 	{
 		int n = font->getNextChar(p, len, &code, &u, (int)(sizeof(u) / sizeof(Unicode)), &uLen,

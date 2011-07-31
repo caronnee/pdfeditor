@@ -35,6 +35,7 @@ ColorPicker::ColorPicker(QWidget * parent) : QWidget(parent)
 	setColor(QColor(255,0,255));
 	setColor(QColor(0,255,255));
 	setColor(QColor(255,255,255));
+	connect(this->ui.colors, SIGNAL(currentIndexChanged(int)), this, SLOT(valueChanged(int)));
 }
 int ColorPicker::getR() 
 { 
@@ -79,4 +80,9 @@ QColor ColorPicker::getColor()
 {
 	int index = ui.colors->itemData(ui.colors->currentIndex()).toInt(); 
 	return colors[index];
+}
+
+void ColorPicker::valueChanged(int)
+{
+	emit ValueChangedSignal(getColor());
 }

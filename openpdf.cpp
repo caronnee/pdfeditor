@@ -39,6 +39,7 @@ void OpenPdf::setModeDeleteAnnotation()
 }
 QColor OpenPdf::getHColor()
 {
+	_highlightColor = emit GetActualHColorSignal();
 	return _highlightColor;
 }
 OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeDoNothing),_previous(ModeDoNothing), _color(255,0,0,50), _highlightColor(0,255,0),_author("Unknown")
@@ -308,6 +309,7 @@ void OpenPdf::insertEmpty()
 }
 void OpenPdf::print()
 {
+	throw "Not implemented";
 	//calls insert range specific to active tab
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->print();
@@ -357,7 +359,7 @@ void OpenPdf::setPreviousMode()
 void OpenPdf::setColor( QColor color )
 {
 	_color = color;
-	_color.setAlpha(50);
+	_color.setAlpha(150);
 }
 
 void OpenPdf::setHColor( QColor color)

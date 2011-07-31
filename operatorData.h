@@ -22,8 +22,8 @@ struct OperatorData
 #endif // _DEBUG
 public:
 	OperatorData(PdfOp op, pdfobjects::DisplayParams& displayParams);
-	float GetPreviousStop();
-	float GetNextStop();
+	float getPreviousStop();
+	float getNextStop();
 	void change(bool from_beg);
 	void clear();
 	void restoreBegin();

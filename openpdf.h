@@ -32,6 +32,8 @@ public:
 	Mode getMode() const { return _mode; }
 
 signals:
+	QColor GetActualHColorSignal();
+	QColor GetActualColorSignal();
 	void ModeChangedSignal(HelptextIcon);
 public slots:
 	void initAnalyze();
