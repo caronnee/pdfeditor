@@ -290,7 +290,7 @@ void TabPage::about()
 	if (_pdf->getDictionary()->containsProperty("Metadata"))
 	{
 		message += "Contains metadata:";
-		shared_ptr<CDict> dict = _pdf->getDictionary()->getProperty<CDict>("MetaData");
+		shared_ptr<CStream> dict = _pdf->getDictionary()->getProperty<CStream>("Metadata");
 		std::vector<std::string> conts;
 		dict->getAllPropertyNames(conts);
 		for ( int i = 0; i< conts.size(); i++)
@@ -301,6 +301,9 @@ void TabPage::about()
 			message += val.c_str();
 			message += "\n";
 		}
+		message += QString("Data:");
+		for ( int i =0; i < dict->getBuffer().size(); i++)
+			message += dict->getBuffer()[i];
 	}
 	else
 		message += "No metadata\n\n";
@@ -364,10 +367,11 @@ void TabPage::raiseChangeSelectedImage()
 	y-= (min(b.yleft,b.yright))*scaleY;
 	//uz mame bbox
 	rotatePdf(displayparams,x,y,false);
-	_image->setPosition(x,y,72.0f/displayparams.vDpi);
-	_image->setSize(abs(b.xleft-b.xright), abs(b.xleft-b.xright));
+	float corr = 72.0f/displayparams.vDpi;
+	_image->setPosition(x,y);
+	_image->setSize(abs(b.xleft-b.xright)*corr, abs(b.xleft-b.xright)*corr);
 	emit addHistory(QString("Raising image change at position ") + QVariant(abs(b.xleft-b.xright)).toString() + " " + QVariant(abs(b.xleft-b.xright)).toString() + "\n");
-	_image->setImage( _selectedImage, 72.0f/displayparams.vDpi); //TODO x,y
+	_image->setImage( _selectedImage); //TODO x,y
 	_image->show();
 }
 
@@ -1434,7 +1438,7 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			p.y = r.y();
 			//rotatePdf(displayparams, p.x, p.y,true);
 			displayparams.convertPixmapPosToPdfPos(p.x,p.y,p.x,p.y);
-			_image->setPosition(p.x,p.y, displayparams.vDpi/72);
+			_image->setPosition(p.x,p.y);
 			raiseInsertImage(r);
 			_dataReady=false;
 			break;
@@ -2949,16 +2953,17 @@ void TabPage::deleteSelectedText() //sucasne zarovna
 {
 	if (!_selected)
 		return;
-	PdfOp insertTdBeforeThis;
+	PdfOp op;
+	//PdfOp insertTdBeforeThis;
 	//prvy replasni, ostatne vymaz, pridaj TD pred posledne
-	QString s[3];
-	sTextIt->split(s[0],s[1],s[2]);
-	PdfOperator::Operands operand;
-	operand.push_back(shared_ptr<IProperty>(new CString(s[0].toAscii().data())));;
+	//QString s[3];
+	//sTextIt->split(s[0],s[1],s[2]);
+	//PdfOperator::Operands operand;
+	//operand.push_back(shared_ptr<IProperty>(new CString(s[0].toAscii().data())));;
 	_selected = false;
-	PdfOp op = createOperator("Tj",operand);
+	//PdfOp op = createOperator("Tj",operand);
 	sTextIt->_op->setSubPartExclusive(sTextIt->letters(sTextIt->_begin), sTextIt->letters(sTextIt->_end));
-	float distX = -sTextIt->GetNextStop() + sTextItEnd->GetPreviousStop(); //nesmie byt fabs!! keby to 
+	float distX = -sTextIt->GetNextStop() + sTextItEnd->GetPreviousStop(); //nesmie byt fabs!! 
 	float distY =  sTextIt->_ymax - sTextItEnd->_ymax;
 	if (sTextIt == sTextItEnd)
 	{
@@ -2972,30 +2977,32 @@ void TabPage::deleteSelectedText() //sucasne zarovna
 	}
 
 	/////////////////////////////////MANY OPERATORS///////////
-	
-	//sTextIt->_op->setSubPartExclusive()getContentStream()->replaceOperator(PdfOperator::getIterator(sTextIt->_op),op);
-	distX =  sTextIt->GetPreviousStop() - sTextItEnd->_origX;
+	distX =  sTextIt->GetPreviousStop() - sTextIt->_origX2;
 	distX/= displayparams.vDpi/72;
 	distY =  sTextIt->_ymin - sTextItEnd->_ymin;
 	distY /= displayparams.hDpi/72;
+	op = FontWidget::createTranslationTd(distX, 0);
+	sTextIt->_op->getContentStream()->insertOperator(sTextIt->_op, op);
+
+	distX =  sTextIt->_origX2 - sTextItEnd->GetNextStop();
+	distX /= displayparams.vDpi/72;
+	distY =  sTextIt->_ymin - sTextItEnd->_ymin;
+	distY /= displayparams.hDpi/72;
+	op = FontWidget::createTranslationTd(distX, -distY);
+
 	sTextIt++;
 	while(sTextIt!=sTextItEnd)//delete also Td operators
 	{
-	/*	PdfOperator::Iterator it = findTdAssOp(PdfOperator::getIterator(sTextIt->_op));
-		if (it.valid())
-		{
-			PdfOp tdOp = it.getCurrent();
-			tdOp->getContentStream()->deleteOperator(it);
-		}*/
 		sTextIt->_op->getContentStream()->deleteOperator(sTextIt->_op);
 		sTextIt++;
 	}
-	//jedno Td naraz
+	//2Td
 	op = FontWidget::createTranslationTd(distX, -distY);
 	assert(sTextIt->_op->getContentStream());
-	sTextIt->split(s[0],s[1],s[2]);
-	assert(s[0]=="");
-	distX = sTextIt->_origX - sTextIt->GetNextStop();
+	assert(sTextIt == sTextItEnd);
+	/*sTextIt->split(s[0],s[1],s[2]);
+	assert(s[0]=="");*/
+	distX = sTextItEnd->_origX - sTextItEnd->GetNextStop();
 	distX /= displayparams.vDpi/72;
 	{
 		PdfOp op2 = FontWidget::createTranslationTd(distX,0);
@@ -3071,7 +3078,7 @@ void TabPage::eraseSelectedText()
 		}
 		else
 			sTextIt->replaceAllText(checkCode(s[0],sTextIt->_op->getFontName()));
-		//vlozime to, ze sme menili
+
 		emit addHistory("Text erased\n");
 		return;
 	}
@@ -3081,7 +3088,7 @@ void TabPage::eraseSelectedText()
 	//najskor musim deletnut tie, ktore urcite nechceme, v dalsom kuse kodu robim replace a nema sa to rado
 	TextData::iterator it = sTextIt;
 	QString s1,s2,s3;
-
+// REPLACE SUBEXPLUSIVE
 	std::string n1 = checkCode(s1,sTextIt->_op->getFontName());
 	std::string n2 = checkCode(s3,sTextIt->_op->getFontName());
 	if ((n1.empty() && !s1.isEmpty())|| (n2.empty()&& !s3.isEmpty()) )
@@ -3148,22 +3155,22 @@ void TabPage::exportText()
 	_page=_pdf->getPage(beg);
 	QTextEdit * edit = new QTextEdit(this);
 	//TODO nejaka inicializacia
-	QString text;//TODO check ci nie je text moc dlhy, odmedzenia?
+	QString text;
 	float dy = 0;
 	for ( size_t i = beg; i <= end; i++)
 	{
 		float prev =_textList.size() > 0  ? _textList.begin()->_begin : 0;
+		float dy = _textList.size() > 0  ? _textList.begin()->_ymax : 0;
 		for (TextData::iterator iter = _textList.begin(); iter != _textList.end(); iter++)
 		{
-			shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(iter->_op);
-			float diff = iter->_origX - prev;
-			float customSpace = iter->_origX2 - iter->_origX;
-			customSpace /= iter->_text.size()+1;
-			dy = dy - iter->_ymax;
-			if ( diff > 1 || dy < 0) //TODO hack
+			float xx = prev - iter->_origX;
+			float yy = dy - iter->_ymax;
+			float customSpace = iter->_op->getFontHeight()/2;
+			float size2 = xx*xx + yy * yy;
+			if ( size2 < customSpace * customSpace) //TODO hack
 				text.append(" ");
 			std::wstring test;
-			txt->getFontText(test);
+			iter->_op->getFontText(test);
 			text.append(QString::fromStdWString(test));
 			prev = iter->_origX2;
 			dy = iter->_ymax;

@@ -16,7 +16,6 @@ class InsertImage : public QWidget
 
 	PdfOp _invertCm;
 	Ui::Image ui;
-	float _scale;
 	typedef boost::shared_ptr<pdfobjects::CInlineImage> PdfInlineImage;
 	boost::shared_ptr<pdfobjects::InlineImageCompositePdfOperator> biOp;
 	//to, kde sa pridava obrazok, je uz v matici
@@ -26,13 +25,13 @@ protected:
 	virtual void closeEvent ( QCloseEvent * event );
 public:
 	InsertImage(QWidget * parent);
-	void setImage(PdfOp image, double scale);//TODO x,y
+	void setImage(PdfOp image);//TODO x,y
 	void getInvertMatrix(PdfOp op, double * act, double * res);
 public slots:
 	void apply();
 	//void rotationCm(int angle);
 	void setImagePath();
-	void setPosition(float f1, float f2,float scale); //todo xscale, yscale
+	void setPosition(float f1, float f2); //todo xscale, yscale
 	void setSize(float w,float h);
 	void showAngleToolTip( int value );
 signals:

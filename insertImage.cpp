@@ -29,9 +29,8 @@ void InsertImage::setSize(float w,float h)
 	ui.sizeX->setValue(fabs(w));
 	ui.sizeY->setValue(fabs(h));
 }
-void InsertImage::setPosition(float pdfX,float pdfY, float scale)
+void InsertImage::setPosition(float pdfX,float pdfY)
 {
-	_scale = scale;	
 	init();
 	ui.positionX->setValue(pdfX);
 	ui.positionY->setValue(pdfY);
@@ -71,7 +70,7 @@ void InsertImage::createInlineImage()
 		QMessageBox::warning(this,tr("Unable to load file"),tr("LoadFailed"),QMessageBox::Ok);
 		return;
 	}
-	image = image.scaled(ui.sizeX->value()*_scale,ui.sizeY->value()*_scale,Qt::IgnoreAspectRatio); //proporcie
+	image = image.scaled(ui.sizeX->value(),ui.sizeY->value(),Qt::IgnoreAspectRatio); //proporcie
 	CDict image_dict;
 	image_dict.addProperty ("W", CInt (image.width())); 
 	image_dict.addProperty ("H", CInt (image.height()));
@@ -135,7 +134,7 @@ void InsertImage::apply()
 		q->push_back(_invertCm,getLastOperator(q));
 		q->push_back(createOperatorTranslation(0,0),getLastOperator(q));
 		q->push_back(createOperatorRotation(toRadians(ui.rotation->value())),getLastOperator(q));
-		q->push_back(createOperatorScale(pixW*_scale*scaleX,pixH*_scale*scaleY ),getLastOperator(q));
+		q->push_back(createOperatorScale(pixW*scaleX,pixH*scaleY ),getLastOperator(q));
 	}
 	//vyhod alpha channel	
 	q->push_back(biOp,getLastOperator(q));
@@ -222,10 +221,9 @@ PdfOperator::Iterator iter = PdfOperator::getIterator(ii);
 	c.matrix[3]=1;*/
 	memcpy(res,c.matrix,sizeof(double)*6);
 }
-void InsertImage::setImage(PdfOp ii, double scale)
+void InsertImage::setImage(PdfOp ii)
 {
 	this->ui.imageChooseFrame->hide();
-	_scale = scale;
 	biOp = boost::dynamic_pointer_cast<InlineImageCompositePdfOperator>(ii->clone());
 	ui.sizeX->setValue(biOp->getWidth());
 	ui.sizeY->setValue(biOp->getHeight());
