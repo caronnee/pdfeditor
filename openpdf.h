@@ -103,6 +103,7 @@ public slots:
 	QColor getColor();
 	QColor getHColor();
 	void setModeInsertLinkAnotation();
+	void setModeSetting();
 
 signals:
 	void OpenSuccess(QString);

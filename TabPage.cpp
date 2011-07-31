@@ -1469,8 +1469,7 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			QRect rect(min(point.x(),_mousePos.x()), min(point.y(),_mousePos.y()), abs(point.x()-_mousePos.x()),abs(point.y()-_mousePos.y()));
 			clipBoard->setImage(_labelPage->getImage().copy(rect));
 			_parent->setMode(ModeImagePartCopied);
-			_parent->setMode(ModeImagePartCopied);
-
+			emit addHistory("image was copied to the clipboard");
 			operationDone();
 			break;
 		}

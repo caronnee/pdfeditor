@@ -158,6 +158,10 @@ void OpenPdf::rotate()
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->rotate(90);
 }
+void OpenPdf::setModeSetting()
+{
+	setMode(ModeSettings);
+}
 void OpenPdf::closeAndRemoveTab(int i)
 {
 	TabPage * page = (TabPage *)this->widget(i); //how to get exact tab?

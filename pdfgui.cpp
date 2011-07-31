@@ -52,6 +52,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 
 //////////////////////////////////MENU////////////////////////////////////////
 
+	connect( this->ui.settingsButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeSetting()));
 	connect( this->ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
 	connect( this->ui.actionFullScreen, SIGNAL(triggered()), this, SLOT(showFullScreened()) );
 	connect( this->ui.actionOpen, SIGNAL(triggered()), this->ui.openedPdfs, SLOT(openAnotherPdf()));

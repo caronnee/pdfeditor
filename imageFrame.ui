@@ -38,6 +38,9 @@
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
+     <attribute name="buttonGroup">
+      <string>mainGrup</string>
+     </attribute>
     </widget>
    </item>
    <item>
@@ -64,6 +67,9 @@
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
+     <attribute name="buttonGroup">
+      <string>mainGrup</string>
+     </attribute>
     </widget>
    </item>
    <item>
@@ -136,6 +142,9 @@
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
+     <attribute name="buttonGroup">
+      <string>mainGrup</string>
+     </attribute>
     </widget>
    </item>
    <item>
@@ -163,6 +172,9 @@
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
+     <attribute name="buttonGroup">
+      <string>mainGrup</string>
+     </attribute>
     </widget>
    </item>
   </layout>
@@ -171,4 +183,7 @@
   <include location="pdf.qrc"/>
  </resources>
  <connections/>
+ <buttongroups>
+  <buttongroup name="mainGrup"/>
+ </buttongroups>
 </ui>

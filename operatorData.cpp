@@ -5,6 +5,7 @@
 #include "kernel/ccontentstream.h"
 #include "kernel/displayparams.h"
 #include "globalfunctions.h"
+#include <QMessageBox>
 
 using namespace pdfobjects;
 
@@ -18,6 +19,11 @@ OperatorData::OperatorData(PdfOp op, DisplayParams& displayParams) : _begin(0), 
 	std::string tmp;
 	std::wstring test;
 	_op = boost::dynamic_pointer_cast<TextSimpleOperator>(op);
+	if (!_op->getCurrentFont())
+	{
+		QMessageBox::warning(NULL,"WEIRD!","This text operator does not have font enabled.\n Skipping."); //s trochou stastie bbox bde desne maly
+		return;
+	}
 	_op->getFontText(test);
 	_text = QString::fromStdWString(test); //TODO pozor na leak
 	libs::Rectangle r = _op->getBBox();
