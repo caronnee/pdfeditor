@@ -26,6 +26,7 @@ void Comments::setIndex( int i )
 		this->ui.hFrame->hide();
 		break;
 	}
+	onChange(i);
 }
 //toto sa zavola vzdy iva vtedy, ked ine o novy anotaciu
 void Comments::setRectangle(float x, float y, int width, int height)

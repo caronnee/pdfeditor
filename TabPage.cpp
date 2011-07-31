@@ -1119,13 +1119,11 @@ void TabPage::raiseAnnotation(QPoint point)//raise cpmment annotation
 	displayparams.convertPixmapPosToPdfPos(d[0],d[1],d[0],d[1]);
 	_cmts->setRectangle(d[0],d[1],30,30);//pre zvysok sa to vyhodi a nahradi sadou anotacii	
 	_cmts->setWindowFlags(Qt::Window);
-	_cmts->setIndex(AText);
 	_cmts->show();
 }
 
 void TabPage::createList()
-{
-	
+{	
 	emit addHistory("Recreating text list");
 	_textList.clear();
 	//get all pdf text operators in list
