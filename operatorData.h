@@ -2,6 +2,7 @@
 #include "typedefs.h"
 #include <QString>
 #include "kernel/displayparams.h"
+#include "utils/types/coordinates.h"
 
 typedef boost::shared_ptr<pdfobjects::TextSimpleOperator> PdfTextOperator;
 //TODO pozor na rotaciu stranky, bude to fachat?

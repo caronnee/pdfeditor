@@ -156,6 +156,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	ui.setupUi(this);
 	shared_ptr<pdfobjects::utils::ProgressObserver> prog(new pdfobjects::utils::ProgressObserver(new PdfProgress(ui.progressBar)));
 	_pdf->getPdfWriter()->registerObserver(prog);
+	_labelPage->hide();
 	_labelPage = new DisplayPage(this);
 	_cmts = new Comments(_parent->Author());
 	_cmts->setHColor(_parent->getHColor());
@@ -174,8 +175,11 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	//////////////////////////////////////THREAD////////////////////////////////////
 	connect( _thread, SIGNAL(finished()), this, SLOT(reportSearchResult()));
 	//////////////////////////////////////////////////////////////////////////
-	connect(this->ui.documentInfo, SIGNAL(pressed()), this, SLOT(about()));
-	connect(this->ui.plusZoom, SIGNAL(pressed()), this, SLOT(addZoom()) );
+	connect( this, SIGNAL(SetStateSignal(QString)), this->ui.stateLabel, SLOT(setText(QString)));
+	connect( this, SIGNAL(SetStateSignal(QString)), this->ui.stateLabel, SLOT(show()));
+
+	connect( this->ui.documentInfo, SIGNAL(pressed()), this, SLOT(about()));
+	connect( this->ui.plusZoom, SIGNAL(pressed()), this, SLOT(addZoom()) );
 // 	connect(this->ui.minusZoom, SIGNAL(pressed()), this, SLOT(minusZoom()) );
  	connect(this->ui.commitButton, SIGNAL(pressed()), this, SLOT(commitRevision()));
 	connect( this->ui.pageInfo, SIGNAL(returnPressed()),this, SLOT(setPageFromInfo()));
@@ -265,6 +269,14 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	_parent->setMode(oldMode);
 	//search("oftwar",true);
 	//changeSelectedText();
+}
+void TabPage::setState()
+{
+	QString message;
+	if (_pdf->isLinearized())
+		message += "Linearized!\n";
+	if (containsOperator("TJ"))
+		message += "Contains unsupported TJ operator. Text may not work properly"; 
 }
 void TabPage::about()
 {
@@ -449,14 +461,14 @@ void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 		double x = iter->getPreviousStop();
 		double y = iter->_ymax;
 		rotatePdf(displayparams,x,y,true);
-		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
+		displayparams.convertPixmapPosToPdfPos(iter->getPreviousStop(),iter->_ymax,x,y);
 		coordinates.push_back(x);
 		coordinates.push_back(y);
 
 		x = iter->getNextStop();
 		y = iter->_ymax;
 		rotatePdf(displayparams,x,y,true);
-		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
+		displayparams.convertPixmapPosToPdfPos(iter->getNextStop(),iter->_ymax,x,y);
 		coordinates.push_back(x);
 		coordinates.push_back(y);
 		dim[1] = min(dim[1],y);
@@ -464,7 +476,7 @@ void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 		x = iter->getPreviousStop();
 		y = iter->_ymin;
 		rotatePdf(displayparams,x,y,true);
-		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
+		displayparams.convertPixmapPosToPdfPos(iter->getPreviousStop(),iter->_ymin,x,y);
 		coordinates.push_back(x);
 		coordinates.push_back(y); 
 		dim[0] = min(dim[0],x);
@@ -472,7 +484,7 @@ void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 		x = iter->getNextStop();
 		y = iter->_ymin;
 		rotatePdf(displayparams,x,y,true);
-		displayparams.convertPixmapPosToPdfPos(x,y,x,y);
+		displayparams.convertPixmapPosToPdfPos(iter->getNextStop(),iter->_ymin,x,y);
 		coordinates.push_back(x);
 		coordinates.push_back(y); 
 		dim[2] = max(dim[2],x);
@@ -1163,6 +1175,8 @@ void TabPage::createList()
 	_textList.sort();
 	sTextIt = sTextItEnd = sTextMarker = _textList.begin();
 #ifdef _DEBUG
+	if (_textList.empty())
+		return;
 	TextData::iterator iter = _textList.begin();
 	TextData::iterator iter2 = _textList.begin();
 	iter2++;
@@ -1950,8 +1964,7 @@ void TabPage::setPage(int index)
 	_page = _pdf->getPrevPage(_page);
 	displayparams.rotate = _page->getRotation();
 	this->redraw();
-	if (containsOperator("TJ"))
-		QMessageBox::warning(this, "Unsupported element","Pdf contains unsupported element. Some text operator may not work correctly", QMessageBox::Ok,QMessageBox::Ok); 
+	setState();
 	updatePageInfoBar();
 }
 bool TabPage::previousPage()
@@ -3733,9 +3746,7 @@ void TabPage::setPageFromInfo()
 		updatePageInfoBar();
 		return;
 	}
-	_page = _pdf->getPage(pos);
-	redraw();
-	updatePageInfoBar();
+	setPage(pos);
 }
 
 void TabPage::addZoom()

@@ -323,6 +323,7 @@ private slots:
 	void move(int difx, int dify); //on mouse event, called on mouse realease
 	*/
 signals:
+	void SetStateSignal(QString);
 	void addHistory(QString);
 	void ChangePageModeSignal(PageDrawMode);
 	void markPosition(QPoint point); //reverted point
@@ -355,6 +356,7 @@ public:
 	void resizeEvent(QResizeEvent * event);
 	void highlight(); //nesprav nic, pretoze to bude robit mouseMove
 	void setPage(int index);
+	void setState();
 };
 
 #endif
