@@ -144,9 +144,6 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	_thread = new MyThread();
 	debug::changeDebugLevel(10000);
 	_page = boost::shared_ptr<pdfobjects::CPage> (_pdf->getPage(1)); //or set from last
-	if (containsOperator("TJ"))
-		QMessageBox::warning(this, "Unsupported element","Pdf contains unsupported element. Some text operator may not work correctly", QMessageBox::Ok,QMessageBox::Ok); 
-	displayparams.rotate = _page->getRotation();
 	//displayparams.upsideDown = true;
 	// init splash bitmap
 	_acceptedType = OpTextName;
@@ -156,8 +153,9 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	ui.setupUi(this);
 	shared_ptr<pdfobjects::utils::ProgressObserver> prog(new pdfobjects::utils::ProgressObserver(new PdfProgress(ui.progressBar)));
 	_pdf->getPdfWriter()->registerObserver(prog);
-	_labelPage->hide();
+
 	_labelPage = new DisplayPage(this);
+	this->ui.stateLabel->hide();
 	_cmts = new Comments(_parent->Author());
 	_cmts->setHColor(_parent->getHColor());
 	aboutDialogUI.setupUi(&aboutDialog);
@@ -269,14 +267,19 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	_parent->setMode(oldMode);
 	//search("oftwar",true);
 	//changeSelectedText();
+	setPage(1);
 }
 void TabPage::setState()
 {
 	QString message;
 	if (_pdf->isLinearized())
 		message += "Linearized!\n";
+	if (_pdf->getMode() == CPdf::ReadOnly)
+		message+="Read-only document\n";
 	if (containsOperator("TJ"))
-		message += "Contains unsupported TJ operator. Text may not work properly"; 
+		message += "Contains unsupported TJ operator. Text may not work properly\n"; 
+	if (!message.isEmpty())
+		emit SetStateSignal(message);
 }
 void TabPage::about()
 {
@@ -1961,7 +1964,7 @@ void TabPage::pageDown()
 }
 void TabPage::setPage(int index)
 {
-	_page = _pdf->getPrevPage(_page);
+	_page = _pdf->getPage(index);
 	displayparams.rotate = _page->getRotation();
 	this->redraw();
 	setState();
