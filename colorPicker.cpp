@@ -27,7 +27,6 @@ public:
 ColorPicker::ColorPicker(QWidget * parent) : QWidget(parent)
 { 
 	this->ui.setupUi(this);
-	setColor(QColor(0,0,0));
 	setColor(QColor(255,0,0));
 	setColor(QColor(0,255,0));
 	setColor(QColor(0,0,255));

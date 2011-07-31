@@ -38,6 +38,9 @@
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
+     <attribute name="buttonGroup">
+      <string>buttongroup</string>
+     </attribute>
     </widget>
    </item>
    <item>
@@ -64,6 +67,9 @@
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
+     <attribute name="buttonGroup">
+      <string>buttongroup</string>
+     </attribute>
     </widget>
    </item>
    <item>
@@ -90,6 +96,9 @@
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
+     <attribute name="buttonGroup">
+      <string>buttongroup</string>
+     </attribute>
     </widget>
    </item>
    <item>
@@ -110,9 +119,15 @@
        <height>32</height>
       </size>
      </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
+     <attribute name="buttonGroup">
+      <string>buttongroup</string>
+     </attribute>
     </widget>
    </item>
    <item>
@@ -139,6 +154,9 @@
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
+     <attribute name="buttonGroup">
+      <string>buttongroup</string>
+     </attribute>
     </widget>
    </item>
   </layout>
@@ -147,4 +165,7 @@
   <include location="pdf.qrc"/>
  </resources>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttongroup"/>
+ </buttongroups>
 </ui>

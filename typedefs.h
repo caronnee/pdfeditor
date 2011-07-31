@@ -26,10 +26,11 @@
 	XX(ModeInsertLinkAnnotation,"Insert Link Annotation mode: click on pdf to insert a link annotation","unknown.jpg")	\
 	XX(ModeDeleteAnnotation, "Delete annotation mode: click on annotation to delete it","unknown.jpg")	\
 	XX(ModeEmitPosition, "Emit position mode: Pdf is waiting for position. Click somewhere in the pdf","unknown.jpg")	\
+	XX(ModeSettings,"Set the color that should be used when highlighting text by hand and by annostion. Press setting to get away","unknown.jpg")\
 	XX(ImageMode," Not Implemented","unknown.jpg")	\
 	XX(DrawMode,"NotImplemented, go away!","unknown.jpg")	\
 	XX(ModeFindLastFont, "Click to select font and font size by text in PDF","unknown.jpg")\
-	XX(ModeChangeAnntation, "Click on anotation to change it","unknown.jpg") \
+	XX(ModeChangeAnnotation, "Click on anotation to change it","unknown.jpg") \
 	XX(DefaultMode,"Open an PDF","unknown.jpg") \
 	XX(ModeHighlighComment,"After selecting text, fill please content","unknown.jpg") \
 	
@@ -45,6 +46,7 @@ enum Mode
 };
 enum PageDrawMode
 {
+	ModeDrawCircle,
 	ModeTrackCompleteRectangle,
 	ModeDrawNothing,
 	ModeTrackDrawingRect

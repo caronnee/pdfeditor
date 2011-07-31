@@ -25,7 +25,6 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	//GlobalParams::initGlobalParams(NULL)->setupBaseFonts("D:\\Work\\winPdfEdit\\winPdfEdit\\pdfedit-0.4.5\\projects\\output"); //? Where are my fonts?
 
 	ui.setupUi(this);
-	ui.fileFrame->hide();
 	_textFrameUI.setupUi(&_textFrame);
 	_textFrame.hide();
 	
@@ -176,9 +175,6 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	}
 	//--------------------
 	fclose(f);
-#ifdef _DEBUG
-	ui.fileFrame->show();
-#endif // _DEBUG
 }
 void pdfGui::showFullScreened()
 {

@@ -9,6 +9,12 @@ void DisplayPage::paintEvent(QPaintEvent * event)
 	QLabel::paintEvent(event);
 	switch (_mode)
 	{
+	case ModeDrawCircle:
+		{
+			QPainter p(this);
+			p.drawEllipse(_pos, 23,10);
+			break;
+		}
 	case ModeDrawNothing: //do now draw anything
 		break;
 	case ModeTrackDrawingRect:
@@ -16,7 +22,7 @@ void DisplayPage::paintEvent(QPaintEvent * event)
 		{
 			QPainter p(this);
 			p.drawRoundedRect(_rect, 2.0,1.0);
-				break;
+			break;
 		}
 	default:
 		assert(false);
@@ -257,7 +263,7 @@ void DisplayPage::mouseReleaseEvent(QMouseEvent * event)
 //	event->ignore(); //posun to parentovi
 	if (event->button() == Qt::LeftButton)
 		emit MouseReleased(event->pos()); //:)
-	if (event->button() == Qt::LeftButton)
+	if (event->button() == Qt::RightButton)
 	{
 		QPoint p = event->pos();
 		for ( int i =0; i< _interactive.size();i++)
@@ -297,4 +303,11 @@ int DisplayPage::getPlace( QPoint point )
 			return i;
 	}
 	return -1;
+}
+
+void DisplayPage::drawCircle( QPoint point )
+{
+	_pos = point;
+	_mode = ModeDrawCircle;
+	update();
 }

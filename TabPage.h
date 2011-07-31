@@ -213,8 +213,8 @@ private:
 	void showClicked(int x, int y);
 public:	
 	void delinearize(QString name);
-	bool CanBeSaved();
-	bool CanBeSavedChanges();
+	bool CanBeSaved(bool raisew = true);
+	bool CanBeSavedChanges(bool raiseW = true);
 	void redraw();
 	void getBookMarks(); //LATER, treba actions zisti, ako sa vykoavaju
 //	void changeImageProp(); // v selected mame images//LATER

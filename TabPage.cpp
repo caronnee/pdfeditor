@@ -307,9 +307,21 @@ void TabPage::about()
 	}
 	else
 		message += "No metadata\n\n";
+	//lenarozacia:
+	message+= "Linearized: ";
+	if (_pdf->isLinearized())
+		message+= "yes\n";
+	else
+		message+= "No\n";
+	message += "ReadOnly: ";
+	if(_pdf->getMode()==CPdf::ReadOnly)
+		message += "Yes\n";
+	else
+		message += "No\n";
 	//pocet revizii
 	message += "Number of revision :";
 	message +=QVariant(_pdf->getRevisionsCount()).toString();
+	
 	aboutDialogUI.info->setText(message);
 	aboutDialog.exec();
 }
@@ -431,6 +443,7 @@ void TabPage::zoom( int zoomscale )
 }
 void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 {
+	assert(_selected);
 	TextData::iterator iter = sTextIt;
 	while (true)
 	{
@@ -472,17 +485,17 @@ void TabPage::fillCoordinates(std::vector<float>& coordinates, float * dim)
 }
 pdfobjects::IndiRef TabPage::createAppearanceHighlight( float * dim )
 {
-	addHistory("Creating appearance directory fro highlighting..\n");
+	addHistory("Creating appearance directory for highlighting..\n");
 	shared_ptr<CStream> apStream = createAPStream(dim);
 	PdfOperator::Operands operands;
 	operands.push_back((PdfProperty(CNameFactory::getInstance("TransGs"))));
 	PdfOp op = createOperator("gs",operands);
 	apStream->addToBuffer(op);
 	operands.clear();
-
-	operands.push_back((PdfProperty(CRealFactory::getInstance(1.0f))));
-	operands.push_back((PdfProperty(CRealFactory::getInstance(1.0f))));
-	operands.push_back((PdfProperty(CRealFactory::getInstance(0.0f))));
+	QColor color = _cmts->getHColor();
+	operands.push_back((PdfProperty(CRealFactory::getInstance(color.redF()))));
+	operands.push_back((PdfProperty(CRealFactory::getInstance(color.greenF()))));
+	operands.push_back((PdfProperty(CRealFactory::getInstance(color.blueF()))));
 	op = createOperator("rg",operands);
 	apStream->addToBuffer(op);
 
@@ -924,35 +937,41 @@ END:
 void TabPage::insertTextMarkup(PdfAnnot annot)
 {
 	//for all selected text
+	/*for ()
 	if (!_selected)
 	{
 		addHistory("Text not selected, aborting\n");
 		return;
-	}
-	
-	{
-		QColor col = _cmts->getHColor();
-		float f = col.redF();
-		pdfobjects::CArray arr;
-		arr.addProperty(*boost::shared_ptr< pdfobjects::CReal>(pdfobjects::CRealFactory::getInstance(col.redF()))); //add color
-		arr.addProperty(*boost::shared_ptr< pdfobjects::CReal>(pdfobjects::CRealFactory::getInstance(col.greenF()))); //add color
-		arr.addProperty(*boost::shared_ptr< pdfobjects::CReal>(pdfobjects::CRealFactory::getInstance(col.blueF()))); //add color
-		annot->getDictionary()->setProperty("C",arr);//TODO len pre markup, ale nic dalsie nepodporujeme, tak ze to tu bude ircite spravne
-	}
+	}*/
+	bool changing = false;
+	float dim[4] = {FLT_MAX,FLT_MAX,0,0};
 	for ( int i =0; i < _annots.size(); i++)
 		if (_annots[i] == annot)
 		{
+			shared_ptr<CArray> arr = annot->getDictionary()->getProperty<CArray>("Rect"); 
+			for ( int a =0; a< 4; a++)
+			{
+				if (arr->getProperty(a)->getType() == pInt)
+					dim[a] = utils::getIntFromArray(arr,a);
+				if (arr->getProperty(a)->getType() == pReal)
+					dim[a] = utils::getDoubleFromArray(arr, a);
+			}
+			IndiRef indi = createAppearanceHighlight(dim);
+			PdfProperty prop(pdfobjects::CRefFactory::getInstance(indi));
+			boost::shared_ptr<pdfobjects::CDict> nDict(CDictFactory::getInstance());
+			nDict->addProperty("N",*prop);
+			annot->getDictionary()->setProperty("AP",*nDict);
 			emit addHistory("Annotation changed\n");
-			redraw();
+			operationDone();
 			return;
 		}
 	//toto je len pre highlighty, ktore este nemame
-	_page->addAnnotation(annot);
+	_page->addAnnotation(annot);	
 	emit addHistory("Annotation added\n");
 	_page->getAllAnnotations(_annots);
 	annot = _annots.back();//posledny pridany, na nom budeme pachat zmeny
 	std::vector<float> coordinates;
-	float dim[4] = {FLT_MAX,FLT_MAX,0,0};
+
 	fillCoordinates(coordinates, dim);
 	IndiRef indi = createAppearanceHighlight(dim);
 	{
@@ -1198,7 +1217,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			emit addHistory("Font was selected");
 			break;
 		}
-	case ModeChangeAnntation:
+	case ModeChangeAnnotation:
 		{
 			int index = _labelPage->getPlace(point);
 			if (index == -1)
@@ -1221,7 +1240,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 	case ModeInsertText:
 		{
 			//show position
-			emit markPosition(point);
+			_labelPage->drawCircle(point);
 			raiseInsertText(point); //TODO angle
 			break;
 		}
@@ -1238,8 +1257,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			insertAnnotation(_annots.back());
 			_page->getAllAnnotations(_annots);
 			_cmts->addLink(_annots.back(), _page->getDictionary()->getIndiRef(),x,y);
-			_parent->setModeInsertAnotation();//boli sme v tomto mode
-			_parent->setModeInsertAnotation();//boli sme v tomto mode
+			_parent->setModeInsertLinkAnotation();//boli sme v tomto 
 #ifdef _DEBUG
 			_annots.back()->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
@@ -1281,6 +1299,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 	case ModeHighlighComment:
 	case ModeSelectText:
 		{
+			_labelPage->setMode(ModeTrackDrawingRect);
 			highlightText(point); //nesprav nic, pretoze to bude robit mouseMove
 			break;
 		}
@@ -1426,6 +1445,8 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 		}
 	case ModeSelectText:
 		{
+			_labelPage->setMode(ModeDrawNothing);
+			_labelPage->update();
 			highlightText(point);
 			break;
 		}
@@ -2080,6 +2101,7 @@ void TabPage::deletePage()
 }
 void TabPage::redraw()
 {
+	displayparams.pageRect = _page->getMediabox();
 	JustDraw();
 	_selected = false;
 	createList();//TODO only in right mode
@@ -2185,20 +2207,22 @@ void TabPage::saveAs()
 	emit addHistory(QString("Saved copy as ") + fileName);
 	initRevisions();
 }
-bool TabPage::CanBeSavedChanges()
+bool TabPage::CanBeSavedChanges(bool raise)
 {
 	if(_pdf->getMode()==CPdf::ReadOnly)
 	{
-		QMessageBox::warning(this, "ReadOnly pdf","Pdf cannot be changed", QMessageBox::Ok,QMessageBox::Ok); 
+		if (raise)
+			QMessageBox::warning(this, "ReadOnly pdf","Pdf cannot be changed", QMessageBox::Ok,QMessageBox::Ok); 
 		return false;
 	}
-	return CanBeSaved();
+	return CanBeSaved(raise);
 }
-bool TabPage::CanBeSaved()
+bool TabPage::CanBeSaved(bool raise)
 {
 	if (_pdf->isLinearized())
 	{
-		QMessageBox::warning(this, "Linearized pdf","Pdf is linearized, cannot be saved", QMessageBox::Ok,QMessageBox::Ok); 
+		if (raise)
+			QMessageBox::warning(this, "Linearized pdf","Pdf is linearized, cannot be saved", QMessageBox::Ok,QMessageBox::Ok); 
 		return false;
 	}
 	if (ui.revision->currentIndex() != ui.revision->count()-1)
@@ -2583,12 +2607,13 @@ void TabPage::changeSelectedText(PdfOp insertedText) //vsetko zosane na svojom m
 	//rotatePdf(displayparams,pos,y,true);
 	//_font->setPosition(pos,y); //pretoze toto je v default user space
 	//rozdelime na dva pripady - pokial je to roznake a pokial je zaciatok erozny od konca
-	if ( sTextIt==sTextItEnd ) //TODO co ak je s3 prazdne? -> Compact?:)
+	//if ( sTextIt==sTextItEnd ) //TODO co ak je s3 prazdne? -> Compact?:)
 	{
 		eraseSelectedText();
 		insertText(insertedText);
 		return;
 	}
+	//CHANGE COLOR ONLY
 	//stale ame v operatoroch ulozene suradnice
 	std::vector<PdfOp> operators;
 	//prvy je vzdy stejny,ziadne Td

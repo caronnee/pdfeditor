@@ -31,6 +31,9 @@
      <property name="currentIndex">
       <number>-1</number>
      </property>
+     <property name="insertPolicy">
+      <enum>QComboBox::InsertAtCurrent</enum>
+     </property>
      <property name="sizeAdjustPolicy">
       <enum>QComboBox::AdjustToContents</enum>
      </property>

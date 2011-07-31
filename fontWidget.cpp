@@ -195,6 +195,11 @@ void FontWidget::setText(QString s)
 {
 	ui.text->setText(s);
 }
+void FontWidget::showEvent(QShowEvent *)
+{
+	this->ui.colorN->setColor(Qt::black);
+	this->ui.colorS->setColor(Qt::black);
+}
 std::string FontWidget::addParameters() //TODO nie s jedine parametre
 {
 	///rendering mode

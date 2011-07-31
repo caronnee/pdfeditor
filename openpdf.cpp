@@ -31,7 +31,7 @@ void OpenPdf::pdfChanged()
 }
 void OpenPdf::setModeChangeAnnotation()
 {
-	setMode(ModeChangeAnntation);
+	setMode(ModeChangeAnnotation);
 }
 void OpenPdf::setModeDeleteAnnotation()
 {
@@ -56,8 +56,7 @@ OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeD
 #endif
 	_author = name;
 #if _DEBUG
-	TabPage * page = new TabPage(this,"./zadani.pdf");
-	this->addTab(page,"test");
+	open("./zadani.pdf");
 #endif
 	setModeDefault(); //default mode
 }
@@ -164,8 +163,6 @@ void OpenPdf::closeAndRemoveTab(int i)
 	TabPage * page = (TabPage *)this->widget(i); //how to get exact tab?
 	//this->focusNextChild();
 	this->removeTab(i);
-	delete page;
-	///But ist should! be deleted
 }
 void OpenPdf::saveEncoded()
 {
@@ -200,15 +197,21 @@ void OpenPdf::saveAs()
 void OpenPdf::open(QString name)
 {
 	TabPage * page = NULL;
-#if _DEBUG
+#ifndef _DEBUG
 	try
 #endif
 	{
 		page = new TabPage(this, name);
-		this->addTab(page,name);
+		QIcon icon(":/images/enabled.png");
+		this->addTab(page,icon,name);
 		emit OpenSuccess(name);
 		setCurrentIndex(count() -1);
 		//pri kazdon otvoreni sa spytaj, ci je to potreba delinerizovat(co noveho suboru), inak sa nebude dat savovat
+		if (!page->CanBeSavedChanges(false))
+		{
+			QIcon i2(":/images/disabled.png");
+			this->setTabIcon(this->count()-1,i2);
+		}
 		if (page->checkLinearization())
 			return;
 		QString fileName = QFileDialog::getSaveFileName(this, tr("Save pdf file"),".",tr("PdfFiles (*.pdf)"));
@@ -217,14 +220,14 @@ void OpenPdf::open(QString name)
 		page->delinearize(fileName);
 		
 		//close the old file & open delinearized version
-		this->closeAndRemoveTab(this->count());
-		//delete page;
+		this->closeAndRemoveTab(this->count()-1);
+
 		page = new TabPage(this,fileName);
 		this->addTab(page,fileName);
 		assert(page->checkLinearization());
 		setCurrentIndex(count() -1);
 	}
-#if _DEBUG
+#ifndef _DEBUG
 	catch (PdfOpenException e)
 	{
 		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
@@ -327,7 +330,7 @@ static const HelptextIcon helper[] = { MODES(EARRAY) };
 
 bool PermanentMode(Mode mode)
 {
-	return mode == ModeChangeAnntation ||
+	return mode == ModeChangeAnnotation ||
 		mode == ModeDeleteAnnotation ||
 		mode == ModeDoNothing ||
 		mode == ModeExtractImage ||

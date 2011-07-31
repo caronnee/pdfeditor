@@ -88,6 +88,7 @@ public:
 public slots:
 	void copyText();
 	int getPlace( QPoint point );
+	void drawCircle( QPoint point );
 };
 
 #endif // PAGE_H

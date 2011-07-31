@@ -59,6 +59,9 @@ class FontWidget : public QWidget
 	float _scale[2];
 	PdfOp createMatrix(std::string op);
 	QPalette palette;
+protected:
+	void showEvent(QShowEvent *);
+
 public:
 
 	void paintEvent(QPaintEvent * event);

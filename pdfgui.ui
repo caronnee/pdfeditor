@@ -22,6 +22,10 @@
   <property name="windowTitle">
    <string>Pdf editor v1.22</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="pdf.qrc">
+    <normaloff>:/images/enabled.png</normaloff>:/images/enabled.png</iconset>
+  </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
   </property>
@@ -32,6 +36,12 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QFrame" name="fileFrame">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
@@ -41,6 +51,9 @@
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <property name="spacing">
         <number>0</number>
+       </property>
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMinimumSize</enum>
        </property>
        <property name="margin">
         <number>0</number>
@@ -262,6 +275,9 @@
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonTextUnderIcon</enum>
          </property>
+         <attribute name="buttonGroup">
+          <string>mainGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -303,33 +319,10 @@
      </widget>
     </item>
     <item>
-     <widget class="QWidget" name="fileProp" native="true">
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="margin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QFrame" name="contentFrame">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <property name="margin">
-           <number>0</number>
-          </property>
-         </layout>
-        </widget>
-       </item>
-      </layout>
+     <widget class="QLabel" name="Help">
+      <property name="text">
+       <string/>
+      </property>
      </widget>
     </item>
     <item>
@@ -341,36 +334,6 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="1">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>highligh color</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="ColorPicker" name="hcolor" native="true"/>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>select color</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <spacer name="horizontalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
        <item row="0" column="0">
         <spacer name="horizontalSpacer_6">
          <property name="orientation">
@@ -383,6 +346,16 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>highligh color</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="ColorPicker" name="hcolor" native="true"/>
        </item>
        <item row="0" column="4">
         <spacer name="horizontalSpacer_8">
@@ -397,6 +370,29 @@
          </property>
         </spacer>
        </item>
+       <item row="3" column="0">
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>select color</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="ColorPicker" name="color" native="true"/>
+       </item>
        <item row="3" column="4">
         <spacer name="horizontalSpacer_7">
          <property name="orientation">
@@ -409,9 +405,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item row="3" column="3">
-        <widget class="ColorPicker" name="color" native="true"/>
        </item>
       </layout>
      </widget>
@@ -438,13 +431,6 @@
       </property>
       <property name="movable">
        <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="Help">
-      <property name="text">
-       <string/>
       </property>
      </widget>
     </item>
@@ -721,6 +707,70 @@
     <hint type="destinationlabel">
      <x>438</x>
      <y>465</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>settingsButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>textButton</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>290</x>
+     <y>58</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>39</x>
+     <y>58</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>settingsButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>imageButton</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>290</x>
+     <y>58</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>99</x>
+     <y>58</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>settingsButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>annotationButton</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>290</x>
+     <y>58</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>165</x>
+     <y>58</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>settingsButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>debugButton</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>290</x>
+     <y>58</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>350</x>
+     <y>58</y>
     </hint>
    </hints>
   </connection>
