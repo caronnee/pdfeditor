@@ -61,8 +61,7 @@ public:
 	}
 	void run()
 	{
-		if (_shared->performSearch(_str, _flags & SearchForward))
-			_shared->highlight();
+		_shared->performSearch(_str, _flags & SearchForward);
 		_shared->show();
 	}
 };
@@ -1641,6 +1640,7 @@ void TabPage::highlight()
 		//rotatePdf(displayparams,x1,y1,false);
 		x2 = first->getNextStop();
 		y2 = first->_ymax;
+
 		rotatePdf(displayparams,x1,y1,false);
 		rotatePdf(displayparams,x2,y2,false);
 		QRect r(min(x1,x2),min(y1,y2), fabs(x2-x1),fabs(y1-y2));
@@ -1946,25 +1946,29 @@ void TabPage::pageDown()
 	_page = _pdf->getPage(pos+1);
 	updatePageInfoBar();
 }
+void TabPage::setPage(int index)
+{
+	_page = _pdf->getPrevPage(_page);
+	displayparams.rotate = _page->getRotation();
+	this->redraw();
+	if (containsOperator("TJ"))
+		QMessageBox::warning(this, "Unsupported element","Pdf contains unsupported element. Some text operator may not work correctly", QMessageBox::Ok,QMessageBox::Ok); 
+	updatePageInfoBar();
+}
 bool TabPage::previousPage()
 {
 	if (_pdf->getPagePosition(_page) == 1)
 		return false;
-	_page = _pdf->getPrevPage(_page);
-	displayparams.rotate = _page->getRotation();
-	this->redraw();
+	int index = _pdf->getPagePosition(_page);
+	setPage(index-1);
 	return true;
 }
 bool TabPage::nextPage()
 {
 	if (_pdf->getPagePosition(_page) == _pdf->getPageCount())
 		return false;
-	_page = _pdf->getNextPage(_page);
-	displayparams.rotate = _page->getRotation();
-	this->redraw();
-	if (containsOperator("TJ"))
-		QMessageBox::warning(this, "Unsupported element","Pdf contains unsupported element. Some text operator may not work correctly", QMessageBox::Ok,QMessageBox::Ok); 
-
+	int index = _pdf->getPagePosition(_page);
+	setPage(index+1);
 	return true;
 }
 void TabPage::getBookMarks()
@@ -2093,9 +2097,8 @@ void TabPage::deletePage()
 	_pdf->removePage(i);
 	if ( i > _pdf->getPageCount() ) //if removing last page..
 		i =_pdf->getPageCount() ;
-	_page = _pdf->getPage(i);
+	setPage(i);
 	emit addHistory(QString("page")+ QVariant(i).toString() + " deleted");
-	redraw();
 }
 void TabPage::redraw()
 {
@@ -2188,7 +2191,7 @@ void TabPage::saveEncoded()
 	_pdf->saveDecoded("decoded");
 	return;
 #endif
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "", tr("PdfFile Decoded (*.decoded)"));
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), _name, tr("PdfFile Decoded (*.decoded)"));
 	emit addHistory(QString("Saved decoded pdf to file") + fileName);
 	_pdf->saveDecoded(fileName.toAscii().data());
 }
@@ -2200,7 +2203,7 @@ void TabPage::save() //revision je inde
 }
 void TabPage::saveAs()
 {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "/home", tr("PdfFile (*.pdf)"));
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), _name, tr("PdfFile (*.pdf)"));
 	savePdf(fileName.toAscii().data());
 	emit addHistory(QString("Saved copy as ") + fileName);
 	initRevisions();
@@ -2334,9 +2337,9 @@ QString TabPage::getFile(bool open, QFileDialog::FileMode flags)
 {
 	QString fileName;
 	if (open)
-	 fileName = QFileDialog::getOpenFileName(this, tr("Open pdf file"),".",tr("PdfFiles (*.pdf)"));
+	 fileName = QFileDialog::getOpenFileName(this, tr("Open pdf file"),_name,tr("PdfFiles (*.pdf)"));
 	else
-		fileName = QFileDialog::getSaveFileName(this, tr("Save pdf file"),".",tr("PdfFiles (*.pdf)"));
+		fileName = QFileDialog::getSaveFileName(this, tr("Save pdf file"),_name,tr("PdfFiles (*.pdf)"));
 	if (fileName == NULL)
 		return NULL;//cancel pressed
 	return fileName;
@@ -3764,7 +3767,10 @@ pdfobjects::DisplayParams TabPage::getDisplayParams()
 void TabPage::reportSearchResult()
 {
 	if (_selected)
+	{
+		highlight();
 		return;// nasiel, vsetko je OK
+	}
 	if (_stop)
 		QMessageBox::warning(this,"Stopped","Searching was stopped");
 	else

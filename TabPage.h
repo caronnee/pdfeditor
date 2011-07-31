@@ -354,7 +354,7 @@ public slots:
 public:
 	void resizeEvent(QResizeEvent * event);
 	void highlight(); //nesprav nic, pretoze to bude robit mouseMove
-
+	void setPage(int index);
 };
 
 #endif

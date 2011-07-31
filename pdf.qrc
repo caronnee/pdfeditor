@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="/">
+    <file>images/mainIcon.png</file>
+    <file>images/font.png</file>
+    <file>images/position.png</file>
     <file>images/about.png</file>
     <file>images/addComment.png</file>
     <file>images/addImage.png</file>

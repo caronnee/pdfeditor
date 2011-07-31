@@ -13,26 +13,26 @@
 
 #define MODES(XX) \
 	XX(ModeDoNothing," Viewmode ","view.png")	\
-	XX(ModeInsertText,"InsertText mode : click on pdf to insert a text","unknown.jpg")	\
-	XX(ModeSelectText,"Select text mode : Click and drag to select a text","unknown.jpg") \
-	XX(ModeInsertImage,"InsertImage mode: Select a rectangle to insert an image","unknown.jpg") \
-	XX(ModeSelectImage,"Select image mode: Click to select inline image","unknown.jpg")	\
-	XX(ModeImageSelected, "Image selected. Click on buttons to change or to delete image","unknown.jpg")	\
-	XX(ModeImagePartCopied,"Snapshot was copied to the clipboard","unknown.jpg")	\
-	XX(ModeImagePart,"Extract pdf part as image mode: select a rectangle to be saved as image","unknown.jpg")	\
-	XX(ModeExtractImage, "Extract image mode: click on inlineimage to extract an image","unknown.jpg")	\
-	XX(ModeOperatorSelect,"Operator select mode: click on text operator to highligh it","unknown.jpg")	\
-	XX(ModeInsertAnnotation,"Insert Text Annotation mode: click on pdf to insert an annotation","unknown.jpg")	\
-	XX(ModeInsertLinkAnnotation,"Insert Link Annotation mode: click on pdf to insert a link annotation","unknown.jpg")	\
-	XX(ModeDeleteAnnotation, "Delete annotation mode: click on annotation to delete it","unknown.jpg")	\
-	XX(ModeEmitPosition, "Emit position mode: Pdf is waiting for position. Click somewhere in the pdf","unknown.jpg")	\
-	XX(ModeSettings,"Set the color that should be used when highlighting text by hand and by annostion. Press setting to get away","unknown.jpg")\
+	XX(ModeInsertText,"InsertText mode : click on pdf to insert a text","insert_text.png")	\
+	XX(ModeSelectText,"Select text mode : Click and drag to select a text","hand.png") \
+	XX(ModeInsertImage,"InsertImage mode: Select a rectangle to insert an image","addImage.png") \
+	XX(ModeSelectImage,"Select image mode: Click to select inline image","hand.png")	\
+	XX(ModeImageSelected, "Image selected. Click on buttons to change or to delete image","hand.png")	\
+	XX(ModeImagePartCopied,"Snapshot was copied to the clipboard","snapshot.png")	\
+	XX(ModeImagePart,"Extract pdf part as image mode: select a rectangle to be saved as image","snapshot.png")	\
+	XX(ModeExtractImage, "Extract image mode: click on inlineimage to extract an image","snapshot.png")	\
+	XX(ModeOperatorSelect,"Operator select mode: click on text operator to highligh it","operator.png")	\
+	XX(ModeInsertAnnotation,"Insert Text Annotation mode: click on pdf to insert an annotation","addComment.png")	\
+	XX(ModeInsertLinkAnnotation,"Insert Link Annotation mode: click on pdf to insert a link annotation","addLink.png")	\
+	XX(ModeDeleteAnnotation, "Delete annotation mode: click on annotation to delete it","DeleteText.png")	\
+	XX(ModeEmitPosition, "Emit position mode: Pdf is waiting for position. Click somewhere in the pdf","position.png")	\
+	XX(ModeSettings,"Set the color that should be used when highlighting text by hand and by annostion. Press setting to get away","settings.png")\
 	XX(ImageMode," Not Implemented","unknown.jpg")	\
 	XX(DrawMode,"NotImplemented, go away!","unknown.jpg")	\
-	XX(ModeFindLastFont, "Click to select font and font size by text in PDF","unknown.jpg")\
-	XX(ModeChangeAnnotation, "Click on anotation to change it","unknown.jpg") \
+	XX(ModeFindLastFont, "Click to select font and font size by text in PDF","font.png")\
+	XX(ModeChangeAnnotation, "Click on anotation to change it","change.ong") \
 	XX(DefaultMode,"Open an PDF","unknown.jpg") \
-	XX(ModeHighlighComment,"After selecting text, fill please content","unknown.jpg") \
+	XX(ModeHighlighComment,"After selecting text, fill please content","highlight.png") \
 	
 
 #define ENUMS(a,b,c) a,

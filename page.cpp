@@ -145,7 +145,7 @@ void DisplayPage::fillRect(QList<QRect> rects,QColor color)
 	painter.setCompositionMode(QPainter::CompositionMode_Source);
 	painter.fillRect(resultImage.rect(), Qt::transparent);
 	for ( int i =0; i < rects.size(); i++)
-		painter.fillRect(rects[i], color); //TODO len linky
+		painter.fillRect(rects[i], Qt::black); //TODO len linky
 	painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
 	painter.drawImage(0, 0, _copyImg);
 	painter.end();

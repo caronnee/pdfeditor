@@ -20,11 +20,11 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Pdf editor v1.22</string>
+   <string>Pdf editor v1.23</string>
   </property>
   <property name="windowIcon">
    <iconset resource="pdf.qrc">
-    <normaloff>:/images/enabled.png</normaloff>:/images/enabled.png</iconset>
+    <normaloff>:/images/mainIcon.png</normaloff>:/images/mainIcon.png</iconset>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -549,6 +549,9 @@
    <property name="text">
     <string>Rotate left</string>
    </property>
+   <property name="shortcut">
+    <string>L</string>
+   </property>
   </action>
   <action name="actionRotate_right">
    <property name="icon">
@@ -557,6 +560,9 @@
    </property>
    <property name="text">
     <string>Rotate right</string>
+   </property>
+   <property name="shortcut">
+    <string>R</string>
    </property>
   </action>
   <action name="actionPage_up">
