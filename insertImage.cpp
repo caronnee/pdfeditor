@@ -114,6 +114,8 @@ void InsertImage::apply()
 		createInlineImage();
 		create = true;
 	}
+	if (biOp == NULL)
+		return;
 	//add to buffer everything that is in image
 	shared_ptr<UnknownCompositePdfOperator> q(new UnknownCompositePdfOperator("q", "Q"));
 	

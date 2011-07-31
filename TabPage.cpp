@@ -950,6 +950,8 @@ END:
 }
 void TabPage::insertTextMarkup(PdfAnnot annot)
 {
+	if ( this->ui.revision->currentIndex()!= _pdf->getRevisionsCount()-1)
+		return;
 	//for all selected text
 	/*for ()
 	if (!_selected)
@@ -1024,6 +1026,8 @@ void TabPage::closeAnnotDiag()
 }
 void TabPage::insertTextAnnot(PdfAnnot a)
 {
+	if ( this->ui.revision->currentIndex()!= _pdf->getRevisionsCount()-1)
+		return;
 #ifdef _DEBUG
 	std::string m;
 	a->getDictionary()->getStringRepresentation(m);
@@ -1043,6 +1047,8 @@ void TabPage::insertTextAnnot(PdfAnnot a)
 }
 void TabPage::insertAnnotation(PdfAnnot a)
 {
+	if ( this->ui.revision->currentIndex()!= _pdf->getRevisionsCount()-1)
+		return;
 #ifdef _DEBUG
 	std::string m;
 	a->getDictionary()->getStringRepresentation(m);
@@ -1213,6 +1219,8 @@ void TabPage::clearSelected()
 }
 void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, ze sa vyberie prvy operator
 {
+	if ( this->ui.revision->currentIndex()!= _pdf->getRevisionsCount()-1)
+		return;
 	switch (_parent->getMode())
 	{
 	case ModeDoNothing:
@@ -1438,6 +1446,8 @@ void TabPage::deleteSelectedImage()
 }
 void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit mouseMove
 {
+	if ( this->ui.revision->count()!= _pdf->getRevisionsCount())
+		return;
 	switch (_parent->getMode())
 	{
 	case ModeDeleteAnnotation:
@@ -2090,12 +2100,16 @@ void TabPage::changeSelectedImage(PdfOp op)
 }
 void TabPage::insertImage(PdfOp op) //positions
 {
+	if ( this->ui.revision->currentIndex()!= _pdf->getRevisionsCount()-1)
+		return;
 	Ops ops;
 	ops.push_back(op);
 	_page->addContentStreamToBack(ops);
 }
 void TabPage::insertPageRangeFromExisting()
 { 
+	if ( this->ui.revision->currentIndex()!= _pdf->getRevisionsCount()-1)
+		return;
 	QString s = QFileDialog::getOpenFileName(this, tr("Open File"),".",tr("Pdf files (*.pdf)"));
 	if (s == NULL)
 		return;
@@ -2362,6 +2376,8 @@ QString TabPage::getFile(bool open, QFileDialog::FileMode flags)
 
 void TabPage::insertRange()
 {
+	if ( this->ui.revision->currentIndex()!= _pdf->getRevisionsCount()-1)
+		return;
 	//opens file
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open pdf file"),".",tr("PdfFiles (*.pdf)"));
 	if (fileName == NULL)
@@ -2602,6 +2618,8 @@ void TabPage::findLastFontMode()
 //}
 void TabPage::insertText( PdfOp op )
 {
+	if ( this->ui.revision->currentIndex()!= _pdf->getRevisionsCount()-1)
+		return;
 	Ops ops;
 	ops.push_back(op);
 	_page->addContentStreamToBack(ops);
@@ -2614,6 +2632,8 @@ void TabPage::insertText( PdfOp op )
 //slot
 void TabPage::changeSelectedText(PdfOp insertedText) //vsetko zosane na svojom mieste, akurat sa pridaju 
 {
+	if ( this->ui.revision->currentIndex()!= _pdf->getRevisionsCount()-1)
+		return;
 	assert(_selected);
 	float corr = displayparams.vDpi/72;
 	//float h = sTextIt->_op->getFontHeight();
