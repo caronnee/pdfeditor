@@ -176,13 +176,67 @@ FIXED -- pri loadovani pridat progress bar
 FIXED -- tooltips pre buttony
 ----------------------BUGS---------------------
 -- pri hladani pridat progress bar
--- vyhladaj cele slovo, vyhladaj ignore-case, volby
--- search novy thread ( pre zastavenie);
+FIXED -- vyhladaj cele slovo, vyhladaj ignore-case, volby
+FIXED -- search novy thread ( pre zastavenie);
 -- loader na finish -> hide, on init->hide, on save
 -- skin pre fontwidget, image a anotacie - pohybovatelna bublina
--- samostatna obrazovka na settings
+FIXED -- samostatna obrazovka na settings
 -- insert rotovaneho obrazka- rotuje sa okolo pociatku, nevyzera to dobre. Malo by sa zorotovat do boxu
 QT single application + otvarat vsetko v tomto jednom
 vyhladava len cele slova (Page 1)
 vklada v Algebra PDF 3 riadky nizsie
 regularne vyrazy
+
+---------------------------------------
+FIXED -- connect minus zoom
+FIXED -- border u tlacitok analyze, bookmark -
+FIXED -- decoded 
+FIXED -- logicky oddelit highlight color + dat tam color picker
+FIXED -- prevyplnenie zmazat u anotacii 
+FIXED -- zmenit ikonku na saves revision
+FIXED -- checknut CTRL->S
+FIXED -- defaultne tlacika pri macknuti modu
+FIXED -- chyba ikonka u change annotation
+FIXED -- zmenit titulok u anotacii ked to mazem
+FIXED -- matie sa operator mode ked mazem anotaciu
+FIXED -- position 
+FIXED -- angle aby zacinal na nule a nepamatal si tie veci
+FIXED -- po add image dat automaticku na select
+FIXED -- raseon unable to poen gile - dvojbodka
+FIXED -- napisat ze to nie je mja chyba ked sa neda vlozit obrazok
+FIXED -- obe tlacitka u selectu sa vysviecuju
+FIXED -- crosspoint pri vkladaju
+FIXED -- shape nebude shape ale vybratie typu (STYLE)
+FIXED -- rotacia (disaled field)
+Fixed -- medzera bude poznat by default
+FIXED -- stroku bude obsahovat iba jednu farbu v zaislosti na 
+FIXED -- delete & erase popisat - erase, erase with spaces
+FIXED -- delete highlight
+FIXED -- export to text
+FIXED -- v settingoch rusenie dashov
+FIXED -- padne pri SYMBOL font
+-- do settingov autora - do polozky annotation autor
+-- PAGEDOWN ako klavesa
+-- enabelovat lencast stanok co sa moze menit
+-- zatvaranie pri zatvarani TabPage
+-- vyhladavanie v pradnom PDF fail po zatvoreni
+-- premenovat CVview na rotation
+-- na rotovanych to nie je fixed
+-- do Menu about ODF
+-- unable to open file 
+-- replikovat butlik aj s textom ( viewMode )\
+!!!!!! RECTANGLE v te + zmena kurzoru
+-- aby clovek vedel ze je NAD operatorom a nemusel vyberat od-do
+-- open button menu
+-- pri malych PDF - fixed size
+-- number of revisionS
+-- padne pri kazdom neotvorenom PDF
+
+OPEN, SAVE
+-- neda sa secnut obravsky obrazok
+-- logicky oddelit  help raidok - podmenicka + pozadie zmenit od menu
+-- F1 - popis co to je, co sa s tym da robit, klikatelny otaznik
+?? -- form u insert annotation
+-- dat active okno
+-- v dokumentaci  - pouzite kommenty, ktore
+-- selected existing font zmenit na 3

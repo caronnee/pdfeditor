@@ -30,9 +30,10 @@
 	XX(ImageMode," Not Implemented","unknown.jpg")	\
 	XX(DrawMode,"NotImplemented, go away!","unknown.jpg")	\
 	XX(ModeFindLastFont, "Click to select font and font size by text in PDF","font.png")\
-	XX(ModeChangeAnnotation, "Click on anotation to change it","change.ong") \
+	XX(ModeChangeAnnotation, "Click on anotation to change it","change.png") \
 	XX(DefaultMode,"Open an PDF","unknown.jpg") \
 	XX(ModeHighlighComment,"After selecting text, fill please content","highlight.png") \
+	XX(ModeDeleteHighLight, "Click to delete highlight annotation","delete.png")\
 	
 
 #define ENUMS(a,b,c) a,
@@ -46,7 +47,7 @@ enum Mode
 };
 enum PageDrawMode
 {
-	ModeDrawCircle,
+	ModeDrawPosition,
 	ModeTrackCompleteRectangle,
 	ModeDrawNothing,
 	ModeTrackDrawingRect
@@ -57,7 +58,7 @@ enum SearchFlags
 {
 	SearchForward = 1,
 	SearchCaseSensitive = 2,
-	SearchWholeWords = 4,
+	SearchConcate = 4,
 	SearchRegexp = 8
 };
 

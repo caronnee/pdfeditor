@@ -178,7 +178,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 
 	connect( this->ui.documentInfo, SIGNAL(pressed()), this, SLOT(about()));
 	connect( this->ui.plusZoom, SIGNAL(pressed()), this, SLOT(addZoom()) );
-// 	connect(this->ui.minusZoom, SIGNAL(pressed()), this, SLOT(minusZoom()) );
+ 	connect(this->ui.minusZoom, SIGNAL(pressed()), this, SLOT(minusZoom()) );
  	connect(this->ui.commitButton, SIGNAL(pressed()), this, SLOT(commitRevision()));
 	connect( this->ui.pageInfo, SIGNAL(returnPressed()),this, SLOT(setPageFromInfo()));
 	connect (this->ui.firstPage, SIGNAL(pressed()), this, SLOT(setFirstPage()));
@@ -437,7 +437,6 @@ void TabPage::raiseInsertImage(QRect rect)
 {
 	double w=rect.width()*72.0f/displayparams.vDpi,h =rect.height()*72.0f/displayparams.vDpi;
 	//::rotate(displayparams.rotate,w,h);
-//	_image->setRotation(displayparams.rotate);
 	_image->setSize(w,h);
 	_image->show();
 }
@@ -1226,8 +1225,6 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 		return;
 	switch (_parent->getMode())
 	{
-	case ModeDoNothing:
-		break;
 	case ModeFindLastFont:
 		{
 			double x = point.x(),y = point.y();
@@ -1426,11 +1423,14 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			}
 		}
 	case ModeOperatorSelect:
-	default: //ukazuje celeho operatora
 		{
 			_labelPage->unsetImg();
-			showClicked(point.x(),point.y());//zmenit
-			
+			showClicked(point.x(),point.y());//
+			break;
+		}
+	default: //ukazuje celeho operatora
+		{
+			break;//do nothing
 		}
 	}
 }
@@ -1453,6 +1453,19 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 		return;
 	switch (_parent->getMode())
 	{
+	case ModeDeleteHighLight:
+		{
+			int index = _labelPage->getPlace(point);
+			if (index<0)
+				break;
+			PdfAnnot an = _annots[index];
+			std::string type = utils::getStringFromDict("Subtype", an->getDictionary());
+			if (type!= "Highlight")
+				break;
+			_page->delAnnotation(an);
+			redraw();
+			break;
+		}
 	case ModeDeleteAnnotation:
 		{
 			int index = _labelPage->deleteAnnotation(point);
@@ -2108,6 +2121,7 @@ void TabPage::insertImage(PdfOp op) //positions
 	Ops ops;
 	ops.push_back(op);
 	_page->addContentStreamToBack(ops);
+	_parent->setMode(ModeSelectImage);
 }
 void TabPage::insertPageRangeFromExisting()
 { 
@@ -2268,11 +2282,11 @@ void TabPage::savePdf(char * name)
 	if (name == NULL)
 	{
 		_pdf->save();
-		emit addHistory("saved to new revision\n");
+		emit addHistory("Saved to latest revision");
 		initRevisions();
 		return;
 	}
-	emit addHistory(QString("Saves PDF to new file\n") + name);
+	emit addHistory(QString("PDF saved to new file") + name);
 	_pdf->saveChangesToNew(name);
 }
 TabPage::~TabPage(void)	

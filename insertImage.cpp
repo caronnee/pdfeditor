@@ -28,6 +28,7 @@ void InsertImage::setSize(float w,float h)
 	this->ui.imageChooseFrame->show();
 	ui.sizeX->setValue(fabs(w));
 	ui.sizeY->setValue(fabs(h));
+	ui.rotation->setValue(0);
 }
 void InsertImage::setPosition(float pdfX,float pdfY)
 {
@@ -67,7 +68,7 @@ void InsertImage::createInlineImage()
 	QImage image;
 	if (!image.load(tr(ui.lineEdit->text().toAscii().data())))
 	{
-		QMessageBox::warning(this,tr("Unable to load file"),tr("LoadFailed"),QMessageBox::Ok);
+		QMessageBox::warning(this,tr("Unable to load file"),tr("Qt4 cannot load the image"),QMessageBox::Ok);
 		return;
 	}
 	image = image.scaled(ui.sizeX->value(),ui.sizeY->value(),Qt::IgnoreAspectRatio); //proporcie
@@ -249,7 +250,9 @@ void InsertImage::setImage(PdfOp ii)
 
 void InsertImage::showAngleToolTip( int value )
 {
-	QString str(QString("Angle:") + QVariant(value).toString());
+	QVariant v(value);
+	QString str(QString("Angle:") + v.toString());
 	QToolTip::showText( QCursor::pos() , str, this );
 	this->ui.rotation->setToolTip(str);
+	this->ui.angleText->setText(v.toString());
 }

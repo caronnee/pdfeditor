@@ -122,6 +122,7 @@ public slots:
 	void clearTempFonts();
 	void waitForFont( );
 	void closeEvent ( QCloseEvent * event );
+	void setDrawType( int index );
 	//void setAngle(int angle);
 };
 

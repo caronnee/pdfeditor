@@ -30,7 +30,7 @@ void FontWidget::sliderChanged(int value)
 	QString message = "Value:";
 	message.append(v.toString());
 	QToolTip::showText(QCursor::pos(), message);
-	//this->ui.rotation->setToolTip(message);
+	this->ui.angleLabel->setText(v.toString());
 }
 QString FontWidget::getText()
 {
@@ -101,6 +101,7 @@ FontWidget::FontWidget(QWidget *parent) : QWidget(parent/*, Qt::FramelessWindowH
 	this->ui.fonts->insertItem(this->ui.fonts->count(), "<Select font from text>", QVariant(-1));
 	connect(ui.rotation, SIGNAL(valueChanged(int)),this,SLOT(sliderChanged(int)));
 	connect(ui.selectFont, SIGNAL(pressed()), this, SLOT(waitForFont()));
+	connect(ui.shape, SIGNAL(currentIndexChanged()), this, SLOT(setDrawType(int)));
 }
 
 //FontWidget::FontWidget(const FontWidget & font) : QWidget(font.parentWidget()),_embededFont(false)
@@ -270,9 +271,18 @@ PdfOp FontWidget::addText( QString s )
 	createBT();
 	std::string name = addParameters();
 	PdfOperator::Operands textOperands;
-	std::string e = emit convertTextFromUnicode(s,name);
-	textOperands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(e)));
-	addToBT(createOperator("Tj", textOperands));
+	QStringList list = s.split(' ',QString::SkipEmptyParts);
+	for (int i =0; i < list.size(); i++)
+	{
+		textOperands.clear();
+		std::string e = emit convertTextFromUnicode(list[i],name);
+		textOperands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(e)));
+		addToBT(createOperator("Tj", textOperands));
+		if ( i == list.size()-1)
+			break;
+		QVariant val = ui.fontsize->itemData(ui.fontsize->currentIndex());
+		addToBT(createTranslationTd(val.toFloat(),0));
+	}
 	return createET();
 }
 void FontWidget::closeEvent ( QCloseEvent * event )
@@ -308,10 +318,15 @@ void FontWidget::createFromMulti( std::vector<PdfOp>& operators )
 	createET();
 	emit text(_q);
 }
-
-
+extern GlobalParams *globalParams;
 void FontWidget::clearTempFonts()
 {
+	ui.shape->setCurrentIndex(0);
+	ui.text->clear();
+	ui.rotation->setValue(0);
+	ui.colorN->setColor(Qt::black);
+	ui.colorS->setColor(Qt::black);
+	setDrawType(0);
 	ui.fonts->clear();
 	_fonts.clear();
 	//QVariant q("Select font from operator"); 
@@ -324,9 +339,9 @@ void FontWidget::clearTempFonts()
 	{//okrem posledneho, Zapfdings blbe pri zmene
 		std::string name =*it;
 		it++;
-		if (it ==flist.end())
-			break;
-		addFont(name,name); //TODO zrusit a pridat do fontu, ktory si to moze naloadovat sam
+		GString gs(name.c_str());
+		if (globalParams->getDisplayFont(&gs))
+			addFont(name,name); //TODO zrusit a pridat do fontu, ktory si to moze naloadovat sam
 	}
 	//_fonts.push_back(name);
 }
@@ -352,4 +367,17 @@ void FontWidget::addTm( float w, float h )
 {
 	_scale[0] = w;
 	_scale[1] = h;
+}
+
+void FontWidget::setDrawType( int index )
+{
+	index++; //chceme od 1-4
+	this->ui.borderLabel->setVisible(index&1);
+	this->ui.colorN->setVisible(index&1);
+
+	this->ui.colorN->setVisible(index&1);
+
+	this->ui.strokeLabel->setVisible(index&2);
+	this->ui.colorS->setVisible(index&2);
+
 }

@@ -7,6 +7,11 @@
 #include "kernel/cobjecthelpers.h"
 #include <QMessageBox>
 
+void Comments::showEvent ( QShowEvent * event )
+{
+	this->ui.content->clear();
+	this->setWindowTitle("Add annotation");
+}
 void Comments::setIndex( int i )
 {
 	_change = false;
@@ -103,7 +108,7 @@ void Comments::apply()
 	//zisti, ci je to text
 	ADictionary d = _an->getDictionary();
 	d->setProperty("Contents", *boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string(ui.content->toPlainText().toAscii().data()))));
-	d->setProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string("Created by ") + _name)));//autor
+	d->setProperty("T",*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CStringFactory::getInstance(std::string("Created by ") + ui.author->text().toStdString())));//autor
 	switch (_index)
 	{
 	case AText: //text, obycajny
@@ -216,8 +221,10 @@ void Comments::loadAnnotation( PdfAnnot _annots )
 		type = pdfobjects::utils::getStringFromDict("Contents",_annots->getDictionary());
 		this->ui.content->setText(QString(type.c_str()));
 	}
-	this->_an = _annots;
 	show();
+	this->_an = _annots;
+	this->setWindowTitle("Changing annotation");
+
 }
 
 QColor Comments::getHColor()

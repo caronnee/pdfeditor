@@ -62,13 +62,6 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QCheckBox" name="wholeWord">
-     <property name="text">
-      <string>Whole word</string>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="2">
     <widget class="QCheckBox" name="regexp">
      <property name="text">
@@ -84,6 +77,13 @@
      <property name="icon">
       <iconset resource="pdf.qrc">
        <normaloff>:/images/stop.png</normaloff>:/images/stop.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QCheckBox" name="concate">
+     <property name="text">
+      <string>Concate split words</string>
      </property>
     </widget>
    </item>

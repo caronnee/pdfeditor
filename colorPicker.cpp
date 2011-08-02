@@ -1,5 +1,7 @@
 #include "colorpicker.h"
 #include <vector>
+#include <QColor>
+#include <QColorDialog>
 
 static std::vector<QColor> colors;
 
@@ -27,30 +29,41 @@ public:
 ColorPicker::ColorPicker(QWidget * parent) : QWidget(parent)
 { 
 	this->ui.setupUi(this);
-	setColor(QColor(255,0,0));
+	connect(this->ui.colors, SIGNAL(pressed()), this, SLOT(setFromDialog()));
+	/*setColor(QColor(255,0,0));
 	setColor(QColor(0,255,0));
 	setColor(QColor(0,0,255));
 	setColor(QColor(255,255,0));
 	setColor(QColor(255,0,255));
 	setColor(QColor(0,255,255));
 	setColor(QColor(255,255,255));
-	connect(this->ui.colors, SIGNAL(currentIndexChanged(int)), this, SLOT(valueChanged(int)));
+	connect(this->ui.colors, SIGNAL(currentIndexChanged(int)), this, SLOT(valueChanged(int)));*/
+}
+void ColorPicker::setFromDialog()
+{
+	QColor color = QColorDialog::getColor();
+	if (!color.isValid())
+		return;
+	setColor(color);
 }
 int ColorPicker::getR() 
 { 
-	return qRed(colors[ui.colors->itemData(ui.colors->currentIndex() ).toInt()].rgb()); 
+//	return qRed(colors[ui.colors->itemData(ui.colors->currentIndex() ).toInt()].rgb()); 
+	return qRed(_color.rgb());
 }
 int ColorPicker::getG() 
 { 
-	return qGreen(colors[ui.colors->itemData(ui.colors->currentIndex() ).toInt()].rgb()); 
+	return qRed(_color.rgb());
+	//return qGreen(colors[ui.colors->itemData(ui.colors->currentIndex() ).toInt()].rgb()); 
 }
 int ColorPicker::getB() 
 { 
-	return qBlue(colors[ui.colors->itemData(ui.colors->currentIndex() ).toInt()].rgb()); 
+	return qBlue(_color.rgb());
+	//return qBlue(colors[ui.colors->itemData(ui.colors->currentIndex() ).toInt()].rgb()); 
 }
 void ColorPicker::setColor(QColor color)
 {
-	int index = -1;
+	/*int index = -1;
 	for(int i =0; i < colors.size(); i++)
 	{
 		if (colors[i] == color)
@@ -73,15 +86,21 @@ void ColorPicker::setColor(QColor color)
 		ui.colors->insertItem(0,pixmap,"",QVariant(index));
 		index2 = ui.colors->findData(QVariant(index));
 	}
-	ui.colors->setCurrentIndex(index2);
+	ui.colors->setCurrentIndex(index2);*/
+	QPixmap pixmap(QSize(32,32));
+	QPainter painter(&pixmap);
+	painter.fillRect(pixmap.rect(),color);
+	this->ui.colors->setIcon(pixmap);
+	_color = color;
 }
 QColor ColorPicker::getColor()
 {
-	int index = ui.colors->itemData(ui.colors->currentIndex()).toInt(); 
-	return colors[index];
+	/*int index = ui.colors->itemData(ui.colors->currentIndex()).toInt(); 
+	return colors[index];*/
+	return _color;
 }
 
-void ColorPicker::valueChanged(int)
-{
-	emit ValueChangedSignal(getColor());
-}
+//void ColorPicker::valueChanged(int)
+//{
+//	emit ValueChangedSignal(getColor());
+//}

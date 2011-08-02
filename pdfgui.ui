@@ -36,12 +36,6 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QFrame" name="fileFrame">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
@@ -52,258 +46,964 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="sizeConstraint">
-        <enum>QLayout::SetMinimumSize</enum>
-       </property>
        <property name="margin">
         <number>0</number>
        </property>
        <item>
-        <widget class="QToolButton" name="textButton">
-         <property name="minimumSize">
-          <size>
-           <width>60</width>
-           <height>0</height>
-          </size>
+        <widget class="QWidget" name="main" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <property name="toolTip">
-          <string>show text operations</string>
-         </property>
-         <property name="text">
-          <string>Text</string>
-         </property>
-         <property name="icon">
-          <iconset resource="pdf.qrc">
-           <normaloff>:/images/insertTextMarker.png</normaloff>:/images/insertTextMarker.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="shortcut">
-          <string>T</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-         <attribute name="buttonGroup">
-          <string>mainGroup</string>
-         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QToolButton" name="textButton">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>show text operations</string>
+            </property>
+            <property name="text">
+             <string>Text</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/insertTextMarker.png</normaloff>:/images/insertTextMarker.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>T</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>mainGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="imageButton">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>show image operation</string>
+            </property>
+            <property name="text">
+             <string>&amp;Images</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/images.png</normaloff>:/images/images.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>I</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>mainGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="annotationButton">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>show annotation operations</string>
+            </property>
+            <property name="text">
+             <string>&amp;Annotations</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/comment.png</normaloff>:/images/comment.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>A</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>mainGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="viewButton">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>View</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/view.png</normaloff>:/images/view.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>V</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>mainGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="settingsButton">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>show setting dialog</string>
+            </property>
+            <property name="text">
+             <string>Settings</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/settings.png</normaloff>:/images/settings.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>S</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>mainGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="debugButton">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>show debug options</string>
+            </property>
+            <property name="text">
+             <string>Debug</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/debug.png</normaloff>:/images/debug.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>D</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>mainGroup</string>
+            </attribute>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="imageButton">
-         <property name="minimumSize">
-          <size>
-           <width>60</width>
-           <height>0</height>
-          </size>
+        <widget class="QFrame" name="imageFrame">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <property name="toolTip">
-          <string>show image operation</string>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
          </property>
-         <property name="text">
-          <string>&amp;Images</string>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
          </property>
-         <property name="icon">
-          <iconset resource="pdf.qrc">
-           <normaloff>:/images/images.png</normaloff>:/images/images.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="shortcut">
-          <string>I</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-         <attribute name="buttonGroup">
-          <string>mainGroup</string>
-         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <property name="margin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QToolButton" name="insertImageButton">
+            <property name="toolTip">
+             <string>Insert inline image</string>
+            </property>
+            <property name="text">
+             <string>Add image</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/addImage.png</normaloff>:/images/addImage.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="selectImageButton">
+            <property name="toolTip">
+             <string>select inline image</string>
+            </property>
+            <property name="text">
+             <string>Select</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/hand.png</normaloff>:/images/hand.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="changeImageButton">
+            <property name="toolTip">
+             <string>change inline image</string>
+            </property>
+            <property name="text">
+             <string>Change</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/change.png</normaloff>:/images/change.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="deleteImageButton">
+            <property name="toolTip">
+             <string>delete inline image</string>
+            </property>
+            <property name="text">
+             <string>Delete</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/DeleteText.png</normaloff>:/images/DeleteText.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="imagePartButton">
+            <property name="toolTip">
+             <string>extract part of pdf as image</string>
+            </property>
+            <property name="text">
+             <string>SnapShot</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/snapshot.png</normaloff>:/images/snapshot.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="extractButton">
+            <property name="toolTip">
+             <string>extract inline image</string>
+            </property>
+            <property name="text">
+             <string>ShapShot
+(imageOnly)</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/snapshot.png</normaloff>:/images/snapshot.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>16</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="annotationButton">
-         <property name="minimumSize">
-          <size>
-           <width>60</width>
-           <height>0</height>
-          </size>
+        <widget class="QFrame" name="annotationFrame">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <property name="toolTip">
-          <string>show annotation operations</string>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
          </property>
-         <property name="text">
-          <string>&amp;Annotations</string>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
          </property>
-         <property name="icon">
-          <iconset resource="pdf.qrc">
-           <normaloff>:/images/comment.png</normaloff>:/images/comment.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="shortcut">
-          <string>A</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-         <attribute name="buttonGroup">
-          <string>mainGroup</string>
-         </attribute>
+         <layout class="QHBoxLayout" name="l1">
+          <item>
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="insertAnotation">
+            <property name="toolTip">
+             <string>insert text annotation</string>
+            </property>
+            <property name="text">
+             <string>Insert comment</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/addComment.png</normaloff>:/images/addComment.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="linkAnnotation">
+            <property name="toolTip">
+             <string>insert link annotation</string>
+            </property>
+            <property name="text">
+             <string>Insert link</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/addLink.png</normaloff>:/images/addLink.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="changeAnnotationButton">
+            <property name="toolTip">
+             <string>click &amp; change annotation</string>
+            </property>
+            <property name="text">
+             <string>Change</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/change.png</normaloff>:/images/change.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="highlightButton">
+            <property name="toolTip">
+             <string>insert highlight annotation</string>
+            </property>
+            <property name="text">
+             <string>Highlight</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/highlight.png</normaloff>:/images/highlight.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="delAnnotation">
+            <property name="toolTip">
+             <string>delete annotation</string>
+            </property>
+            <property name="text">
+             <string>Delete</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/DeleteText.png</normaloff>:/images/DeleteText.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="viewButton">
-         <property name="minimumSize">
-          <size>
-           <width>60</width>
-           <height>0</height>
-          </size>
+        <widget class="QFrame" name="textFrame">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <property name="text">
-          <string>View</string>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
          </property>
-         <property name="icon">
-          <iconset resource="pdf.qrc">
-           <normaloff>:/images/view.png</normaloff>:/images/view.png</iconset>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
          </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="shortcut">
-          <string>V</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-         <attribute name="buttonGroup">
-          <string>mainGroup</string>
-         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QToolButton" name="selectTextButton">
+            <property name="toolTip">
+             <string>select text</string>
+            </property>
+            <property name="text">
+             <string>Select</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/hand.png</normaloff>:/images/hand.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>S</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="insertTextButton">
+            <property name="toolTip">
+             <string>insert text</string>
+            </property>
+            <property name="text">
+             <string>Insert</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/insert_text.png</normaloff>:/images/insert_text.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>I</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+            <attribute name="buttonGroup">
+             <string>buttonGroup</string>
+            </attribute>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="changeButton">
+            <property name="toolTip">
+             <string>change text</string>
+            </property>
+            <property name="text">
+             <string>Change</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/change.png</normaloff>:/images/change.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>C</string>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="deleteButton">
+            <property name="toolTip">
+             <string>delete text (leaves no empty space)</string>
+            </property>
+            <property name="text">
+             <string>Delete </string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/DeleteText.png</normaloff>:/images/DeleteText.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>D</string>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="eraseButton">
+            <property name="toolTip">
+             <string>replace text with blank space</string>
+            </property>
+            <property name="text">
+             <string>Fill with blank</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/eraseText.png</normaloff>:/images/eraseText.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>E</string>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="highlightButton_3">
+            <property name="toolTip">
+             <string>highlight text</string>
+            </property>
+            <property name="text">
+             <string>Highlight</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/highlight.png</normaloff>:/images/highlight.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>H</string>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="deleteHighlightButton">
+            <property name="text">
+             <string>Delete highlight</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/eraseText.png</normaloff>:/images/eraseText.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="searchButton">
+            <property name="text">
+             <string>Search</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/search.png</normaloff>:/images/search.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="shortcut">
+             <string>S</string>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="exportTextButton">
+            <property name="text">
+             <string>Export to text</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/TextConvert.png</normaloff>:/images/TextConvert.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="settingsButton">
-         <property name="minimumSize">
-          <size>
-           <width>60</width>
-           <height>0</height>
-          </size>
+        <widget class="QFrame" name="debugFrame">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <property name="toolTip">
-          <string>show setting dialog</string>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
          </property>
-         <property name="text">
-          <string>Settings</string>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
          </property>
-         <property name="icon">
-          <iconset resource="pdf.qrc">
-           <normaloff>:/images/settings.png</normaloff>:/images/settings.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="shortcut">
-          <string>S</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-         <attribute name="buttonGroup">
-          <string>mainGroup</string>
-         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="QToolButton" name="refreshButton">
+            <property name="toolTip">
+             <string>redraw page</string>
+            </property>
+            <property name="text">
+             <string>Refresh</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/refresh.png</normaloff>:/images/refresh.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="analyzeButton">
+            <property name="toolTip">
+             <string>create analyze tree</string>
+            </property>
+            <property name="text">
+             <string>Analyze!</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/analyze.png</normaloff>:/images/analyze.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="saveEncodedButton">
+            <property name="toolTip">
+             <string>save decoded</string>
+            </property>
+            <property name="text">
+             <string>&amp;Decode</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/decrypt_icon.png</normaloff>:/images/decrypt_icon.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="opSelect">
+            <property name="toolTip">
+             <string>select operators</string>
+            </property>
+            <property name="text">
+             <string>Operators</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/operator.png</normaloff>:/images/operator.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="debugButton">
-         <property name="minimumSize">
-          <size>
-           <width>60</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>show debug options</string>
-         </property>
-         <property name="text">
-          <string>Debug</string>
-         </property>
-         <property name="icon">
-          <iconset resource="pdf.qrc">
-           <normaloff>:/images/debug.png</normaloff>:/images/debug.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="shortcut">
-          <string>D</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonTextUnderIcon</enum>
-         </property>
-         <attribute name="buttonGroup">
-          <string>mainGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
        </item>
        <item>
         <widget class="QToolButton" name="actualButton">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
          <property name="toolTip">
           <string>Actual mode</string>
          </property>
@@ -322,9 +1022,23 @@
      </widget>
     </item>
     <item>
+     <widget class="Line" name="line_5">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QLabel" name="Help">
       <property name="text">
        <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="Line" name="line_6">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </item>
@@ -343,30 +1057,17 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <spacer name="horizontalSpacer_6">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="1">
+       <item row="0" column="2">
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>highligh color</string>
+          <string>Select default color for highlighting annotation</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
+       <item row="0" column="4">
         <widget class="ColorPicker" name="hcolor" native="true"/>
        </item>
-       <item row="0" column="4">
+       <item row="0" column="5">
         <spacer name="horizontalSpacer_8">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -379,30 +1080,17 @@
          </property>
         </spacer>
        </item>
-       <item row="3" column="0">
-        <spacer name="horizontalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="3" column="1">
+       <item row="3" column="2">
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>select color</string>
+          <string>Select color for selecting text</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="3">
+       <item row="3" column="4">
         <widget class="ColorPicker" name="color" native="true"/>
        </item>
-       <item row="3" column="4">
+       <item row="3" column="5">
         <spacer name="horizontalSpacer_7">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -805,5 +1493,6 @@
  </connections>
  <buttongroups>
   <buttongroup name="mainGroup"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

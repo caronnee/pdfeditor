@@ -13,9 +13,10 @@ class Search : public QWidget
 
 	Ui::Search ui;
 
-	int getFlags();
 public:
 	Search(QWidget * widget);
+	int getFlags();
+	void setFlags(int flags);
 protected:
 	void showEvent ( QShowEvent * event );
 public slots:

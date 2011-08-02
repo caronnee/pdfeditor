@@ -21,10 +21,6 @@
 #undef NO_CMAP
 
 #include "ui_aboutDialog.h"
-#include "ui_debugFrame.h"
-#include "ui_textFrame.h"
-#include "ui_imageFrame.h"
-#include "ui_annotationFrame.h"
 
 class QCloseWidget : public QWidget
 {
@@ -52,17 +48,14 @@ class pdfGui : public QMainWindow
 	QDialog aboutDialog;
 	Ui::AboutDialog aboutDialogUI;
 
-	QCloseWidget _debugFrame;
-	Ui::DebugFrame _debugFrameUI;
-
-	QCloseWidget _annotationFrame;
+	/*QCloseWidget _annotationFrame;
 	Ui::AnnotationFrame _annotationFrameUI;
 
 	QCloseWidget _imageFrame;
 	Ui::ImageFrame _imageFrameUI;
 
 	QCloseWidget _textFrame;
-	Ui::TextFrame _textFrameUI;
+	Ui::TextFrame _textFrameUI;*/
 public:
 	pdfGui(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~pdfGui();

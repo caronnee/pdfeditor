@@ -94,6 +94,7 @@ public slots:
 	void print();
 	//Deletes actual page, if theree is more that one page
 	void deletePage();
+	void setModeDeleteHighLight();
 	void setModeDeleteAnnotation();
 	void pdfChanged();
 	void redraw();

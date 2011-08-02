@@ -239,7 +239,7 @@ public:
 	void setFlags( int flags ) 
 	{
 		_caseSensitive = flags & SearchCaseSensitive;
-		_wholeWord = flags & SearchWholeWords;
+		_wholeWord = flags & SearchConcate;
 		_regexp = flags & SearchRegexp;
 	}
 

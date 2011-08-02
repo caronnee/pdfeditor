@@ -6,113 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>253</width>
-    <height>73</height>
+    <width>440</width>
+    <height>213</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Debugging tools</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-   <item>
-    <widget class="QToolButton" name="refreshButton">
-     <property name="toolTip">
-      <string>redraw page</string>
-     </property>
-     <property name="text">
-      <string>Refresh</string>
-     </property>
-     <property name="icon">
-      <iconset resource="pdf.qrc">
-       <normaloff>:/images/refresh.png</normaloff>:/images/refresh.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QToolButton" name="analyzeButton">
-     <property name="toolTip">
-      <string>create analyze tree</string>
-     </property>
-     <property name="text">
-      <string>Analyze!</string>
-     </property>
-     <property name="icon">
-      <iconset resource="pdf.qrc">
-       <normaloff>:/images/analyze.png</normaloff>:/images/analyze.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QToolButton" name="saveEncodedButton">
-     <property name="toolTip">
-      <string>save decoded</string>
-     </property>
-     <property name="text">
-      <string>&amp;Decode</string>
-     </property>
-     <property name="icon">
-      <iconset resource="pdf.qrc">
-       <normaloff>:/images/decrypt_icon.png</normaloff>:/images/decrypt_icon.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QToolButton" name="opSelect">
-     <property name="toolTip">
-      <string>select operators</string>
-     </property>
-     <property name="text">
-      <string>Operators</string>
-     </property>
-     <property name="icon">
-      <iconset resource="pdf.qrc">
-       <normaloff>:/images/operator.png</normaloff>:/images/operator.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-  </layout>
+  <layout class="QHBoxLayout" name="horizontalLayout"/>
  </widget>
  <resources>
   <include location="pdf.qrc"/>

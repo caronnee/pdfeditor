@@ -6,6 +6,7 @@
 #include <QColor>
 #include "ui_colorPicker.h"
 #include <vector>
+#include <QColor>
 
 //TODO CMYK a podobne veci?
 class ColorPicker : public QWidget
@@ -16,6 +17,7 @@ private:
 	Ui::colorPick ui;	 //tri spinboxy + 1 na vykreslovanie farby
 public:
 	ColorPicker(QWidget * parent);
+	QColor _color;
 	int getR(); 
 	int getG(); 
 	int getB(); 
@@ -34,6 +36,7 @@ signals:
 		//}
 		void setColor(QColor color);
 		QColor getColor();
-		void valueChanged(int);
+		//void valueChanged(int);
+		void setFromDialog();
 };
 #endif

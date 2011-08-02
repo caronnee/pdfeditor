@@ -41,6 +41,8 @@ signals:
 	void annotationTextMarkup(PdfAnnot);
 	void annotation(PdfAnnot);
 	void WaitForPosition(PdfAnnot);
+protected:
+	void showEvent ( QShowEvent * event );
 
 public slots:
 	void setIndex(int i);

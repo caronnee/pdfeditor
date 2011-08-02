@@ -9,6 +9,10 @@
 #include <Windows.h>
 #endif // _WIN32
 
+void OpenPdf::setModeDeleteHighLight()
+{
+	setMode(ModeDeleteHighLight);
+}
 void OpenPdf::stopSearch()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
@@ -239,7 +243,7 @@ void OpenPdf::open(QString name)
 	}
 	catch (PdfException e)
 	{
-		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
+		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason : ") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
 
 	//	return;
 	}
@@ -249,7 +253,7 @@ void OpenPdf::open(QString name)
 	}
 	catch (std::exception e)
 	{
-		QMessageBox::warning(this, "Unexpected exception",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
+		QMessageBox::warning(this, "Unexpected exception",QString("Reason : ") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
 	}
 #endif // _DEBUG
 
@@ -281,7 +285,7 @@ void OpenPdf::save()
 	if (!t->CanBeSavedChanges())
 		return;
 	t->savePdf(NULL);
-	this->setTabText(currentIndex(), this->tabText(currentIndex()).mid(1));
+	//this->setTabText(currentIndex(), this->tabText(currentIndex()).mid(1));
 }
 
 void OpenPdf::pageUp()

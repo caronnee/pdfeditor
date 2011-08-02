@@ -52,7 +52,7 @@ OperatorData::OperatorData(PdfOp op, DisplayParams& displayParams) : _begin(0), 
 		i++;
 		bool ok = false;
 		libs::Point p = _op->getPosition(i,ok);
-		rotate(displayParams.rotate, p.x,p.y);
+		//rotate(displayParams.rotate, p.x,p.y);
 		if (!ok)
 			break;
 		_letters.push_back( _letters.back() + p.x*displayParams.vDpi/72); //kde zacina tato pozicia, nezaujima nas y

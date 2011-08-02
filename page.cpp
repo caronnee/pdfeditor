@@ -9,10 +9,11 @@ void DisplayPage::paintEvent(QPaintEvent * event)
 	QLabel::paintEvent(event);
 	switch (_mode)
 	{
-	case ModeDrawCircle:
+	case ModeDrawPosition:
 		{
 			QPainter p(this);
-			p.drawEllipse(_pos, 23,10);
+			p.drawRect(_pos.x()-5, _pos.y()-2,10,4);
+			p.drawRect(_pos.x()-2, _pos.y()-5,4,10);
 			break;
 		}
 	case ModeDrawNothing: //do now draw anything
@@ -308,6 +309,6 @@ int DisplayPage::getPlace( QPoint point )
 void DisplayPage::drawCircle( QPoint point )
 {
 	_pos = point;
-	_mode = ModeDrawCircle;
+	_mode = ModeDrawPosition;
 	update();
 }

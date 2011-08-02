@@ -10,7 +10,7 @@
 #include <QWidget>
 
 pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags) 
-: QMainWindow(parent, flags),_textFrame(this), _imageFrame(this), _annotationFrame(this), _debugFrame(this), init()
+: QMainWindow(parent, flags),/*_textFrame(this), _imageFrame(this), _annotationFrame(this), _debugFrame(this),*/ init()
 {
 	init.fontDir = ".";
 	int argc = 0;
@@ -25,16 +25,10 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	//GlobalParams::initGlobalParams(NULL)->setupBaseFonts("D:\\Work\\winPdfEdit\\winPdfEdit\\pdfedit-0.4.5\\projects\\output"); //? Where are my fonts?
 
 	ui.setupUi(this);
-	_textFrameUI.setupUi(&_textFrame);
-	_textFrame.hide();
-	
-	_annotationFrameUI.setupUi(&_annotationFrame);
-	_annotationFrame.hide();
-
-	_imageFrameUI.setupUi(&_imageFrame);
-	_imageFrame.hide();
-
-	_debugFrameUI.setupUi(&_debugFrame);
+	ui.textFrame->hide();
+	ui.annotationFrame->hide();
+	ui.imageFrame->hide();
+	ui.debugFrame->hide();
 
 	ui.settingFrame->hide();
 	aboutDialogUI.setupUi(&aboutDialog);
@@ -71,42 +65,44 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 
 //////////////////////////////////////////////////////////////////////////
 
-	connect( this->ui.debugButton, SIGNAL(pressed()), &_debugFrame, SLOT(show()));
-	connect( _textFrameUI.searchButton, SIGNAL(pressed()), _search, SLOT(show()));
+	connect( this->ui.debugButton, SIGNAL(toggled(bool)), ui.debugFrame, SLOT(setVisible(bool)));
+	connect( this->ui.searchButton, SIGNAL(pressed()), _search, SLOT(show()));
 //	connect( this->ui.openButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(openAnotherPdf()));
 //	connect( this->ui.saveButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(save()));
 //	connect( this->ui.saveAsButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(saveAs()));
-	connect( _debugFrameUI.saveEncodedButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(saveEncoded()));
+	connect( ui.saveEncodedButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(saveEncoded()));
 	connect( this->ui.viewButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeView()));
 //	connect( this->ui.exportButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(getText()));
-	connect( _imageFrameUI.insertImageButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeInsertImage()));
-	connect( _debugFrameUI.analyzeButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(initAnalyze()));
+	connect( this->ui.insertImageButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeInsertImage()));
+	connect( ui.analyzeButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(initAnalyze()));
 //	connect( this->ui.lastOpenedButton, SIGNAL(pressed()), this, SLOT(lastOpenedPdfs()));
-	connect( _debugFrameUI.opSelect, SIGNAL(pressed()), this->ui.openedPdfs,SLOT(setModeOperator()));
+	connect( ui.opSelect, SIGNAL(pressed()), this->ui.openedPdfs,SLOT(setModeOperator()));
 	//connect( this->ui.rotateButton, SIGNAL(pressed()), this->ui.openedPdfs,SLOT(rotate()));
 	//connect( this->ui.derotateButton, SIGNAL(pressed()), this->ui.openedPdfs,SLOT(derotate()));
-	connect( _textFrameUI.insertTextButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeInsertText()));
-	connect( _textFrameUI.deleteButton,SIGNAL(pressed()),this->ui.openedPdfs,SLOT(deleteSelectedText()));
-	connect( _textFrameUI.changeButton,SIGNAL(pressed()),this->ui.openedPdfs,SLOT(changeSelectedText()));
-	connect( _textFrameUI.eraseButton,SIGNAL(pressed()),this->ui.openedPdfs,SLOT(eraseSelectedText()));
-	connect( _textFrameUI.highlightButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(highlightSelected()));
-	connect( _textFrameUI.selectTextButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeSelectText()));
+	connect( this->ui.insertTextButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeInsertText()));
+	connect( this->ui.deleteButton,SIGNAL(pressed()),this->ui.openedPdfs,SLOT(deleteSelectedText()));
+	connect( this->ui.changeButton,SIGNAL(pressed()),this->ui.openedPdfs,SLOT(changeSelectedText()));
+	connect( this->ui.eraseButton,SIGNAL(pressed()),this->ui.openedPdfs,SLOT(eraseSelectedText()));
+	connect( this->ui.highlightButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(highlightSelected()));
+	connect( this->ui.selectTextButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeSelectText()));
 	
 	connect( _search, SIGNAL(search(QString,int)),this->ui.openedPdfs, SLOT(search(QString, int)));
-	connect( _imageFrameUI.selectImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeSelectImage()));
-	connect( _imageFrameUI.deleteImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(deleteSelectedImage()));
-	connect( _imageFrameUI.changeImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(changeSelectedImage()));
-	connect( _imageFrameUI.imagePartButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeImagePart()));
-	connect( _imageFrameUI.extractButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeExtractImage()));
+	connect( this->ui.selectImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeSelectImage()));
+	connect( this->ui.deleteImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(deleteSelectedImage()));
+	connect( this->ui.changeImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(changeSelectedImage()));
+	connect( this->ui.imagePartButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeImagePart()));
+	connect( this->ui.extractButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeExtractImage()));
 	
-	connect( _annotationFrameUI.insertAnotation, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeInsertAnotation()));
-	connect( _annotationFrameUI.linkAnnotation, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeInsertLinkAnotation()));
-	connect( _annotationFrameUI.changeAnnotationButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeChangeAnnotation()) );
-	connect( _annotationFrameUI.delAnnotation,SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeDeleteAnnotation()));
+	connect( this->ui.insertAnotation, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeInsertAnotation()));
+	connect( this->ui.linkAnnotation, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeInsertLinkAnotation()));
+	connect( this->ui.changeAnnotationButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeChangeAnnotation()) );
+	connect( this->ui.delAnnotation,SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeDeleteAnnotation()));
 	connect( this->ui.openedPdfs, SIGNAL(ModeChangedSignal(HelptextIcon)), this,SLOT(handleModeChange(HelptextIcon)));
-	connect( _annotationFrameUI.highlightButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setHighlighCommentText()));
+	connect( this->ui.highlightButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setHighlighCommentText()));
 
-	connect( _debugFrameUI.refreshButton, SIGNAL(pressed()), ui.openedPdfs, SLOT(redraw()));
+	connect( ui.refreshButton, SIGNAL(pressed()), ui.openedPdfs, SLOT(redraw()));
+	connect(ui.deleteHighlightButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeDeleteHighLight()));
+	connect(ui.exportTextButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(getText()));
 //	connect( this->ui.pageUp, SIGNAL(pressed()), ui.openedPdfs, SLOT(pageUp()));
 //	connect( this->ui.pageDown, SIGNAL(pressed()), ui.openedPdfs, SLOT(pageDown()));
 //	connect( this->ui.insertEmpty, SIGNAL(pressed()), ui.openedPdfs, SLOT(insertEmpty()));
@@ -116,16 +112,14 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.color, SIGNAL(ValueChangedSignal(QColor)), ui.openedPdfs, SLOT(setColor(QColor)));
 	connect( this->ui.openedPdfs, SIGNAL(OpenSuccess(QString)), this, SLOT(appendToLast(QString)));
 	////////////////////////////////////////VISIBILITY connect//////////////////////////////////
-	connect(this->ui.textButton, SIGNAL(toggled(bool)), &_textFrame, SLOT(setVisible(bool)));
-	connect(this->ui.imageButton, SIGNAL(toggled(bool)), &_imageFrame, SLOT(setVisible(bool)));
-	connect(this->ui.annotationButton, SIGNAL(toggled(bool)), &_annotationFrame, SLOT(setVisible(bool)));
+	connect(this->ui.textButton, SIGNAL(toggled(bool)), ui.textFrame, SLOT(setVisible(bool)));
+	connect(this->ui.imageButton, SIGNAL(toggled(bool)), ui.imageFrame, SLOT(setVisible(bool)));
+	connect(this->ui.annotationButton, SIGNAL(toggled(bool)), ui.annotationFrame, SLOT(setVisible(bool)));
 	connect( this->ui.openedPdfs, SIGNAL(currentChanged(int)), this, SLOT(disableMainPanel(int)));
 
-	//connect na vsetky zatvaratekne veci
-	connect(&_textFrame, SIGNAL(WidgetClosedSignal()), this->ui.viewButton, SLOT(click()));
-	connect(&_imageFrame, SIGNAL(WidgetClosedSignal()), this->ui.viewButton, SLOT(click()));
-	connect(&_annotationFrame, SIGNAL(WidgetClosedSignal()), this->ui.viewButton, SLOT(click()));
-	connect(&_debugFrame, SIGNAL(WidgetClosedSignal()), this->ui.viewButton, SLOT(click()));
+	connect(this->ui.textButton, SIGNAL(pressed()), this->ui.selectTextButton, SLOT(click()));
+connect(this->ui.imageButton, SIGNAL(pressed()), this->ui.selectImageButton, SLOT(click()));
+connect(this->ui.annotationButton, SIGNAL(pressed()), this->ui.insertAnotation, SLOT(click()));
 
 	disableMainPanel(0);
 	//////////////////////////////////////////////////////////////////////////
@@ -171,8 +165,13 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 			s++;
 			_lastOpenedButtonMenu->addAction(s,this,SLOT(openLastFile()));
 		}
+		if(!stricmp(buffer,"dash"))
+		{
+			s++;
+			QVariant v(s);
+			_search->setFlags(v.toInt());
+		}
 		i=0;
-
 	}
 	//--------------------
 	fclose(f);
@@ -187,10 +186,10 @@ void pdfGui::showFullScreened()
 void pdfGui::closeEvent( QCloseEvent *event )
 {
 	_search->close();
-	_debugFrame.close();
+	/*_debugFrame.close();
 	_textFrame.close();
 	_imageFrame.close();
-	_annotationFrame.close();
+	_annotationFrame.close();*/
 
 	FILE * f = fopen("config","w");
 	if (!f)
@@ -209,6 +208,8 @@ void pdfGui::closeEvent( QCloseEvent *event )
 		sprintf(buffer,"file=%s\n",actions[i]->text().toAscii().data());
 		fwrite(buffer,sizeof(char),strlen(buffer),f);
 	}
+	sprintf(buffer,"dash=%c\n",_search->getFlags());
+	fwrite(buffer,sizeof(char),strlen(buffer),f);
 	fclose(f);
 }
 pdfGui::~pdfGui()
