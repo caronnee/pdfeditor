@@ -8,6 +8,7 @@ struct HelptextIcon
 {
 	const char * helpText;
 	const char * icon;
+	const char * description;
 };
 
 class OpenPdf :
@@ -105,6 +106,7 @@ public slots:
 	QColor getHColor();
 	void setModeInsertLinkAnotation();
 	void setModeSetting();
+	void about();
 
 signals:
 	void OpenSuccess(QString);

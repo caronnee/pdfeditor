@@ -85,6 +85,8 @@ public:
 	void mouseMoveEvent(QMouseEvent *);
 	void mouseReleaseEvent(QMouseEvent * event);
 	void clearLabels();
+	QRect getRect();
+
 public slots:
 	void copyText();
 	int getPlace( QPoint point );

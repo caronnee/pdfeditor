@@ -153,24 +153,28 @@ bool OperatorData::operator<(const OperatorData & oper) //zoradime podla y-osi
 	//cim vyssie je y, tym vyssie je na obrazovke, t.j. ty to bude prvsie
 	//ak je rozdiel moc maly v y osi, si na jednej lajne
 	bool boo;
-	bool ret = forward( oper._origX , oper._ymax,boo);
+	bool ret = forward( oper,boo);
 	if (boo)
 		return _id < oper._id;
 	return ret;
 }
-bool OperatorData::forward(double x, double y, bool& eq)const
+bool OperatorData::forward(const OperatorData &oper, bool& eq)const
 {
 	eq  = false;
 	float maxy = _ymax; //najvyssia hodnota -> najnizie
-
-	if (fabs(maxy - y) > 0.5f) //rozhodni podla y osi, cim mensi, tym blizsie
+	/*float size = fabs (myRect.yLeft - myRect.yRight);
+	float sum1 = fabs (myRect.yLeft - rect.yRight) + fabs (rect.yRight - myRect.yRight);
+	bool oneRow = (fabs(maxy - y) > 1e-3) || myRect.yLeft -*/
+	//sucin rozdielu maxom a minov je kladny -> su v jednom riadku
+	float oneRow = (_ymax - oper._ymax) * (_ymin - oper._ymin);
+	if ( oneRow > 1e-2 ) //fabs(maxy - y) > 1e-3) //rozhodni podla y osi, cim mensi, tym blizsie
 	{
-		return maxy - y < 0;//pojde dopredy ak toto je vyssie ako y, ktore sme dostali
+		return maxy - oper._ymax < 0;//pojde dopredy ak toto je vyssie ako y, ktore sme dostali
 	}
 	maxy = _origX;
-	if (fabs(maxy - x) < 1e-3)
+	if (fabs(maxy - oper._origX) < 1e-3)
 		return eq = true;
-	return maxy < x;
+	return maxy < oper._origX;
 }
 //split odla toho, ako sme to vysvietili
 void OperatorData::split(QString & split1, QString& split2, QString& split3)

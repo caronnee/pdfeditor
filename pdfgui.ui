@@ -16,11 +16,16 @@
     <height>400</height>
    </size>
   </property>
+  <property name="font">
+   <font>
+    <family>MV Boli</family>
+   </font>
+  </property>
   <property name="mouseTracking">
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Pdf editor v1.25</string>
+   <string>Pdf editor v1.27</string>
   </property>
   <property name="windowIcon">
    <iconset resource="pdf.qrc">
@@ -28,9 +33,6 @@
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
-  </property>
-  <property name="styleSheet">
-   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -51,21 +53,49 @@
        </property>
        <item>
         <widget class="QWidget" name="main" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QToolButton" name="textButton">
-            <property name="minimumSize">
+           <widget class="QToolButton" name="openButton">
+            <property name="text">
+             <string>Open</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/open.png</normaloff>:/images/open.png</iconset>
+            </property>
+            <property name="iconSize">
              <size>
-              <width>60</width>
-              <height>0</height>
+              <width>32</width>
+              <height>32</height>
              </size>
             </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="saveButton">
+            <property name="text">
+             <string>Save</string>
+            </property>
+            <property name="icon">
+             <iconset resource="pdf.qrc">
+              <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="textButton">
             <property name="toolTip">
              <string>show text operations</string>
             </property>
@@ -98,12 +128,6 @@
           </item>
           <item>
            <widget class="QToolButton" name="imageButton">
-            <property name="minimumSize">
-             <size>
-              <width>60</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="toolTip">
              <string>show image operation</string>
             </property>
@@ -136,12 +160,6 @@
           </item>
           <item>
            <widget class="QToolButton" name="annotationButton">
-            <property name="minimumSize">
-             <size>
-              <width>60</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="toolTip">
              <string>show annotation operations</string>
             </property>
@@ -174,12 +192,6 @@
           </item>
           <item>
            <widget class="QToolButton" name="viewButton">
-            <property name="minimumSize">
-             <size>
-              <width>60</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="text">
              <string>View</string>
             </property>
@@ -209,17 +221,11 @@
           </item>
           <item>
            <widget class="QToolButton" name="settingsButton">
-            <property name="minimumSize">
-             <size>
-              <width>60</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="toolTip">
              <string>show setting dialog</string>
             </property>
             <property name="text">
-             <string>Settings</string>
+             <string>Colors</string>
             </property>
             <property name="icon">
              <iconset resource="pdf.qrc">
@@ -247,12 +253,6 @@
           </item>
           <item>
            <widget class="QToolButton" name="debugButton">
-            <property name="minimumSize">
-             <size>
-              <width>60</width>
-              <height>0</height>
-             </size>
-            </property>
             <property name="toolTip">
              <string>show debug options</string>
             </property>
@@ -283,6 +283,19 @@
             </attribute>
            </widget>
           </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
        </item>
@@ -304,6 +317,13 @@
           <property name="margin">
            <number>0</number>
           </property>
+          <item>
+           <widget class="Line" name="line_4">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QToolButton" name="insertImageButton">
             <property name="toolTip">
@@ -466,6 +486,19 @@
              <string>buttonGroup</string>
             </attribute>
            </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -637,6 +670,19 @@
             </attribute>
            </widget>
           </item>
+          <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
        </item>
@@ -655,6 +701,13 @@
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="Line" name="line_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QToolButton" name="selectTextButton">
             <property name="toolTip">
@@ -841,6 +894,9 @@
               <height>32</height>
              </size>
             </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
            </widget>
           </item>
           <item>
@@ -881,7 +937,23 @@
               <height>32</height>
              </size>
             </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
+            </property>
            </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -901,6 +973,13 @@
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="Line" name="line_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QToolButton" name="refreshButton">
             <property name="toolTip">
@@ -999,6 +1078,19 @@
             </property>
            </widget>
           </item>
+          <item>
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
        </item>
@@ -1008,7 +1100,7 @@
           <string>Actual mode</string>
          </property>
          <property name="text">
-          <string>...</string>
+          <string/>
          </property>
          <property name="iconSize">
           <size>
@@ -1016,30 +1108,12 @@
            <height>32</height>
           </size>
          </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonTextUnderIcon</enum>
+         </property>
         </widget>
        </item>
       </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="Line" name="line_5">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="Help">
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="Line" name="line_6">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
      </widget>
     </item>
     <item>
@@ -1144,6 +1218,30 @@
       </property>
      </widget>
     </item>
+    <item>
+     <widget class="Line" name="line_5">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="Help">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="Line" name="line_6">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -1153,7 +1251,7 @@
      <x>0</x>
      <y>0</y>
      <width>878</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1162,7 +1260,7 @@
     </property>
     <widget class="QMenu" name="menuView">
      <property name="title">
-      <string>View</string>
+      <string>Rotation</string>
      </property>
      <addaction name="actionRotate_left"/>
      <addaction name="actionRotate_right"/>
@@ -1194,6 +1292,7 @@
     <addaction name="menuPages"/>
     <addaction name="menuView"/>
     <addaction name="actionAnalyze"/>
+    <addaction name="actionDocument"/>
     <addaction name="actionExport_text"/>
     <addaction name="actionExit"/>
    </widget>
@@ -1239,7 +1338,7 @@
     <string>SaveCopy</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+A</string>
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
   <action name="actionAnalyze">
@@ -1345,6 +1444,11 @@
     <string>Exit</string>
    </property>
   </action>
+  <action name="actionDocument">
+   <property name="text">
+    <string>Document info</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1423,70 +1527,6 @@
     <hint type="destinationlabel">
      <x>438</x>
      <y>465</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>settingsButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>textButton</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>290</x>
-     <y>58</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>39</x>
-     <y>58</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>settingsButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>imageButton</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>290</x>
-     <y>58</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>99</x>
-     <y>58</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>settingsButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>annotationButton</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>290</x>
-     <y>58</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>165</x>
-     <y>58</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>settingsButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>debugButton</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>290</x>
-     <y>58</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>350</x>
-     <y>58</y>
     </hint>
    </hints>
   </connection>

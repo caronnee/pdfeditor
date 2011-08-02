@@ -36,7 +36,7 @@ public:
 	void setBegin(float x);
 	void setEnd(float x);
 	bool operator<(const OperatorData & oper); //zoradime podla y-osi
-	bool forward (double x, double y, bool & eq)const;
+	bool forward (const OperatorData & oper, bool & eq)const;
 	//split odla toho, ako sme to vysvietili
 	void split(QString& split1, QString& split2, QString& split3);
 	//void replaceAllText(std::string s);

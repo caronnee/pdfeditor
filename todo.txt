@@ -209,34 +209,33 @@ FIXED -- crosspoint pri vkladaju
 FIXED -- shape nebude shape ale vybratie typu (STYLE)
 FIXED -- rotacia (disaled field)
 Fixed -- medzera bude poznat by default
-FIXED -- stroku bude obsahovat iba jednu farbu v zaislosti na 
+FIXED -- stroke bude obsahovat iba jednu farbu v zaislosti na 
 FIXED -- delete & erase popisat - erase, erase with spaces
 FIXED -- delete highlight
 FIXED -- export to text
 FIXED -- v settingoch rusenie dashov
 FIXED -- padne pri SYMBOL font
--- do settingov autora - do polozky annotation autor
--- PAGEDOWN ako klavesa
--- enabelovat lencast stanok co sa moze menit
--- zatvaranie pri zatvarani TabPage
--- vyhladavanie v pradnom PDF fail po zatvoreni
--- premenovat CVview na rotation
--- na rotovanych to nie je fixed
--- do Menu about ODF
--- unable to open file 
--- replikovat butlik aj s textom ( viewMode )\
-!!!!!! RECTANGLE v te + zmena kurzoru
--- aby clovek vedel ze je NAD operatorom a nemusel vyberat od-do
--- open button menu
--- pri malych PDF - fixed size
--- number of revisionS
+FIXED -- do settingov autora - do polozky annotation autor
+FIXED -- PAGEDOWN ako klavesa
+FIXED -- enabelovat len cast stanok co sa moze menit
+FIXED -- zatvaranie pri zatvarani TabPage
+FIXED -- premenovat CVview na rotation
+FIXED -- do Menu about ODF
+FIXED -- na rotovanych to nie je fixed
+FIXED -- replikovat butlik aj s textom ( viewMode )\
+FIXED -- !!!!!! RECTANGLE v te + zmena kurzoru
+FIXED -- open button menu
+FIXED -- number of revisionS
 -- padne pri kazdom neotvorenom PDF
 
-OPEN, SAVE
+FIXED - OPEN, SAVE
 -- neda sa secnut obravsky obrazok
--- logicky oddelit  help raidok - podmenicka + pozadie zmenit od menu
+FIXED -- logicky oddelit  help raidok - podmenicka + pozadie zmenit od menu
 -- F1 - popis co to je, co sa s tym da robit, klikatelny otaznik
 ?? -- form u insert annotation
 -- dat active okno
 -- v dokumentaci  - pouzite kommenty, ktore
 -- selected existing font zmenit na 3
+-- vyhladavanie v pradnom PDF fail po zatvoreni
+-- unable to open file - spatna hlaska 
+-- pri malych PDF - fixed size

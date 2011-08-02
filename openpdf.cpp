@@ -9,6 +9,11 @@
 #include <Windows.h>
 #endif // _WIN32
 
+void OpenPdf::about()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->about();
+}
 void OpenPdf::setModeDeleteHighLight()
 {
 	setMode(ModeDeleteHighLight);
@@ -171,6 +176,7 @@ void OpenPdf::closeAndRemoveTab(int i)
 	TabPage * page = (TabPage *)this->widget(i); //how to get exact tab?
 	//this->focusNextChild();
 	this->removeTab(i);
+	delete page;
 }
 void OpenPdf::saveEncoded()
 {

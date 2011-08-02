@@ -980,7 +980,87 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\images\addComment.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\addImage.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\addLink.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\images\addpage.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\analyze.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1040,7 +1120,67 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\images\change.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\changed.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\images\comment.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\commit.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1100,7 +1240,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\images\decrypt_icon.jpg"
+				RelativePath="..\images\decrypt_icon.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1180,7 +1320,47 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\images\disabled.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\images\downpage.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\enabled.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1220,7 +1400,107 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\images\exit.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\export.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\firstPage.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\font.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\images\hand.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\highlight.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1300,6 +1580,46 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\images\lastPage.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\mainIcon.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\images\nextpage.png"
 				>
 				<FileConfiguration
@@ -1340,7 +1660,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\images\operator.jpg"
+				RelativePath="..\images\operator.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1389,7 +1709,7 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing $(InputFileName)..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(InputPath);..\images\view.png;..\images\about.png;..\images\addpage.png;..\images\background.png;..\images\bubble.png;..\images\comment.png;..\images\content.png;..\images\debug.png;..\images\decrypt_icon.jpg;..\images\deletepage.png;..\images\DeleteText.png;..\images\derotate.png;..\images\downpage.png;..\images\eraseText.png;..\images\hand.png;..\images\images.png;..\images\insert_text.png;..\images\insertTextMarker.png;..\images\nextpage.png;..\images\open.png;..\images\operator.jpg;..\images\page_down.png;..\images\previousPage.png;..\images\redo.png;..\images\rotate.png;..\images\save.png;..\images\saveas.png;..\images\savecopy.png;..\images\save-encoded.png;..\images\search.png;..\images\setText.png;..\images\TextConvert.png;..\images\undo.png;..\images\unknown.jpg;..\images\uppage.png;..\images\zoom.png;..\images\debug.png;..\images\background.png;..\images\eraseText.png;..\images\insertTextMarker.png;..\images\redo.png;..\images\undo.png;..\images\unknown.jpg;..\images\addpage.png;..\images\comment.png;..\images\content.png;..\images\decrypt_icon.jpg;..\images\deletepage.png;..\images\DeleteText.png;..\images\derotate.png;..\images\downpage.png;..\images\hand.png;..\images\images.png;..\images\insert_text.png;..\images\insertTextMarker.png;..\images\open.png;..\images\operator.jpg;..\images\page_down.png;..\images\rotate.png;..\images\save.png;..\images\saveas.png;..\images\savecopy.png;..\images\save-encoded.png;..\images\search.png;..\images\setText.png;..\images\TextConvert.png;..\images\uppage.png;..\images\zoom.png"
+						AdditionalDependencies="$(InputPath);..\images\mainIcon.png;..\images\font.png;..\images\position.png;..\images\about.png;..\images\addComment.png;..\images\addImage.png;..\images\addLink.png;..\images\addpage.png;..\images\analyze.png;..\images\background.png;..\images\bubble.png;..\images\comment.png;..\images\commit.png;..\images\content.png;..\images\debug.png;..\images\decrypt_icon.png;..\images\deletepage.png;..\images\DeleteText.png;..\images\derotate.png;..\images\disabled.png;..\images\downpage.png;..\images\eraseText.png;..\images\exit.png;..\images\export.png;..\images\firstPage.png;..\images\hand.png;..\images\highlight.png;..\images\change.png;..\images\changed.png;..\images\images.png;..\images\enabled.png;..\images\insert_text.png;..\images\insertTextMarker.png;..\images\lastPage.png;..\images\nextpage.png;..\images\open.png;..\images\operator.png;..\images\page_down.png;..\images\previousPage.png;..\images\redo.png;..\images\refresh.png;..\images\rotate.png;..\images\save.png;..\images\saveas.png;..\images\savecopy.png;..\images\save-encoded.png;..\images\search.png;..\images\setText.png;..\images\settings.png;..\images\snapshot.png;..\images\stop.png;..\images\TextConvert.png;..\images\undo.png;..\images\unknown.png;..\images\uppage.png;..\images\view.png;..\images\zoom.png"
 						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
 					/>
 				</FileConfiguration>
@@ -1400,8 +1720,28 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing $(InputFileName)..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(InputPath);..\images\view.png;..\images\about.png;..\images\addpage.png;..\images\background.png;..\images\bubble.png;..\images\comment.png;..\images\content.png;..\images\debug.png;..\images\decrypt_icon.jpg;..\images\deletepage.png;..\images\DeleteText.png;..\images\derotate.png;..\images\downpage.png;..\images\eraseText.png;..\images\hand.png;..\images\images.png;..\images\insert_text.png;..\images\insertTextMarker.png;..\images\nextpage.png;..\images\open.png;..\images\operator.jpg;..\images\page_down.png;..\images\previousPage.png;..\images\redo.png;..\images\rotate.png;..\images\save.png;..\images\saveas.png;..\images\savecopy.png;..\images\save-encoded.png;..\images\search.png;..\images\setText.png;..\images\TextConvert.png;..\images\undo.png;..\images\unknown.jpg;..\images\uppage.png;..\images\zoom.png;..\images\debug.png;..\images\background.png;..\images\eraseText.png;..\images\insertTextMarker.png;..\images\redo.png;..\images\undo.png;..\images\unknown.jpg;..\images\addpage.png;..\images\comment.png;..\images\content.png;..\images\decrypt_icon.jpg;..\images\deletepage.png;..\images\DeleteText.png;..\images\derotate.png;..\images\downpage.png;..\images\hand.png;..\images\images.png;..\images\insert_text.png;..\images\insertTextMarker.png;..\images\open.png;..\images\operator.jpg;..\images\page_down.png;..\images\rotate.png;..\images\save.png;..\images\saveas.png;..\images\savecopy.png;..\images\save-encoded.png;..\images\search.png;..\images\setText.png;..\images\TextConvert.png;..\images\uppage.png;..\images\zoom.png"
+						AdditionalDependencies="$(InputPath);..\images\mainIcon.png;..\images\font.png;..\images\position.png;..\images\about.png;..\images\addComment.png;..\images\addImage.png;..\images\addLink.png;..\images\addpage.png;..\images\analyze.png;..\images\background.png;..\images\bubble.png;..\images\comment.png;..\images\commit.png;..\images\content.png;..\images\debug.png;..\images\decrypt_icon.png;..\images\deletepage.png;..\images\DeleteText.png;..\images\derotate.png;..\images\disabled.png;..\images\downpage.png;..\images\eraseText.png;..\images\exit.png;..\images\export.png;..\images\firstPage.png;..\images\hand.png;..\images\highlight.png;..\images\change.png;..\images\changed.png;..\images\images.png;..\images\enabled.png;..\images\insert_text.png;..\images\insertTextMarker.png;..\images\lastPage.png;..\images\nextpage.png;..\images\open.png;..\images\operator.png;..\images\page_down.png;..\images\previousPage.png;..\images\redo.png;..\images\refresh.png;..\images\rotate.png;..\images\save.png;..\images\saveas.png;..\images\savecopy.png;..\images\save-encoded.png;..\images\search.png;..\images\setText.png;..\images\settings.png;..\images\snapshot.png;..\images\stop.png;..\images\TextConvert.png;..\images\undo.png;..\images\unknown.png;..\images\uppage.png;..\images\view.png;..\images\zoom.png"
 						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\position.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 			</File>
@@ -1427,6 +1767,26 @@
 			</File>
 			<File
 				RelativePath="..\images\redo.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\refresh.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1586,6 +1946,66 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\images\settings.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\snapshot.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\images\stop.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\images\TextConvert.png"
 				>
 				<FileConfiguration
@@ -1626,7 +2046,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\images\unknown.jpg"
+				RelativePath="..\images\unknown.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"

@@ -38,7 +38,7 @@ void rotatePdf( DisplayParams& displayparams, double& x,double& y, bool toUpPosi
 		y = fabs(resy) - fabs(y);
 		break;
 	case 3:
-		y = fabs(resy) - fabs(x);
+		y = fabs(resy) - fabs(y);
 		break;
 	default:
 		break;

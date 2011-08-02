@@ -185,8 +185,7 @@ public:
 
 	void setTree(shared_ptr<CDict> d, Bookmark * b );
 	void highLightBegin(int x, int y); //nesprav nic, pretoze to bude robit mouseMove
-	void highlightText(QPoint point); //tu mame convertle  x,y
-
+	void highlightText(); //tu mame convertle  x,y
 	void moveText(int difX, int difY);
 	void insertBefore(PdfOp op, PdfOp before);
 	void createAddMoveString(PdfOp bef, double x, double y, QString name);

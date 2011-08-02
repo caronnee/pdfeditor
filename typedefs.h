@@ -12,33 +12,33 @@
 #define ZOOM_STEP 50
 
 #define MODES(XX) \
-	XX(ModeDoNothing," Viewmode ","view.png")	\
-	XX(ModeInsertText,"InsertText mode : click on pdf to insert a text","insert_text.png")	\
-	XX(ModeSelectText,"Select text mode : Click and drag to select a text","hand.png") \
-	XX(ModeInsertImage,"InsertImage mode: Select a rectangle to insert an image","addImage.png") \
-	XX(ModeSelectImage,"Select image mode: Click to select inline image","hand.png")	\
-	XX(ModeImageSelected, "Image selected. Click on buttons to change or to delete image","hand.png")	\
-	XX(ModeImagePartCopied,"Snapshot was copied to the clipboard","snapshot.png")	\
-	XX(ModeImagePart,"Extract pdf part as image mode: select a rectangle to be saved as image","snapshot.png")	\
-	XX(ModeExtractImage, "Extract image mode: click on inlineimage to extract an image","snapshot.png")	\
-	XX(ModeOperatorSelect,"Operator select mode: click on text operator to highligh it","operator.png")	\
-	XX(ModeInsertAnnotation,"Insert Text Annotation mode: click on pdf to insert an annotation","addComment.png")	\
-	XX(ModeInsertLinkAnnotation,"Insert Link Annotation mode: click on pdf to insert a link annotation","addLink.png")	\
-	XX(ModeDeleteAnnotation, "Delete annotation mode: click on annotation to delete it","DeleteText.png")	\
-	XX(ModeEmitPosition, "Emit position mode: Pdf is waiting for position. Click somewhere in the pdf","position.png")	\
-	XX(ModeSettings,"Set the color that should be used when highlighting text by hand and by annostion. Press setting to get away","settings.png")\
-	XX(ImageMode," Not Implemented","unknown.jpg")	\
-	XX(DrawMode,"NotImplemented, go away!","unknown.jpg")	\
-	XX(ModeFindLastFont, "Click to select font and font size by text in PDF","font.png")\
-	XX(ModeChangeAnnotation, "Click on anotation to change it","change.png") \
-	XX(DefaultMode,"Open an PDF","unknown.jpg") \
-	XX(ModeHighlighComment,"After selecting text, fill please content","highlight.png") \
-	XX(ModeDeleteHighLight, "Click to delete highlight annotation","delete.png")\
+	XX(ModeDoNothing,"Viewmode ","view.png", "View only")	\
+	XX(ModeInsertText,"InsertText mode : click on pdf to insert a text","insert_text.png","Insert")	\
+	XX(ModeSelectText,"Select text mode : Click and drag to select a text","hand.png","Select") \
+	XX(ModeInsertImage,"InsertImage mode: Select a rectangle to insert an image","addImage.png","Insert") \
+	XX(ModeSelectImage,"Select image mode: Click to select inline image","hand.png","Select")	\
+	XX(ModeImageSelected, "Image selected. Click on buttons to change or to delete image","hand.png","Select")	\
+	XX(ModeImagePartCopied,"Snapshot was copied to the clipboard","snapshot.png","Snapshot")	\
+	XX(ModeImagePart,"Extract pdf part as image mode: select a rectangle to be saved as image","snapshot.png","Snapshot")	\
+	XX(ModeExtractImage, "Extract image mode: click on inlineimage to extract an image","snapshot.png","Image snapshot")	\
+	XX(ModeOperatorSelect,"Operator select mode: click on text operator to highligh it","operator.png","Operators")	\
+	XX(ModeInsertAnnotation,"Insert Text Annotation mode: click on pdf to insert an annotation","addComment.png","Insert comment")	\
+	XX(ModeInsertLinkAnnotation,"Insert Link Annotation mode: click on pdf to insert a link annotation","addLink.png","Insert Link")	\
+	XX(ModeDeleteAnnotation, "Delete annotation mode: click on annotation to delete it","DeleteText.png","Delete annotation")	\
+	XX(ModeEmitPosition, "Emit position mode: Pdf is waiting for position. Click somewhere in the pdf","position.png","Wait for position")	\
+	XX(ModeSettings,"Set the color that should be used when highlighting text by hand and by annostion. Press setting to get away","settings.png","Settings")\
+	XX(ImageMode," Not Implemented","unknown.jpg","")	\
+	XX(DrawMode,"NotImplemented, go away!","unknown.jpg","")	\
+	XX(ModeFindLastFont, "Click to select font and font size by text in PDF","font.png","Fetch Font")\
+	XX(ModeChangeAnnotation, "Click on anotation to change it","change.png","Change annotation") \
+	XX(DefaultMode,"Open an PDF","unknown.jpg","") \
+	XX(ModeHighlighComment,"After selecting text, fill please content","highlight.png","Highlight") \
+	XX(ModeDeleteHighLight, "Click to delete highlight annotation","delete.png","Delete highlight")\
 	
 
-#define ENUMS(a,b,c) a,
+#define ENUMS(a,b,c,d) a,
 
-#define EARRAY(a,b,c) { b,c },
+#define EARRAY(a,b,c,d) { b,c,d },
 
 enum Mode
 {

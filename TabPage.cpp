@@ -335,7 +335,7 @@ void TabPage::about()
 	else
 		message += "No\n";
 	//pocet revizii
-	message += "Number of revision :";
+	message += "Number of revisions :";
 	message +=QVariant(_pdf->getRevisionsCount()).toString();
 	
 	aboutDialogUI.info->setText(message);
@@ -1322,7 +1322,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 	case ModeSelectText:
 		{
 			_labelPage->setMode(ModeTrackDrawingRect);
-			highlightText(point); //nesprav nic, pretoze to bude robit mouseMove
+			//highlightText(point); //nesprav nic, pretoze to bude robit mouseMove
 			break;
 		}
 	case ModeImagePartCopied:
@@ -1478,7 +1478,9 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 		}
 	case ModeHighlighComment:
 		{
-			highlightText(point);
+			highlightText(/*_mousePos, point*/);
+			if (!_selected)
+				break;
 			_labelPage->annotation();
 			_cmts->setIndex(AHighlight);
 			break;	
@@ -1487,7 +1489,7 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 		{
 			_labelPage->setMode(ModeDrawNothing);
 			_labelPage->update();
-			highlightText(point);
+			highlightText(/*_mousePos, point*/);
 			break;
 		}
 	case ModeInsertImage:
@@ -1547,6 +1549,8 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 		//	highlight();//TODO ZMAZST
 		break;
 	}
+	_labelPage->setMode(ModeDrawNothing);
+	_labelPage->update();
 	_dataReady = false;
 }
 void TabPage::highLightBegin(int x, int y) //nesprav nic, pretoze to bude robit mouseMove
@@ -1593,36 +1597,77 @@ void TabPage::setTextData(TextData::iterator & it, TextData::iterator end,shared
 	throw "Unexpected operator, text is not present in tree, why, why? ";
 }
 
-void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka ser space
+void TabPage::highlightText() //tu mame convertle  x,y, co sa tyka ser space
 {
-	double x = point.x(),y = point.y();
+	//double x = point.x(),y = point.y();
+	QRect r = _labelPage->getRect();
+	libs::Rectangle lRect(r.left(),  r.top(), r.right(), r.bottom());
 	//rotatePdf(displayparams,x,y,true);
-	if (!_dataReady) //prvykrat, co sme dotkli nejakeho operatora
-	{
-		_mousePos = point;
-		_labelPage->unsetImg();
-		highLightBegin(x,y); //oznaci zaciatok
-		return;
-	}//sTextIt
+		//_mousePos = point;
+		//_labelPage->unsetImg();
+		//highLightBegin(x,y); //oznaci zaciatok
+		//return;
+	
 	Ops ops;
-	_page->getObjectsAtPosition(ops, libs::Point(x,y));
+	_page->getObjectsAtPosition(ops, lRect);
+	bool found;
+	StateUpdater::CheckTypes c;
+
+	sTextIt = _textList.begin();
+	int i = 0;
 	if (ops.empty())
 		return;
-	bool found;
-	PdfOp text = getValidTextOp(ops, found);
-	if (!found)//ak nie je najdeme, mozeme sa pokusit hladat najbluzie alebo jednoducho nevyzietit
-		return;
-	OperatorData s(text,displayparams);
-	double xBegin;
-	double xEnd;
-	TextData::iterator move = sTextMarker;
-	move->clear();
-	double xxPoint = point.x(),yyPoint=point.y();
-	double xxOrig = _mousePos.x(),yyOrig=_mousePos.y();
+	for (; i < ops.size(); i++)
+	{
+		std::string s;
+		ops[i]->getOperatorName(s);
+		memcpy(c.name,s.c_str(),s.size());
+		c.name[s.size()] = '\0';
+		if (!isTextOp(c))
+			continue;
+		setTextData(sTextIt,_textList.end(), ops[i]);
+		sTextMarker = sTextItEnd = sTextIt;
+		break;
+	}
+	for(i; i<ops.size();i++)
+	{
+		std::string s;
+		ops[i]->getOperatorName(s);
+		memcpy(c.name,s.c_str(),s.size());
+		c.name[s.size()] = '\0';
+		if (!isTextOp(c))
+			continue;
+		OperatorData op(ops[i],displayparams);
+		if ( *sTextIt < op )
+		{
+			sTextIt =_textList.begin();
+			setTextData(sTextIt,_textList.end(),ops[i]);
+		}
+		if (op < *sTextItEnd)
+			setTextData(sTextItEnd,_textList.end(),ops[i]);
+	}
+	for (TextData::iterator iter = sTextIt; iter!= sTextItEnd; iter++)
+	{
+		iter->clear();
+	}
+	sTextItEnd->clear();
+	//bool found;
+	//PdfOp text = getValidTextOp(ops, found);
+	//if (!found)//ak nie je najdeme, mozeme sa pokusit hladat najbluzie alebo jednoducho nevyzietit
+	//	return;
+	//OperatorData s(text,displayparams);
+	//double xBegin;
+	//double xEnd;
+	/*TextData::iterator move = sTextMarker;
+	move->clear();*/
+	double xxPoint = r.left() , yyPoint =r.top();
+	double xxOrig = r.right() , yyOrig= r.bottom();
 	rotatePdf(displayparams,xxPoint,yyPoint,true);
 	rotatePdf(displayparams,xxOrig,yyOrig,true);
+	sTextIt->setBegin(min(xxOrig,xxPoint));
+	sTextItEnd->setEnd(max(xxOrig,xxPoint));
 
-	if ( *move < s)
+	/*if ( *move < s)
 	{
 		while (move->_op!=s._op)
 		{
@@ -1658,7 +1703,7 @@ void TabPage::highlightText(QPoint point) //tu mame convertle  x,y, co sa tyka s
 		sTextIt->setBegin(xxOrig);
 		sTextItEnd = move;
 		sTextItEnd->setEnd(xxPoint);
-	}
+	}*/
 
 	_selected =  true;
 	highlight();
@@ -2294,6 +2339,7 @@ TabPage::~TabPage(void)
 	if (_thread->isRunning())
 		_thread->terminate();
 	delete _thread;
+	//_pdf->
 }
 
 ///---private--------
@@ -2644,6 +2690,8 @@ void TabPage::insertText( PdfOp op )
 	TextOperatorIterator iter(op);assert(iter.valid());
 	_parent->setPreviousMode();
 	emit addHistory("Text inserted\n");
+	_labelPage->setMode(ModeDrawNothing);
+	_labelPage->update();
 	redraw();
 }
 
@@ -3254,7 +3302,7 @@ void TabPage::exportText()
 	//TODO nejaka inicializacia
 	QString text;
 	float dy = 0;
-	for ( size_t i = beg; i <= end; i++)
+	for ( size_t i = beg; i < end; i++)
 	{
 		float prev =_textList.size() > 0  ? _textList.begin()->_begin : 0;
 		float dy = _textList.size() > 0  ? _textList.begin()->_ymax : 0;
@@ -3262,13 +3310,15 @@ void TabPage::exportText()
 		{
 			float xx = prev - iter->_origX;
 			float yy = dy - iter->_ymax;
-			float customSpace = iter->_op->getFontHeight()/2;
+			float customSpace = iter->_op->getFontHeight()/4;
 			float size2 = xx*xx + yy * yy;
-			if ( size2 < customSpace * customSpace) //TODO hack
+			if (fabs(yy) > customSpace)
+				text.append('\n');
+			else if ( size2 > customSpace * customSpace) //TODO hack
 				text.append(" ");
 			std::wstring test;
 			iter->_op->getFontText(test);
-			text.append(QString::fromStdWString(test));
+			text.append(iter->_text);
 			prev = iter->_origX2;
 			dy = iter->_ymax;
 		}
@@ -3780,7 +3830,8 @@ void TabPage::setPageFromInfo()
 {
 	QString text = this->ui.pageInfo->text();
 	bool ok;
-	int pos = text.toInt(&ok);
+	QStringList list  = text.split('/');
+	int pos = list[0].toInt(&ok);
 	if (!ok || pos <=0 || pos > _pdf->getPageCount())
 	{
 		QMessageBox::warning(this, "Not a page","No such page exists",QMessageBox::Ok,QMessageBox::Ok);
@@ -3795,6 +3846,8 @@ void TabPage::addZoom()
 	this->ui.plusZoom->setEnabled(false);
 	int index = ui.zoom->currentIndex();
 	index++;
+	if (index > ui.zoom->count())
+		return;
 	ui.zoom->setCurrentIndex(index);
 	this->ui.plusZoom->setEnabled(true);
 }
@@ -3804,6 +3857,8 @@ void TabPage::minusZoom()
 	this->ui.minusZoom->setEnabled(false);
 	int index = ui.zoom->currentIndex();
 	index--;
+	if (index == -1)
+		return;
 	ui.zoom->setCurrentIndex(index);
 	this->ui.minusZoom->setEnabled(true);
 }

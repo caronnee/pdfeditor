@@ -4,6 +4,10 @@
 #include <QPainter>
 #include <QShortcut>
 
+QRect DisplayPage::getRect()
+{
+	return _rect;
+}
 void DisplayPage::paintEvent(QPaintEvent * event)
 {
 	QLabel::paintEvent(event);

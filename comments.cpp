@@ -69,6 +69,7 @@ Comments::Comments(std::string name) :_index(0),_change(false),_name(name)
 	_inits.push_back(InitName("Link",CAInit(new pdfobjects::utils::LinkAnnotInitializer()))) ;
 	_inits.push_back(InitName("Highlight",CAInit(new pdfobjects::utils::UniversalAnnotInitializer())));
 	ui.setupUi(this);
+	ui.author->setText(_name.c_str());
 	//rect sa potom este upravi podla to, ci je to link a ako velky je
 	{
 		char b[] = { 'N','I','O','P', '\0' };
