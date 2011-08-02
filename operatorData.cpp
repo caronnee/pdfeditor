@@ -11,7 +11,7 @@ using namespace pdfobjects;
 
 static size_t idCount =0;
 
-OperatorData::OperatorData(PdfOp op, DisplayParams& displayParams) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _origX(0), _origX2(0), _text(""),_id(idCount++) //nevadi ani ked to pretecie, je to tu iba pre porovnacvacie ucely
+OperatorData::OperatorData(PdfOp op, DisplayParams& displayParams) : _begin(0), _end(0), _ymin(0), _ymax(0), _charSpace(0.0f), _origX(0), _origX2(0), _text(""),_id(idCount++) //nevadi ani ked to pretecie, je to tu iba pre porovnacacie ucely
 {
 #ifdef _DEBUG
 	op->getOperatorName(operatorName);
@@ -22,8 +22,8 @@ OperatorData::OperatorData(PdfOp op, DisplayParams& displayParams) : _begin(0), 
 	_op->getFontText(test);
 	_text = QString::fromStdWString(test); //TODO pozor na leak
 	libs::Rectangle r = _op->getBBox();
-	rotatePdf(displayParams,r.xleft,r.yleft,true);
-	rotatePdf(displayParams,r.xright,r.yright,true);
+	rotatePdf(displayParams,r.xleft,r.yleft,false);
+	rotatePdf(displayParams,r.xright,r.yright,false);
 
 	_ymin = min<double>(r.yleft, r.yright);
 	_ymax = max<double>(r.yleft, r.yright);

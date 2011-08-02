@@ -21,7 +21,7 @@ void rotatePosition( T xin, T yin, T& xout, T &yout, int angle )
 	xout = s*cos(toRadians(angle));
 	yout = s*sin(toRadians(angle));
 };
-void rotatePdf( pdfobjects::DisplayParams& displayparams, double& x,double& y, bool toUpPosition);
+void rotatePdf( pdfobjects::DisplayParams displayparams, double& x,double& y, bool toUpPosition);
 
 //TODO highlight m underline, strikeout - ukazat len komentare
 #define ANNOTS(XX) \

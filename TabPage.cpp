@@ -1638,12 +1638,12 @@ void TabPage::highlightText() //tu mame convertle  x,y, co sa tyka ser space
 		if (!isTextOp(c))
 			continue;
 		OperatorData op(ops[i],displayparams);
-		if ( *sTextIt < op )
+		if ( op < *sTextIt )
 		{
 			sTextIt =_textList.begin();
 			setTextData(sTextIt,_textList.end(),ops[i]);
 		}
-		if (op < *sTextItEnd)
+		if (*sTextItEnd < op)
 			setTextData(sTextItEnd,_textList.end(),ops[i]);
 	}
 	for (TextData::iterator iter = sTextIt; iter!= sTextItEnd; iter++)
@@ -1651,59 +1651,13 @@ void TabPage::highlightText() //tu mame convertle  x,y, co sa tyka ser space
 		iter->clear();
 	}
 	sTextItEnd->clear();
-	//bool found;
-	//PdfOp text = getValidTextOp(ops, found);
-	//if (!found)//ak nie je najdeme, mozeme sa pokusit hladat najbluzie alebo jednoducho nevyzietit
-	//	return;
-	//OperatorData s(text,displayparams);
-	//double xBegin;
-	//double xEnd;
-	/*TextData::iterator move = sTextMarker;
-	move->clear();*/
+	
 	double xxPoint = r.left() , yyPoint =r.top();
 	double xxOrig = r.right() , yyOrig= r.bottom();
 	rotatePdf(displayparams,xxPoint,yyPoint,true);
 	rotatePdf(displayparams,xxOrig,yyOrig,true);
 	sTextIt->setBegin(min(xxOrig,xxPoint));
 	sTextItEnd->setEnd(max(xxOrig,xxPoint));
-
-	/*if ( *move < s)
-	{
-		while (move->_op!=s._op)
-		{
-			move++;
-			assert(move!= _textList.end());
-			move->clear();
-		}
-	}
-	else
-	{
-		while (move->_op!=s._op)
-		{
-			move--;
-			move->clear();
-		}
-	}
-	if (*move < *sTextMarker)
-	{
-		sTextIt = move;
-		sTextIt->setBegin(min(xxOrig,xxPoint));
-		sTextItEnd = sTextMarker;
-		sTextItEnd->setEnd(max(xxOrig,xxPoint));
-	}
-	else if (move == sTextMarker)
-	{
-		sTextIt = sTextItEnd = sTextMarker;
-		sTextIt->setBegin(min(xxPoint,xxOrig));
-		sTextIt->setEnd(max(xxPoint,xxOrig));
-	}
-	else
-	{
-		sTextIt = sTextMarker;
-		sTextIt->setBegin(xxOrig);
-		sTextItEnd = move;
-		sTextItEnd->setEnd(xxPoint);
-	}*/
 
 	_selected =  true;
 	highlight();
@@ -1728,8 +1682,16 @@ void TabPage::highlight()
 		x2 = first->getNextStop();
 		y2 = first->_ymax;
 
-		rotatePdf(displayparams,x1,y1,false);
-		rotatePdf(displayparams,x2,y2,false);
+		DisplayParams d = displayparams;
+		d.rotate*=-1;
+		rotatePdf(d,x1,y1,true);
+		rotatePdf(d,x2,y2,true);
+
+		//rotatePdf(displayparams,x1,y1,false);
+		//rotatePdf(displayparams,x2,y2,false);
+
+		//rotatePdf(d,x1,y1,false);
+		//rotatePdf(d,x2,y2,false);
 		QRect r(min(x1,x2),min(y1,y2), fabs(x2-x1),fabs(y1-y2));
 		region.append(r);
 		if (first == sTextItEnd)

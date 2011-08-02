@@ -18,12 +18,14 @@ void rotate(int angle, double& x, double& y)
 	y = yy;
 }
 using namespace pdfobjects;
-void rotatePdf( DisplayParams& displayparams, double& x,double& y, bool toUpPosition) //dostanem pozcie ake su v pdfku
+void rotatePdf( DisplayParams displayparams, double& x,double& y, bool toUpPosition) //dostanem pozcie ake su v pdfku
 {//proti smeru hodinovych ruciciek!
+	if (!toUpPosition)
+		displayparams.rotate*=-1;
 	int angle = (displayparams.rotate + 360)%360;
 	double par[] = { displayparams.vDpi/72.0f, displayparams.hDpi/72.0f};
-	double resx = DisplayParams::DEFAULT_PAGE_RX*par[0];
-	double resy = DisplayParams::DEFAULT_PAGE_RY*par[1];
+	double resx = displayparams.pageRect.xright *par[0];
+	double resy = displayparams.pageRect.yright *par[1];
 
 	::rotate(angle,resx,resy);
 	if (!toUpPosition)
