@@ -236,6 +236,6 @@ FIXED -- logicky oddelit  help raidok - podmenicka + pozadie zmenit od menu
 -- dat active okno
 -- v dokumentaci  - pouzite kommenty, ktore
 -- selected existing font zmenit na 3
--- vyhladavanie v pradnom PDF fail po zatvoreni
+-- vyhladavanie v prazdnom PDF fail po zatvoreni
 -- unable to open file - spatna hlaska 
 -- pri malych PDF - fixed size

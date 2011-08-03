@@ -38,10 +38,14 @@ class AcceptSet : public Accept
 {
 	std::vector< Accept *> acc;
 public:
-	AcceptSet(std::string s, Accept * p) :Accept(' ', p)
+	AcceptSet(QString s, Accept * p) :Accept(' ', p)
 	{
 		for (size_t i = 0; i < s.length(); i++)
+		{
+			if (s[i] == '\\')
+				continue;
 			acc.push_back(new Accept(s[i], this));
+		}
 		_prev = p;
 	}
 	virtual Accept* accept(QChar ch)
@@ -130,17 +134,17 @@ public:
 			delete t; //TODO check
 		}
 	}
-	Tree() : _regexp(false),_position (-1),_root(NULL),_caseSensitive(false),_wholeWord(false),
+	Tree() : _regexp(false),_position (-1),_root(NULL),_caseSensitive(false),_concateHyphen(false),
 		_actual (NULL),_begin (0),_end (0),_tokens(-1)
 	{}
 	~Tree() { Clear(); }
-	void setPattern(QString pattern)
+	bool setPattern(QString pattern)
 	{
-		Clear(); //TODO checkovat, ci tam ten pattern uz nahodou nie je, takze netreba clear
+		Clear();
+		if (!validateSearch(pattern))
+			return false;
 		assert(!pattern.isEmpty()); //TODO validate
 		pattern = pattern.trimmed();
-		if (_wholeWord)
-			pattern += " ";
 		if (!_caseSensitive)
 			pattern = pattern.toLower();
 		Accept * prev = NULL;
@@ -151,19 +155,23 @@ public:
 		prev = _root;
 		while (i < pattern.length())
 		{	
+			if (pattern[i] == QChar(' '))
+			{
+				i++;
+				continue;
+			};
 			setAccept(pattern,i);
 			prev->setNext(_actual);
 			prev=_actual;
 		}
 		_actual = _root;
+		return true;
 	} //krajsie by to bolo asi odzadu ale co uz
-
-	bool checkPattern() { return true; } //TODO dorobit na checkovanie, ci je to v spravnom tvare, tabulka pre preddefinovanie, kam sa ma skocit
 
 private:
 	bool _regexp;
 	bool _caseSensitive;
-	bool _wholeWord;
+	bool _concateHyphen;
 	void setAccept(QString pattern, int & i)
 	{
 		if (!_regexp)
@@ -174,27 +182,39 @@ private:
 		}
 		if (pattern[i] == QChar('*'))
 		{
-			_actual = new AcceptRange(pattern[0],0,~0,_root);
+			_actual = new AcceptRange(pattern[i],0,~0,_root);
 			i+=2; //zobrali sme aj dalsie				
 		}
 		else if (pattern[i] == QChar('\\'))
 		{
-			_actual = new Accept(pattern[1],_root);
+			_actual = new Accept(pattern[i+1],_root);
 			i +=2;
 		}
-		else if (pattern[i] == QChar('?'))
+		else if (pattern[i] == QChar('['))
 		{
-			_actual = new AcceptRange(pattern[i+1],0,1,_root);
+			int j = i;
+			while ((j = pattern.indexOf("]", j)) != -1) {
+				if (pattern[j-1] != '\\')
+					break;
+				++j;
+			}
+			QString res = pattern.mid(i+1,j-i-1);
+			_actual = new AcceptSet(res,_root);
+			i+= i-j;
+		}
+		else if (pattern[i+1] == QChar('?'))
+		{
+			_actual = new AcceptRange(pattern[i],0,1,_root);
 			i += 2;
 		}
-		else if (pattern[i] == QChar(' '))
-		{
-			if (_actual && _actual->getChar()!= ' ')
-			{
-				_actual = new AcceptSpace(pattern[i],_root);
-			}
-			i++; //spracovane
-		}
+		//else if (pattern[i] == QChar(' '))
+		//{
+		//	if (_actual && _actual->getChar()!= ' ')
+		//	{
+		//		_actual = new AcceptSpace(pattern[i],_root);
+		//	}
+		//	i++; //spracovane
+		//}
 		else
 		{ 
 			_actual = new Accept(pattern[i],_root);
@@ -219,6 +239,8 @@ public:
 		//stejne toho nedostane vela a bude to brat po tokenoch
 		for (; _position< _search.length();  _position++)
 		{
+			if (_concateHyphen && _search[_position]==QChar('-'))
+				continue; //automaticky accept
 			if (_actual->isBegin())
 			{
 				_tokens = 0;
@@ -239,10 +261,21 @@ public:
 	void setFlags( int flags ) 
 	{
 		_caseSensitive = flags & SearchCaseSensitive;
-		_wholeWord = flags & SearchConcate;
+		_concateHyphen = flags & SearchConcate;
 		_regexp = flags & SearchRegexp;
 	}
 
+	bool validateSearch( QString srch ) 
+	{
+		if (!_regexp)
+			return true;
+		//pravidla pre regularny vyraz
+		bool previousWasSpecial = true;
+		for ( int i =0; i< srch.size(); i++)
+		{
 
+		}
+		return true;
+	}
 };
 #endif  // __TREE__

@@ -101,7 +101,7 @@ FontWidget::FontWidget(QWidget *parent) : QWidget(parent/*, Qt::FramelessWindowH
 	this->ui.fonts->insertItem(this->ui.fonts->count(), "<Select font from text>", QVariant(-1));
 	connect(ui.rotation, SIGNAL(valueChanged(int)),this,SLOT(sliderChanged(int)));
 	connect(ui.selectFont, SIGNAL(pressed()), this, SLOT(waitForFont()));
-	connect(ui.shape, SIGNAL(currentIndexChanged()), this, SLOT(setDrawType(int)));
+	connect(ui.shape, SIGNAL(currentIndexChanged(int)), this, SLOT(setDrawType(int)));
 }
 
 //FontWidget::FontWidget(const FontWidget & font) : QWidget(font.parentWidget()),_embededFont(false)

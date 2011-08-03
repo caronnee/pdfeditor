@@ -157,7 +157,6 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	_labelPage = new DisplayPage(this);
 	this->ui.stateLabel->hide();
 	_cmts = new Comments(_parent->Author());
-	_cmts->setHColor(_parent->getHColor());
 	aboutDialogUI.setupUi(&aboutDialog);
 	_image = new InsertImage(NULL);
 	this->ui.scrollArea->setWidget(_labelPage);	
@@ -528,7 +527,7 @@ pdfobjects::IndiRef TabPage::createAppearanceHighlight( float * dim )
 	apStream->addToBuffer(op);
 
 	operands.clear();
-	operands.push_back((PdfProperty(CRealFactory::getInstance(dim[1]))));
+	operands.push_back((PdfProperty(CRealFactory::getInstance(dim[2]))));
 	operands.push_back((PdfProperty(CRealFactory::getInstance(dim[3]))));
 	op = createOperator("l",operands);
 	apStream->addToBuffer(op);
@@ -1141,6 +1140,7 @@ void TabPage::raiseAnnotation(QPoint point)//raise cpmment annotation
 	displayparams.convertPixmapPosToPdfPos(d[0],d[1],d[0],d[1]);
 	_cmts->setRectangle(d[0],d[1],30,30);//pre zvysok sa to vyhodi a nahradi sadou anotacii	
 	_cmts->setWindowFlags(Qt::Window);
+	_cmts->setHColor(_parent->getHColor());
 	_cmts->show();
 }
 
@@ -2834,6 +2834,7 @@ void TabPage::search(QString srch, int flags)
 	MyThread * m = (MyThread *) _thread;
 	m->set(this,srch,flags);
 	_searchEngine.setFlags(flags);
+	_searchEngine.validateSearch(srch);
 	m->start();
 }
 QString revert(QString s)
@@ -2909,8 +2910,8 @@ bool TabPage::performSearch( QString srch, bool forw )
 			goto NextPage;
 		if(!forw)
 			srch = revert(srch);
-		_searchEngine.setPattern(srch); //vytvor strom, ktory bude hladat to slovo, pre kazdu stranku znova
-
+		if (!_searchEngine.setPattern(srch))
+			return false; //vytvor strom, ktory bude hladat to slovo, pre kazdu stranku znova
 		//vysviet prve, ktore najdes
 		if (forw)
 			iter = _textList.begin();

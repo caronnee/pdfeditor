@@ -242,6 +242,10 @@ void OpenPdf::open(QString name)
 		setCurrentIndex(count() -1);
 	}
 #ifndef _DEBUG
+	catch (MalformedFormatExeption e)
+	{
+		QMessageBox::warning(this, "Unable to load",QString("Pdf is corrupted"), QMessageBox::Ok, QMessageBox::Ok);
+	}
 	catch (PdfOpenException e)
 	{
 		QMessageBox::warning(this, "Pdf library unable to perform action",QString("Reason") + QString(e.what()), QMessageBox::Ok, QMessageBox::Ok);
@@ -333,7 +337,9 @@ void OpenPdf::print()
 }
 QColor OpenPdf::getColor()
 {
-	return _color;
+	QColor c = GetActualColorSignal();
+	c.setAlpha(150);
+	return c;
 }
 void OpenPdf::deletePage()
 {

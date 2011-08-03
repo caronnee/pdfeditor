@@ -212,7 +212,7 @@ void pdfGui::closeEvent( QCloseEvent *event )
 		sprintf(buffer,"file=%s\n",actions[i]->text().toAscii().data());
 		fwrite(buffer,sizeof(char),strlen(buffer),f);
 	}
-	sprintf(buffer,"dash=%c\n",_search->getFlags());
+	sprintf(buffer,"dash=%d\n",_search->getFlags());
 	fwrite(buffer,sizeof(char),strlen(buffer),f);
 	fclose(f);
 }
