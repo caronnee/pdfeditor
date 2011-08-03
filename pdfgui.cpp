@@ -260,4 +260,13 @@ void pdfGui::disableMainPanel( int )
 {
 	bool enable = this->ui.openedPdfs->count()>0;
 	this->ui.fileFrame->setEnabled(enable);
+	this->ui.actionSaveCopy->setEnabled(enable);
+	this->ui.actionSave->setEnabled(enable);
+	this->ui.actionRotate_right->setEnabled(enable);
+	this->ui.extractButton->setEnabled(enable);
+	this->ui.actionPage_up->setEnabled(enable);
+	this->ui.actionPage_down->setEnabled(enable);
+	this->ui.actionAdd_page->setEnabled(enable);
+	this->ui.actionAnalyze->setEnabled(enable);
+	this->ui.actionDocument->setEnabled(enable);
 }

@@ -217,7 +217,12 @@ void OpenPdf::open(QString name)
 	{
 		page = new TabPage(this, name);
 		QIcon icon(":/images/enabled.png");
-		this->addTab(page,icon,name);
+#ifdef WIN32
+		int index = name.lastIndexOf('/');
+#else
+		int index = name.lastIndexOf('\\');
+#endif // WIN32
+		this->addTab(page,icon,name.mid(index));
 		emit OpenSuccess(name);
 		setCurrentIndex(count() -1);
 		//pri kazdon otvoreni sa spytaj, ci je to potreba delinerizovat(co noveho suboru), inak sa nebude dat savovat
@@ -338,7 +343,7 @@ void OpenPdf::print()
 QColor OpenPdf::getColor()
 {
 	QColor c = GetActualColorSignal();
-	c.setAlpha(150);
+	c.setAlpha(100);
 	return c;
 }
 void OpenPdf::deletePage()

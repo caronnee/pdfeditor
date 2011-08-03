@@ -19,6 +19,10 @@ public:
 	QChar getChar()const { return _ch; }
 	Accept(QChar ch, Accept * prev) : _ch(ch), _next(NULL), _prev(prev) { }
 
+	virtual Accept * changeAccepted(QChar input)
+	{
+		return _prev;
+	}
 	virtual Accept* accept(QChar ch)
 	{
 		if (ch == _ch)
@@ -52,8 +56,8 @@ public:
 	{
 		for(size_t i =0; i < acc.size(); i++)
 		{
-			if(acc[i]->accept(ch))
-				return acc[i]->next();
+			if(acc[i]->accept(ch)!=this)
+				return next();
 		}
 		return prev();
 	}
@@ -89,14 +93,19 @@ public:
 	{
 		_beg = beg; _end = end; _iter = 0;
 	}
-	virtual Accept * accept(QChar c) 
+	virtual Accept * changeAccepted(QChar input)
+	{
+//TODO later
+		return NULL;
+	}
+	virtual Accept * accept(QChar c)  //zatial iba jedno pismeno
 	{
 		if (c != _ch)
 		{
 			int i = _iter;
 			_iter = 0;
 			if ( i < _beg) //nedociahli sme na spodnu hranicu
-				return _prev;
+				return _prev->changeAccepted(c);
 			return next()->accept(c);
 		}
 		_iter ++;
@@ -115,6 +124,15 @@ class Tree
 	size_t _position;
 
 public:
+	enum Special
+	{
+		QUESTION= '?',
+		STAR = '*',
+		SLASH = '\\',
+		LBRACKET = '[',
+		RBRACKET =']',
+		DOT = '.'
+	};
 	int _begin;
 	int _end; //poradie v tokenu
 	int _tokens;
@@ -137,9 +155,26 @@ public:
 	Tree() : _regexp(false),_position (-1),_root(NULL),_caseSensitive(false),_concateHyphen(false),
 		_actual (NULL),_begin (0),_end (0),_tokens(-1)
 	{}
+
+	QString Tree::revertPattern(QString s)
+	{
+		if (!_regexp)
+			return revertNormal(s); //v tomto okamihu je string validny
+		int i =0;
+		QString res;
+		while (i < s.size())
+		{ //vsetky rozoznavane znaky-> .?*[]
+			QString token = getNextSpecialToken(s,i);
+			res.push_front(token);
+		}
+		return res;
+	}
+
 	~Tree() { Clear(); }
 	bool setPattern(QString pattern)
 	{
+		if (!_forward)
+			pattern = revertPattern(pattern);
 		Clear();
 		if (!validateSearch(pattern))
 			return false;
@@ -172,6 +207,7 @@ private:
 	bool _regexp;
 	bool _caseSensitive;
 	bool _concateHyphen;
+	bool _forward;
 	void setAccept(QString pattern, int & i)
 	{
 		if (!_regexp)
@@ -200,7 +236,7 @@ private:
 			}
 			QString res = pattern.mid(i+1,j-i-1);
 			_actual = new AcceptSet(res,_root);
-			i+= i-j;
+			i = j+1;
 		}
 		else if (pattern[i+1] == QChar('?'))
 		{
@@ -227,6 +263,8 @@ public:
 		_tokens++;
 		if (!_caseSensitive)
 			text = text.toLower();
+		if (!_forward)
+			text = revertNormal(text);
 		_search = text;
 	}
 	//ak je tj operator s whitespacom ->"test    test", "test \t test"
@@ -263,6 +301,7 @@ public:
 		_caseSensitive = flags & SearchCaseSensitive;
 		_concateHyphen = flags & SearchConcate;
 		_regexp = flags & SearchRegexp;
+		_forward = flags & SearchForward;
 	}
 
 	bool validateSearch( QString srch ) 
@@ -277,5 +316,44 @@ public:
 		}
 		return true;
 	}
+
+	QString revertNormal( QString text ) 
+	{
+		QString res;
+		for ( int i =0; i < text.size(); i++)
+			res.push_front(text[i]);
+		return res;
+	}
+
+	QString getNextSpecialToken( QString s, int& i ) 
+	{
+		switch (s[i].unicode())
+		{
+		case QUESTION:
+		case STAR:
+		case SLASH:
+			{
+				QString ret;
+				ret = QString(s[i]) + s[i+1];
+				i+=2;
+				return ret;
+			}
+		case LBRACKET:
+			{
+				int index = s.indexOf(']',i);
+				QString ret = s.mid(i,index - i+1); //vratane zavoriek
+				i = index+1;
+				return ret;
+			}
+		case RBRACKET:
+			assert (false);
+		default:
+			i++;
+			return QString(s[i-1]);
+		}
+	}
+
+
+
 };
 #endif  // __TREE__

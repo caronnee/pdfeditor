@@ -264,9 +264,9 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_
 	this->ui.zoom->setCurrentIndex(1);
 	_dataReady = false;
 	_parent->setMode(oldMode);
-	//search("oftwar",true);
 	//changeSelectedText();
 	setPage(1);
+	//search("[jm]e", Searf);
 }
 void TabPage::setState()
 {
@@ -2837,13 +2837,6 @@ void TabPage::search(QString srch, int flags)
 	_searchEngine.validateSearch(srch);
 	m->start();
 }
-QString revert(QString s)
-{
-	QString rev;
-	for ( int i = s.size()-1; i>=0; i--)
-		rev += s[i];
-	return rev;
-}
 
 #include "splash/SplashGlyphBitmap.h"
 #include "splash/SplashFont.h"
@@ -2908,8 +2901,6 @@ bool TabPage::performSearch( QString srch, bool forw )
 		TextData::iterator iter;
 		if (_textList.size() == 0)
 			goto NextPage;
-		if(!forw)
-			srch = revert(srch);
 		if (!_searchEngine.setPattern(srch))
 			return false; //vytvor strom, ktory bude hladat to slovo, pre kazdu stranku znova
 		//vysviet prve, ktore najdes
@@ -2926,8 +2917,6 @@ bool TabPage::performSearch( QString srch, bool forw )
 		if (_selected && !forw)
 			iter = sTextIt;//nic nemen v hladacom engine
 		s = iter->_text;
-		if (!forw)
-			s = revert(s);
 		_searchEngine.setText(s);
 		_searchEngine._begin = sTextIt->letters(sTextIt->_begin);
 
@@ -2993,8 +2982,6 @@ bool TabPage::performSearch( QString srch, bool forw )
 				}
 			}
 			QString s = iter->_text;
-			if (!forw)
-				s = revert(s);
 			_searchEngine.setText(s);
 		}
 		//next page, etreba davat do splashu
