@@ -20,7 +20,6 @@
 	XX(ModeImageSelected, "Image selected. Click on buttons to change or to delete image","hand.png","Select")	\
 	XX(ModeImagePartCopied,"Snapshot was copied to the clipboard","snapshot.png","Snapshot")	\
 	XX(ModeImagePart,"Extract pdf part as image mode: select a rectangle to be saved as image","snapshot.png","Snapshot")	\
-	XX(ModeExtractImage, "Extract image mode: click on inlineimage to extract an image","snapshot.png","Image snapshot")	\
 	XX(ModeOperatorSelect,"Operator select mode: click on text operator to highligh it","operator.png","Operators")	\
 	XX(ModeInsertAnnotation,"Insert Text Annotation mode: click on pdf to insert an annotation","addComment.png","Insert comment")	\
 	XX(ModeInsertLinkAnnotation,"Insert Link Annotation mode: click on pdf to insert a link annotation","addLink.png","Insert Link")	\

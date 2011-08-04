@@ -66,6 +66,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 
 //////////////////////////////////////////////////////////////////////////
 
+	connect( this->ui.extractButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(extractImage()));
 	connect( this->ui.settingsButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeSetting()));
 	connect( this->ui.debugButton, SIGNAL(toggled(bool)), ui.debugFrame, SLOT(setVisible(bool)));
 	connect( this->ui.searchButton, SIGNAL(pressed()), _search, SLOT(show()));
@@ -95,7 +96,6 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.deleteImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(deleteSelectedImage()));
 	connect( this->ui.changeImageButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(changeSelectedImage()));
 	connect( this->ui.imagePartButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeImagePart()));
-	connect( this->ui.extractButton,SIGNAL(pressed()),this->ui.openedPdfs, SLOT(setModeExtractImage()));
 	
 	connect( this->ui.insertAnotation, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeInsertAnotation()));
 	connect( this->ui.linkAnnotation, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeInsertLinkAnotation()));
@@ -122,8 +122,8 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.openedPdfs, SIGNAL(currentChanged(int)), this, SLOT(disableMainPanel(int)));
 
 	connect(this->ui.textButton, SIGNAL(pressed()), this->ui.selectTextButton, SLOT(click()));
-connect(this->ui.imageButton, SIGNAL(pressed()), this->ui.selectImageButton, SLOT(click()));
-connect(this->ui.annotationButton, SIGNAL(pressed()), this->ui.insertAnotation, SLOT(click()));
+	connect(this->ui.imageButton, SIGNAL(pressed()), this->ui.selectImageButton, SLOT(click()));
+	connect(this->ui.annotationButton, SIGNAL(pressed()), this->ui.insertAnotation, SLOT(click()));
 
 	disableMainPanel(0);
 	//////////////////////////////////////////////////////////////////////////
@@ -190,6 +190,7 @@ void pdfGui::showFullScreened()
 void pdfGui::closeEvent( QCloseEvent *event )
 {
 	_search->close();
+	this->ui.openedPdfs->checkClose();
 	/*_debugFrame.close();
 	_textFrame.close();
 	_imageFrame.close();
@@ -269,4 +270,7 @@ void pdfGui::disableMainPanel( int )
 	this->ui.actionAdd_page->setEnabled(enable);
 	this->ui.actionAnalyze->setEnabled(enable);
 	this->ui.actionDocument->setEnabled(enable);
+	this->ui.actionRotate_left->setEnabled(enable);
+	this->ui.actionDelete_Page->setEnabled(enable);
+	this->ui.actionExport_text->setEnabled(enable);
 }

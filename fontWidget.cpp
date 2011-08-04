@@ -80,7 +80,7 @@ void FontWidget::paintEvent( QPaintEvent * event )
 	//setMask(image.mask());//TODO nie v repainte
 
 }
-FontWidget::FontWidget(QWidget *parent) : QWidget(parent/*, Qt::FramelessWindowHint*/),_embededFont(false)
+FontWidget::FontWidget(QWidget *parent) : QWidget(parent),_embededFont(false)
 {
 	_scale[0] = _scale[1] = 1;
 	ui.setupUi(this);
@@ -275,13 +275,13 @@ PdfOp FontWidget::addText( QString s )
 	for (int i =0; i < list.size(); i++)
 	{
 		textOperands.clear();
-		std::string e = emit convertTextFromUnicode(list[i],name);
-		textOperands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(e)));
+		GlyphInfo info = emit convertTextFromUnicode(list[i],name);
+		textOperands.push_back(shared_ptr<IProperty>(CStringFactory::getInstance(info.name)));
 		addToBT(createOperator("Tj", textOperands));
 		if ( i == list.size()-1)
 			break;
 		QVariant val = ui.fontsize->itemData(ui.fontsize->currentIndex());
-		addToBT(createTranslationTd(val.toFloat(),0));
+		addToBT(createTranslationTd((info.size+0.5f)*val.toFloat(),0));
 	}
 	return createET();
 }
@@ -372,12 +372,9 @@ void FontWidget::addTm( float w, float h )
 void FontWidget::setDrawType( int index )
 {
 	index++; //chceme od 1-4
-	this->ui.borderLabel->setVisible(index&1);
-	this->ui.colorN->setVisible(index&1);
+	this->ui.borderLabel->setVisible(index&2);
+	this->ui.colorN->setVisible(index&2);
 
-	this->ui.colorN->setVisible(index&1);
-
-	this->ui.strokeLabel->setVisible(index&2);
-	this->ui.colorS->setVisible(index&2);
-
+	this->ui.strokeLabel->setVisible(index&1);
+	this->ui.colorS->setVisible(index&1);
 }

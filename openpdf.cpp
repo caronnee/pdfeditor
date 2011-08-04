@@ -9,6 +9,11 @@
 #include <Windows.h>
 #endif // _WIN32
 
+void OpenPdf::extractImage()
+{
+	TabPage * page = (TabPage *)this->widget(currentIndex());
+	page->extractImage();
+}
 void OpenPdf::about()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
@@ -122,10 +127,6 @@ void OpenPdf::setModeInsertAnotation()
 {
 	setMode(ModeInsertAnnotation);
 }
-void OpenPdf::setModeExtractImage()
-{
-	setMode(ModeExtractImage);
-}
 void OpenPdf::setModeImagePart()
 {
 	setMode(ModeImagePart);
@@ -167,6 +168,17 @@ void OpenPdf::rotate()
 	TabPage * page = (TabPage *)this->widget(currentIndex());
 	page->rotate(90);
 }
+void OpenPdf::checkClose()
+{
+	for ( int i = 0; i< count(); i++)
+	{
+		TabPage * page = (TabPage *)this->widget(i); //how to get exact tab?
+		if (!page->changed())
+			continue;
+		if (QMessageBox::warning(this, "File not saved!",QString("File ")+page->getName()+ "was not changed. Save?", QMessageBox::Ok|QMessageBox::Discard, QMessageBox::Ok) == QMessageBox::Ok)
+			page->save();
+	}
+}
 void OpenPdf::setModeSetting()
 {
 	setMode(ModeSettings);
@@ -174,7 +186,6 @@ void OpenPdf::setModeSetting()
 void OpenPdf::closeAndRemoveTab(int i)
 {
 	TabPage * page = (TabPage *)this->widget(i); //how to get exact tab?
-	//this->focusNextChild();
 	this->removeTab(i);
 	delete page;
 }
@@ -358,7 +369,6 @@ bool PermanentMode(Mode mode)
 	return mode == ModeChangeAnnotation ||
 		mode == ModeDeleteAnnotation ||
 		mode == ModeDoNothing ||
-		mode == ModeExtractImage ||
 		mode == ModeImagePart ||
 		mode == ModeImagePartCopied ||
 		mode == ModeImageSelected ||

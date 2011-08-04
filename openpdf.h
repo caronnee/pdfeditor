@@ -48,7 +48,6 @@ public slots:
 	void setModeView();
 	void setModeChangeAnnotation();
 	void setHighlighCommentText();
-	void setModeExtractImage();
 	void setModeImagePart();
 	void setModeInsertText();
 	void setModeSelectText();
@@ -107,10 +106,12 @@ public slots:
 	void setModeInsertLinkAnotation();
 	void setModeSetting();
 	void about();
+	void extractImage();
 
 signals:
 	void OpenSuccess(QString);
 public:
 	std::string Author()const;
+	void checkClose();
 	//void resizeEvent(QResizeEvent *event);
 };

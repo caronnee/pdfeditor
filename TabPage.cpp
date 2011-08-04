@@ -74,6 +74,9 @@ void TabPage::handleBookmark(QTreeWidgetItem* item, int) //nezaujima nas stlpec
 {
 	Bookmark * b = (Bookmark *)(item);
 	emit addHistory(QString("Navigating to page ")+ QVariant(b->getDest()).toString() + ", zoom:" +QVariant(b->getZoom()).toString() +"\n" );
+	int pIndex = b->getDest();
+	if (pIndex <=0 || pIndex >_pdf->getPageCount())
+		return;
 	_page = _pdf->getPage(b->getDest());
 	double z = b->getZoom();
 	int index = z/0.5 -1;
@@ -138,7 +141,7 @@ bool TabPage::containsOperator(std::string wanted)
 }
 static SplashColor paperColor = {0xff,0xff,0xff};
 
-TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),_allowResize(0),splash (splashModeBGR8, 4, gFalse, paperColor),aboutDialog(this),_stop(0)
+TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),splash (splashModeBGR8, 4, gFalse, paperColor),aboutDialog(this),_stop(0)
 {
 	_pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 	_thread = new MyThread();
@@ -286,8 +289,13 @@ void TabPage::about()
 {
 	//naplnime metadatom
 	aboutDialogUI.info->clear();
+	aboutDialogUI.info->setAlignment(Qt::AlignLeft);
+	aboutDialog.setWindowTitle("Info about Pdf document");
 	QString message("FullPath: ");
 	message += _name;
+	message += "\n\n";
+	message += "Version";
+	message += _pdf->getCXref()->getPDFVersion();
 	message += "\n\n";
 	//bookmarky
 	message += "Contains bookmarks: ";
@@ -1048,7 +1056,7 @@ void TabPage::insertTextAnnot(PdfAnnot a)
 }
 void TabPage::insertAnnotation(PdfAnnot a)
 {
-	if ( this->ui.revision->currentIndex()!= _pdf->getRevisionsCount()-1)
+	if ( !this->CanBeSavedChanges())
 		return;
 #ifdef _DEBUG
 	std::string m;
@@ -1213,6 +1221,48 @@ void TabPage::raiseInsertText(QPoint point)
 	_font->setPosition(x,y);
 	_font->setInsert();
 }
+void TabPage::extractImage()
+{
+	if (!_selected || _selectedImage == NULL)
+	{
+		emit addHistory("No inline image was selected");
+		return;
+	}
+	{
+		shared_ptr<pdfobjects::CInlineImage> inIm =  boost::dynamic_pointer_cast<pdfobjects::CInlineImage>(_selectedImage);
+		boost::shared_ptr<IProperty> prop = inIm->getProperty("CS");
+		std::string cs = utils::getNameFromIProperty(prop);
+		if (cs!="RGB")
+		{
+			QMessageBox::warning(this, "Unable to export inline image","Unsupported color space", QMessageBox::Ok,QMessageBox::Ok);
+			return; 
+		}
+		int bpp = utils::getIntFromIProperty(inIm->getProperty("BPC"));
+		if(bpp!=8)
+		{
+			emit addHistory("Failed to export an image\n");
+			QMessageBox::warning(this, "Unable to export inline image","Wrong depth", QMessageBox::Ok,QMessageBox::Ok);
+			return;
+		}
+		QImage image(QSize(inIm->width(),inIm->height()),QImage::Format_ARGB32);
+		CStream::Buffer buffer = inIm->getBuffer();
+		int index = 0;
+
+		for ( int h=0; h<inIm->height();h++)
+			for ( int w=0; w<inIm->width();w++)
+			{ 
+				QColor c((unsigned char)buffer[index],(unsigned char)buffer[index+1],(unsigned char)buffer[index+2],0);
+				image.setPixel(w,h,c.rgb());
+				index+=3;
+			}
+
+			QString fileName = QFileDialog::getSaveFileName(this, tr("Save image"), "", tr("Images (*.png *.jpg *.bmp))"));
+			if (fileName.isEmpty())
+				return;
+			image.save(fileName);
+			emit addHistory("Image saved\n");
+	}
+}
 void TabPage::clearSelected()
 {
 	_selected = false;
@@ -1276,14 +1326,17 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			double y = point.y();//jelikoz to ide priamo do dictionary, musim prejst cez params.frompdf :-/
 			displayparams.convertPixmapPosToPdfPos(x,y,x,y);
 			rotatePdf(displayparams,x,y,true);
-			insertAnnotation(_annots.back());
-			_page->getAllAnnotations(_annots);
-			_cmts->addLink(_annots.back(), _page->getDictionary()->getIndiRef(),x,y);
+			if ( !this->CanBeSavedChanges())
+				return;
+			 _pdf->getPage(_oldPage)->addAnnotation(_linkAnnot);
+			_cmts->addLink(_linkAnnot, _page->getDictionary()->getIndiRef(),x,y);
 			_parent->setModeInsertLinkAnotation();//boli sme v tomto 
 #ifdef _DEBUG
 			_annots.back()->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
 			emit addHistory("Position was selected");
+			_page = _pdf->getPage(_oldPage);
+			redraw();
 			break;
 		}
 	case ModeImageSelected:
@@ -1296,7 +1349,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			//HACK - px, py su teraz v PDF poziciach
 			//px, py musime ale zmenit vzhladom na to,ze sa u inline neberie do uvahy displayparams
 
-			_page->getObjectsAtPosition(ops,libs::Point(px,py));
+			_page->getObjectsAtPosition(ops,libs::Rectangle(0,0,10000,10000));
 			while(!ops.empty())
 			{
 				std::string name;
@@ -1342,61 +1395,6 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 				assert(false);
 			}
 			break;
-		}
-	case ModeExtractImage:
-		{
-			Ops ops;
-			_page->getObjectsAtPosition(ops,libs::Point(point.x(),point.y()));
-			while (!ops.empty())
-			{
-				std::string name;
-				ops.back()->getOperatorName(name);
-				if (typeChecker.isType(OpImageName,name))
-					break;
-				ops.pop_back();
-			}
-			if (ops.empty())
-			{
-				emit addHistory("No inline image found\n");
-				return;
-			}
-			PdfOperator::Operands op;
-			ops.back()->getParameters(op);
-			//image_dict.addProperty ("CS", CName ("RGB"));
-			//image_dict.addProperty ("BPC", CInt (8)); //
-			shared_ptr<pdfobjects::CInlineImage> inIm =  boost::dynamic_pointer_cast<pdfobjects::CInlineImage>(op.back());
-			boost::shared_ptr<IProperty> prop = inIm->getProperty("CS");
-			std::string cs = utils::getNameFromIProperty(prop);
-			if (cs!="RGB")
-			{
-				QMessageBox::warning(this, "Unable to export inline image","Unimplented color space", QMessageBox::Ok,QMessageBox::Ok);
-				return; 
-			}
-			int bpp = utils::getIntFromIProperty(inIm->getProperty("BPC"));
-			if(bpp!=8)
-			{
-				emit addHistory("Failed to export an image\n");
-				QMessageBox::warning(this, "Unable to export inline image","Wrong depth", QMessageBox::Ok,QMessageBox::Ok);
-				return;
-			}
-			QImage image(QSize(inIm->width(),inIm->height()),QImage::Format_ARGB32);
-			CStream::Buffer buffer = inIm->getBuffer();
-			int index = 0;
-
-			for ( int h=0; h<inIm->height();h++)
-				for ( int w=0; w<inIm->width();w++)
-				{ 
-					QColor c((unsigned char)buffer[index],(unsigned char)buffer[index+1],(unsigned char)buffer[index+2],0);
-					image.setPixel(w,h,c.rgb());
-					index+=3;
-				}
-
-				QString fileName = QFileDialog::getSaveFileName(this, tr("Save image"), "", tr("Images (*.png *.jpg *.bmp))"));
-				if (fileName.isEmpty())
-					return;
-				image.save(fileName);
-				emit addHistory("Image saved\n");
-				break;
 		}
 	case ImageMode:
 		{
@@ -2237,14 +2235,21 @@ void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
 }
 void TabPage::saveEncoded()
 {
-#ifdef _DEBUG
+#if _DEBUG
 	float dim[4] = {FLT_MAX,FLT_MAX,0,0};
 	std::string out;
 	//prop->getStringRepresentation(out);
 	_pdf->saveDecoded("decoded");
 	return;
 #endif
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), _name, tr("PdfFile Decoded (*.decoded)"));
+#ifdef WIN32
+	QString path = _name.mid(0,_name.indexOf("/"));
+#else
+	QString path = _name.mid(0,_name.size() - _name.indexOf("\\"));
+#endif
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), path, tr("PdfFile Decoded (*.decoded)"));
+	if (fileName.isEmpty())
+		return;
 	emit addHistory(QString("Saved decoded pdf to file") + fileName);
 	_pdf->saveDecoded(fileName.toAscii().data());
 }
@@ -2841,9 +2846,10 @@ void TabPage::search(QString srch, int flags)
 #include "splash/SplashGlyphBitmap.h"
 #include "splash/SplashFont.h"
 
-std::string TabPage::checkCode(QString s, std::string fontName)
+GlyphInfo TabPage::checkCode( QString s, std::string fontName )
 {
 	//get ID
+
 	CPage::FontList contL;
 	std::string t;
 	_page->getFontIdsAndNames(contL);
@@ -2853,7 +2859,9 @@ std::string TabPage::checkCode(QString s, std::string fontName)
 			fontName = contL[i].first;
 			break;
 		}
-	std::string ret;
+
+	GlyphInfo ret;
+	ret.size = 0;
 	bool raiseWarning = false;
 	GfxFont * font = NULL;
 	std::vector<shared_ptr<CContentStream> > cont;
@@ -2880,16 +2888,24 @@ std::string TabPage::checkCode(QString s, std::string fontName)
 		if (tBitmap.w == 0)
 			raiseWarning = true;
 		else
-			ret+=c;
+		{
+			CharCode code; int uLen; double dx,dy,originX,originY;
+			font->getNextChar(&c, 1, &code,
+				&u, (int)(sizeof(u) / sizeof(Unicode)), &uLen,
+				&dx, &dy, &originX, &originY);
+
+			ret.size += dx;
+			ret.name+=c;
+		}
 	}
 	if (raiseWarning)
 	{
 		int res = QMessageBox::warning(this, tr("Text truncation"),
-			tr("Some characters are not supported.\n Truncated to ")+ret.c_str() + "\nContinue?",
+			tr("Some characters are not supported.\n Truncated to ")+ret.name.c_str() + "\nContinue?",
 			QMessageBox::Ok|QMessageBox::Discard,
 			QMessageBox::Discard);
 		if (res == QMessageBox::Discard)
-			ret = "";
+			ret.name = "";
 	}
 	return ret;
 }
@@ -3243,6 +3259,7 @@ void TabPage::exportText()
 			return;
 		beg = pdialog.begin->value();
 		end = pdialog.end->value();
+		end++;
 		dialog->close();
 		delete dialog;
 	}
@@ -3620,8 +3637,9 @@ void TabPage::loadBookmark( QTreeWidgetItem * item )
 
 void TabPage::SetModePosition(PdfAnnot a)
 {
-	_annots.push_back(a);
-	emit addHistory("Waitinf for position to be set\n");
+	_linkAnnot = a;
+	emit addHistory("Waiting for position to be set");
+	_oldPage = _pdf->getPagePosition(_page);
 	_parent->setMode(ModeEmitPosition);
 }
 
@@ -3832,4 +3850,14 @@ void TabPage::reportSearchResult()
 	else
 		QMessageBox::warning(this,"Not found","String was not found");
 
+}
+
+bool TabPage::changed()
+{
+	return _pdf->isChanged();
+}
+
+QString TabPage::getName()
+{
+	return _name;
 }

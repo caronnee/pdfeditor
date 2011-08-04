@@ -240,6 +240,10 @@
 				RelativePath="..\TabPage.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\tree.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

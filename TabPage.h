@@ -117,11 +117,13 @@ enum AnnotType
 };
 class OpenPdf;
 
+
 class TabPage : public QWidget
 {
 	Q_OBJECT
 
 private: //variables
+	int _oldPage;
 	QThread * _thread;
 	int _stop;
 	SplashOutputDev splash;
@@ -168,9 +170,10 @@ private: //variables
 	void setSelected(TextData::iterator& first, TextData::iterator& last);
 	void showAnnotation();
 public:
+
 	bool performSearch(QString srch, bool forw);
 	bool _changed;
-	int _allowResize;
+	PdfAnnot _linkAnnot;
 	//static std::string SupportedAnnotations[] = { ANNOTS(CREATE_ARRAY) };
 
 	void deleteSelectedImage();
@@ -310,7 +313,7 @@ private slots:
 	void loadBookmark( QTreeWidgetItem * item );
 	void insertTextAnnot(PdfAnnot a);
 	void findLastFontMode();
-	std::string checkCode(QString s, std::string fontName);
+	GlyphInfo checkCode(QString s, std::string fontName);
 	void getPreviousTmInPosition( libs::Point p, float* size);
 	void checkLoadedBookmarks();
 
@@ -352,10 +355,13 @@ public slots:
 	void stopSearch();
 	void reportSearchResult();
 public:
+	bool changed();
 	void resizeEvent(QResizeEvent * event);
 	void highlight(); //nesprav nic, pretoze to bude robit mouseMove
 	void setPage(int index);
 	void setState();
+	void extractImage();
+	QString getName();
 };
 
 #endif

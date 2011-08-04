@@ -12,6 +12,12 @@
 #include "typedefs.h"
 //misc
 
+struct GlyphInfo
+{
+	std::string name;
+	float size;
+};
+
 class TextFont
 {
 	std::string _name;
@@ -99,7 +105,7 @@ public:
 signals:
 	void FontClosedSignal();
 	void getLastTm(libs::Point,float *);
-	std::string convertTextFromUnicode(QString, std::string);
+	GlyphInfo convertTextFromUnicode(QString, std::string);
 	void changeTextSignal(PdfOp op);
 	void text(PdfOp op);
 	void changeSelected();
