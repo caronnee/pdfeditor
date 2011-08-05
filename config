@@ -1,4 +1,5 @@
 make distclean
+cd core && make
 qmake
 cat Makefile.include >> Makefile
 make
