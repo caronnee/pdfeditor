@@ -193,12 +193,15 @@ public:
 	void highLightAnnSelected();
 	void delAnnot(int i); //page to u seba upravi, aby ID zodpovedali
 	void SetTextSelect();
-	
+///constructor	
 	TabPage(OpenPdf *,QString name);
+	///destructor
 	~TabPage(void);
-
+///sets initializes bookmark according to dictionary
 	void setTree(shared_ptr<CDict> d, Bookmark * b );
+	///start highlightin - no longer used
 	void highLightBegin(int x, int y); //nesprav nic, pretoze to bude robit mouseMove
+	///highligghts selected text
 	void highlightText(); //tu mame convertle  x,y
 	void moveText(int difX, int difY);
 	void insertBefore(PdfOp op, PdfOp before);

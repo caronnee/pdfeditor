@@ -188,9 +188,9 @@ void Tree::setAccept(QString pattern, int & i)
 		_actual = new AcceptSet(res,_root);
 		i = j+1;
 	}
-	else if (pattern[i+1] == QChar('?'))
+	else if (pattern[i+1] == QChar('.'))
 	{
-		_actual = new AcceptRange(pattern[i],0,1,_root);
+		_actual = new AcceptDot(pattern[i],_root);
 		i += 2;
 	}
 	//else if (pattern[i] == QChar(' '))

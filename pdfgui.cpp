@@ -89,6 +89,7 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 	connect( this->ui.changeButton,SIGNAL(pressed()),this->ui.openedPdfs,SLOT(changeSelectedText()));
 	connect( this->ui.eraseButton,SIGNAL(pressed()),this->ui.openedPdfs,SLOT(eraseSelectedText()));
 	connect( this->ui.highlightButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(highlightSelected()));
+	connect( this->ui.textHighlightButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(highlightSelected()));
 	connect( this->ui.selectTextButton, SIGNAL(pressed()), this->ui.openedPdfs, SLOT(setModeSelectText()));
 	
 	connect( _search, SIGNAL(search(QString,int)),this->ui.openedPdfs, SLOT(search(QString, int)));

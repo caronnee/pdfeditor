@@ -20,7 +20,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>QtSdkPath=c:\QtSDK\lib;TARGETSOURCE=pdfeditor.exe</DefineConstants>
+    <DefineConstants>QtSdkPath=c:\QtSDK\lib;TARGETSOURCE=TIAEditor.exe</DefineConstants>
     <WixVariables>
     </WixVariables>
   </PropertyGroup>
@@ -43,6 +43,6 @@
 	</Target>
 	-->
   <PropertyGroup>
-    <PreBuildEvent>copy $(ProjectDir)..\releasepdf\pdfeditor.exe  $(SolutionDir)\..</PreBuildEvent>
+    <PreBuildEvent>copy $(ProjectDir)..\releasepdf\TIAEditor.exe  $(SolutionDir)\..</PreBuildEvent>
   </PropertyGroup>
 </Project>

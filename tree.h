@@ -48,13 +48,12 @@ public:
 	/** destructor **/
 	virtual ~AcceptSet();
 };
-//class AcceptSpace : public Accept
-//{
-//	bool _accepted;
-//public:
-//	AcceptSpace(QChar ot, Accept * prev);
-//	virtual Accept * accept(QChar c) ;
-//};
+class AcceptDot : public Accept
+{
+public:
+	AcceptDot(QChar ot, Accept * prev) : Accept(ot, prev) {};
+	virtual Accept * accept(QChar c) { return next();}
+};
 // {0-19}
 /** this class is not used */
 class AcceptRange : public Accept

@@ -57,7 +57,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib freetype.lib zdll.lib"
-				OutputFile="$(OutDir)\pdfeditor.exe"
+				OutputFile="$(OutDir)\TIAEditor.exe"
 				AdditionalLibraryDirectories="..\dlls;.\libs;&quot;$(QTDIR)\lib&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="false"

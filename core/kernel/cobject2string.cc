@@ -254,7 +254,7 @@ simpleValueToString (const std::string& val, std::string& str)
 			else
 			{
 				str = Specification::CHEXSTRING_PREFIX 
-					+ makeHexString (validateStr.begin(), validateStr.end())
+					+ makeHexString (val.begin(), val.end())
 					+ Specification::CHEXSTRING_SUFFIX;
 			}
 			break;

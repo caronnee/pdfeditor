@@ -214,16 +214,16 @@ std::string FontWidget::addParameters() //TODO nie s jedine parametre
 	{
 		//stroking operands
 		PdfOperator::Operands operands;
-		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorS->getR()/255)) );
-		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorS->getG()/255)) );
-		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorS->getB()/255)) );
+		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorN->getR()/255)) );
+		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorN->getG()/255)) );
+		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorN->getB()/255)) );
 		_BT->push_back( createOperator("RG", operands ), getLastOperator(_BT));
 	}
 	{
 		PdfOperator::Operands operands;
-		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorN->getR()/255)) );
-		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorN->getG()/255)) );
-		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorN->getB()/255)) );
+		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorS->getR()/255)) );
+		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorS->getG()/255)) );
+		operands.push_back(shared_ptr<IProperty>(new CReal((float)this->ui.colorS->getB()/255)) );
 
 		//non-stroking operands
 		_BT->push_back( createOperator("rg", operands ), getLastOperator(_BT));

@@ -213,7 +213,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),s
 	//pridanie anotacie
 	connect(this->ui.showBookmark, SIGNAL(clicked()), this, SLOT(checkLoadedBookmarks()));
 	connect(_cmts,SIGNAL(textAnnotation(PdfAnnot)),this,SLOT(insertTextAnnot(PdfAnnot)));
-	connect(_cmts,SIGNAL(annotation(PdfAnnot)),this,SLOT(insertAnnotation(PdfAnnot)));
+	//connect(_cmts,SIGNAL(annotation(PdfAnnot)),this,SLOT(insertAnnotation(PdfAnnot)));
 	connect(_cmts,SIGNAL(WaitForPosition(PdfAnnot)),this,SLOT(SetModePosition(PdfAnnot)));
 	connect(_labelPage,SIGNAL(ShowAnnotation(int)),this,SLOT(showAnnotation(int)));
 
@@ -380,6 +380,8 @@ void TabPage::initRevisions()
 }
 void TabPage::highLightAnnSelected()
 {
+	if (!CanBeSavedChanges(true))
+		return;
 	if (!_selected)
 		return;//TODO musi byt tie non-empty
 	_cmts->setIndex(AHighlight);
@@ -389,6 +391,8 @@ void TabPage::highLightAnnSelected()
 }
 void TabPage::raiseChangeSelectedImage()
 {
+	if (!CanBeSavedChanges(true))
+		return;
 	if(!_selected)
 	{
 		emit addHistory("No image was selected, ignoring");
@@ -413,6 +417,8 @@ void TabPage::raiseChangeSelectedImage()
 
 void TabPage::deleteImage(QPoint point)
 {
+	if (!CanBeSavedChanges(true))
+		return;
 	//zistime, co mame pod pointom;
 	double x,y;
 	toPdfPos(point.x(),point.y(),x,y);
@@ -442,6 +448,8 @@ void TabPage::deleteImage(QPoint point)
 }
 void TabPage::raiseInsertImage(QRect rect)
 {
+	if (!CanBeSavedChanges(true))
+		return;
 	double w=rect.width()*72.0f/displayparams.vDpi,h =rect.height()*72.0f/displayparams.vDpi;
 	//::rotate(displayparams.rotate,w,h);
 	_image->setSize(w,h);
@@ -959,6 +967,8 @@ END:
 }
 void TabPage::insertTextMarkup(PdfAnnot annot)
 {
+	if (!CanBeSavedChanges(true))
+		return;
 	if ( this->ui.revision->currentIndex()!= _pdf->getRevisionsCount()-1)
 		return;
 	//for all selected text
@@ -1035,6 +1045,8 @@ void TabPage::closeAnnotDiag()
 }
 void TabPage::insertTextAnnot(PdfAnnot a)
 {
+	if (!CanBeSavedChanges(true))
+		return;
 	if ( this->ui.revision->currentIndex()!= _pdf->getRevisionsCount()-1)
 		return;
 #ifdef _DEBUG
@@ -1098,6 +1110,8 @@ void TabPage::insertAnnotation(PdfAnnot a)
 //}
 void TabPage::raiseChangeSelectedText()
 {
+	if (!CanBeSavedChanges(true))
+		return;
 	if (!_selected)
 		return;
 	QString s,s1,s2,s3;
@@ -1138,6 +1152,8 @@ void TabPage::raiseChangeSelectedText()
 //}
 void TabPage::raiseAnnotation(QPoint point)//raise cpmment annotation
 {
+	if (!CanBeSavedChanges(true))
+		return;
 	//_mode = ModeEmitPosition;
 	double x=point.x(),y=point.y();
 	rotatePdf(displayparams ,x,y,true);
@@ -1209,6 +1225,8 @@ void TabPage::createList()
 }
 void TabPage::raiseInsertText(QPoint point)
 {
+	if (!CanBeSavedChanges(true))
+		return;
 	double x,y;
 	DisplayParams d = displayparams;
 	d.pageRect = _page->getMediabox();
@@ -1291,6 +1309,8 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 		}
 	case ModeChangeAnnotation:
 		{
+			if (!CanBeSavedChanges(true))
+				return;
 			int index = _labelPage->getPlace(point);
 			if (index == -1)
 				break;
@@ -1299,12 +1319,16 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 		}
 	case ModeInsertLinkAnnotation:
 		{
+			if (!CanBeSavedChanges(true))
+				break;
 			_labelPage->annotation();
 			_cmts->setIndex(ALink);
 			break;
 		}
 	case ModeInsertAnnotation:
 		{
+			if (!CanBeSavedChanges(true))
+				break;
 			_labelPage->annotation();
 			_cmts->setIndex(0);
 			break;
@@ -1312,6 +1336,8 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 	case ModeInsertText:
 		{
 			//show position
+			if (!CanBeSavedChanges(true))
+				break;
 			_labelPage->drawCircle(point);
 			raiseInsertText(point);
 			break;
@@ -1320,7 +1346,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 		{
 #ifdef _DEBUG
 			std::string m;
-			_annots.back()->getDictionary()->getStringRepresentation(m);
+			_linkAnnot->getDictionary()->getStringRepresentation(m);
 #endif // _DEBUG
 			double x = point.x();
 			double y = point.y();//jelikoz to ide priamo do dictionary, musim prejst cez params.frompdf :-/
@@ -1329,10 +1355,14 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 			if ( !this->CanBeSavedChanges())
 				return;
 			 _pdf->getPage(_oldPage)->addAnnotation(_linkAnnot);
-			_cmts->addLink(_linkAnnot, _page->getDictionary()->getIndiRef(),x,y);
+			 _page->getAllAnnotations(_annots);
+			 _cmts->addLink(_annots.back(), _page->getDictionary()->getIndiRef(),x,y);
+
 			_parent->setModeInsertLinkAnotation();//boli sme v tomto 
 #ifdef _DEBUG
-			_annots.back()->getDictionary()->getStringRepresentation(m);
+			_linkAnnot->getDictionary()->getStringRepresentation(m);
+			//_page->getAllAnnotations(_annots);
+			//assert(_annots[0] == _linkAnnot);
 #endif // _DEBUG
 			emit addHistory("Position was selected");
 			_page = _pdf->getPage(_oldPage);
@@ -1342,6 +1372,8 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 	case ModeImageSelected:
 	case ModeSelectImage:
 		{//vyber nejaky BI operator a daj ho to vybranych
+			if (!CanBeSavedChanges(true))
+				break;
 			Ops ops;
 			_mousePos = point;
 			double px = point.x(), py=point.y();
@@ -1374,6 +1406,8 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 	case ModeHighlighComment:
 	case ModeSelectText:
 		{
+			if (!CanBeSavedChanges(true))
+				return;
 			_labelPage->setMode(ModeTrackDrawingRect);
 			//highlightText(point); //nesprav nic, pretoze to bude robit mouseMove
 			break;
@@ -1382,6 +1416,8 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 	case ModeImagePart:
 	case ModeInsertImage:
 		{
+			if (!CanBeSavedChanges(true))
+				return;
 			if (!_dataReady)
 			{
 				_mousePos = point;
@@ -1457,7 +1493,7 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			if (index<0)
 				break;
 			PdfAnnot an = _annots[index];
-			std::string type = utils::getStringFromDict("Subtype", an->getDictionary());
+			std::string type = utils::getNameFromDict("Subtype", an->getDictionary());
 			if (type!= "Highlight")
 				break;
 			_page->delAnnotation(an);
@@ -2092,7 +2128,10 @@ void TabPage::setTree(shared_ptr<CDict> d, Bookmark * b)
 	else if (type == pArray)
 		getDestFromArray(prop,b);
 	else
-		throw "not implemented";
+	{
+		assert(false);
+		return;
+	}
 	if (d->containsProperty("First"))
 		b->setSubsection(utils::getRefFromDict("First",d));
 }
@@ -2356,6 +2395,8 @@ void TabPage::rotate(int angle) //rotovanie pages
 }
 void TabPage::commitRevision()
 {
+	if (!CanBeSavedChanges(true))
+		return;
 	if (ui.revision->currentIndex() != ui.revision->count()-1)
 	{
 		QMessageBox::warning(this, "Cannot change","No change", QMessageBox::Ok, QMessageBox::Ok);

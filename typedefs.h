@@ -32,7 +32,7 @@
 	XX(ModeChangeAnnotation, "Click on anotation to change it","change.png","Change annotation") \
 	XX(DefaultMode,"Open an PDF","unknown.jpg","") \
 	XX(ModeHighlighComment,"After selecting text, fill please content","highlight.png","Highlight") \
-	XX(ModeDeleteHighLight, "Click to delete highlight annotation","delete.png","Delete highlight")\
+	XX(ModeDeleteHighLight, "Click to delete highlight annotation","deleteText.png","Delete highlight")\
 	
 
 #define ENUMS(a,b,c,d) a,
