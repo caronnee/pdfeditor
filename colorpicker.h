@@ -1,3 +1,4 @@
+/** \file Difining class for picking colors */
 #ifndef ___COLORPICK__
 #define ___COLORPICK__
 
@@ -8,7 +9,11 @@
 #include <vector>
 #include <QColor>
 
-//TODO CMYK a podobne veci?
+/** \brief main class for color picking */
+/** This class handles color picking. In contains following signals and slots: \n
+ \n - setColor
+ \n- setFromDialog
+ */
 class ColorPicker : public QWidget
 {
 	Q_OBJECT
@@ -24,19 +29,13 @@ public:
 signals:
 	void ValueChangedSignal(QColor);
 	public slots:
-		//void update()
-		//{
-		//	QColor color(getR(),getG(),getB());
-		//	//ui.preview->set
-		//	QPalette pal(QColor(255,255,255));
-		//	pal.setColor(QPalette::Background, color);
-		//	ui.preview->setAutoFillBackground(true);
-		//	ui.preview->setPalette(pal);
-		//	emit ValueChangedSignal(color);
-		//}
+		/** \brief sets color */
+		/** This method is called when it is needed to set predefined color. When no color is set, default is  black*/
 		void setColor(QColor color);
+		/** \brief Gets set color */
 		QColor getColor();
-		//void valueChanged(int);
+		/** \brief Sets dialog according to one picked in dialog */
+		/** This method is called when user vlicked on the button */
 		void setFromDialog();
 };
 #endif

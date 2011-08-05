@@ -53,7 +53,7 @@ int ColorPicker::getR()
 }
 int ColorPicker::getG() 
 { 
-	return qRed(_color.rgb());
+	return qGreen(_color.rgb());
 	//return qGreen(colors[ui.colors->itemData(ui.colors->currentIndex() ).toInt()].rgb()); 
 }
 int ColorPicker::getB() 

@@ -45,14 +45,14 @@ void FontWidget::setInsert()
 	this->ui.fonts->setCurrentIndex(1);
 	this->ui.fonts->setCurrentIndex(0);
 }
-void FontWidget::change()
-{
-	emit changeSelected();
-}
-void FontWidget::reset() //nastavit rotaciu na nulu a podobne
-{
-	memset(set,0x0,sizeof(bool)*NumberOfOptions);
-}
+//void FontWidget::change()
+//{
+//	emit changeSelected();
+//}
+//void FontWidget::reset() //nastavit rotaciu na nulu a podobne
+//{
+//	memset(set,0x0,sizeof(bool)*NumberOfOptions);
+//}
 void FontWidget::paintEvent( QPaintEvent * event )
 {
 	//QVector<QPoint> points;
@@ -85,7 +85,7 @@ FontWidget::FontWidget(QWidget *parent) : QWidget(parent),_embededFont(false)
 	_scale[0] = _scale[1] = 1;
 	ui.setupUi(this);
 	
-	reset();
+//	reset();
 	//set 10-40 fontsize
 	for ( int i = 10; i<=20; i++)
 	{

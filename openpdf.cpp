@@ -256,6 +256,7 @@ void OpenPdf::open(QString name)
 		this->addTab(page,fileName);
 		assert(page->checkLinearization());
 		setCurrentIndex(count() -1);
+		setMode(ModeDoNothing);
 	}
 #ifndef _DEBUG
 	catch (MalformedFormatExeption e)

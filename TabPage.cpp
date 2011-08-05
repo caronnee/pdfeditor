@@ -1313,7 +1313,7 @@ void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, 
 		{
 			//show position
 			_labelPage->drawCircle(point);
-			raiseInsertText(point); //TODO angle
+			raiseInsertText(point);
 			break;
 		}
 	case ModeEmitPosition: //pre anotacie
