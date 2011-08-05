@@ -57,15 +57,16 @@ QColor OpenPdf::getHColor()
 }
 OpenPdf::OpenPdf(QWidget * centralWidget) :QTabWidget(centralWidget),_mode(ModeDoNothing),_previous(ModeDoNothing), _color(255,0,0,50), _highlightColor(0,255,0),_author("Unknown")
 {
-#ifdef _WIN32
 	char name[256];
+#ifdef _WIN32
 	DWORD size = sizeof(name);
 	GetUserNameA(name,&size);
 
 #else
-	name = fopen("whoami", "r");
-	fgets(text, sizeof(text), name);
-	fclose(name);
+	FILE * f; 
+	f = fopen("whoami", "r");
+	fgets(name, sizeof(name), f);
+	fclose(f);
 #endif
 	_author = name;
 #if _DEBUG

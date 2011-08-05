@@ -1,4 +1,5 @@
 LIBS += \
+-L./core/xpdf -L./core -L./core/xpdf \
 -lkernel -lutils -lfofi -lGoo -lsplash -lxpdf  \
 -lkernel -lutils -lfofi -lGoo -lsplash -lxpdf  \
 -lkernel -lutils -lfofi -lGoo -lsplash -lxpdf  \

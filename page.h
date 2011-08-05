@@ -3,6 +3,7 @@
 
 #include <QScrollArea>
 #include <QMouseEvent>
+#include <QShortcut>
 #include <QWheelEvent>
 #include <QMenu>
 #include "ui_page.h"

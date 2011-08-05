@@ -4,6 +4,7 @@
 #include <QtGui/QMainWindow>
 #include <QCloseEvent>
 #include <QDialog>
+#include <QShortcut>
 #include "Search.h"
 
 #include "openpdf.h"

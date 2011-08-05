@@ -23,7 +23,7 @@ InsertImage::InsertImage( QWidget * parent) : QWidget(parent)
 	connect(this->ui.rotation, SIGNAL(sliderMoved(int)), this, SLOT(showAngleToolTip(int)));
 #ifndef _DEBUG
 	ui.positionX->hide();
-	ui->positionY->hide();
+	ui.positionY->hide();
 #endif
 }
 

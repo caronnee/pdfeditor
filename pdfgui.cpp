@@ -152,24 +152,24 @@ pdfGui::pdfGui(QWidget *parent, Qt::WFlags flags)
 		buffer[i] ='\0';
 		char * s = strchr(buffer,'=');
 		*s='\0';
-		if (!stricmp(buffer,"hcolor"))
+		if (!strcmp(buffer,"hcolor"))
 		{
 			s++;//budu to vzdy len 3 hodnoty
 			QVariant str(s);
 			ui.hcolor->setColor((QRgb)str.toUInt());
 		}
-		if(!stricmp(buffer,"color"))
+		if(!strcmp(buffer,"color"))
 		{
 			s++;//budu to vzdy len 3 hodnoty
 			QVariant str(s);
 			ui.color->setColor((QRgb)str.toUInt());
 		}
-		if(!stricmp(buffer,"file"))
+		if(!strcmp(buffer,"file"))
 		{
 			s++;
 			_lastOpenedButtonMenu->addAction(s,this,SLOT(openLastFile()));
 		}
-		if(!stricmp(buffer,"dash"))
+		if(!strcmp(buffer,"dash"))
 		{
 			s++;
 			QVariant v(s);

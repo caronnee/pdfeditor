@@ -28,7 +28,7 @@ SOURCES = static.cc xpdf.cc modecontroller.cc factories.cc cannotation.cc \
 	  ccontentstream.cc pdfoperatorsbase.cc  pdfoperators.cc pdfoperatorsiter.cc \
 	  stateupdater.cc pdfwriter.cc cinlineimage.cc coutline.cc \
 	  cpage.cc cpageattributes.cc cpagechanges.cc cpagefonts.cc cpagedisplay.cc cpagecontents.cc contentschangetag.cc cpageannots.cc \
-	  cpdf.cc textoutputengines.cc textoutputentities.cc \
+	  cpdf.cc  textoutputentities.cc \
 	  textoutputbuilder.cc pdfspecification.cc \
 	  delinearizator.cc flattener.cc \
 	  pdfedit-core-dev.cc 

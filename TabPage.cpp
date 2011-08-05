@@ -2913,6 +2913,7 @@ bool TabPage::performSearch( QString srch, bool forw )
 	QString s; //TODO do threadu
 	for(int i = 0; i< _pdf->getPageCount()&&!_stop; i++)
 	{
+		float prev = 0;
 		TextData::iterator iter;
 		if (_textList.size() == 0)
 			goto NextPage;
@@ -2935,7 +2936,7 @@ bool TabPage::performSearch( QString srch, bool forw )
 		_searchEngine.setText(s);
 		_searchEngine._begin = sTextIt->letters(sTextIt->_begin);
 
-		float prev = forw? iter->_end : iter->_begin;
+		prev = forw? iter->_end : iter->_begin;
 		while (iter != _textList.end())
 		{
 			switch (_searchEngine.search())
