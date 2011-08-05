@@ -150,30 +150,68 @@ public:
 signals:
 	/** \brief emits closed signal */
 	void FontClosedSignal();
-	void getLastTm(libs::Point,float *);
+
+	/** \brief emits request for last Tm at given position */
+	/** \param p is point from the the search should begin 
+		\param size will after successful perform contain information about width and height of the found TH.*/
+	void getLastTm(libs::Point p,float * size);
+
+	/** \brief checks the text againt requested font */
+	/** \return unformation about string that can be displayed */
 	GlyphInfo convertTextFromUnicode(QString, std::string);
+	
+	/** \brief signal that signifies that part of the text that was requested to ched, is changed */
 	void changeTextSignal(PdfOp op);
+
+	/** \brief signal that is emitted after valid operator is created */
 	void text(PdfOp op);
 	//void changeSelected();
+	/** signal that reguests last font from given point */
 	PdfOp getLastFontSignal(libs::Point);
+	/** \brief checks inf the font is in page */
+	/** if the font is not in page, it is added to page and it representation id is returned */
 	std::string fontInPage(std::string id);
+
+	/** \brief requests font from page */
+	/** this count on that if any widget catches this, it will later emit the fignal with the font */ 
 	void FindLastFontSignal();
 
 public slots:
+	/** \brief sets the state to insert state */
 	void setInsert();
+	
+	/** \brief sets the state to change state */
 	void setChange();
+
+	/** \brief sets position */
+	/** parameters are inf the PDF  units */
 	void setPosition(float pdfx, float pdfy);
+	
 	//void setTm() { set[OptionTm] = true; }
 	//void setFont() { set[OptionFont] = true; }
 	//void setShape() { set[OptionShape] = true; }
 	//void setGray() { set[OptionGray] = true; } //TODO macro
 
+	/** \brief this method will insert or change the text and closes the window */
 	void apply(); //on clicked
+	/** \brief inserts this operators to new BT with new parameters */
+	/** \note this method was not tested, so it is nore released */
 	void createFromMulti( std::vector<PdfOp>& operators );
+	/** \brief reaction to angle change */
+	/** if angle is changed, the value should show in the label the to the widget */  
 	void sliderChanged(int value);
+	/** \brief clears all fonts and sets them from scratch */
+	/** some fonts are present only on one particular page. We have to clrear all the fonts every time this widget will be used */
 	void clearTempFonts();
+
+	/** \bried sets this widget to the state that waits only fot font */
+	/** this method will disable clear templ when this widget will show up */
 	void waitForFont( );
+	/** \brieg cleans after everything was ionserted and done */
+	/** after close event, all temporary folders will be delete */
 	void closeEvent ( QCloseEvent * event );
+
+	/** \brief checks which color should be visible */
 	void setDrawType( int index );
 	//void setAngle(int angle);
 };

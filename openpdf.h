@@ -4,13 +4,19 @@
 #include <QTimer>
 #include "typedefs.h"
 
+/** \brief structure for holding all necessary help indices */
+/** this structure is emitted every time  mode is changed. It containt all necessary information mode change \n
+ - help text that is possible to show in help row
+ - icon to be shown in actual mode
+ - descripion as a text under actuaIcon */
 struct HelptextIcon
 {
 	const char * helpText;
 	const char * icon;
 	const char * description;
 };
-
+/** \brief main class handling multiple opened documents */
+/** this class contains and handles multiple opened pdfs in tabWidget tree */
 class OpenPdf :
 	public QTabWidget
 {
@@ -18,57 +24,102 @@ class OpenPdf :
 	
 
 public:
+	/** \brief constructor */
 	OpenPdf(QWidget * widget);
+
+	/** \brief descturor*/
 	~OpenPdf(void);
 
+	/** \brief Opend another pdf */
+	/** this is used internaly as a result action of some slot */
 	void open(QString s);
+
+	/** previous mode. It is useful for teporary mode like ModeEmitPosition */
 	Mode _previous;
+	/** actual mode */
 	Mode _mode;
+	/** saved color */
 	QColor _color;
+	/** saved highlight color */
 	QColor _highlightColor;
+	/** owner of the account. Its name will be automatically filled within annotation etc. */ 
 	std::string _author;
-	QTimer pageTimer;
+
 public:
+	/** \brief sets mode */
+	/** Sets and emits code about change. */  
 	void setMode(Mode mode);
+	/** \brief gets actual mode */
 	Mode getMode() const { return _mode; }
 
 signals:
+	/** \request for actual highlight signal */
 	QColor GetActualHColorSignal();
+	/** \request for actualselecte text signal */
 	QColor GetActualColorSignal();
+	/** \request for actual highlight signal */
+	/** All the widgets can catch the sognal and pick the information */
 	void ModeChangedSignal(HelptextIcon);
 public slots:
+	/** \brief inita abaluzation tree */
+	/** load docCatalog into analyzation Item . All other analyzation things will be lazy -load only after request */
 	void initAnalyze();
+	/** \brief reaction on search sognal from main window */
+	/** re-called to child */
 	void search(QString s, int flags);
+	/** re-called to child for deleting selected text */
 	void deleteSelectedText();
+	/** \brief delegated to child widget for erasing selected text */
 	void eraseSelectedText();
+	/**\brief delegates to child widget chor changing text */
 	void changeSelectedText();
+
+	/** \brief sets highlight annotatinon for selected */
 	void highlightSelected();
 
+	/** \brief set mode for selecting text operators */
 	void setModeOperator();
+
+	/** \brief sets viewMode */
 	void setModeView();
+	/** \brief sets mode for changing annotatinon */
 	void setModeChangeAnnotation();
+	/** \brief sets mode for highlighting comment without raising dialog */
 	void setHighlighCommentText();
+	/** \brief sets mode for snapshot */
 	void setModeImagePart();
+	/** \brief sets mode for inserting text */
 	void setModeInsertText();
+	/** \brief sets mode for selecting text */
 	void setModeSelectText();
+	/** \brief sets mode for inserting image */
 	void setModeInsertImage();
+	/** \brief sets defailt (view) mode */
 	void setModeDefault();
+	/** \brief sets mode for selecting  annotation */
 	void setModeSelectImage();
+	/** \brief sets mode for inserting annotation */
 	void setModeInsertAnotation();
 
+	/** \brief delegates to child widget for changing selected image */
 	void changeSelectedImage();
+
+	/** \brief delegates to child widget for deleting selected image */
 	void deleteSelectedImage();
+	/** \brief saves in the encoded state */
 	void saveEncoded();
-	// extracts text
+
+	/// \brief extracts text
 	void getText();
+	/** \brief rotate page in the clock-wise direction */
 	void derotate();
-	//rotates active page
+	/// \brief rotates active page
 	void rotate();
 
-	///Opens another pdf
+	/// \brief Opens another pdf
 	void openAnotherPdf();
 
-	///removes tab when closed
+	/// \brief deletes tab when closed
 	void closeAndRemoveTab(int);
 
 	//saves under original name
@@ -88,30 +139,58 @@ public slots:
 
 	//inserts empty page
 	void insertEmpty();
+
+	/** \brief makes the page stop searching */
 	void stopSearch();
 
 	///print a page
+	/** \brief this is not used */
 	void print();
-	//Deletes actual page, if theree is more that one page
+	/** \brief delegates to the child widget */
 	void deletePage();
+
+	/** \brief sets mode for deleting only highligh annotation */
 	void setModeDeleteHighLight();
+	
+	/** \brief sets mode for deleting annotation */
 	void setModeDeleteAnnotation();
+
+	/** \brief of pdf was changed, adds a star to its name */
 	void pdfChanged();
+	
+	/** \brief redraws actual page */
 	void redraw();
+	
+	/** \brief sets previous mode */
 	void setPreviousMode();
+	
+	/** \brief sets color for select operation*/
+	/** this will be mandatory for all subwidgets */
 	void setColor(QColor);
+	/** \brief sets color for highligh annotation */
 	void setHColor(QColor);
 	QColor getColor();
+	/** \brief get global color for highlighting annotations */  
 	QColor getHColor();
+	/** \brief sets mode for inserting link annotation  */
 	void setModeInsertLinkAnotation();
+	/** \brief sets setting mode */
 	void setModeSetting();
+	/** \brief re-call to the child widget */
+	/** handling request for raising dialog window with information about PDF */
 	void about();
+	/** \brief re-call to the child widget */
+	/** asks actual tabPage aout extracting image */
 	void extractImage();
 
 signals:
+	/** \brief this is used for emitting history */
+	/** every time a file is successfuly opened, it will be added to the recent list*/
 	void OpenSuccess(QString);
 public:
 	std::string Author()const;
+	/** \brief this check if all opened pdfs were saved before closing */
+	/** It there is document that wasnot close, the pop-up dialog will as user about what to do */
 	void checkClose();
 	//void resizeEvent(QResizeEvent *event);
 };

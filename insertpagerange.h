@@ -15,6 +15,7 @@
 #include <QString>
 #include "ui_insertpagerange.h"
 
+/** \brief this class is not used */
 class InsertPageRange : public QDialog
 {
 	Q_OBJECT

@@ -40,7 +40,6 @@ void OpenPdf::initAnalyze()
 void OpenPdf::pdfChanged()
 {
 	TabPage * page = (TabPage *)this->widget(currentIndex());
-	page->_changed = true;
 	this->setTabText( currentIndex(), QString("*") + this->tabText(currentIndex() )); //TODO zmenit na coot?
 }
 void OpenPdf::setModeChangeAnnotation()

@@ -141,7 +141,7 @@ bool TabPage::containsOperator(std::string wanted)
 }
 static SplashColor paperColor = {0xff,0xff,0xff};
 
-TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),_changed(false),splash (splashModeBGR8, 4, gFalse, paperColor),aboutDialog(this),_stop(0)
+TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),splash (splashModeBGR8, 4, gFalse, paperColor),aboutDialog(this),_stop(0)
 {
 	_pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
 	_thread = new MyThread();
@@ -1920,13 +1920,12 @@ void TabPage::showClicked(int x, int y)
 		//ukaz len povolene typy
 		std::string s;
 		ops[i]->getOperatorName(s);
-#if _DEBUG 
 		if (!typeChecker.isType(OpTextName,s))
 			continue;
 		std::wstring w;
 		shared_ptr<TextSimpleOperator> txt= boost::dynamic_pointer_cast<TextSimpleOperator>(ops[i]);
 		txt->getFontText(w);
-#endif
+
 		libs::Rectangle b = ops[i]->getBBox();
 
 		QColor color(55, 55, 200,100);

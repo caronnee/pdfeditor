@@ -21,6 +21,10 @@ InsertImage::InsertImage( QWidget * parent) : QWidget(parent)
 {
 	ui.setupUi(this);
 	connect(this->ui.rotation, SIGNAL(sliderMoved(int)), this, SLOT(showAngleToolTip(int)));
+#ifndef _DEBUG
+	ui.positionX->hide();
+	ui->positionY->hide();
+#endif
 }
 
 void InsertImage::setSize(float w,float h)

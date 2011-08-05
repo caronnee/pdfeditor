@@ -9,9 +9,14 @@
 #define min(a,b) (a) < (b)? (a):(b)
 #define max(a,b) (a) > (b)? (a):(b) 
 
+/** \brief converts degres to radians */
 float toRadians(int angle);
+
+/** \brief converts degrees to radians */
 int toDegree(float angle);
 
+/** rotates the position*/
+/** rotates the positin around origin (0,0) ny angle */
 void rotate(int angle, double& x, double& y);
 
 template<typename T>
@@ -23,7 +28,6 @@ void rotatePosition( T xin, T yin, T& xout, T &yout, int angle )
 };
 void rotatePdf( pdfobjects::DisplayParams displayparams, double& x,double& y, bool toUpPosition);
 
-//TODO highlight m underline, strikeout - ukazat len komentare
 #define ANNOTS(XX) \
 	XX("Text", Text) \
 	XX("Link", Link) \
@@ -32,6 +36,9 @@ void rotatePdf( pdfobjects::DisplayParams displayparams, double& x,double& y, bo
 
 #define AENUMS(a,b) A##b,
 #define CREATE_ARRAY(a,b)	a,
+
+/** \brief enum for supported annotations */
+/** annotation not define here will not be handled */
 
 enum SupportedAnnotation
 {
