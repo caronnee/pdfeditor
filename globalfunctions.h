@@ -1,3 +1,4 @@
+/** \file globalfunctions.h defines hlper functions */
 #ifndef __GLOBAL_F__
 #define __GLOBAL_F__
 

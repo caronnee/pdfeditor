@@ -2184,29 +2184,6 @@
 				SourceControlFiles="false"
 				>
 				<File
-					RelativePath=".\generatedfiles\release\colorPicker.moc"
-					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing $(InputFileName)..."
-							CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;..\colorPicker.cpp&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\$(InputName).moc&quot;  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_HAS_ITERATOR_DEBUGGING=0 -D_MBCS &quot;-I$(BOOST_DIR)\.&quot; &quot;-I.\..\extern&quot; &quot;-I.\..\core\xpdf\xpdf&quot; &quot;-I.\..\core\xpdf&quot; &quot;-I.\..\core\utils&quot; &quot;-I.\..&quot; &quot;-I.\..\core&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(FREETYPE_DIR)\.&quot; &quot;-I$(FREETYPE_DIR)\freetype2&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;..\colorPicker.cpp"
-							Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\$(InputName).moc&quot;"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath=".\generatedfiles\release\moc_colorpicker.cpp"
 					>
 					<FileConfiguration
@@ -2344,29 +2321,6 @@
 				Filter="cpp;moc"
 				SourceControlFiles="false"
 				>
-				<File
-					RelativePath=".\generatedfiles\debug\colorPicker.moc"
-					>
-					<FileConfiguration
-						Name="Release|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing $(InputFileName)..."
-							CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;..\colorPicker.cpp&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\$(InputName).moc&quot;  -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_MBCS &quot;-I.\..&quot; &quot;-I.\..\extern&quot; &quot;-I.\..\core&quot; &quot;-I.\..\core\xpdf&quot; &quot;-I$(BOOST_DIR)\.&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;..\colorPicker.cpp"
-							Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\$(InputName).moc&quot;"
-						/>
-					</FileConfiguration>
-				</File>
 				<File
 					RelativePath=".\generatedfiles\debug\moc_colorpicker.cpp"
 					>
@@ -2570,6 +2524,10 @@
 		<Filter
 			Name="doc"
 			>
+			<File
+				RelativePath="..\main.dox"
+				>
+			</File>
 			<File
 				RelativePath="..\todo.txt"
 				>

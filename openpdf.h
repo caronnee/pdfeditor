@@ -1,3 +1,4 @@
+/** \file openpdf.h Defines class for handling all pdfs */
 #pragma once
 #include <QTabWidget>
 #include <QString>
@@ -11,8 +12,11 @@
  - descripion as a text under actuaIcon */
 struct HelptextIcon
 {
+	/// text shown in help row
 	const char * helpText;
+	/// shown icon
 	const char * icon;
+	/// description of the actual button
 	const char * description;
 };
 /** \brief main class handling multiple opened documents */
@@ -53,11 +57,11 @@ public:
 	Mode getMode() const { return _mode; }
 
 signals:
-	/** \request for actual highlight signal */
+	/** \brief request for actual highlight signal */
 	QColor GetActualHColorSignal();
-	/** \request for actualselecte text signal */
+	/** \brief request for actualselecte text signal */
 	QColor GetActualColorSignal();
-	/** \request for actual highlight signal */
+	/** \brief request for actual highlight signal */
 	/** All the widgets can catch the sognal and pick the information */
 	void ModeChangedSignal(HelptextIcon);
 public slots:
@@ -122,7 +126,7 @@ public slots:
 	/// \brief deletes tab when closed
 	void closeAndRemoveTab(int);
 
-	//saves under original name
+	///saves under original name
 	void save();
 
 	///save unser another name
@@ -134,16 +138,15 @@ public slots:
 	///moves the actual page down
 	void pageDown();
 
-	//insert range from another pdf
+	///insert range from another pdf
 	void insertRange();
 
-	//inserts empty page
+	///inserts empty page
 	void insertEmpty();
 
 	/** \brief makes the page stop searching */
 	void stopSearch();
 
-	///print a page
 	/** \brief this is not used */
 	void print();
 	/** \brief delegates to the child widget */
@@ -167,8 +170,9 @@ public slots:
 	/** \brief sets color for select operation*/
 	/** this will be mandatory for all subwidgets */
 	void setColor(QColor);
-	/** \brief sets color for highligh annotation */
+	/** \brief sets color for highlight annotation */
 	void setHColor(QColor);
+	/** \brief get color that should be used when drawing something */
 	QColor getColor();
 	/** \brief get global color for highlighting annotations */  
 	QColor getHColor();
@@ -188,9 +192,10 @@ signals:
 	/** every time a file is successfuly opened, it will be added to the recent list*/
 	void OpenSuccess(QString);
 public:
+	/// loginn namethat should be used for annotation
 	std::string Author()const;
 	/** \brief this check if all opened pdfs were saved before closing */
-	/** It there is document that wasnot close, the pop-up dialog will as user about what to do */
+	/** It there is document that was not closed, the pop-up dialog will as user about what to do */
 	void checkClose();
 	//void resizeEvent(QResizeEvent *event);
 };

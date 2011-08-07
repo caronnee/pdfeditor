@@ -1,3 +1,4 @@
+/** \file page.h define widget for displaing content of pdf */ 
 #ifndef DISPLAY_PAGE_H
 #define DISPLAY_PAGE_H
 
@@ -26,19 +27,20 @@ public:
 	/** \brief Destructor */
 	~DisplayPage();
 
-	/** \bried sets the rectangle that should be warn. If user will move mouse after this was called, the result is changing the draw rectangle accrding to user input.*/
+	/** \brief sets the rectangle that should be warn. If user will move mouse after this was called, the result is changing the draw rectangle accrding to user input.*/
 	void drawAndTrackRectangle( QRect rect);
 	/** \brief sets rendered image of the PDF document */
 	void setImage( const QImage & image);
 
 	/** \brief draws all rect in region with selected color */
-	void fillRect(QList<QRect> rects,QColor color);
+	void setPixmapFromImage(QList<QRect> rects,QColor color);
 
 	/** \brief return given image */
 	const QImage & getImage()const
 	{
 		return _image;
 	}
+	/// sets image of the pdf page
 	void setImg();
 	/** \brief convert coords from this user space to the space that has opposite Y axis. this is never used */
 	QPoint convertCoord(QPoint point);
@@ -46,7 +48,7 @@ private:
 	bool _mousePressed;
 	//annotations
 	QList<QRect> _interactive;
-
+	QList<QRect> _region;
 	//change handling
 	QImage _image;
 	QImage _copyImg;
@@ -57,7 +59,8 @@ private:
 	QShortcut * _copy;
 	QPoint _pos;
 	QPoint _origRect;
-public slots:
+	QColor _color;
+	public slots:
 	/** \brief marks selected position */ 
 	void markPosition(QPoint point);
 	
@@ -69,7 +72,7 @@ public slots:
 	/** \brief handles press events*/
 	void mousePressEvent(QMouseEvent * event);
 	/** \brief fills rectangle with given color */
-	void fillRect(int x, int y, int x2, int y2, const QColor color);
+	void setPixmapFromImage(int x, int y, int x2, int y2, const QColor color);
 /** \brief used for emitting for custom menu - not used anymore*/
 	void insertText();
 	/** \brief used for emitting for custom menu - not used anymore*/
@@ -124,6 +127,7 @@ public:
 /** \brief check if there is some interaktive place an emit signal to delete annotation at found index*/
 	int deleteAnnotation(QPoint p);
 
+	/// removes image from display. no need to call this when before setImg is called
 	void unsetImg();
 	/** \brief handles mouse movement. */
 	/** \brief this is important for tracing user input when selecting text or insertin image */ 
@@ -143,6 +147,8 @@ public slots:
 	int getPlace( QPoint point );
 	/** \brief draws has on the place where text should be inserted. This is very ugly called method */
 	void drawCircle( QPoint point );
+	/// sets mode to fill regions. This is called when highlight text is performed
+	void fillRect( QList<QRect> region, QColor color );
 };
 
 #endif // PAGE_H

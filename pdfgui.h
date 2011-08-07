@@ -1,3 +1,4 @@
+/** \file pdfgui.h define main window */
 #ifndef PDFGUI_H
 #define PDFGUI_H
 

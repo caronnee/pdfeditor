@@ -1,3 +1,4 @@
+/** \brief Search.h defines class for handling search input */
 #ifndef ___SEARCH___
 #define ___SEARCH___
 

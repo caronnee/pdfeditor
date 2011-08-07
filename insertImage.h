@@ -1,3 +1,4 @@
+/** \file insertImage.h  defines basic classes for operating eith images */
 #ifndef ___IMAGE_MODULE__
 #define ___IMAGE_MODULE__
 #include <QWidget>

@@ -1,4 +1,4 @@
-/** \file containing class handling annotations */
+/** \file comments.h containing class handling annotations */
 #ifndef __COMMENTS___
 #define __COMMENTS___
 
@@ -19,13 +19,18 @@ class Comments : public  QWidget
 {
 	Q_OBJECT
 
+	/// annotation dictionary
 	typedef boost::shared_ptr<pdfobjects::CDict> ADictionary;
-
+	/// points that determine active place of the annotation 
 	boost::shared_ptr<pdfobjects::CArray> points;
+	/// user interface
 	Ui::Comments ui;
+	/// destination array. One of the properties of the pdf
 	boost::shared_ptr<pdfobjects::CArray> arr;
+	/// annotation to ne inserted or change
 	PdfAnnot _an;
-	libs::Rectangle rect;
+	/// bounding rectangle for annotation
+	libs::Rectangle _rect;
 	typedef boost::shared_ptr<pdfobjects::utils::IAnnotInitializator> CAInit;
 	struct InitName
 	{
@@ -33,9 +38,13 @@ class Comments : public  QWidget
 		CAInit init;
 		InitName(std::string n,CAInit i):name(n),init(i){};
 	};
+	/// initializtor for all types
 	std::vector<InitName> _inits;
+	/// type of annotation to be created
 	int _index;
+	/// flag if annotation should be changed or created
 	bool _change;
+	/// default name of the autor
 	std::string _name;
 public:
 	/** \brief constructor */
@@ -73,12 +82,13 @@ public slots:
 	/** these points must be multiplication of 8 according to the PDF specification. it is used only when highlighting to determine where is the active place */ 
 	void setPoints(std::vector<float> flts);
 
+	/// sets detination for link annotation 
 	void setDestination(pdfobjects::IndiRef ref);
 	/** \brief checks if the shown windows are correct */
 	/** every time annotation type changes, this method ensures that correct windows will be visible */
 	void onChange(int index);
 
-	/** \bried What should happen after apply */
+	/** \brief What should happen after apply */
 	/** at the end of this method, annotation will be created and signal with it will be emitted. All mandatory properties will be set during this metod */
 	void apply();
 

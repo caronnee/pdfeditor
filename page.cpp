@@ -13,6 +13,16 @@ void DisplayPage::paintEvent(QPaintEvent * event)
 	QLabel::paintEvent(event);
 	switch (_mode)
 	{
+	case ModeDrawHighLight:
+		{
+			QPainter p(this);
+			for ( int i = 0 ; i < _region.size(); i++)
+			{
+				p.setBrush(_color);
+				p.drawRect(_region[i]);
+			}
+			break;
+		}
 	case ModeDrawPosition:
 		{
 			QPainter p(this);
@@ -142,7 +152,7 @@ void DisplayPage::markPosition(QPoint point)
 	painter.end();
 	this->setPixmap(QPixmap::fromImage(resultImage));
 }
-void DisplayPage::fillRect(QList<QRect> rects,QColor color)
+void DisplayPage::setPixmapFromImage(QList<QRect> rects,QColor color)
 {
 	QImage resultImage(_copyImg.size(),QImage::Format_ARGB32_Premultiplied);
 
@@ -173,7 +183,7 @@ void DisplayPage::fillRect(QList<QRect> rects,QColor color)
 //	this->setPixmap(QPixmap::fromImage(resultImage));
 //}
 	
-void DisplayPage::fillRect( int x1, int y1, int x2, int y2, const QColor color)
+void DisplayPage::setPixmapFromImage( int x1, int y1, int x2, int y2, const QColor color)
 {
 //	QPainter painter(&_copyImg); //mozno az na this?
 	int sx = (x1 > x2) ? x1 - x2:x2 - x1;
@@ -184,15 +194,15 @@ void DisplayPage::fillRect( int x1, int y1, int x2, int y2, const QColor color)
 //	setImg();
 	QList<QRect> rr;
 	rr.append(r);
-	fillRect(rr,color);
+	setPixmapFromImage(rr,color);
 	//needrepaint? TODO
 }
 void DisplayPage::setImg() //again st from image, for removing highligh and so
 {
 #ifdef _DEBUG
-	fillRect(_interactive,QColor(0,255, 0, 50));
+	setPixmapFromImage(_interactive,QColor(0,255, 0, 50));
 #else 
-	fillRect(QList<QRect>(),QColor(0,255, 0, 50));
+	setPixmapFromImage(QList<QRect>(),QColor(0,255, 0, 50));
 #endif // _DEBUG
 	this->adjustSize();
 	_size = this->pixmap()->size();
@@ -313,6 +323,13 @@ int DisplayPage::getPlace( QPoint point )
 void DisplayPage::drawCircle( QPoint point )
 {
 	_pos = point;
-	_mode = ModeDrawPosition;
+	setMode (ModeDrawPosition);
 	update();
+}
+
+void DisplayPage::fillRect( QList<QRect> region, QColor color )
+{
+	setMode(ModeDrawHighLight);
+	_region = region;
+	_color = color;
 }

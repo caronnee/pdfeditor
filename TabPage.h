@@ -1,3 +1,4 @@
+/** \file tabPage.h defines main class for handling operation with pdf */
 #ifndef __TABPAGE__
 #define __TABPAGE__
 
@@ -58,7 +59,9 @@ enum AcceptName
 /** \brief structure with operator names thast should be accpted for operation */
 struct AcceptOperatorName
 {
+	/// names of the operators
 	std::vector<std::string> names;
+	/** \brief checks if name is wanted operator name */
 	bool isType(std::string name)
 	{
 		for (size_t i =0; i < names.size(); i++)
@@ -68,6 +71,7 @@ struct AcceptOperatorName
 		}
 		return false;
 	}
+	/** \brief adds name to the recognized operotor name */
 	void add(std::string name)
 	{
 		names.push_back(name);
@@ -79,6 +83,7 @@ class IsType
 	AcceptOperatorName names[OpAcceptCount];
 
 public:
+	/** \brief constructor */
 	IsType()
 	{
 		names[OpFontName].add("Tf");
@@ -95,10 +100,12 @@ public:
 		names[OpGraphicName].add("DO");
 		names[OpGraphicName].add("Do");
 	}
+	/** \brief checks if n is accepted operator name accortding to the type */
 	bool isType(int type, std::string n)
 	{
 		return names[type].isType(n);
 	}
+	/** \brief checks if the application can handle operator with this name */
 	bool acceptType(std::string name)
 	{
 		for ( int i =0 ; i < OpAcceptCount; i++)
@@ -109,6 +116,7 @@ public:
 		return false;
 	}
 };
+/** \brief annotation that can be handled by TIAEditor */
 enum AnnotType
 {
 	LinkAnnot,
@@ -118,44 +126,65 @@ enum AnnotType
 };
 class OpenPdf;
 
-/** \brief main class for handling one concrete opened pdf */
+/** \brief main class for handling one concrete opened pdf  document*/
 class TabPage : public QWidget
 {
 	Q_OBJECT
 
 private: //variables
+	/** this variable is used when the should be new page visible but still some operation is pending in the old page. It is used for creating link annotation */
 	int _oldPage;
-	QThread * _thread;
+	/** thread that start when request of search is handled */
+	QThread * _searchThread;
+	/** flag determining when searching should stop. User interrupts */
 	int _stop;
+	/** output device for PDF document */
 	SplashOutputDev splash;
+	/** what type should operator mode accept */
 	int _acceptedType;
+	/** ownet of this class */
 	OpenPdf * _parent;
+	/** generated user interface */
 	Ui::TabUI ui; 
-	QWidget * widget;
+	/** Form that will pop-up when signal for inserting or changing image is set */
 	InsertImage * _image;
+	/** position os the mouse first time it was clicked */
 	QPoint _mousePos;
+	/** searching engine. It contains all the flags and work that we look for. It need to be constantly fed by tokens */ 
 	Tree _searchEngine;
+	/** form that will raise up when request for handling annotation is caught */
 	Comments * _cmts;
-	//std::vector<std::string> acceptedAnotName;//TODO static alebo enum alebo cos
-	//could be static. but :)
-	QRegion _region;
-	QString _name; //name of the file to be opened
+
+	/** name of the opened file */
+	QString _name; 
+	/** form that will raise up when request for handling will be caught */
 	FontWidget * _font;	
+	/** checker for type that TIAEditor can handle */
 	IsType typeChecker;
+	/** parameters that changes the way the final pdf is disaplyed, like zoot etc */
 	pdfobjects::DisplayParams displayparams;	
+	/** pdf that is openened */
 	boost::shared_ptr<pdfobjects::CPdf> _pdf;
+	/** visible page */
 	boost::shared_ptr<pdfobjects::CPage> _page;
+	/** container with all ordered text tokens */
 	TextData _textList;
-	//oterator	of selected
+	/** iterators the border the selection */
 	TextData::iterator sTextIt, sTextItEnd, sTextMarker; //kde ten iterator konci
-	bool _dataReady; //pouzivane vseobecne, kedy sa to hodi
+	/** flags that tells it there was fulfilled all condition for continueing the operation. For example if after draggon mouse in image wade it was clicked and aproppriate variable set */
+	bool _dataReady;
+	/** flag that determines if there was something selected */
 	bool _selected;
+	/** inline image operator that was selected */
 	PdfOp _selectedImage;
 
+	/** user interface of dialog about PDF */
 	Ui::AboutDialog aboutDialogUI;
+	/** widget handler for displaying info about PDF */
 	QDialog aboutDialog;
-
+	/** accepted annotation */
 	CPage::Annotations _annots;
+	/** widget responsible to display pdf */
 	DisplayPage * _labelPage;
 	/** fills coordinated that shouls be actine in annotation */
 	void fillCoordinates(std::vector<float>& coordinates, float * dim);
@@ -187,12 +216,16 @@ public:
 	PdfAnnot _linkAnnot;
 	//static std::string SupportedAnnotations[] = { ANNOTS(CREATE_ARRAY) };
 ///
+	/** if image was selected, it will be deleted */
 	void deleteSelectedImage();
+	/** show form about changing image */
 	void raiseChangeSelectedImage();
+	/** recreates list of all text operators and sorts the according to left uppert corner */
 	void createList();
+	/** creates annotation aroud selected text */
 	void highLightAnnSelected();
+	/** delected annnptation */
 	void delAnnot(int i); //page to u seba upravi, aby ID zodpovedali
-	void SetTextSelect();
 ///constructor	
 	TabPage(OpenPdf *,QString name);
 	///destructor
@@ -201,49 +234,57 @@ public:
 	void setTree(shared_ptr<CDict> d, Bookmark * b );
 	///start highlightin - no longer used
 	void highLightBegin(int x, int y); //nesprav nic, pretoze to bude robit mouseMove
-	///highligghts selected text
+	///highlights selected text
 	void highlightText(); //tu mame convertle  x,y
-	void moveText(int difX, int difY);
+/** inserts ioperator before another. PdfEdit kernel does not support this, so this method replaces the operator and inserts clone after replaced operator */
 	void insertBefore(PdfOp op, PdfOp before);
+	/// this was not used
 	void createAddMoveString(PdfOp bef, double x, double y, QString name);
+	/// deprecated. Thia was moved to FontWidget 
 	void insertTextAfter(PdfOp opBehind, double td, double ymax, QString s);
-
 private:
-
-	//void loadFonts(FontWidget * font);
+///loads object at specified position according to displayparameters actually used 
 	void getAtPosition(Ops& ops, int x, int y );
+	/// validates that begin is before end 
 	void setTextData(TextData::iterator &begin, TextData::iterator end, shared_ptr<PdfOperator> op);
+	///deletes selected text 
 	void deleteText( QString text);
+	//convert BBox to QRect according to display parameters actually used 
 	QRect getRectangle( PdfOp ops );
+	//convert qrect to BBox according to display parameters actually used 
 	QRect getRectangle( BBox box );
 
-	//private methods
+	///adds another revision number to the selectable list 
 	void addRevision( int i = -1);
-
 	
+	/** sychronizes page number an page count ont he screen with the one in PDF */
 	void updatePageInfoBar();
+
 	/// gets file, name is name of dialog
 	QString getFile(bool open,QFileDialog::FileMode flags = QFileDialog::AnyFile);
+
+	/** shows text operator at the selected position */
 	void showClicked(int x, int y);
 public:	
-	/// preform delinerization
+	/// performs delinearization
 	void delinearize(QString name);
 	/// check if this PDF can be saved
 	bool CanBeSaved(bool raisew = true);
 	/// check if this pdf is not in read=-only mode or delinearized
 	bool CanBeSavedChanges(bool raiseW = true);
-/// readraw page
+	/// completely redraw page. This must be performed when something is inserted or deleted. Those operation could change while PDF display
 	void redraw();
 	///load first level pof bookmarks
 	void getBookMarks(); //LATER, treba actions zisti, ako sa vykoavaju
-//	void changeImageProp(); // v selected mame images//LATER
-	//nastavi u page cakanie na skoncenie kreslenie ( nieco emitne:)
-	//void draw();
+	///handles going to another page
 	void wheelEvent( QWheelEvent * event ); 
+	///deletes actual page 
 	void deletePage();
-
+	///saves pdf to the new file. If no name is specified, all changes are saved to new hidden revision
 	void savePdf(char * name);
+	///checks if this file is linearized */
 	bool checkLinearization();
+	/// checks if this pdf contains certain operator. Used for checking TJ operator
 	bool containsOperator(std::string name);
 	//rotate page
 
@@ -258,19 +299,19 @@ public slots:
 	void SetModePosition(PdfAnnot a);
 	///show contennt of the annotation that is active ( there is cursor )
 	void showAnnotation(int i);
-	// save pdf with hidden revision
+	/// save pdf with hidden revision
 	void save();
-	// save to another copy
+	/// save to another copy
 	void saveAs();
 	/// save in decoded state
 	void saveEncoded();
 	/// clear selected image and selected text
 	void clearSelected();
-///not used
+	///not used. Text operator are set by default when in operator mode
 	void setTextOperator();
 	///not used
 	void setImageOperator();
-//
+	/// gets font from page. If there is no such page, is will try to create one
 	std::string addFontToPage(std::string id);
 	/// not used
 	void replaceText( QString what, QString by);
@@ -301,23 +342,20 @@ public slots:
 	void search(QString text,int flags);
 	/// do to the bookmark page
 	void handleBookmark(QTreeWidgetItem* item, int);
-//	void removeObjects();
 	/// handle vlick event
 	void clicked(QPoint point);
-//	void updateSelectedRect( std::vector<shared_ptr<PdfOperator> > oops);
-//	void selectOperators(const QRect rect, std::vector<shared_ptr<PdfOperator> > & opers) ;
-	//void setSelectedOperators(QRect rect);
-	// there was created valid pdf operator, it must be insrted into page
+	/// there was created valid pdf operator, it must be inserted into page
 	void insertText( PdfOp op );
-	//raise insert Text dialog
+	/// raise insert Text dialog
 	void raiseInsertText(QPoint);
 	/// raise change selected text dialog
 	void raiseChangeSelectedText();
-	//raise insert image dialog
+	/// raise insert image dialog
 	void raiseInsertImage(QRect);
 	/// raise annotation dialog for inserting comment
 	void raiseAnnotation(QPoint point);
 
+	/// deletes image at selected point 
 	void deleteImage(QPoint point);
 	///Sets image to previous page
 	bool previousPage();
@@ -330,7 +368,7 @@ public slots:
 	/// Adds empty page
 	void addEmptyPage();
 
-	//prints pdf
+	///prints pdf. this was not implemented due to pdf print specification
 	void print();
 
 	/** exports text to the chosen file & opens that file ( txt ) in view */
@@ -368,27 +406,25 @@ private slots:
 	void getPreviousTmInPosition( libs::Point p, float* size);
 	void checkLoadedBookmarks();
 
-//----------------------------------------------------------------------------------------------------	
-	/* To implement
-	void showTextAnnot(std::string name);
-	void copyToClipBoard(); //from selected/ highlighted
-	void handleAnnotation(int i);
-	void move(int difx, int dify); //on mouse event, called on mouse realease
-	*/
 signals:
+	/// signal for creating varnings
 	void SetStateSignal(QString);
+	/// signal to information about operation to the history */
 	void addHistory(QString);
+	/// sets new mode to the page 
 	void ChangePageModeSignal(PageDrawMode);
+	///marks positon in PDF for inserting page
 	void markPosition(QPoint point); //reverted point
+	///position for comments are ready to be set when this signal is emitted 
 	void parsed(std::vector<float>);
-//	void pdfPosition(float a, float b, int w,int h);
+	///	void pdfPosition(float a, float b, int w,int h);
 	void pdfText(std::string s);
 private:
-	/// get destinatiion arrat from name tree
+	/// get destination array from name tree
 	void getDest( const char * nameToResolve, Bookmark *b ) ;
 	/// when loading bookmark, get destination
 	void getDestFromArray( PdfProperty pgl, Bookmark * b );
-	//readra all page 
+	//redraw all page 
 	void JustDraw();
 	/// creates appearance stre
 	boost::shared_ptr<pdfobjects::CStream> createAPStream(float * dim);
@@ -405,7 +441,7 @@ public slots:
 	void copyTextToClipBoard();
 	/// remove all remains from all operations from the page
 	void operationDone();
-	//init analyzation item 
+	///init analyzation item 
 	void initAnalyze();
 	/// load analyze t=item that was clicked 
 	void loadAnalyzeItem( QTreeWidgetItem * item );

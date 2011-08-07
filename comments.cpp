@@ -38,15 +38,15 @@ void Comments::setRectangle(float x, float y, int width, int height)
 {
 	onChange(_index);
 	//konvert do nasich suradnic
-	rect.yleft = y-height; //big line
-	rect.xleft = x; //big line
-	rect.yright = y; //big line
-	rect.xright = x+width; //big line
+	_rect.yleft = y-height; //big line
+	_rect.xleft = x; //big line
+	_rect.yright = y; //big line
+	_rect.xright = x+width; //big line
 	pdfobjects::CArray arr;
-	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.xleft)));
-	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.yleft)));
-	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.xright)));
-	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.yright)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(_rect.xleft)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(_rect.yleft)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(_rect.xright)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(_rect.yright)));
 	_an->getDictionary()->setProperty("Rect",arr);
 #ifdef _DEBUG
 	std::string m;
@@ -55,12 +55,12 @@ void Comments::setRectangle(float x, float y, int width, int height)
 }
 void Comments::setRectangle(libs::Rectangle rectangle)
 {
-	rect = rectangle;
+	_rect = rectangle;
 	pdfobjects::CArray arr;
-	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.xleft)));
-	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.yleft)));
-	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.xright)));
-	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(rect.yright)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(_rect.xleft)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(_rect.yleft)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(_rect.xright)));
+	arr.addProperty(*boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(_rect.yright)));
 	_an->getDictionary()->setProperty("Rect",arr);
 }
 Comments::Comments(std::string name) :_index(0),_change(false),_name(name)
@@ -92,14 +92,14 @@ void Comments::onChange(int index)
 {
 	pdfobjects::CAnnotation::setAnnotInitializator(_inits[index].init);
 	//prida ten typ na urcity rect
-	_an = pdfobjects::CAnnotation::createAnnotation(rect, _inits[index].name );
+	_an = pdfobjects::CAnnotation::createAnnotation(_rect, _inits[index].name );
 	//cela annotacia sa bude diat v page
 }
 void Comments::insertMarkup()//TODO hihligh s  textom
 {
 	_index = 2;
 	pdfobjects::CAnnotation::setAnnotInitializator(_inits[_index].init);
-	_an = pdfobjects::CAnnotation::createAnnotation(rect, "Highlight");
+	_an = pdfobjects::CAnnotation::createAnnotation(_rect, "Highlight");
 	apply();
 }
 void Comments::apply()

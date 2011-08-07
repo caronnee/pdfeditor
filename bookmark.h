@@ -1,3 +1,4 @@
+/** \file bookmark.h Defines class for picking colors */
 #ifndef __BOOKMARK__
 #define __BOOKMARK__
 
@@ -8,44 +9,63 @@
 #include <kernel/cpdf.h>
 #include <kernel/iproperty.h>
 
-/** \brief main class handling analysation */
-/** This class handles all properties and operators of the PDF document \n
-	It is used for diplaying ifnformation accourting to the proprty it contains. It is used in such way that at	first it handles DocCatalog of the pdf. I works in the lazy/loading regime. If user clicks on the item tha represents AnalyzeItem, it checks if it is loaded. If it is not, it loads all the properties and operator and parameters */
+/** \brief main class handling analysis */
+/** This class handles all properties of the PDF document \n
+	It is used for displaying information according to the property it contains. It works in the lazy/loading regime. If user clicks on the item the represents AnalyzeItem, it checks if it is loaded. If it is not, it loads all the properties */
 class AnalyzeItem : public QTreeWidgetItem
 {
-	/**\brief Initializes analyzation item */
-	/** This method is used usually in constructor */
+	/**\brief Initializes analysation item */
+	/** This method is used usually in constructor \n
+		It fill all necessary information needed for lazy-loading
+	*/
 	void Init();
-
+	/** flag determining if this item has child */ 
 	bool _hasChild;
+	/** flag determining if this item handles  property of pdf operator */
 	bool _isProp;
+	/** type of the property. Possible value of the type are: \n
+		- pNull \n
+		- pString \n
+		- pArray	\n
+		- pName \n
+		- pStream \n
+		- pRef \n
+		*/
 	pdfobjects::PropertyType _type;
+	/**pdf that this property belong to */
 	PdfInstance _pdfs;
+	/** property that should be analyzed */
+	/** this is exclusive with the operation analysation */
 	PdfProperty _prop;
+	/** operator that is to be analyzed */
 	PdfOp _op;
+	/** flags if this is loaded */
 	bool _loaded; //name, type, value, indiref
 
+	/** fully load operator */
 	void loadOperator();
+	/** fully loads property */
 	void loadProperty();
 public:
-	/** \Brief contructor for DOC catalog */
+	/** \brief contructor for DOC catalog */
 	AnalyzeItem(QTreeWidget * parent, PdfProperty prop);
 
-	/** \Brief contructor for Subitems with property type */
+	/** \brief contructor for Subitems with property type */
 	AnalyzeItem(QTreeWidgetItem * parent, PdfProperty prop);
 
-	/** \Brief contructor for Subitems with operator type */
+	/** \brief contructor for Subitems with operator type */
 	AnalyzeItem(QTreeWidgetItem * parent, PdfOp prop);
 
 	/** \brief Checks if the analyzation item was loaded */
 	bool loaded();
-	/** \brief Loads analyzation item */
+
+	/** \brief Loads analysation item */
 	/** This load will later call operator loader or property loader */
 	void load();
 };
 
 /** \brief class for Bookmark handling */
-/** This class is similar to AnalyzationItem. It works in lazy-load regime. When it loads, it contains valid page, zoom and X,Y coordinates. If it containt page=0 it means that tjhe bookmark is invalid and its parent should reload it */
+/** This class is similar to AnalyzationItem. It works in lazy-load regime. When it loads, it contains valid page, zoom and X,Y coordinates. If it contains page=0 it means that the bookmark is invalid and its parent should reload it */
 class Bookmark : public QTreeWidgetItem
 {
 	int _page; 
@@ -56,10 +76,10 @@ class Bookmark : public QTreeWidgetItem
 	double _x;
 	int _zoom;
 public:
-	/** \brief contructor for main bookmark */
+	/** \brief constructor for main bookmark */
 	Bookmark(QTreeWidgetItem * parent): QTreeWidgetItem(parent),_page(0),_loaded(true),_y(0),_x(0),_zoom(1) {} 
 	/** \brief Constructor for bookmark in item */
-	/** Initilializes item to invalid values */
+	/** Initializes item to invalid values */
 	Bookmark(QTreeWidget * parent): QTreeWidgetItem(parent),_page(0),_loaded(true),_y(0),_x(0),_zoom(1) {} 
 
 	/** \brief gets destination page */

@@ -5,26 +5,26 @@
 
 static std::vector<QColor> colors;
 
-class ItemList : public QAbstractListModel
-{
-	Q_OBJECT
-public:
-	ItemList(QObject *parent = 0) : QAbstractListModel(parent) {}
-
-	int rowCount(const QModelIndex &parent = QModelIndex()) const { return 5; }
-	QVariant data(const QModelIndex &index, int role) const {
-		if (!index.isValid())
-			return QVariant();
-
-		if (role == Qt::BackgroundRole)
-			return QColor(QColor::colorNames().at(index.row()));
-
-		if (role == Qt::DisplayRole)
-			return QString("Item %1").arg(index.row() + 1);
-		else
-			return QVariant();
-	}
-};//TODO test this
+//class ItemList : public QAbstractListModel
+//{
+//	Q_OBJECT
+//public:
+//	ItemList(QObject *parent = 0) : QAbstractListModel(parent) {}
+//
+//	int rowCount(const QModelIndex &parent = QModelIndex()) const { return 5; }
+//	QVariant data(const QModelIndex &index, int role) const {
+//		if (!index.isValid())
+//			return QVariant();
+//
+//		if (role == Qt::BackgroundRole)
+//			return QColor(QColor::colorNames().at(index.row()));
+//
+//		if (role == Qt::DisplayRole)
+//			return QString("Item %1").arg(index.row() + 1);
+//		else
+//			return QVariant();
+//	}
+//};//TODO test this
 
 ColorPicker::ColorPicker(QWidget * parent) : QWidget(parent)
 { 

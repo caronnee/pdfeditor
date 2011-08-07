@@ -1,3 +1,4 @@
+/** \file operatorData.h orders text data */
 #include <kernel/pdfoperators.h>
 #include "typedefs.h"
 #include <QString>
@@ -10,14 +11,29 @@ typedef boost::shared_ptr<pdfobjects::TextSimpleOperator> PdfTextOperator;
 /** this structure is used for sorting all the pdf operators and manipulating with them. Every operator initilizes bounding boxes. The text is then extracted from operator. In every case there must be font precent in the operator, otherwise we will get nasty exception */
 struct OperatorData
 {
-	double _begin, _end;
-	double _ymin, _ymax; 
+	/// x coordinate of beginning selection 
+	double _begin;
+	/// x coordinate of ending selection 
+	double _end;
+	/// Y coordinate of minimum in not-rotated state
+	double _ymin;
+	/// Y coordinate of maximum in not-rotated state
+	double _ymax; 
+	/// size of the char space
 	double _charSpace;
+	/// text operator
 	PdfTextOperator _op;
-	double _origX, _origX2;
-	QString _text; 
+	/// x coordinates of the left corner in not-rotated state
+	double _origX;
+	/// x coordinates of the right corner in not-rotated state
+	double _origX2;
+	/// converted text
+	QString _text;
+	/// width of the text
 	float _width;
+	/// x coordinated for each character
 	std::vector<float> _letters;
+	/// id used for creating weak order
 	size_t _id;
 #ifdef _DEBUG
 	std::string operatorName;

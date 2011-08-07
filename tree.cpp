@@ -1,23 +1,19 @@
 #include "tree.h"
 
+Accept::Accept(QChar ch, Accept * prev, int id) : _ch(ch), _next(NULL), _prev(prev),_id(id) { }
 
-//class pre strom rozhodujuci o tom, ci je dane slovo v PDF
-//toto by mohlo byt virtual
-////TODO nejaka globalna funkcia typu preprocessing, ci to ma byt velke, male alebo jake, aby to vyhovovalo
-////TODO zmenit na KMP alebo iny chytry algoritmus
-
-QChar Accept::getChar()const { return _ch; }
-Accept::Accept(QChar ch, Accept * prev) : _ch(ch), _next(NULL), _prev(prev) { }
-
- Accept * Accept::changeAccepted(QChar input)
+Accept* Accept::accept(QChar ch, TokenInfo info )
 {
-	return _prev;
+	if (ch != _ch)
+		return _prev;
+	_info = info;
+	return _next;
 }
-Accept* Accept::accept(QChar ch)
+
+bool Accept::accepts(QChar ch)
 {
-	if (ch == _ch)
-		return _next;
-	return _prev;
+	TokenInfo i = {0,0};
+	return accept(ch, i) == next();
 }
 void Accept::setNext ( Accept * acc) { _next = acc; }
 Accept * Accept::next()const { return _next;}
@@ -27,22 +23,45 @@ bool Accept::isEnd()const { return _next == NULL; }
 bool Accept::isBegin()const { return _prev == this; } //resp root, TODO vlastna podclass?Treba?
 Accept::~Accept() {}
 
-AcceptSet::AcceptSet(QString s, Accept * p) :Accept(' ', p)
+int Accept::getId()
 {
+	return _id;
+}
+
+AcceptSet::AcceptSet(QString s, Accept * p, int id) :Accept(' ', p,id)
+{
+	bool special = false;
 	for (size_t i = 0; i < s.length(); i++)
 	{
 		if (s[i] == '\\')
+		{
+			special = true;
 			continue;
-		acc.push_back(new Accept(s[i], this));
+		}
+		if (special)
+		{
+			acc.push_back(new Accept(s[i], this,id));
+			special = false;
+			continue;
+		}
+		//osetrenie specialnych znakov
+		if (s[i] == QChar('-'))
+		{
+			for (ushort c = s[i-1].unicode()+1; c<s[i+1].unicode()-1; c++)
+				acc.push_back(new Accept(c,this,id)); //zmozina cez -
+		}
 	}
 	_prev = p;
 }
-Accept* AcceptSet::accept(QChar ch)
+Accept* AcceptSet::accept(QChar ch, TokenInfo info)
 {
 	for(size_t i =0; i < acc.size(); i++)
 	{
-		if(acc[i]->accept(ch)!=this)
+		if(acc[i]->accepts(ch))
+		{
+			_info = info;
 			return next();
+		}
 	}
 	return prev();
 }
@@ -70,24 +89,20 @@ AcceptSet::~AcceptSet() {}
 //};
 // {0-19}
 
-AcceptRange::AcceptRange(QChar ot, int beg, int end, Accept * prev) : Accept(ot, prev)
+AcceptRange::AcceptRange(QChar ot, int beg, int end, Accept * prev, int id) : Accept(ot, prev,id)
 {
 	_beg = beg; _end = end; _iter = 0;
 }
-Accept * AcceptRange::changeAccepted(QChar input)
-{
-	//TODO later
-	return NULL;
-}
-Accept * AcceptRange::accept(QChar c)  //zatial iba jedno pismeno
+
+Accept * AcceptRange::accept(QChar c, TokenInfo info)  //zatial iba jedno pismeno
 {
 	if (c != _ch)
 	{
 		int i = _iter;
 		_iter = 0;
 		if ( i < _beg) //nedociahli sme na spodnu hranicu
-			return _prev->changeAccepted(c);
-		return next()->accept(c);
+			return prev();
+		return next()->accept(c, info);
 	}
 	_iter ++;
 	if (_iter < _end) 
@@ -125,6 +140,7 @@ QString Tree::revertPattern(QString s)
 }
 
 Tree::~Tree() { Clear(); }
+
 bool Tree::setPattern(QString pattern)
 {
 	if (!_forward)
@@ -141,19 +157,42 @@ bool Tree::setPattern(QString pattern)
 	setAccept(pattern,i);
 	_actual->setPrev(_actual); //back to root
 	_root = _actual;
+	std::vector<Accept *> _table;
+	_table.clear();
+	_table.push_back(_root);
 	prev = _root;
 	while (i < pattern.length())
 	{	
-		if (pattern[i] == QChar(' '))
+		if ((pattern[i] == QChar(' '))||_concateHyphen && (pattern[i] == QChar('-')))
 		{
 			i++;
 			continue;
 		};
 		setAccept(pattern,i);
 		prev->setNext(_actual);
-		prev=_actual;
+		prev = _actual;
+		//vytvarame tabulku
+		_table.push_back(_table.back());
+		while (true)	
+		{
+			if ((_table.back())->accepts(pattern[i-1]))
+			{
+				_table.back() = (_table.back()->next());
+				break;
+			}//nekceptuje ale padame dolu
+			if (_table.back() == _root)
+				break;
+			_table.back() = _table.back()->prev();
+		}
+		_actual->setPrev(_table.back());
+		assert(_table.size() == i);
 	}
 	_actual = _root;
+	//_table.clear();
+	//_table.push_back(_root);
+	//while (_table.back())
+	//	_table.push_back(_table.back()->next()); // pre zaverecnu integritu
+	//_table.pop_back();
 	return true;
 } //krajsie by to bolo asi odzadu ale co uz
 
@@ -162,18 +201,18 @@ void Tree::setAccept(QString pattern, int & i)
 {
 	if (!_regexp)
 	{
-		_actual = new Accept(pattern[i],_root);
+		_actual = new Accept(pattern[i],_root,i);
 		i++;
 		return;
 	}
 	if (pattern[i] == QChar('*'))
 	{
-		_actual = new AcceptRange(pattern[i],0,~0,_root);
+		_actual = new AcceptRange(pattern[i],0,~0,_root,i);
 		i+=2; //zobrali sme aj dalsie				
 	}
 	else if (pattern[i] == QChar('\\'))
 	{
-		_actual = new Accept(pattern[i+1],_root);
+		_actual = new Accept(pattern[i+1],_root,i);
 		i +=2;
 	}
 	else if (pattern[i] == QChar('['))
@@ -185,12 +224,12 @@ void Tree::setAccept(QString pattern, int & i)
 			++j;
 		}
 		QString res = pattern.mid(i+1,j-i-1);
-		_actual = new AcceptSet(res,_root);
+		_actual = new AcceptSet(res,_root,i);
 		i = j+1;
 	}
 	else if (pattern[i+1] == QChar('.'))
 	{
-		_actual = new AcceptDot(pattern[i],_root);
+		_actual = new AcceptDot(pattern[i],_root,i);
 		i += 2;
 	}
 	//else if (pattern[i] == QChar(' '))
@@ -203,7 +242,7 @@ void Tree::setAccept(QString pattern, int & i)
 	//}
 	else
 	{ 
-		_actual = new Accept(pattern[i],_root);
+		_actual = new Accept(pattern[i],_root,i);
 		i++;
 	}
 }
@@ -233,12 +272,29 @@ Tree::TreeTokens Tree::search()
 			_tokens = 0;
 			_begin = _position;
 		}
-		_actual = _actual->accept(_search[_position]);
+		bool done = false;
+		int oldId = _actual->getId();
+		while (!done)	
+		{
+			if (_actual == _root || _actual->accepts(_search[_position]))
+				done = true;
+			TokenInfo info = {_position,_tokens};
+			_actual = _actual->accept(_search[_position],info);
+		}
 		if (_actual==NULL) //posledne
 		{
 			_actual = _root;
 			_end = _position;
 			return Tree::Found;//kolkate pismeno to bolo. Operator budeme vediet z toho, co tam vrazame
+		}
+		if (oldId > _actual->getId())
+		{
+			int diff = oldId - _actual->getId()-1;
+			Accept * t = _root;
+			for ( int i =0; i<diff; i++)
+				t = t->next();
+			_begin = t->getPosition()._position;
+			_tokens -= t->getPosition()._tokens;
 		}
 	}
 	_position = -1;

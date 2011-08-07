@@ -154,9 +154,12 @@ void InsertImage::apply()
 	biOp = boost::shared_ptr<InlineImageCompositePdfOperator>();
 	this->close();
 }
+/** \brief pdf matrix convertor */
 struct Cm
 {
+	/// matrix
 	double matrix[6];
+	/// constructor 
 	Cm (double a=1.0f, double b=0.0f, double c=0.0f, double d=1.0f, double e=0.0f, double f=0.0f)
 	{
 		matrix[0] = a;matrix[1] = b;matrix[2] = c;

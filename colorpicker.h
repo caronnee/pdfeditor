@@ -1,4 +1,4 @@
-/** \file Difining class for picking colors */
+/** \file colorpicker.h Defines class for picking colors */
 #ifndef ___COLORPICK__
 #define ___COLORPICK__
 
@@ -21,12 +21,18 @@ class ColorPicker : public QWidget
 private:
 	Ui::colorPick ui;	 //tri spinboxy + 1 na vykreslovanie farby
 public:
+	/// constructor
 	ColorPicker(QWidget * parent);
+	/// selected colot
 	QColor _color;
+	/// red value of color
 	int getR(); 
+	/// green value of color
 	int getG(); 
+	/// blue value of color
 	int getB(); 
 signals:
+	/// when color is changes, signal is emitted to notice all objects 
 	void ValueChangedSignal(QColor);
 	public slots:
 		/** \brief sets color */

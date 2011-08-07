@@ -46,19 +46,24 @@
 #include <QProgressBar>
 #include <xpdf/xpdf/SplashOutputDev.h>
 #include "ui_aboutDialog.h"
-
+/** \brief searching thread */
 class MyThread : public QThread
 {
+	/// tabpage where should be performed searching 
 	TabPage * _shared;
+	/// string to be searched
 	QString _str;
+	/// flas for searching machine
 	int _flags;
 public:
+	/// initialize seatrch thread
 	void set(TabPage * pg, QString str, int fl)
 	{ 
 		_shared = pg;
 		_str = str;
 		_flags = fl; 
 	}
+	/// what should be done when the thread starts
 	void run()
 	{
 		_shared->performSearch(_str, _flags & SearchForward);
@@ -68,6 +73,7 @@ public:
 //operatory, ktore musim zaklonovat, ked chcem pohnut textom
 #define ZOOM_AFTER_HACK 4
 
+/// name of operators that are text-related - just informative
 std::string nameInTextOperators[] = { "w","j","J","M","d","ri","i","gs", "CS","cs", "SC","SCN", "sc","scn", "G","g","RG","rg","k","K","Tc","Tw", "Tz", "TL", "Tf","Tr","Ts","Td","TD","Tm","T*" };
 
 void TabPage::handleBookmark(QTreeWidgetItem* item, int) //nezaujima nas stlpec
@@ -92,25 +98,31 @@ void TabPage::handleBookmark(QTreeWidgetItem* item, int) //nezaujima nas stlpec
 	rotatePdf(displayparams, x,y,false);
 	this->ui.scrollArea->ensureVisible(x,y);
 }
-
+/** \brief class for bridging progress set in pdf and in QT4 */
 class PdfProgress : public pdfobjects::utils::IProgressBar
 {
+	/// QT$ bar that nadles the progress
 	QProgressBar * _bar;
 public:
+	/// contructor
 	PdfProgress(QProgressBar * bar): _bar(bar){};
+	/// initialization
 	virtual void start()
 	{
 		_bar->reset();
 	}
+	/// progress reached its end
 	virtual void finish()
 	{
 		//hide it
 		_bar->hide();
 	};
+	/// progress update. Step is the value that the bar should advance
 	virtual void update(int step)
 	{
 		_bar->setValue(_bar->value() + step);
 	};
+	/// sets range for bar
 	virtual void setMaxStep(int maxStep)
 	{
 		_bar->setRange(0,maxStep);
@@ -144,7 +156,7 @@ static SplashColor paperColor = {0xff,0xff,0xff};
 TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),splash (splashModeBGR8, 4, gFalse, paperColor),aboutDialog(this),_stop(0)
 {
 	_pdf = boost::shared_ptr<pdfobjects::CPdf> ( pdfobjects::CPdf::getInstance (name.toAscii().data(), pdfobjects::CPdf::ReadWrite));
-	_thread = new MyThread();
+	_searchThread = new MyThread();
 	debug::changeDebugLevel(10000);
 	_page = boost::shared_ptr<pdfobjects::CPage> (_pdf->getPage(1)); //or set from last
 	//displayparams.upsideDown = true;
@@ -173,7 +185,7 @@ TabPage::TabPage(OpenPdf * parent, QString name) : _name(name),_parent(parent),s
 		this->ui.zoom->addItem( s.toString()+" %",s);
 	}
 	//////////////////////////////////////THREAD////////////////////////////////////
-	connect( _thread, SIGNAL(finished()), this, SLOT(reportSearchResult()));
+	connect( _searchThread, SIGNAL(finished()), this, SLOT(reportSearchResult()));
 	//////////////////////////////////////////////////////////////////////////
 	connect( this, SIGNAL(SetStateSignal(QString)), this->ui.stateLabel, SLOT(setText(QString)));
 	connect( this, SIGNAL(SetStateSignal(QString)), this->ui.stateLabel, SLOT(show()));
@@ -1289,8 +1301,6 @@ void TabPage::clearSelected()
 }
 void TabPage::clicked(QPoint point) //resp. pressed, u select textu to znamena, ze sa vyberie prvy operator
 {
-	if ( this->ui.revision->currentIndex()!= _pdf->getRevisionsCount()-1)
-		return;
 	switch (_parent->getMode())
 	{
 	case ModeFindLastFont:
@@ -1483,12 +1493,12 @@ void TabPage::deleteSelectedImage()
 }
 void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit mouseMove
 {
-	if ( this->ui.revision->count()!= _pdf->getRevisionsCount())
-		return;
 	switch (_parent->getMode())
 	{
 	case ModeDeleteHighLight:
 		{
+			if (!CanBeSavedChanges())
+				break;
 			int index = _labelPage->getPlace(point);
 			if (index<0)
 				break;
@@ -1497,21 +1507,25 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			if (type!= "Highlight")
 				break;
 			_page->delAnnotation(an);
-			redraw();
+			operationDone();
 			break;
 		}
 	case ModeDeleteAnnotation:
 		{
+			if (!CanBeSavedChanges())
+				break;
 			int index = _labelPage->deleteAnnotation(point);
 			if (index <0 )
 				break;
 			_page->delAnnotation(_annots[index]);
 			_page->getAllAnnotations(_annots);
-			redraw();
+			operationDone();
 			break;
 		}
 	case ModeHighlighComment:
 		{
+			if (!CanBeSavedChanges())
+				break;
 			highlightText(/*_mousePos, point*/);
 			if (!_selected)
 				break;
@@ -1521,13 +1535,13 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 		}
 	case ModeSelectText:
 		{
-			_labelPage->setMode(ModeDrawNothing);
-			_labelPage->update();
 			highlightText(/*_mousePos, point*/);
 			break;
 		}
 	case ModeInsertImage:
 		{
+			if (!CanBeSavedChanges())
+				break;
 			QRect r(min(_mousePos.x(),point.x()),min(_mousePos.y(),point.y()), 
 				abs(_mousePos.x()-point.x()), abs(_mousePos.y()-point.y()));
 			libs::Point p;
@@ -1555,6 +1569,8 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 	case ModeImageSelected:
 		{
 			//vytvor nove cm a posun obrazok
+			if (!CanBeSavedChanges())
+				break;
 			if(!_selected)
 				break;
 			if (abs(_mousePos.x()-point.x())<2 && abs(_mousePos.y()-point.y()) <2)
@@ -1580,10 +1596,9 @@ void TabPage::mouseReleased(QPoint point) //nesprav nic, pretoze to bude robit m
 			break;
 		}
 	default:
-		//	highlight();//TODO ZMAZST
+		_labelPage->setMode(ModeDrawNothing);
 		break;
 	}
-	_labelPage->setMode(ModeDrawNothing);
 	_labelPage->update();
 	_dataReady = false;
 }
@@ -1650,7 +1665,11 @@ void TabPage::highlightText() //tu mame convertle  x,y, co sa tyka ser space
 	sTextIt = _textList.begin();
 	int i = 0;
 	if (ops.empty())
+	{
+		_selected = false;
+		_labelPage->update();
 		return;
+	}
 	for (; i < ops.size(); i++)
 	{
 		std::string s;
@@ -1739,8 +1758,8 @@ void TabPage::highlight()
 }
 
 //zatial len v ramci jednej stranky
-void TabPage::moveText(int difX, int difY) //on mouse event, called on mouse realease
-{
+//void TabPage::moveText(int difX, int difY) //on mouse event, called on mouse realease
+//{
 	//for each selected operator, move it accrding to position
 	//if (!_selected) //spravne nastavene 
 	//	return;
@@ -1783,12 +1802,12 @@ void TabPage::moveText(int difX, int difY) //on mouse event, called on mouse rea
 	//createAddMoveString(first->_op,first->_begin+difX,first->_ymax+y,s2);
 
 	//_textList.sort();
-}
+//}
 void TabPage::insertBefore(PdfOp op, PdfOp before)
 {
 	PdfOp clone = before->clone();
-	before->getContentStream()->replaceOperator(before,op);
-	op->getContentStream()->insertOperator(op,clone);
+	before->getContentStream()->replaceOperator(before,op,false);
+	op->getContentStream()->insertOperator(op,clone,true);
 }
 
 void TabPage::getPreviousTmInPosition( libs::Point p, float* size )
@@ -1967,11 +1986,11 @@ void TabPage::showClicked(int x, int y)
 		QColor color(55, 55, 200,100);
 		//rotatePdf(displayparams,b.xleft,b.yleft,false);
 		//rotatePdf(displayparams,b.xright,b.yright,false);
-		_labelPage->fillRect( b.xleft, b.yleft, b.xright, b.yright, color );
+		_labelPage->setPixmapFromImage( b.xleft, b.yleft, b.xright, b.yright, color );
 		emit addHistory(QString("Selected operator ") + s.c_str() +"\n");
 	}
 }
-QRect TabPage::getRectangle(shared_ptr < PdfOperator> ops)
+QRect TabPage::getRectangle(PdfOp ops)
 {
 	QRect r;
 	libs::Rectangle b = ops->getBBox();
@@ -2249,27 +2268,27 @@ void TabPage::resizeEvent(QResizeEvent * event)
 }
 void TabPage::wheelEvent( QWheelEvent * event ) //non-continuous mode
 {
+	QScrollBar * bar = this->ui.scrollArea->horizontalScrollBar();
+	bar->setMinimum(0);
+	bar->setMaximum(100);
 	if (event->delta() > 0 )
 	{
 		//wheeling forward
-		QScrollBar * bar = this->ui.scrollArea->horizontalScrollBar();
-		if (( bar->value() > event->delta()) && 
+		
+		if (( bar->value() < event->delta()) && 
 			(this->previousPage()))
-			bar->setValue(bar->maximum());
-		else
-			bar->setValue(bar->value() + event->delta() );
+		{
+			ui.scrollArea->ensureVisible(0, _labelPage->height());
+		}
 	}
 	else
 	{
-		QScrollBar * bar = this->ui.scrollArea->horizontalScrollBar();
-		if ( bar->value() < event->delta()*-1 )
+		if (( (bar->value() + event->delta()*-1)> bar->maximum() ) &&
+			this->nextPage() )
 		{
-			bar->setValue(bar->minimum());
+			ui.scrollArea->ensureVisible(0,0);
 		}
-		else
-			bar->setValue(bar->value()+event->delta());
 	}
-	event->accept(); //TODO opravit
 }
 void TabPage::saveEncoded()
 {
@@ -2341,9 +2360,9 @@ void TabPage::savePdf(char * name)
 }
 TabPage::~TabPage(void)	
 {
-	if (_thread->isRunning())
-		_thread->terminate();
-	delete _thread;
+	if (_searchThread->isRunning())
+		_searchThread->terminate();
+	delete _searchThread;
 	//_pdf->
 }
 
@@ -2813,7 +2832,7 @@ void TabPage::insertTextAfter(PdfOp opBehind, double td, double ymax, QString s)
 			it ++;
 			continue;
 		}
-		_font->addToBT((*it)->clone()); //no tak tam bt viac klonov, no:) ked tak do samostatnej listy a pri TJ sa to deletne
+		_font->addToBT((*it)->clone());
 		it++;
 	}
 	_font->addParameters();
@@ -2874,9 +2893,9 @@ void TabPage::stopSearch()
 
 void TabPage::search(QString srch, int flags)
 {
-	assert(!_thread->isRunning());
+	assert(!_searchThread->isRunning());
 	_stop = false;
-	MyThread * m = (MyThread *) _thread;
+	MyThread * m = (MyThread *) _searchThread;
 	m->set(this,srch,flags);
 	_searchEngine.setFlags(flags);
 	_searchEngine.validateSearch(srch);

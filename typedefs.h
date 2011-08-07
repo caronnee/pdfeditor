@@ -26,7 +26,7 @@
 	XX(ModeDeleteAnnotation, "Delete annotation mode: click on annotation to delete it","DeleteText.png","Delete annotation")	\
 	XX(ModeEmitPosition, "Emit position mode: Pdf is waiting for position. Click somewhere in the pdf","position.png","Wait for position")	\
 	XX(ModeSettings,"Set the color that should be used when highlighting text by hand and by annostion. Press setting to get away","settings.png","Settings")\
-	XX(ImageMode," Not Implemented","unknown.jpg","")	\
+	XX(ImageMode," Not Implemented","unknown.png","")	\
 	XX(DrawMode,"NotImplemented, go away!","unknown.jpg","")	\
 	XX(ModeFindLastFont, "Click to select font and font size by text in PDF","font.png","Fetch Font")\
 	XX(ModeChangeAnnotation, "Click on anotation to change it","change.png","Change annotation") \
@@ -46,6 +46,7 @@ enum Mode
 };
 enum PageDrawMode
 {
+	ModeDrawHighLight,
 	ModeDrawPosition,
 	ModeTrackCompleteRectangle,
 	ModeDrawNothing,

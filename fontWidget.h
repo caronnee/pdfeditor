@@ -1,4 +1,4 @@
-// \file that is responsible for correct inserting and changing values 
+/** \file fontWidget.h that is responsible for correct inserting and changing values */
 #ifndef __FONTE_WIDGET__
 #define __FONTE_WIDGET__
 
@@ -44,7 +44,7 @@ public:
 		fontOperands.push_back(boost::shared_ptr<pdfobjects::IProperty>(pdfobjects::CRealFactory::getInstance(size)));//velkost pismeno
 		return createOperator("Tf", fontOperands);
 	}
-	/** \bried get recognizable name - for example Times New Roman */
+	/** \brief get recognizable name - for example Times New Roman */
 	/** this is the name that is user- friendly - has recognizable name. This name can be different for the same fonts in the differemt PDF pages */
 	std::string getName() const{ return _name; }
 
@@ -116,7 +116,7 @@ public:
 	std::string addParameters();
 
 	/** \brief add to BT operator */
-	/** \param operator to be added to the BT */
+	/** \param op operator to be added to the BT */
 	void addToBT(PdfOp op);
 
 	/** \brief ends BT operator */
@@ -132,7 +132,7 @@ public:
 	void addFont(PdfOp op);
 	/** \brief get rotation as was set */
 	int getRotation();
-	/** \berief gets scale as it was set */
+	/** \brief gets scale as it was set */
 	int getScale();
 	/** \brief get color of the font */
 	QColor getColor();
@@ -145,6 +145,8 @@ public:
 
 	/** \brief emits change selected signal */
 	void change();
+
+	/// creates TM from page. this is used when getting font from page
 	void addTm( float w, float h );
 
 signals:
@@ -204,10 +206,10 @@ public slots:
 	/** some fonts are present only on one particular page. We have to clrear all the fonts every time this widget will be used */
 	void clearTempFonts();
 
-	/** \bried sets this widget to the state that waits only fot font */
+	/** \brief sets this widget to the state that waits only fot font */
 	/** this method will disable clear templ when this widget will show up */
 	void waitForFont( );
-	/** \brieg cleans after everything was ionserted and done */
+	/** \brief cleans after everything was ionserted and done */
 	/** after close event, all temporary folders will be delete */
 	void closeEvent ( QCloseEvent * event );
 
