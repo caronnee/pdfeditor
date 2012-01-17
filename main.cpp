@@ -1,3 +1,8 @@
+/*************************
+* 
+* this source code and its parts are distribuded under GPLv2 licence
+*   
+* */
 #include "pdfgui.h"
 #include <QtGui/QApplication>
 
